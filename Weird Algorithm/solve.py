@@ -3,7 +3,7 @@ import sys
 
 def solve():
     input = sys.stdin.readline
-    N = int(input())
+    N = int(input().strip())
     print(N, end=" ")
     
     while (N != 1):

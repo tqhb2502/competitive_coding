@@ -3,7 +3,7 @@ import sys
 
 def solve():
     input = sys.stdin.readline
-    text = input()
+    text = input().strip()
 
     maxlen = 1
     count = 1

@@ -3,8 +3,8 @@ import sys
 
 def solve():
     input = sys.stdin.readline
-    n = int(input())
-    arr = list(map(int, input().split()))
+    n = int(input().strip())
+    arr = list(map(int, input().strip().split()))
 
     appeared = [False] * (2 * 10**5 + 1)
     for i in arr:
