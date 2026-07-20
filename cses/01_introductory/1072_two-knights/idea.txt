@@ -1,0 +1,47 @@
+Bài toán: Two Knights (CSES 1072)
+
+Đề bài:
+Với mỗi kích thước bàn cờ k x k (k chạy từ 1 đến n), đếm số cách đặt 2
+quân Mã (knight) lên bàn cờ sao cho chúng KHÔNG tấn công lẫn nhau.
+In ra n số, mỗi số ứng với một giá trị k.
+
+Ý tưởng (đếm bù trừ):
+Số cách đặt 2 quân Mã không tấn công nhau
+   = (Tổng số cách đặt 2 quân Mã bất kỳ)
+   - (Số cách đặt 2 quân Mã đang TẤN CÔNG nhau)
+
+1) Tổng số cách đặt 2 quân Mã bất kỳ trên bàn k x k:
+   Bàn cờ có k*k ô. Chọn 2 ô khác nhau (Mã không phân biệt thứ tự):
+      C(k*k, 2) = k*k * (k*k - 1) / 2
+
+2) Số cặp Mã tấn công nhau:
+   Mỗi nước đi của quân Mã (đi theo hình chữ L) tương ứng với một hình
+   chữ nhật 2 x 3 hoặc 3 x 2. Trong mỗi hình chữ nhật 2 x 3 (hoặc 3 x 2)
+   có đúng 2 cặp ô mà quân Mã ở hai ô đó tấn công nhau (2 đường chéo của
+   chữ L). Vì vậy:
+     - Số hình chữ nhật 2 x 3 (2 hàng, 3 cột): (k-1) * (k-2)
+     - Số hình chữ nhật 3 x 2 (3 hàng, 2 cột): (k-2) * (k-1)
+   Mỗi hình cho 2 cặp tấn công, nên tổng số cặp tấn công:
+     2 * [ (k-1)(k-2) + (k-2)(k-1) ] = 4 * (k-1) * (k-2)
+
+   (Với k = 1 hoặc k = 2 thì (k-1)(k-2) = 0, không có cặp tấn công.)
+
+Vậy kết quả cho từng k:
+   answer(k) = k*k*(k*k - 1)/2 - 4*(k-1)*(k-2)
+
+Kiểm tra với ví dụ:
+   k=1: 0 - 0 = 0
+   k=2: 6 - 0 = 6
+   k=3: 36 - 8 = 28
+   k=4: 120 - 24 = 96
+   ... khớp với output mẫu.
+
+Độ phức tạp:
+   - Thời gian: O(n) (một vòng lặp từ 1 đến n, mỗi bước tính số học O(1)).
+   - Bộ nhớ: O(n) cho danh sách kết quả trước khi in (có thể coi là O(1)
+     ngoài phần output).
+
+Các số có thể rất lớn (k=10000 => k^4 ~ 10^16) nên dùng số nguyên lớn của
+Python là an toàn, không tràn số.
+
+Không có rủi ro TLE: n <= 10000, thuật toán O(n) rất nhanh trong Python.

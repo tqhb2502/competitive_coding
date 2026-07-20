@@ -1,0 +1,37 @@
+Bài toán: Stick Lengths (CSES 1074)
+
+1) Tóm tắt đề bài
+- Có n chiếc que với độ dài p_1, p_2, ..., p_n.
+- Ta cần chọn một độ dài đích t rồi biến mọi chiếc que về độ dài t.
+- Chi phí để chỉnh một chiếc que có độ dài p về t là |p - t|.
+- Yêu cầu: tìm tổng chi phí nhỏ nhất, tức là minimize sum(|p_i - t|) theo t.
+
+2) Ý tưởng chính (chọn median)
+- Hàm f(t) = sum_{i=1..n} |p_i - t| là một hàm lồi (convex) theo t, dạng piecewise-linear.
+- Giá trị t làm f(t) đạt cực tiểu chính là median (trung vị) của dãy p.
+- Chứng minh trực giác: nếu ta đứng tại một điểm t và dịch chuyển sang phải một đoạn nhỏ,
+  tổng chi phí thay đổi = (số que nhỏ hơn t) - (số que lớn hơn t). Khi số que ở hai phía cân
+  bằng nhau (đạt được tại median) thì đạo hàm đổi dấu, đó là điểm cực tiểu.
+- Với n lẻ median là phần tử ở giữa; với n chẵn mọi t trong đoạn giữa hai phần tử giữa đều tối
+  ưu và cho cùng một giá trị f, nên chỉ cần lấy phần tử ở vị trí n//2 (0-indexed) sau khi sort.
+
+3) Thuật toán
+- Đọc n và mảng p.
+- Sort mảng p (O(n log n)).
+- Lấy median m = p[n//2].
+- Trả lời = sum(|p_i - m|).
+
+4) Tính đúng đắn
+- Vì f(t) lồi và cực tiểu tại median, giá trị sum(|p_i - median|) là nhỏ nhất có thể.
+- Dùng median lấy tại chỉ số n//2 luôn cho kết quả tối ưu cho cả n chẵn lẫn n lẻ.
+
+5) Độ phức tạp
+- Thời gian: O(n log n) do sort, phần tính tổng là O(n).
+- Bộ nhớ: O(n) để lưu mảng.
+- Với n <= 2*10^5 và p_i <= 10^9, tổng chi phí có thể lớn (tối đa cỡ 2*10^14) nên phải dùng
+  kiểu số nguyên lớn; Python xử lý big integer tự nhiên nên không lo tràn số.
+
+LƯU Ý TLE: Với n <= 2*10^5 thuật toán O(n log n) rất nhẹ, Python đọc bằng sys.stdin.buffer và
+dùng sorted() cùng vòng lặp cộng gần như chắc chắn AC trong giới hạn thời gian. Rủi ro TLE gần
+như bằng 0; nếu muốn tuyệt đối an toàn, một bản C++ dùng sort + tính tổng long long cũng chạy
+trong vài chục ms.

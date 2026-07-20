@@ -1,0 +1,60 @@
+MOVIE FESTIVAL II - CSES 1632
+https://cses.fi/problemset/task/1632
+
+1. TÓM TẮT BÀI TOÁN
+- Có n bộ phim, mỗi phim có thời gian bắt đầu a và kết thúc b (a < b).
+- Có k thành viên câu lạc bộ. Mỗi thành viên tại một thời điểm chỉ xem được một
+  bộ phim, và các phim mà một người xem không được chồng lấn nhau (phim sau bắt
+  đầu >= thời điểm kết thúc phim trước).
+- Tìm tổng số phim tối đa mà k thành viên có thể xem được.
+
+2. Ý TƯỞNG (greedy + multiset)
+- Sắp xếp tất cả các phim theo thời gian kết thúc b tăng dần.
+- Duy trì một multiset gồm k giá trị: thời điểm kết thúc phim gần nhất mà mỗi
+  thành viên đã xem (ban đầu tất cả đều bằng 0 vì chưa ai xem gì).
+- Duyệt lần lượt từng phim (a, b) theo thứ tự b tăng dần. Chọn thành viên có
+  "thời điểm rảnh" (end time) LỚN NHẤT nhưng vẫn <= a để giao bộ phim này:
+    + Nếu tồn tại thành viên như vậy: xóa giá trị end cũ của người đó khỏi
+      multiset, chèn b vào, và tăng biến đếm số phim lên 1.
+    + Nếu không: bỏ qua bộ phim này.
+
+3. TẠI SAO ĐÚNG (tính đúng của greedy)
+- Duyệt theo b tăng dần là chuẩn của bài Movie Festival (mỗi khi chọn được một
+  phim kết thúc sớm nhất có thể thì giải phóng thành viên đó sớm nhất).
+- Với nhiều thành viên, mấu chốt là chọn thành viên có end LỚN NHẤT mà <= a
+  (chứ KHÔNG phải end nhỏ nhất). Lý do: ta duyệt theo b, nên thứ tự start a đến
+  ngẫu nhiên; nên "dành" giá trị end nhỏ cho các phim có thể bắt đầu sớm hơn ở
+  tương lai. Nếu tham lam lấy thành viên có end nhỏ nhất (ví dụ dùng min-heap)
+  thì sẽ sai. Ví dụ: k=2, các phim A=(1,2), B=(1,5), C=(6,7), D=(3,8): đáp án
+  đúng là 4 (người 1: A,D ; người 2: B,C) nhưng nếu luôn lấy end nhỏ nhất thì
+  chỉ được 3. Vì vậy bắt buộc phải lấy end lớn nhất mà <= a.
+- Cách chọn này tương đương với: chọn số phim tối đa sao cho tại mỗi thời điểm
+  số phim chồng lấn nhau không vượt quá k (đồ thị khoảng cách tô màu bằng k màu
+  được khi và chỉ khi độ chồng lấn <= k). Greedy trên là lời giải chuẩn đã được
+  chứng minh cho bài toán này.
+
+4. CÀI ĐẶT MULTISET BẰNG FENWICK (BIT)
+- Python stdlib không có multiset/SortedList, nên ta mô phỏng bằng Fenwick
+  tree trên các giá trị end đã coordinate-compressed ({0} hợp {b_i}).
+- tree[i] lưu số thành viên đang có end time bằng giá trị thứ i.
+- Truy vấn "end lớn nhất <= a":
+    + p = bisect_right(V, a) = số giá trị <= a (chỉ số Fenwick 1..p).
+    + s = prefix(p) = số thành viên có end <= a. Nếu s == 0 thì bỏ qua.
+    + find_kth(s) = chỉ số nhỏ nhất có prefix >= s. Vì có đúng s slot bị chiếm
+      trong [1..p], đây chính là chỉ số LỚN NHẤT <= p đang bị chiếm, tức là
+      thành viên cần tìm. (binary lifting trên Fenwick, O(log n))
+- Chèn/xóa là point-update O(log n). Nhận xét: vì duyệt theo b tăng dần nên tổng
+  số phần tử trong multiset luôn là k (xóa 1, chèn 1).
+
+5. ĐỘ PHỨC TẠP
+- Sắp xếp: O(n log n).
+- Mỗi phim: vài thao tác Fenwick, mỗi cái O(log n) -> tổng O(n log n).
+- Bộ nhớ: O(n).
+
+LƯU Ý TLE: Với n <= 2*10^5 và giới hạn thời gian hướng tới C++ (thường 1.0s),
+lời giải Fenwick thuần CPython3 có thể chậm (nhiều vòng lặp while O(log n) cho
+mỗi phim, tổng ~10^7 thao tác có overhead của Python) và có nguy cơ TLE. Cách
+khắc phục: nộp bằng PyPy3 trên CSES (thường pass thoải mái), hoặc port sang C++
+dùng std::multiset với upper_bound: sắp xếp theo b, giữ multiset<int> M chứa k
+số 0, với mỗi phim tìm it=prev(M.upper_bound(a)); nếu *it <= a thì M.erase(it),
+M.insert(b), ++ans. C++ chạy O(n log n) với hằng số nhỏ, chắc chắn trong giới hạn.

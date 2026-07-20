@@ -1,0 +1,2 @@
+Minimal Grid Path
+https://cses.fi/problemset/task/3359

@@ -1,0 +1,40 @@
+Bài toán: Maximum Subarray Sum (CSES 1643)
+
+Đề bài:
+Cho một mảng gồm n số nguyên, hãy tìm tổng lớn nhất của một subarray liên tục
+và khác rỗng (contiguous, nonempty subarray).
+
+Ý tưởng: thuật toán Kadane (greedy / dynamic programming)
+
+Định nghĩa best_ending_here[i] = tổng lớn nhất của các subarray kết thúc đúng
+tại vị trí i. Khi đó có công thức truy hồi:
+    best_ending_here[i] = x[i] + max(best_ending_here[i-1], 0)
+Nghĩa là: subarray tốt nhất kết thúc tại i hoặc là chỉ gồm mỗi x[i], hoặc là
+x[i] nối vào subarray tốt nhất kết thúc tại i-1. Ta chỉ nối phần trước vào khi
+tổng của nó dương (max(..., 0)); nếu phần trước âm thì bỏ đi và bắt đầu lại.
+
+Đáp số cuối cùng là max của best_ending_here trên mọi i.
+
+Cài đặt gọn: duy trì hai biến
+    cur = tổng subarray tốt nhất kết thúc tại phần tử hiện tại
+    ans = đáp án tốt nhất từng thấy
+Với mỗi x: cur = max(x, cur + x); ans = max(ans, cur).
+
+Vì subarray phải khác rỗng nên ta khởi tạo ans = cur = x[0] (phần tử đầu tiên),
+rồi duyệt từ phần tử thứ hai. Cách này xử lý đúng cả trường hợp toàn bộ mảng
+đều là số âm (khi đó đáp án là phần tử lớn nhất, tức phần tử âm ít nhất).
+
+Tính đúng đắn:
+- Mọi subarray khác rỗng đều kết thúc tại một vị trí i nào đó, nên nếu ta tính
+  đúng best_ending_here[i] cho mọi i thì max của chúng chính là đáp án toàn cục.
+- Công thức truy hồi đúng vì subarray tối ưu kết thúc tại i, sau khi bỏ phần tử
+  x[i], hoặc rỗng (tổng 0) hoặc là một subarray kết thúc tại i-1; ta chọn phương
+  án cho tổng lớn nhất, đó chính là max(best_ending_here[i-1], 0).
+
+Độ phức tạp:
+- Thời gian: O(n) do chỉ duyệt mảng một lần.
+- Bộ nhớ: O(1) ngoài phần lưu dữ liệu đầu vào (chỉ dùng vài biến).
+
+Kết quả có thể lên tới cỡ 2*10^5 * 10^9 = 2*10^14, vượt phạm vi 32-bit nhưng
+Python dùng số nguyên vô hạn nên không tràn số; khi port sang C++ cần dùng
+kiểu long long.

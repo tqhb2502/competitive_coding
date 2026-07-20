@@ -1,0 +1,44 @@
+Bài toán: Coin Combinations II (CSES 1636)
+Đếm số cách tạo ra tổng tiền x từ n loại đồng xu, KHÔNG kể thứ tự (các tổ hợp
+{2,3} và {3,2} chỉ tính là một). Kết quả lấy modulo 1000000007.
+
+Ý tưởng: đây là bài đếm tổ hợp của unbounded knapsack (mỗi đồng xu dùng số lần
+tùy ý).
+
+DP state:
+- ways[s] = số cách (không kể thứ tự) tạo ra tổng đúng bằng s, khi CHỈ được dùng
+  tập các đồng xu đã xét cho tới thời điểm hiện tại.
+
+Base case:
+- ways[0] = 1 (có đúng một cách tạo tổng 0: không dùng đồng xu nào).
+- ways[s] = 0 với mọi s > 0 lúc ban đầu.
+
+Transition (điểm mấu chốt để KHÔNG kể thứ tự):
+- Vòng NGOÀI duyệt qua từng đồng xu c; vòng TRONG duyệt s tăng dần từ c tới x:
+      ways[s] = (ways[s] + ways[s - c]) mod MOD
+- Vì đồng xu nằm ở vòng ngoài nên mỗi tổ hợp {số lượng mỗi loại xu} chỉ được sinh
+  ra đúng một lần, do ta cố định thứ tự "xét các loại xu". Đây chính là điểm khác
+  với Coin Combinations I (bài 1635) vốn để tổng ở vòng ngoài nên đếm cả thứ tự.
+
+Answer:
+- ways[x] mod MOD.
+
+Vì sao đúng:
+- Khi bổ sung một loại xu c, công thức ways[s] += ways[s - c] với s tăng dần cho
+  phép dùng c nhiều lần (unbounded). Do mỗi loại xu chỉ được "mở khóa" một lần
+  theo thứ tự cố định của vòng ngoài, ta đếm được đúng số bội (multiset) các đồng
+  xu, tức số tổ hợp không kể thứ tự.
+- Với ví dụ x=9, coins={2,3,5}: các tổ hợp là 2+2+5, 3+3+3, 2+2+2+3 -> đáp án 3.
+
+Độ phức tạp:
+- Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tích ~ 10^8.
+
+Tối ưu trong lời giải (numpy): với mỗi đồng xu c, phép cộng dồn ways[s] += ways[s-c]
+theo s tăng dần chính là prefix sum trên từng lớp thặng dư (residue class) theo
+modulo c. Ta reshape mảng về ma trận (m, c) rồi dùng cumsum theo axis=0 để tính
+đồng thời tất cả các lớp bằng mã C, đưa mỗi đồng xu về O(x) rất nhanh. Nếu môi
+trường không có numpy, chương trình tự chuyển sang DP thuần Python O(n*x).
+
+LƯU Ý TLE: DP thuần Python O(n*x) với x tới 10^6 và n tới 100 (khoảng 10^8 phép
+tính) gần như chắc chắn TLE trên CSES nếu numpy không khả dụng. Đường nhanh numpy
+giúp tránh TLE; nếu CSES không có numpy thì nên nộp bản C++ tương đương.

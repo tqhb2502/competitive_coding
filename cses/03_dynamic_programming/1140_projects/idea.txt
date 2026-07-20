@@ -1,0 +1,44 @@
+Bài toán: Projects (CSES 1140) - Weighted Interval Scheduling.
+
+Cho n dự án, mỗi dự án có ngày bắt đầu a_i, ngày kết thúc b_i và tiền
+thưởng p_i. Nếu nhận một dự án thì bạn bận toàn bộ các ngày a_i..b_i
+(bao gồm cả hai đầu mút). Hai dự án không được chồng lấn: nếu một dự án
+kết thúc vào ngày b thì dự án tiếp theo phải bắt đầu vào ngày > b
+(tức a_next >= b + 1). Cần chọn tập dự án không chồng lấn để tổng tiền
+thưởng lớn nhất.
+
+Ý tưởng DP (weighted interval scheduling):
+- Sắp xếp tất cả dự án theo ngày kết thúc b tăng dần.
+- Gọi ends là mảng các b đã sắp xếp. dp[i] = số tiền lớn nhất khi chỉ
+  xét i dự án đầu tiên (trong thứ tự đã sắp xếp).
+
+DP state:
+- dp[i] với i = 0..n, dp[i] = lợi nhuận tối đa dùng i dự án đầu tiên.
+
+Base case:
+- dp[0] = 0 (không dùng dự án nào).
+
+Transition:
+- Xét dự án thứ i (1-indexed) có (a, b, p). Có hai lựa chọn:
+  1) Không nhận dự án i: kế thừa dp[i-1].
+  2) Nhận dự án i: cần tìm dự án cuối cùng "tương thích", tức dự án có
+     b < a. Vì đã sắp theo b tăng dần, số dự án có b < a chính là
+     j = bisect_left(ends, a). Khi đó lấy dp[j] + p.
+- dp[i] = max(dp[i-1], dp[j] + p) với j = bisect_left(ends, a).
+  (bisect_left cho vị trí đầu tiên mà ends >= a, nên đếm đúng các dự án
+   có b < a, thỏa điều kiện a_next >= b + 1.)
+
+Answer:
+- dp[n].
+
+Vì sao đúng:
+- Khi sắp theo b tăng dần, mọi dự án tương thích (b < a của dự án hiện
+  tại) đều nằm ở vị trí sớm hơn trong thứ tự, nên dp[j] đã bao gồm
+  phương án tối ưu cho tập con đó. Quyết định "nhận / không nhận" dự án
+  có b lớn nhất trong tiền tố i là đầy đủ và không bỏ sót trường hợp,
+  đây là quy hoạch động chuẩn cho weighted interval scheduling.
+
+Độ phức tạp:
+- Sắp xếp O(n log n). Mỗi dự án một lần bisect O(log n). Tổng thời gian
+  O(n log n). Bộ nhớ O(n).
+- Với n <= 2*10^5 và dùng fast I/O, chạy tốt trong Python trên CSES.

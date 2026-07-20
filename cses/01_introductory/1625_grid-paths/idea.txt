@@ -1,0 +1,51 @@
+Grid Paths - CSES 1625
+https://cses.fi/problemset/task/1625
+
+1. Tóm tắt bài toán
+   - Cho lưới 7x7. Mỗi "đường đi" là một đường đi Hamilton: bắt đầu từ ô góc
+     trên-trái, đi qua ĐÚNG một lần tất cả 49 ô, và kết thúc tại ô góc dưới-trái.
+   - Mỗi đường đi được mô tả bằng chuỗi 48 ký tự gồm D (xuống), U (lên),
+     L (trái), R (phải). Dấu '?' là ký tự đại diện (có thể là 1 trong 4 hướng).
+   - Yêu cầu: đếm số đường đi hợp lệ khớp với chuỗi mô tả cho trước.
+
+2. Ý tưởng: Quay lui (backtracking / DFS)
+   - Đi theo từng bước trong chuỗi mô tả. Ở bước i (0..47):
+       + Nếu s[i] là một hướng cụ thể -> chỉ thử hướng đó.
+       + Nếu s[i] == '?' -> thử cả 4 hướng.
+   - Tại mỗi bước chỉ đi sang ô CHƯA thăm và nằm trong lưới. Đánh dấu ô đã thăm,
+     đệ quy, rồi bỏ đánh dấu khi quay lui.
+   - Vì ta không bao giờ bước lại ô đã thăm, sau đúng 48 bước ta đã thăm 49 ô
+     phân biệt = toàn bộ lưới. Do đó:
+       + Nếu sau 48 bước đang ở ô đích (dưới-trái) -> đếm thêm 1 đường hợp lệ.
+
+3. Các phép cắt tỉa (rất quan trọng để chạy nhanh)
+   a) Cắt theo đích đến:
+      - Đường đi hợp lệ PHẢI kết thúc tại ô dưới-trái ở ô thứ 49 (sau 48 bước).
+      - Nếu DFS tới ô đích khi step < 48 -> không thể là đường hợp lệ và cũng
+        không thể đi tiếp (ô đích chỉ thăm 1 lần) -> dừng nhanh ngay.
+   b) Cắt theo "chia đôi lưới":
+      - Xét ô hiện tại. Gọi 4 ô kề: trên, dưới, trái, phải. "Bị chặn" nghĩa là
+        tường (biên) hoặc ô đã thăm.
+      - Nếu (trên VÀ dưới đều bị chặn) VÀ (trái VÀ phải đều trống): dù đi sang
+        trái hay phải, phần còn lại (phía bên kia) bị cắt rời khỏi đường đi,
+        và phần đó vẫn còn ô chưa thăm -> không thể thăm hết -> dừng nhanh.
+      - Tương tự nếu (trái VÀ phải đều bị chặn) VÀ (trên VÀ dưới đều trống).
+      - Hai trường hợp này bao gồm cả "chạm tường rồi rẽ trái/phải được" và
+        "gặp ô đã thăm (ngõ cụt) rồi rẽ trái/phải được".
+
+4. Cài đặt / thủ thuật tốc độ
+   - Dùng lưới đệm 9x9: viền ngoài được đánh dấu sẵn là "bị chặn", nhờ vậy
+     không cần kiểm tra biên khi di chuyển (ô trên/dưới/trái/phải luôn hợp lệ).
+   - Mã hóa 4 hướng thành độ lệch chỉ số: D=+9, U=-9, L=-1, R=+1.
+   - Dùng bytearray để đánh dấu đã thăm (truy cập/gán rất nhanh).
+
+5. Độ phức tạp
+   - Thời gian: theo lý thuyết là mũ (số nhánh backtracking), nhưng nhờ các
+     phép cắt tỉa số nút duyệt giảm mạnh; trong C++ chạy khoảng 0.x giây cho
+     test khó nhất (chuỗi toàn '?', đáp số 88418).
+   - Bộ nhớ: O(1) - lưới cố định 9x9 và độ sâu đệ quy tối đa 49.
+
+LƯU Ý TLE: Với test toàn dấu '?' (đếm toàn bộ 88418 đường), cây tìm kiếm có
+hàng chục triệu nút; Python thuần rất có thể vượt quá giới hạn 1 giây của CSES.
+Bản C++ (mảng tĩnh/bitmask cho ô đã thăm, đệ quy và thao tác chỉ số rẻ hơn
+~20-50 lần, không có chi phí của interpreter) sẽ chạy trong giới hạn thời gian.

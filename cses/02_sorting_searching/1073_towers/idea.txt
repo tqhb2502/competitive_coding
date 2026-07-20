@@ -1,0 +1,29 @@
+Bài toán: Towers (CSES 1073)
+
+Đề bài
+- Có n khối lập phương đến theo thứ tự cho trước, kích thước k_i.
+- Với mỗi khối, ta hoặc đặt nó lên đỉnh một thap đã có (chỉ được đặt khi khối trên NHỎ HƠN THỰC SỰ khối ngay dưới), hoặc bắt đầu một thap mới.
+- Cần tìm số thap tối thiểu.
+
+Ý tưởng: greedy + binary search (chính là patience sorting)
+- Ta duy trì một danh sách tops chứa giá trị đỉnh hiện tại của tất cả các thap, và giữ cho danh sách này luôn được sắp xếp tăng dần.
+- Khi xử lý khối kích thước k:
+  * Ta muốn đặt k lên một thap có đỉnh > k (để khối trên nhỏ hơn khối dưới). Để tham lam tối ưu, ta chọn thap có đỉnh NHỎ NHẤT trong số các đỉnh > k, tức là upper bound của k (dùng bisect_right).
+  * Nếu tồn tại đỉnh như vậy tại vị trí j: đặt khối lên thap đó, đỉnh mới trở thành k, ta gán tops[j] = k.
+  * Nếu không có đỉnh nào > k: bắt buộc tạo thap mới, thêm k vào cuối tops.
+- Đáp số là số phần tử của tops sau khi xử lý hết.
+
+Vì sao vẫn giữ được thứ tự sắp xếp mà chỉ cần gán tại chỗ (không cần chèn/xóa)?
+- j = bisect_right(tops, k) là chỉ số phần tử đầu tiên THỰC SỰ lớn hơn k. Do đó tops[j-1] <= k < tops[j] <= tops[j+1].
+- Khi thay tops[j] bằng k: ta có tops[j-1] <= k và k < tops[j+1] (vì k < giá trị cũ tops[j] <= tops[j+1]). Vậy danh sách vẫn tăng dần.
+- Khi j == len(tops): mọi đỉnh đều <= k nên k >= tops[-1], việc append giữ nguyên thứ tự.
+
+Vì sao greedy này tối ưu?
+- Đây là lập luận trao đổi (exchange argument) kinh điển của patience sorting. Chọn thap có đỉnh nhỏ nhất mà vẫn > k làm "lãng phí" ít khả năng nhất: giữ lại các thap có đỉnh lớn hơn để đón các khối lớn hơn sau này. Có thể chứng minh không chiến lược nào tạo ít thap hơn.
+- Kết quả cũng bằng độ dài dãy con không giảm dài nhất (longest non-decreasing subsequence) của dãy kích thước, theo định lý Dilworth; greedy trên đây đếm đúng số đó.
+
+Độ phức tạp
+- Thời gian: O(n log n) do mỗi khối tốn một lần bisect_right O(log n) và một phép gán/append O(1).
+- Bộ nhớ: O(n) cho danh sách tops và mảng dữ liệu đầu vào.
+
+LƯU Ý TLE: n tối đa 2*10^5 nên O(n log n) với bisect (viết bằng C) hoàn toàn an toàn trong Python trên CSES. Nếu vẫn gặp TLE do vòng lặp Python, bản C++ port dùng std::multiset (upper_bound + erase + insert) hoặc chính mảng vector với upper_bound gán tại chỗ sẽ chạy nhanh hơn nhiều nhờ không có overhead thông dịch.

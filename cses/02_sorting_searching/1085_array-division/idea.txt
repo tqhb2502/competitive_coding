@@ -1,0 +1,42 @@
+Bài toán: Array Division (CSES 1085)
+https://cses.fi/problemset/task/1085
+
+1. Đề bài
+- Cho một mảng gồm n số nguyên dương. Cần chia mảng thành đúng k đoạn liên tiếp
+  (subarray) sao cho tổng lớn nhất trong các đoạn là NHỎ NHẤT có thể.
+- In ra giá trị tổng lớn nhất tối ưu đó.
+
+2. Ý tưởng: binary search trên đáp án (binary search on the answer)
+- Gọi X là "giá trị tổng lớn nhất cho phép của một đoạn". Ta nhận thấy tính chất
+  đơn điệu (monotonic): nếu chia được mảng thành <= k đoạn mà mỗi đoạn có tổng
+  <= X, thì với mọi X' >= X cũng chia được. Nhờ tính đơn điệu này ta có thể
+  binary search giá trị X nhỏ nhất mà vẫn khả thi.
+- Cận dưới (lo) = phần tử lớn nhất của mảng (max(x_i)): mỗi đoạn phải chứa được
+  ít nhất một phần tử, nên X không thể nhỏ hơn phần tử lớn nhất.
+- Cận trên (hi) = tổng toàn bộ mảng (sum(x_i)): khi k = 1 cả mảng là một đoạn.
+
+3. Hàm kiểm tra khả thi feasible(X) (greedy)
+- Duyệt mảng từ trái sang phải, cộng dồn các phần tử vào đoạn hiện tại.
+- Nếu cộng thêm phần tử tiếp theo làm tổng đoạn vượt quá X, ta "đóng" đoạn hiện
+  tại và mở một đoạn mới bắt đầu bằng phần tử đó (tăng số đoạn lên 1).
+- Đếm tổng số đoạn cần dùng; nếu số đoạn <= k thì X khả thi.
+- Cách chia greedy này là tối ưu: nhồi tối đa vào mỗi đoạn giúp số đoạn cần dùng
+  ít nhất, nên nếu greedy còn vượt k thì không cách chia nào khác đạt được.
+- Vì lo = max(x_i), mọi phần tử đơn lẻ đều <= X trong toàn bộ vùng tìm kiếm, nên
+  luôn nhồi được phần tử vào một đoạn (không có trường hợp phần tử lớn hơn X).
+
+4. Tính đúng đắn
+- feasible(X) đơn điệu tăng theo X (False ... False True ... True), binary search
+  tìm ranh giới True nhỏ nhất chính là đáp án tối ưu.
+- Đáp án nằm trong [max, sum] nên chắc chắn tồn tại điểm True (X = sum luôn True).
+
+5. Độ phức tạp
+- Mỗi lần feasible chạy O(n). Số bước binary search là O(log(sum)) với
+  sum <= n * 10^9 = 2*10^14, tức khoảng 48 bước.
+- Tổng thời gian: O(n log(sum)) ~ 2*10^5 * 48 ~ 10^7 phép toán. Bộ nhớ O(n).
+
+LƯU Ý TLE: Với n = 2*10^5 và ~48 vòng lặp, pure Python thực hiện ~10^7 thao tác
+trong vòng lặp Python thuần nên có thể sát giới hạn thời gian. Để an toàn ta đọc
+input bằng sys.stdin.buffer và giữ vòng feasible tối giản (biến cục bộ). Nếu vẫn
+TLE, bản C++ dùng cùng thuật toán binary search + greedy O(n log(sum)) với I/O
+nhanh (scanf/printf hoặc cin có sync tắt) sẽ chạy thừa thời gian.

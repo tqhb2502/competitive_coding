@@ -1,0 +1,34 @@
+Bài toán: Restaurant Customers (CSES 1619)
+
+Đề bài:
+- Có n khách hàng, mỗi khách có thời điểm đến a và thời điểm rời đi b (a < b).
+- Cần tìm số lượng khách hàng tối đa có mặt trong nhà hàng cùng một lúc.
+
+Ý tưởng (sweep line / event counting):
+- Với mỗi khách hàng ta tạo hai sự kiện (event):
+    + Tại thời điểm a: một sự kiện "đến"   (delta = +1).
+    + Tại thời điểm b: một sự kiện "rời đi" (delta = -1).
+- Gộp tất cả 2*n sự kiện lại rồi sort theo thời điểm tăng dần.
+- Duyệt (quét - sweep) qua các sự kiện theo thứ tự thời gian, duy trì một biến
+  cur là số khách hiện đang có mặt. Mỗi khi gặp sự kiện +1 thì tăng cur, gặp -1
+  thì giảm cur. Đáp án là giá trị lớn nhất mà cur đạt được trong quá trình quét.
+
+Vì sao đúng:
+- Số khách có mặt tại một thời điểm bất kỳ chính bằng tổng các delta của mọi
+  sự kiện có thời điểm nhỏ hơn hoặc bằng thời điểm đó. Do đó khi quét theo thứ
+  tự thời gian và cộng dồn delta, biến cur luôn phản ánh chính xác số khách hiện
+  tại. Giá trị đỉnh (peak) của cur trong toàn bộ quá trình chính là số khách tối đa.
+- Đề bài bảo đảm "tất cả thời điểm đến và rời đi đều phân biệt" (all arrival and
+  leaving times are distinct), nên không có hai sự kiện trùng thời điểm và thứ tự
+  xử lý +1 / -1 không gây mập mờ. Chỉ cần sort theo thời điểm là đủ.
+  (Nếu có trùng thời điểm, ta sẽ ưu tiên xử lý sự kiện rời đi trước hay đến trước
+   tùy quy ước bài toán; ở bài này không cần lo vì mọi thời điểm phân biệt.)
+
+Độ phức tạp:
+- Thời gian: O(n log n) do bước sort 2*n sự kiện.
+- Bộ nhớ: O(n) để lưu danh sách sự kiện.
+
+Cách cài đặt tối ưu trong Python:
+- Thay vì sort các cặp (time, delta), ta sort riêng mảng thời điểm đến và mảng
+  thời điểm rời đi, rồi dùng two-pointer để hợp nhất. Cách này tránh việc tạo
+  tuple, giúp chạy nhanh hơn đáng kể với n tới 2*10^5.

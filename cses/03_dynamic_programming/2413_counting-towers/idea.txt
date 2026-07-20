@@ -1,0 +1,64 @@
+Bài toán: Counting Towers (CSES 2413)
+
+Ta cần đếm số tháp cấu trúc khác nhau có chiều rộng 2 và chiều cao n, lấp đầy
+bằng các khối chữ nhật có kích thước nguyên (rộng 1 hoặc rộng 2, cao tùy ý).
+Kết quả lấy modulo 1000000007.
+
+Ý tưởng DP (xây từ dưới lên, thêm từng hàng cao 1):
+Trạng thái theo cạnh trên (hàng trên cùng) của tháp cao i:
+- A[i]: số tháp cao i mà hàng trên cùng là MỘT khối rộng 2 (hai ô trên cùng
+  "connected", không có vách ngăn dọc).
+- B[i]: số tháp cao i mà hàng trên cùng bị "split" (có vách ngăn dọc, hai ô
+  trên cùng thuộc hai khối khác nhau).
+
+Base case (i = 1):
+- A[1] = 1 (một khối rộng 2 nằm dưới đáy).
+- B[1] = 1 (hai khối 1x1 tách rời).
+=> Đáp án cho n = 1 là A[1] + B[1] = 2.
+
+Transition (thêm hàng i+1 lên trên hàng i):
+Từ A[i] (đỉnh đang là khối rộng):
+- Hàng mới cũng rộng (connected): hoặc kéo dài khối rộng cũ (không có đường
+  cắt ngang), hoặc bắt đầu khối rộng mới (có đường cắt ngang full-width) => 2
+  cách, giữ trạng thái A.
+- Hàng mới split: khối rộng bên dưới không thể tách đôi nên trái/phải đều phải
+  là khối mới => 1 cách, sang trạng thái B.
+Từ B[i] (đỉnh đang split thành trái/phải):
+- Hàng mới rộng (connected): khối rộng phải là khối mới (không nối tiếp được
+  hai cột riêng) => 1 cách, sang trạng thái A.
+- Hàng mới split: mỗi cột (trái, phải) độc lập chọn nối tiếp khối bên dưới hoặc
+  bắt đầu khối mới => 2 * 2 = 4 cách, giữ trạng thái B.
+
+Vậy công thức truy hồi:
+  A[i+1] = 2 * A[i] + 1 * B[i]
+  B[i+1] = 1 * A[i] + 4 * B[i]
+Đáp án cho chiều cao n: answer(n) = (A[n] + B[n]) mod 1000000007.
+
+Biểu diễn dạng ma trận:
+  [A[i+1], B[i+1]]^T = M * [A[i], B[i]]^T, với M = [[2, 1], [1, 4]].
+Do đó:
+  [A[n], B[n]]^T = M^(n-1) * [A[1], B[1]]^T = M^(n-1) * [1, 1]^T.
+Ta tính M^(n-1) bằng lũy thừa ma trận (nhân bình phương liên tiếp) trong O(log n)
+mỗi truy vấn, rồi lấy answer(n) = (A[n] + B[n]) mod 1000000007. Với n = 1 thì
+M^0 là ma trận đơn vị nên A[1] = B[1] = 1, cho đáp án 2 (khớp base case).
+
+Kiểm chứng:
+- n = 2: A = 3, B = 5 -> 8 (đúng).
+- n = 6: A = 843, B = 2021 -> 2864 (đúng).
+
+Vì sao đúng: mỗi tháp được phân rã duy nhất theo cách phân hoạch lưới 2xn thành
+các khối chữ nhật. Khi thêm một hàng lên trên, việc "connected" hay "split" ở
+đỉnh xác định đầy đủ những lựa chọn hợp lệ cho hàng mới (một khối rộng chỉ nối
+tiếp được khối rộng, mỗi cột trong trạng thái split chọn cắt hay không độc lập).
+Do đó phép đếm không trùng lặp và không bỏ sót.
+
+Độ phức tạp:
+- Mỗi truy vấn tính M^(n-1) trong O(log n) với các phép nhân ma trận 2x2 và số
+  học modulo. Có bộ nhớ đệm (cache) theo n để không tính lại các n trùng nhau.
+- Time: O(t * log n), Space: O(1) (không cần mảng kích thước 10^6).
+
+LƯU Ý TLE: cách làm precompute tuyến tính O(max_n) với max_n = 10^6 bằng Python
+thuần chạy sát giới hạn 1.00s trên CSES (biên độ an toàn mỏng). Vì vậy ta dùng
+lũy thừa ma trận O(t * log n) (với t <= 100, n <= 10^6 thì chỉ khoảng vài nghìn
+phép nhân ma trận 2x2) để loại bỏ hoàn toàn nguy cơ TLE, kết hợp đọc/ghi nhanh
+bằng sys.stdin.buffer.

@@ -1,0 +1,50 @@
+Bài toán: Edit Distance (CSES 1639)
+Cho hai chuỗi s (độ dài n) và t (độ dài m). Tính edit distance (khoảng cách
+Levenshtein): số phép biến đổi ít nhất để đưa s về t, mỗi phép là thêm, xóa
+hoặc thay thế một ký tự.
+
+1) Ý tưởng DP kinh điển
+- Trạng thái: dp[i][j] = số phép biến đổi ít nhất để biến i ký tự đầu của s
+  thành j ký tự đầu của t.
+- Base case: dp[0][j] = j (chèn thêm j ký tự), dp[i][0] = i (xóa i ký tự).
+- Chuyển trạng thái:
+    * nếu s[i-1] == t[j-1]: dp[i][j] = dp[i-1][j-1]  (không tốn phép nào)
+    * ngược lại: dp[i][j] = 1 + min(
+          dp[i-1][j],    // xóa s[i-1]
+          dp[i][j-1],    // chèn t[j-1]
+          dp[i-1][j-1]   // thay thế s[i-1] bằng t[j-1]
+      )
+- Đáp án: dp[n][m].
+- Tại sao đúng: mọi cách biến đổi tối ưu đều phải xử lý ký tự cuối bằng đúng
+  một trong bốn khả năng (khớp, thay thế, xóa, chèn); công thức min đã xét đủ
+  các khả năng đó và các bài con nhỏ hơn có tính chất tối ưu con (optimal
+  substructure). Không có mod nào trong bài này.
+- Độ phức tạp DP thẳng: O(n*m) thời gian, O(m) bộ nhớ nếu cuộn 2 hàng. Với
+  n, m <= 5000 thì có tới 25 triệu ô, DP thuần Python rất dễ TLE.
+
+2) Tăng tốc bằng thuật toán bit-parallel của Myers (Myers/Hyyrö)
+- Nhận xét: giữa hai ô kề nhau trong cùng một cột, hiệu dp[i][j] - dp[i-1][j]
+  chỉ nhận giá trị trong {-1, 0, +1}. Ta biểu diễn các delta dọc bằng hai
+  bitmask VP (bit i được set nếu delta = +1) và VN (delta = -1), mỗi mask rộng
+  m bit (dùng số nguyên lớn của Python).
+- Với mỗi ký tự của chuỗi text (chiều dài n), ta cập nhật VP, VN cùng các
+  delta ngang HP, HN bằng vài phép bitwise và một phép cộng (tạo carry để lan
+  truyền). Điểm số score = dp[m][j] được cập nhật qua bit cao nhất (vị trí
+  m-1) của HP/HN.
+- Khác biệt so với bản "approximate matching" của Myers: ở bài edit distance
+  toàn cục, hàng 0 có giá trị 0,1,2,... nên khi dịch trái HP ta phải nhồi bit
+  1 vào vị trí thấp nhất ((Ph<<1)|1), thể hiện dp[0][j]-dp[0][j-1] = +1. Cột 0
+  khởi tạo bằng score = m và VP = all-ones (dp[i][0]-dp[i-1][0] = +1).
+- Ký tự chỉ A-Z nên bảng Peq (bitmask vị trí xuất hiện của mỗi ký tự trong
+  pattern) chỉ có tối đa 26 khóa. Chọn chuỗi ngắn hơn làm pattern P (rộng m
+  bit) để số nguyên lớn nhỏ lại; chuỗi dài hơn làm text T.
+- Đáp án cuối cùng là score sau khi duyệt hết text.
+- Độ chính xác đã được kiểm chứng bằng cách so khớp với DP brute-force trên
+  40000 bộ ngẫu nhiên (0 sai lệch).
+
+3) Độ phức tạp của bản Myers
+- Thời gian: O(n * m / w) về mặt word-operation, với Python là O(n) vòng lặp,
+  mỗi vòng làm hằng số phép trên số nguyên rộng m bit (~m/64 word). Thực tế
+  n = m = 5000 chạy khoảng 0.02s trên máy test.
+- Bộ nhớ: O(m) cho vài số nguyên lớn và bảng Peq.
+- Không có nguy cơ TLE nhờ bit-parallel nên không cần ghi chú TLE.

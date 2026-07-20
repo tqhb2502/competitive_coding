@@ -1,0 +1,35 @@
+Bài toán: Mex Grid Construction (CSES 3419)
+
+Đề bài:
+- Xây dựng lưới n x n. Mỗi ô (i, j) chứa số nguyên không âm nhỏ nhất
+  chưa xuất hiện ở bên trái cùng hàng (các ô (i, k) với k < j) và
+  bên trên cùng cột (các ô (k, j) với k < i). Đây chính là hàm mex.
+
+Ý tưởng (dùng 0-indexed cho hàng i và cột j):
+- Kết quả nổi tiếng: giá trị ở ô (i, j) chính là i XOR j (phép XOR bit).
+- Chứng minh (quy nạp / tính chất XOR):
+  Giả sử giá trị của ô (i, j) là i XOR j với mọi ô phía trước.
+  Tập các giá trị ô bên trái là { i XOR k : 0 <= k < j }.
+  Tập các giá trị ô bên trên là { k XOR j : 0 <= k < i }.
+  Ta cần chứng tỏ mex của hợp hai tập này bằng i XOR j.
+  + i XOR j không nằm trong hai tập:
+    Nếu i XOR k = i XOR j thì k = j (mâu thuẫn với k < j).
+    Nếu k XOR j = i XOR j thì k = i (mâu thuẫn với k < i).
+    Vậy i XOR j chưa xuất hiện.
+  + Mọi giá trị v < i XOR j đều xuất hiện:
+    Xét v < i XOR j. Gọi p là bit cao nhất mà v và (i XOR j) khác nhau;
+    tại bit p thì i XOR j có bit 1 còn v có bit 0 (vì v nhỏ hơn).
+    Nếu bit p của i là 1: đặt k = i XOR (v XOR j). Khi đó i XOR k = v XOR j,
+    tức là k XOR j = v (nằm trong tập bên trên) và có thể kiểm tra k < i.
+    Trường hợp bit p của j là 1 xử lý đối xứng cho tập bên trái.
+    => mọi số nhỏ hơn i XOR j đều có mặt, nên mex = i XOR j.
+
+Cài đặt:
+- Với mỗi hàng i từ 0 đến n-1, in ra n giá trị i XOR j (j từ 0 đến n-1),
+  cách nhau bởi dấu cách, mỗi hàng một dòng.
+
+Độ phức tạp:
+- Thời gian: O(n^2) để sinh toàn bộ lưới.
+- Bộ nhớ: O(n) cho mỗi dòng (dùng join), không cần lưu cả lưới.
+
+Với n <= 100 nên chỉ có tối đa 10000 số, cực kỳ nhẹ, không có rủi ro TLE.

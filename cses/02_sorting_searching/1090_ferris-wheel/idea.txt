@@ -1,0 +1,37 @@
+Bài toán: Ferris Wheel (CSES 1090)
+
+Đề bài:
+- Có n đứa trẻ, mỗi đứa có cân nặng p[i]. Mỗi gondola chở tối đa 2 đứa trẻ và
+  tổng cân nặng không được vượt quá x. Hỏi số gondola tối thiểu cần dùng để chở
+  hết tất cả các đứa trẻ.
+
+Ý tưởng (greedy + two-pointer):
+1. Sắp xếp (sort) mảng cân nặng theo thứ tự tăng dần.
+2. Dùng hai con trỏ: left ở đầu (đứa nhẹ nhất còn lại) và right ở cuối (đứa
+   nặng nhất còn lại). Mỗi bước ta luôn phải xử lý đứa nặng nhất còn lại
+   (chỉ số right):
+   - Nếu p[left] + p[right] <= x thì ghép đứa nhẹ nhất với đứa nặng nhất vào
+     chung một gondola: tăng left, giảm right.
+   - Ngược lại, đứa nặng nhất phải ngồi một mình: chỉ giảm right.
+   Mỗi bước đều tốn đúng 1 gondola, nên tăng biến đếm ans lên 1.
+3. Lặp cho tới khi left > right. Đáp án là ans.
+
+Vì sao đúng (tính tối ưu của greedy):
+- Đứa nặng nhất (heaviest) bắt buộc phải chiếm một gondola trong mọi lời giải.
+  Câu hỏi duy nhất là có thể ghép thêm một đứa nữa vào gondola đó hay không.
+- Nếu tồn tại một đứa có thể ghép chung với đứa nặng nhất (tức tổng <= x), thì
+  đứa nhẹ nhất chắc chắn cũng ghép được (vì nó là nhẹ nhất). Ghép đứa nhẹ nhất
+  với đứa nặng nhất không bao giờ làm xấu đi lời giải: nếu ta không ghép đứa nhẹ
+  nhất bây giờ, sau này nó chỉ có thể đi một mình hoặc ghép với một đứa khác,
+  nhưng để đứa khác đó ghép với đứa nặng nhất hiện tại rồi đứa nhẹ nhất tự xử lý
+  không cho kết quả tốt hơn. Đây là lập luận exchange argument chuẩn cho bài
+  ghép cặp (pairing) này.
+- Do đó greedy ghép nhẹ nhất với nặng nhất khi có thể là tối ưu.
+
+Độ phức tạp:
+- Thời gian: O(n log n) do bước sort, phần two-pointer chỉ O(n).
+- Bộ nhớ: O(n) để lưu mảng cân nặng.
+
+Với n <= 2*10^5, thuật toán này rất nhanh và không có rủi ro TLE trong Python
+khi dùng fast I/O (đọc toàn bộ input một lần bằng sys.stdin.buffer, dùng
+list.sort của Python được cài đặt bằng C).

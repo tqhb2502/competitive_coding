@@ -1,0 +1,54 @@
+Bài toán: Reading Books (CSES 1631)
+
+ĐỀ BÀI (tóm tắt):
+Có hai người (Kotivalo và Justiina). Cả hai đều muốn đọc HẾT tất cả n quyển sách.
+Quyển sách thứ i cần t_i đơn vị thời gian để đọc. Tại mỗi thời điểm, một quyển
+sách chỉ có thể được đọc bởi tối đa một người (hai người không thể cùng đọc chung
+một quyển vào cùng lúc). Mỗi người có thể tạm dừng và đổi sách bất cứ lúc nào.
+Hãy tìm tổng thời gian tối thiểu để cả hai người đều đọc xong toàn bộ n quyển sách.
+
+Ý TƯỞNG (greedy / lập luận toán học):
+Đặt:
+  S = tổng thời gian tất cả các sách = sum(t_i)
+  M = thời gian của quyển sách lớn nhất = max(t_i)
+
+Vì mỗi người phải đọc toàn bộ các sách, mỗi quyển sách sẽ được đọc đúng 2 lần
+(một lần bởi mỗi người). Do đó khối lượng công việc tổng cộng của cả hệ thống là 2*S.
+
+Có hai trường hợp:
+
+1) Trường hợp quyển sách lớn nhất KHÔNG quá lớn: 2*M <= S.
+   Khi đó ta có thể sắp xếp lịch sao cho hai người luôn đọc hai quyển KHÁC nhau
+   tại mọi thời điểm, không bao giờ tranh nhau cùng một quyển. Vì tổng công việc
+   là 2*S và có 2 người làm song song nên thời gian tối thiểu là S (2*S / 2).
+   Kết quả = S.
+
+   Trực giác về lịch: Người A đọc theo thứ tự sách 1,2,...,n. Người B đọc theo thứ
+   tự lệch pha (ví dụ bắt đầu từ một điểm khác trong dãy). Điều kiện 2*M <= S bảo
+   đảm không có quyển nào "quá dài" khiến hai người buộc phải chạm nhau.
+
+2) Trường hợp có một quyển sách RẤT lớn: 2*M > S.
+   Quyển lớn nhất M phải được đọc bởi cả hai người, nhưng KHÔNG thể đọc đồng thời.
+   Vậy chỉ riêng quyển này đã chiếm ít nhất 2*M thời gian nối tiếp nhau
+   (người này đọc xong quyển M thì người kia mới được đọc quyển M). Trong khoảng
+   thời gian 2*M đó, phần công việc còn lại (S - M cho mỗi người) hoàn toàn có thể
+   xen kẽ vào lúc người kia đang đọc quyển M, vì S - M <= M nên đủ chỗ để nhét.
+   Kết quả = 2*M.
+
+Tổng hợp lại: đáp án = max(2*M, S).
+
+VÍ DỤ KIỂM TRA:
+  t = [2, 8, 3] -> S = 13, M = 8, 2*M = 16 > 13 -> đáp án = 16. Đúng với đề.
+
+TÍNH ĐÚNG ĐẮN:
+- Cận dưới: đáp án >= S vì tổng việc 2*S chia cho 2 người; đồng thời đáp án >= 2*M
+  vì quyển lớn nhất phải đọc 2 lần nối tiếp. Nên đáp án >= max(2*M, S).
+- Cận trên: ở cả hai trường hợp trên đều tồn tại lịch đạt đúng giá trị max(2*M, S).
+Do đó max(2*M, S) vừa là cận dưới vừa đạt được => là đáp án tối ưu.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n) chỉ để đọc dữ liệu và tính tổng, max.
+- Bộ nhớ: O(1) ngoài phần input (có thể xử lý luồng, không cần lưu toàn mảng).
+
+Không có rủi ro TLE: thuật toán O(n) với fast I/O rất nhẹ, hoàn toàn an toàn trong
+Python trên CSES.

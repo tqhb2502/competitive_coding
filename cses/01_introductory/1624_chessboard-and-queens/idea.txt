@@ -1,0 +1,32 @@
+Bài toán: Đặt 8 quân hậu lên bàn cờ 8x8 sao cho không quân nào ăn nhau.
+Bàn cờ có ô tự do ('.') và ô bị cấm ('*'). Quân hậu chỉ được đặt lên ô tự do,
+nhưng ô bị cấm KHÔNG chặn đường ăn của quân hậu. Đếm số cách đặt hợp lệ.
+
+Ý tưởng: Quay lui (backtracking) theo từng hàng.
+- Xử lý lần lượt từng hàng từ 0 đến 7, mỗi hàng đặt đúng một quân hậu.
+- Với mỗi hàng, thử đặt quân hậu vào từng cột j (0..7).
+  Điều kiện để đặt được:
+    1. Ô (hàng, j) phải là ô tự do (không phải '*').
+    2. Cột j chưa có quân hậu nào (đánh dấu bằng mảng col).
+    3. Đường chéo chính (hàng - j) chưa bị chiếm. Do (hàng - j) có thể âm,
+       ta dùng chỉ số (hàng - j + 7) trong mảng diag1 có 15 phần tử.
+    4. Đường chéo phụ (hàng + j) chưa bị chiếm, dùng mảng diag2 có 15 phần tử.
+- Nếu đặt được, đánh dấu các trạng thái, đệ quy sang hàng tiếp theo.
+- Khi đã đặt hết 8 hàng (hàng == 8), tăng biến đếm lên 1.
+- Sau khi đệ quy xong, bỏ đánh dấu (backtrack) để thử cột khác.
+
+Tính đúng đắn:
+- Mỗi hàng có đúng một quân hậu => không bao giờ có hai quân cùng hàng.
+- Kiểm tra cột bảo đảm không hai quân cùng cột.
+- Kiểm tra hai đường chéo bảo đảm không hai quân cùng đường chéo.
+- Điều kiện ô tự do bảo đảm không đặt quân lên ô bị cấm.
+=> Mỗi cách đếm được là một cách đặt 8 quân không ăn nhau trên ô tự do.
+
+Độ phức tạp:
+- Bàn cờ cố định 8x8, số trạng thái duyệt tối đa theo kiểu N-Queens là rất nhỏ
+  (có giới hạn bởi 8! = 40320 nhánh, thực tế còn ít hơn nhiều nhờ cắt tỉa).
+- Thời gian: O(số nhánh của cây quay lui) — chạy tức thì.
+- Bộ nhớ: O(1) (vài mảng cố định kích thước 8 và 15).
+
+Vì bàn cờ chỉ 8x8 và số nhánh rất nhỏ, giải pháp Python chạy rất nhanh,
+không có rủi ro TLE.

@@ -1,0 +1,33 @@
+Bài toán: Tasks and Deadlines (CSES 1630)
+
+1. Tóm tắt đề bài
+- Có n công việc, công việc thứ i cần thời gian a_i để hoàn thành và có deadline d_i.
+- Ta làm các công việc lần lượt (sequentially) bắt đầu từ thời điểm 0, mỗi lúc chỉ làm một công việc.
+- Nếu một công việc kết thúc tại thời điểm f thì phần thưởng (reward) của nó là d - f (có thể âm).
+- Cần chọn thứ tự thực hiện để tổng phần thưởng là lớn nhất.
+
+2. Nhận xét then chốt
+- Gọi thứ tự thực hiện là các công việc theo chỉ số hoán vị. Thời điểm kết thúc của một công việc bằng tổng thời gian a của chính nó và tất cả các công việc làm trước nó.
+- Tổng reward = sum(d_i - f_i) = sum(d_i) - sum(f_i).
+- sum(d_i) là hằng số, không phụ thuộc thứ tự. Vậy để tối đa tổng reward ta chỉ cần TỐI THIỂU sum(f_i) (tổng các thời điểm kết thúc). Lưu ý deadline d không hề ảnh hưởng tới việc chọn thứ tự tối ưu.
+
+3. Thuật toán (greedy - Shortest Processing Time first)
+- Nếu sắp xếp các công việc theo a tăng dần rồi thực hiện, thì sum(f_i) đạt cực tiểu.
+- Lý do: xét sum(f_i). Nếu các thời gian được thực hiện theo thứ tự a_(1), a_(2), ..., a_(n) thì
+  sum(f) = n*a_(1) + (n-1)*a_(2) + ... + 1*a_(n),
+  tức là công việc làm sớm được nhân với hệ số lớn hơn. Đây là dạng tích vô hướng (rearrangement inequality): để tổng nhỏ nhất, phần tử a nhỏ phải được nhân với hệ số lớn, nghĩa là a nhỏ phải làm trước. Do đó sắp xếp a tăng dần là tối ưu.
+- Chứng minh bằng exchange argument: nếu tồn tại hai công việc kề nhau mà công việc trước có a lớn hơn công việc sau, đổi chỗ chúng sẽ làm giảm (không tăng) sum(f_i). Lặp lại cho tới khi mảng đã sắp xếp tăng dần => tối ưu.
+
+4. Cài đặt
+- Đọc n cặp (a, d).
+- Sắp xếp theo a tăng dần.
+- Duyệt, giữ biến t (thời điểm hiện tại). Với mỗi công việc: t += a; cộng dồn (d - t) vào đáp án.
+- In ra tổng.
+- Đáp án có thể lớn (cỡ n * max(d) ~ 2e5 * 1e6 = 2e11) nên phải dùng số nguyên 64-bit; Python tự động xử lý số lớn nên không lo tràn số.
+
+5. Độ phức tạp
+- Thời gian: O(n log n) do sắp xếp; phần duyệt là O(n).
+- Bộ nhớ: O(n) để lưu danh sách công việc.
+
+Ví dụ kiểm chứng: các công việc (6,10),(8,15),(5,12).
+Sắp xếp theo a: (5,12),(6,10),(8,15). f = 5, 11, 19. reward = (12-5)+(10-11)+(15-19) = 7 - 1 - 4 = 2. Đúng.

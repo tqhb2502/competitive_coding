@@ -1,0 +1,35 @@
+Bài toán: Digit Queries (CSES 2431)
+
+Đề bài:
+- Xét chuỗi vô hạn tạo bởi việc nối liên tiếp các số nguyên dương:
+  1 2 3 4 5 6 7 8 9 10 11 12 ... => "123456789101112..."
+- Với mỗi truy vấn k (1 <= k <= 10^18), in ra chữ số nằm ở vị trí thứ k (đếm từ 1).
+
+Ý tưởng:
+- Nhóm các số theo số chữ số d:
+  + Các số có d chữ số: từ 10^(d-1) đến 10^d - 1, gồm 9 * 10^(d-1) số.
+  + Mỗi số đóng góp d chữ số, nên tổng số chữ số của nhóm d là:
+        d * 9 * 10^(d-1).
+- Với mỗi k, ta trừ dần tổng số chữ số của từng nhóm (d = 1, 2, 3, ...)
+  cho đến khi k rơi vào nhóm có số chữ số là d hiện tại
+  (tức là k <= d * (9 * 10^(d-1))).
+- Lúc này k là vị trí (1-indexed) trong khối các số có d chữ số:
+  + Số chứa chữ số cần tìm là:
+        number = start + (k - 1) // d      với start = 10^(d-1)
+  + Chỉ số chữ số trong number:
+        digit_index = (k - 1) % d
+  + Kết quả = chữ số thứ digit_index của number (dạng chuỗi).
+
+Tính đúng đắn:
+- Vì số lượng chữ số trong mỗi nhóm d được đếm chính xác (d * 9 * 10^(d-1)),
+  việc trừ dần đưa k về đúng khối chứa nó. Trong khối đó, mỗi số chiếm
+  d chữ số liên tiếp nên phép chia lấy nguyên và lấy dư xác định chính xác
+  số và vị trí chữ số.
+- Với k <= 10^18: tổng số chữ số của các nhóm tăng rất nhanh (theo cấp số nhân),
+  nên d chỉ lên tới khoảng 18-19 là đủ bao phủ 10^18. Vòng lặp rất ngắn.
+
+Độ phức tạp:
+- Mỗi truy vấn: O(D) với D là số chữ số tối đa (~19) cho vòng lặp trừ dần,
+  cộng với chi phí chuyển số sang chuỗi. Tổng thể O(q * D).
+- Bộ nhớ: O(1).
+- Với q <= 1000, thuật toán cực kỳ nhanh, không có nguy cơ TLE.

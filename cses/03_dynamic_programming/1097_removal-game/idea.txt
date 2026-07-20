@@ -1,0 +1,49 @@
+Bài toán: Removal Game (CSES 1097)
+
+Đề bài: Cho một dãy n số. Hai người chơi lần lượt lấy phần tử ở đầu hoặc
+cuối dãy hiện tại, cộng giá trị đó vào điểm của mình. Cả hai chơi tối ưu
+để tối đa điểm của bản thân. Tìm điểm lớn nhất mà người đi trước đạt được.
+
+Ý tưởng DP (game theory / minimax trên đoạn con):
+
+Trạng thái (state):
+- dp[i][j] = hiệu điểm lớn nhất (điểm người đang tới lượt TRỪ điểm đối thủ)
+  mà người đang tới lượt có thể đạt được, khi trò chơi chỉ còn xét đoạn con
+  a[i..j] và người này là người đi trước trên đoạn đó.
+
+Chuyển trạng thái (transition):
+- Người tới lượt có 2 lựa chọn:
+  + Lấy phần tử đầu a[i]: được a[i], phần còn lại a[i+1..j] đối thủ đi trước,
+    nên hiệu của ta trên đoạn còn lại là -dp[i+1][j].
+    => giá trị = a[i] - dp[i+1][j]
+  + Lấy phần tử cuối a[j]: tương tự => giá trị = a[j] - dp[i][j-1]
+- dp[i][j] = max(a[i] - dp[i+1][j], a[j] - dp[i][j-1])
+
+Cơ sở (base case):
+- dp[i][i] = a[i] (chỉ còn 1 phần tử thì bắt buộc lấy nó, không có đối thủ đi).
+
+Đáp án (answer):
+- Gọi diff = dp[0][n-1] = (điểm người 1) - (điểm người 2).
+- Gọi total = tổng tất cả phần tử = (điểm người 1) + (điểm người 2).
+- Suy ra điểm người 1 = (total + diff) / 2. Do total và diff cùng tính chẵn lẻ
+  nên phép chia này luôn cho số nguyên (dùng chia nguyên //).
+
+Vì sao đúng:
+- Đây là bài trò chơi tổng bằng zero-sum trên đoạn con; mỗi người đều tối ưu.
+  Khi đối thủ đi trước ở đoạn còn lại, "hiệu điểm của ta" trên đoạn đó chính
+  là ngược dấu hiệu điểm mà đối thủ (lúc đó là người đi trước) tối ưu được,
+  tức -dp[con]. Vì cả hai đều chơi tối ưu, người tới lượt chọn max của 2 lựa
+  chọn. Quy hoạch động theo độ dài đoạn tăng dần đảm bảo các trạng thái con
+  đã được tính trước.
+
+Độ phức tạp (complexity):
+- Số trạng thái O(n^2), mỗi trạng thái O(1) => thời gian O(n^2), n <= 5000
+  nên khoảng 12.5 triệu phép tính.
+- Bộ nhớ: tối ưu còn O(n) bằng cách lặp theo độ dài đoạn và dùng mảng 1 chiều:
+  dp[i] mới = max(a[i] - dp[i+1], a[i+L-1] - dp[i]) với dp cũ là kết quả độ dài L-1.
+
+LƯU Ý TLE: Với n = 5000, vòng lặp O(n^2) thuần Python (~12.5 triệu bước) rất dễ
+TLE so với giới hạn 1 giây của CSES. Do đó solution dùng numpy để vector hóa
+mỗi bước theo độ dài đoạn (mỗi độ dài chỉ 1 lời gọi np.maximum), giữ bộ nhớ
+O(n) và tổng thao tác phần tử O(n^2) chạy trong C nên nhanh. Nếu môi trường
+không có numpy, cần chuyển sang C++ hoặc chấp nhận rủi ro TLE với Python thuần.

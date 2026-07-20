@@ -1,0 +1,38 @@
+Bài toán: Movie Festival (CSES 1629)
+
+Tóm tắt đề bài:
+- Có n bộ phim, mỗi phim có thời điểm bắt đầu a và thời điểm kết thúc b (a < b).
+- Cần chọn số lượng phim nhiều nhất có thể xem trọn vẹn, sao cho các phim
+  được chọn không chồng lấn về thời gian (không xem đồng thời hai phim).
+- Đây chính là bài toán interval scheduling / activity selection kinh điển.
+
+Ý tưởng (greedy theo thời điểm kết thúc):
+1. Sắp xếp tất cả các phim tăng dần theo thời điểm kết thúc b (nếu b bằng nhau
+   thì thứ tự không quan trọng).
+2. Duyệt lần lượt từng phim theo thứ tự đã sắp. Giữ một biến cur_end là thời
+   điểm kết thúc của phim vừa chọn gần nhất (khởi tạo bằng một giá trị rất nhỏ,
+   ví dụ -1 hoặc -vô cực).
+3. Với mỗi phim (a, b): nếu a >= cur_end (phim này bắt đầu không sớm hơn lúc
+   phim trước kết thúc) thì chọn phim này, tăng bộ đếm và cập nhật cur_end = b.
+4. Đáp án là số phim đã chọn.
+
+Lưu ý về điều kiện a >= cur_end: một phim kết thúc tại thời điểm t và một phim
+khác bắt đầu tại đúng thời điểm t được coi là không chồng lấn (có thể xem cả
+hai), nên ta dùng dấu >= chứ không phải >.
+
+Vì sao greedy đúng (exchange argument):
+- Trong mọi lời giải tối ưu, xét phim kết thúc sớm nhất. Nếu ta luôn chọn phim
+  có thời điểm kết thúc nhỏ nhất trong số các phim còn hợp lệ, ta để lại nhiều
+  "thời gian trống" nhất về sau cho các phim tiếp theo, do đó không bao giờ tệ
+  hơn bất kỳ lựa chọn nào khác.
+- Có thể chứng minh bằng lập luận đổi chỗ (exchange argument): với một lời giải
+  tối ưu bất kỳ, ta có thể thay phim đầu tiên của nó bằng phim kết thúc sớm nhất
+  mà greedy chọn, số phim không giảm; lặp lại cho thấy greedy đạt tối ưu.
+
+Độ phức tạp:
+- Thời gian: O(n log n) do bước sắp xếp; phần duyệt là O(n).
+- Bộ nhớ: O(n) để lưu danh sách các phim.
+
+Với n <= 2 * 10^5, thuật toán O(n log n) chạy rất nhanh. Dùng fast I/O
+(sys.stdin.buffer để đọc, đọc toàn bộ một lần rồi tách số) là đủ, không có
+rủi ro TLE đáng kể trong Python trên CSES.

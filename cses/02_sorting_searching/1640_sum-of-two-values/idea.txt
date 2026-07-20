@@ -1,0 +1,36 @@
+Bài toán: Cho mảng gồm n phần tử và một giá trị mục tiêu x. Cần tìm hai vị trí
+phân biệt i, j sao cho a[i] + a[j] = x. In ra hai vị trí (đánh số từ 1); nếu
+không tồn tại thì in ra "IMPOSSIBLE".
+
+Ý tưởng chính (hash map, một lượt duyệt):
+- Ta duyệt mảng từ trái sang phải theo chỉ số i.
+- Với mỗi phần tử a[i], phần bổ sung cần tìm là need = x - a[i].
+- Ta duy trì một dictionary (hash map) ánh xạ: giá trị đã gặp -> vị trí (1-based)
+  của một phần tử mang giá trị đó, trong số các phần tử đứng TRƯỚC i.
+- Khi xét a[i], nếu need đã có trong map thì ta tìm được cặp: in ra
+  map[need] (vị trí phần tử trước) và i+1 (vị trí hiện tại), rồi kết thúc.
+- Nếu chưa có, ta ghi map[a[i]] = i+1 rồi tiếp tục.
+
+Vì sao đúng:
+- Khi xét i, map chỉ chứa các phần tử ở vị trí j < i, nên cặp (map[need], i+1)
+  luôn gồm hai vị trí PHÂN BIỆT, đúng yêu cầu.
+- Nếu tồn tại một cặp (j, k) với j < k và a[j] + a[k] = x, thì tại thời điểm
+  i = k ta có need = x - a[k] = a[j]; giá trị a[j] chắc chắn đã nằm trong map
+  (được thêm khi duyệt qua j hoặc một phần tử bằng nó trước đó). Do đó thuật toán
+  chắc chắn phát hiện được một lời giải hợp lệ nếu nó tồn tại.
+- Đề cho phép in ra bất kỳ lời giải hợp lệ nào nên việc lấy vị trí đầu tiên gặp
+  giá trị need là chấp nhận được.
+
+Về cách lưu map[a[i]]:
+- Ta chỉ cần lưu một vị trí cho mỗi giá trị. Ở đây ta không ghi đè khi giá trị
+  đã tồn tại (giữ vị trí xuất hiện đầu tiên); ghi đè hay không đều cho kết quả
+  hợp lệ vì ta chỉ cần một cặp bất kỳ.
+
+Độ phức tạp:
+- Thời gian: O(n) trung bình cho các thao tác trên hash map (n ≤ 2·10^5).
+- Bộ nhớ: O(n) cho dictionary.
+
+Cách khác (two-pointer): sắp xếp các phần tử kèm chỉ số gốc, dùng hai con trỏ
+l, r từ hai đầu; nếu tổng nhỏ hơn x thì l++, lớn hơn x thì r--, bằng x thì in
+hai chỉ số gốc. Độ phức tạp O(n log n) do sorting. Cách hash map ở trên đơn giản
+và nhanh hơn nên ta chọn nó.

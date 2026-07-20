@@ -1,0 +1,41 @@
+Bài toán: Distinct Values Subsequences (CSES 3421)
+
+ĐỀ BÀI TÓM TẮT
+Cho mảng gồm n số nguyên. Đếm số lượng subsequence (dãy con chọn theo thứ tự chỉ số
+từ trái sang phải, được phép có khoảng trống) sao cho tất cả các phần tử trong dãy con
+đó đều PHÂN BIỆT về giá trị. Hai dãy con được coi là khác nhau nếu tập chỉ số được chọn
+khác nhau (nên cùng một giá trị nhưng ở vị trí khác nhau vẫn tính riêng). Không tính dãy
+con rỗng. In kết quả modulo 10^9 + 7.
+
+Ý TƯỞNG CHÍNH
+Vì một subsequence được xác định duy nhất bởi TẬP CHỈ SỐ được chọn (thứ tự đã cố định
+theo chỉ số tăng dần), nên bài toán quy về: đếm số tập con KHÁC RỖNG của các chỉ số sao
+cho các giá trị tại những chỉ số đó đôi một khác nhau.
+
+Nhóm các chỉ số theo giá trị. Gọi cnt[v] là số lần xuất hiện của giá trị v trong mảng.
+Để tạo một tập chỉ số hợp lệ, với mỗi giá trị phân biệt v ta có hai lựa chọn độc lập:
+  - KHÔNG chọn giá trị v: 1 cách.
+  - CHỌN đúng một trong cnt[v] lần xuất hiện của v: cnt[v] cách.
+Vì các giá trị khác nhau đóng góp độc lập, tổng số tập (kể cả tập rỗng) là:
+    product over all distinct v of (1 + cnt[v])
+Trừ đi 1 để loại tập rỗng:
+    ANSWER = (product (1 + cnt[v])) - 1   (mod 10^9 + 7)
+
+TẠI SAO ĐÚNG
+Mỗi tập chỉ số hợp lệ (giá trị đôi một khác nhau) tương ứng chính xác với việc: chọn một
+tập con S các giá trị phân biệt, rồi với mỗi giá trị trong S chọn đúng một vị trí xuất
+hiện. Số cách cho một tập giá trị S là product_{v in S} cnt[v]. Lấy tổng trên MỌI tập con
+S (kể cả rỗng) bằng cách khai triển tích: sum over S of product_{v in S} cnt[v]
+= product_v (1 + cnt[v]). Đây là hằng đẳng thức khai triển tích. Cuối cùng trừ 1 để bỏ
+trường hợp S rỗng (dãy con rỗng). Ví dụ mẫu: giá trị 1 (cnt=2), 2 (cnt=1), 3 (cnt=1)
+=> (1+2)(1+1)(1+1) - 1 = 12 - 1 = 11, khớp đáp án.
+
+CÀI ĐẶT
+Dùng một hash map (collections.Counter) để đếm số lần xuất hiện của từng giá trị, sau đó
+nhân dồn (1 + cnt) modulo 10^9 + 7. Đọc dữ liệu bằng sys.stdin.buffer để nhanh.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n) (đếm tần suất + nhân dồn).
+- Bộ nhớ: O(n) cho hash map các giá trị phân biệt.
+
+Với n <= 2*10^5, thuật toán O(n) chạy rất nhẹ, không có nguy cơ TLE trong Python.

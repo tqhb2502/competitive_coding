@@ -1,0 +1,39 @@
+Bài toán: Increasing Subsequence (CSES 1145)
+Tìm độ dài của dãy con tăng nghiêm ngặt (strictly increasing) dài nhất (LIS) của mảng x gồm n phần tử.
+
+Ý tưởng (patience sorting / DP + binary search):
+- Duy trì một mảng "tails", trong đó tails[i] là giá trị đuôi (phần tử cuối) NHỎ NHẤT có thể
+  của một dãy con tăng nghiêm ngặt có độ dài i+1, xét trên tiền tố đã duyệt qua.
+- Bất biến quan trọng: mảng tails luôn được giữ ở trạng thái tăng nghiêm ngặt. Điều này cho phép
+  dùng binary search để cập nhật.
+
+DP state:
+- tails[i] = đuôi nhỏ nhất của LIS độ dài i+1 tính đến vị trí hiện tại.
+- Độ dài LIS hiện tại = len(tails).
+
+Transition:
+- Với mỗi phần tử x của mảng:
+  + Dùng bisect_left(tails, x) để tìm vị trí pos đầu tiên trong tails có giá trị >= x.
+    (Dùng bisect_left vì yêu cầu TĂNG NGHIÊM NGẶT: ta muốn thay thế phần tử bằng hoặc lớn hơn x,
+     nếu dùng bisect_right thì sẽ cho phép các phần tử bằng nhau, tức là dãy không giảm.)
+  + Nếu pos == len(tails): x lớn hơn mọi đuôi hiện có, ta nối thêm x vào cuối -> LIS dài ra 1 đơn vị
+    (tails.append(x)).
+  + Ngược lại: ta thay tails[pos] = x, vì x là một đuôi tốt hơn (nhỏ hơn hoặc bằng) cho dãy con
+    tăng độ dài pos+1, giúp mở rộng dãy dễ hơn trong tương lai.
+
+Base case:
+- tails rỗng ban đầu. Phần tử đầu tiên luôn tạo ra tails = [x0].
+
+Answer:
+- Sau khi duyệt hết mảng, đáp án là len(tails), chính là độ dài LIS.
+
+Vì sao đúng:
+- tails luôn tăng nghiêm ngặt, và tails[i] là đuôi nhỏ nhất của mọi LIS độ dài i+1 khả dĩ.
+  Việc giữ đuôi nhỏ nhất bảo đảm rằng nếu tồn tại một dãy con tăng độ dài k thì cột thứ k của tails
+  sẽ tồn tại và chứa giá trị đuôi tối ưu. Do đó số cột (len(tails)) đúng bằng độ dài LIS.
+- bisect_left bảo đảm tính nghiêm ngặt: một x bằng với một đuôi hiện có sẽ ghi đè đuôi đó chứ không
+  kéo dài dãy, nên không sinh ra hai phần tử bằng nhau trong cùng một dãy con tăng.
+
+Độ phức tạp:
+- Thời gian: O(n log n) do mỗi phần tử tốn một binary search O(log n).
+- Bộ nhớ: O(n) cho mảng tails và mảng đầu vào.

@@ -1,0 +1,43 @@
+Room Allocation - CSES 1164
+
+BÀI TOÁN:
+Có n khách, khách i cần phòng trong khoảng ngày [a_i, b_i] (từ ngày đến a_i tới
+ngày đi b_i). Hai khách có thể dùng chung một phòng nếu ngày đi của người trước
+NHỎ HƠN ngày đến của người sau (b_truoc < a_sau). Nói cách khác, nếu hai khoảng
+[a, b] giao nhau (kể cả trùng một ngày) thì hai khách phải ở phòng khác nhau.
+Cần tìm số phòng ít nhất và gán số phòng cho từng khách (in theo thứ tự đầu vào).
+
+Ý TƯỞNG (greedy + min-heap / priority queue theo ngày đi):
+1. Gắn thêm chỉ số gốc idx cho mỗi khách để cuối cùng in đúng thứ tự đầu vào.
+2. Sort tất cả khách theo ngày đến a tăng dần.
+3. Duyệt lần lượt các khách theo thứ tự đã sort. Dùng một min-heap lưu các cặp
+   (ngày_đi, số_phòng) của những phòng đang được sử dụng, sắp xếp theo ngày đi
+   nhỏ nhất ở đỉnh.
+   - Với khách hiện tại (a, b): nếu heap không rỗng và phòng có ngày đi nhỏ nhất
+     thoả heap_top.ngay_di < a, thì phòng đó đã trống trước khi khách này đến ->
+     tái sử dụng: pop phòng đó ra, gán phòng này cho khách, rồi push lại
+     (b, so_phong) vào heap.
+   - Ngược lại (không phòng nào trống kịp): mở một phòng mới, tăng biến đếm
+     số phòng k, gán phòng mới cho khách, push (b, k) vào heap.
+4. Số phòng tối thiểu chính là giá trị k lớn nhất (tổng số phòng đã mở).
+
+TẠI SAO ĐÚNG:
+- Vì xét khách theo thứ tự ngày đến tăng dần, khi tới khách hiện tại thì mọi
+  phòng đang mở đều thuộc về những khách đến trước (hoặc cùng ngày). Một phòng có
+  thể tái dùng khi và chỉ khi ngày đi của người đang ở đó < ngày đến của khách
+  hiện tại. Trong tất cả các phòng đang mở, phòng có ngày đi sớm nhất là phòng dễ
+  trống nhất; nếu phòng này còn chưa trống thì mọi phòng khác cũng chưa trống,
+  nên bắt buộc phải mở phòng mới. Do đó heap luôn cho quyết định tối ưu cục bộ.
+- Số phòng cùng lúc đang mở tại một thời điểm bằng số khoảng giao nhau nhiều nhất
+  (maximum overlap). Thuật toán greedy này đúng bằng số overlap lớn nhất đó, đây
+  chính là cận dưới lý thuyết cho số phòng cần thiết, nên kết quả là tối ưu.
+- Việc chỉ mở phòng mới khi không thể tái dùng bảo đảm không bao giờ dùng nhiều
+  phòng hơn mức overlap lớn nhất.
+
+ĐỘ PHỨC TẠP:
+- Sort: O(n log n).
+- Mỗi khách push/pop heap tối đa một lần: O(n log n).
+- Tổng thời gian: O(n log n). Bộ nhớ: O(n) cho mảng khách, heap và mảng đáp án.
+
+Với n <= 2*10^5 độ phức tạp O(n log n) là dư sức cho giới hạn thời gian, chỉ cần
+đọc/ghi I/O nhanh (sys.stdin.buffer để đọc, gom kết quả rồi ghi một lần).

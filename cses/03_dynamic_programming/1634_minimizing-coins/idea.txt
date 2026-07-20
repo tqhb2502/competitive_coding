@@ -1,0 +1,43 @@
+Bài toán: Minimizing Coins (CSES 1634)
+
+Đề bài: có n loại đồng xu (mỗi loại dùng được vô số lần), hãy tạo ra tổng x
+bằng số đồng xu ÍT NHẤT. Nếu không tạo được thì in -1.
+Đây là bài toán unbounded knapsack (knapsack không giới hạn số lần dùng).
+
+TRẠNG THÁI DP:
+  dp[s] = số đồng xu ít nhất để tạo ra đúng tổng s (với 0 <= s <= x).
+
+CÔNG THỨC CHUYỂN (transition):
+  dp[s] = min( dp[s - c] + 1 )  với mọi đồng xu c sao cho c <= s.
+Ý nghĩa: để tạo tổng s, ta chọn đồng xu cuối cùng có giá trị c, phần còn lại
+là tổng s - c đã được giải tối ưu; cộng thêm 1 đồng xu vừa chọn.
+
+BASE CASE (cơ sở):
+  dp[0] = 0 (tạo tổng 0 cần 0 đồng xu).
+  Các dp[s] khác khởi tạo bằng INF (nghĩa là chưa tạo được).
+
+ĐÁP ÁN:
+  Nếu dp[x] còn là INF (tức dp[x] > x, vì đáp án thật luôn <= x do mỗi đồng xu
+  giá trị >= 1) thì in -1; ngược lại in dp[x].
+
+VÌ SAO ĐÚNG:
+  Vì mỗi đồng xu được dùng lại tùy ý, ta duyệt s tăng dần và cho phép dp[s - c]
+  đã có thể chứa chính đồng xu c (vòng lặp forward). Do đó dp[s] xét mọi cách
+  chọn đồng xu cuối và luôn dựa trên nghiệm con tối ưu dp[s - c]; theo nguyên lý
+  quy hoạch động (tối ưu con + không sau ảnh hưởng trước) nên dp[x] là tối ưu.
+
+ĐỘ PHỨC TẠP:
+  Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 là khoảng 10^8
+  phép tính cơ bản.
+
+CÁCH CÀI ĐẶT NHANH (numpy):
+  Với một đồng xu c, dp[i] = min_{i = j + k*c} (dp[j] + k). Nếu reshape mảng dp
+  theo bề rộng c thì các vị trí cùng residue (mod c) nằm trên cùng một cột;
+  đi xuống cột tương ứng cộng thêm 1 đồng xu. Đặt t = dp - (chỉ số hàng), lấy
+  prefix-min (np.minimum.accumulate theo cột) rồi cộng lại chỉ số hàng. Nhờ vậy
+  mỗi đồng xu chỉ tốn vài phép numpy trên toàn mảng => rất nhanh, không phụ
+  thuộc vào việc c lớn hay nhỏ.
+
+LƯU Ý TLE: trên CSES với CPython thuần, vòng lặp DP O(n*x) ~ 10^8 có thể TLE.
+Nên nộp bằng numpy (nếu môi trường có) hoặc bằng PyPy3; bản fallback thuần
+Python (hàm solve_pure) chỉ nên dùng cho x nhỏ hoặc khi chạy PyPy.

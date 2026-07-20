@@ -1,0 +1,38 @@
+Bài toán: Increasing Array (CSES 1094)
+
+Đề bài:
+- Cho mảng gồm n số nguyên. Mỗi bước được phép tăng một phần tử bất kỳ lên 1 đơn vị.
+- Tìm số bước ít nhất để biến mảng thành một dãy không giảm (non-decreasing),
+  tức là x[i] <= x[i+1] với mọi i.
+
+Ý tưởng (Greedy - tham lam):
+- Duyệt mảng từ trái sang phải, lưu lại giá trị lớn nhất đã gặp cho đến phần tử
+  ngay trước đó (gọi là "prev", chính là giá trị của phần tử trước sau khi đã
+  chỉnh sửa).
+- Với mỗi phần tử x[i]:
+  + Nếu x[i] >= prev: không cần làm gì, cập nhật prev = x[i].
+  + Nếu x[i] <  prev: ta phải tăng x[i] lên bằng prev, tốn (prev - x[i]) bước.
+    Sau khi tăng, giá trị mới của phần tử là prev, nên prev giữ nguyên.
+- Cộng dồn tất cả (prev - x[i]) lại chính là đáp án.
+
+Tại sao đúng (tính đúng đắn):
+- Vì chỉ được TĂNG (không được giảm), nên phần tử đầu tiên không bao giờ bị thay
+  đổi. Với phần tử thứ i, giá trị tối thiểu mà nó BẮT BUỘC phải đạt là giá trị
+  của phần tử trước đó (đã được chỉnh). Tăng nó đúng bằng prev là lựa chọn tiết
+  kiệm nhất: nếu tăng ít hơn thì vi phạm điều kiện không giảm; tăng nhiều hơn chỉ
+  làm tốn thêm bước và không có lợi ích (còn làm khó cho các phần tử sau vì làm
+  prev lớn hơn cần thiết). Do đó greedy cho kết quả tối ưu.
+- Kết quả có thể rất lớn (tối đa ~ n * 10^9 = 2*10^14), vượt int 32-bit, nhưng
+  Python dùng số nguyên lớn nên không tràn số.
+
+Ví dụ kiểm tra: mảng [3, 2, 5, 1, 7]
+- prev=3
+- 2 < 3  -> +1, prev=3
+- 5 >= 3 -> prev=5
+- 1 < 5  -> +4, prev=5
+- 7 >= 5 -> prev=7
+Tổng = 1 + 4 = 5. Đúng với đáp án mẫu.
+
+Độ phức tạp:
+- Thời gian: O(n) - chỉ duyệt mảng một lần.
+- Bộ nhớ: O(n) để lưu mảng (có thể giảm về O(1) nếu đọc và xử lý luôn từng số).

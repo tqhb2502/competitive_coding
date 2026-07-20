@@ -1,0 +1,35 @@
+Bài toán: Tower of Hanoi (Tháp Hà Nội)
+
+Đề bài:
+- Có 3 cọc (trái = 1, giữa = 2, phải = 3) và n đĩa kích thước khác nhau.
+- Ban đầu tất cả n đĩa nằm ở cọc 1, xếp tăng dần kích thước từ trên xuống dưới.
+- Cần chuyển tất cả đĩa sang cọc 3, dùng cọc 2 làm trung gian.
+- Mỗi bước chỉ được chuyển đĩa trên cùng của một cọc, và không được đặt đĩa lớn
+  lên trên đĩa nhỏ hơn.
+- In ra số bước ít nhất k, rồi k dòng, mỗi dòng là "a b" nghĩa là chuyển đĩa
+  trên cùng từ cọc a sang cọc b.
+
+Ý tưởng (đệ quy chuẩn):
+- Hàm hanoi(m, tu, dich, phu): chuyển m đĩa trên cùng từ cọc "tu" sang cọc "dich",
+  dùng cọc "phu" làm trung gian.
+  1) Chuyển m-1 đĩa trên cùng từ "tu" sang "phu" (dùng "dich" làm trung gian).
+  2) Chuyển đĩa thứ m (đĩa lớn nhất trong nhóm) từ "tu" sang "dich" -> ghi 1 bước.
+  3) Chuyển m-1 đĩa từ "phu" sang "dich" (dùng "tu" làm trung gian).
+- Lời gọi ban đầu: hanoi(n, 1, 3, 2).
+
+Vì sao đúng:
+- Muốn đặt đĩa lớn nhất xuống cọc đích thì trước đó phải dọn sạch m-1 đĩa nhỏ hơn
+  ra khỏi cọc nguồn, và cọc đích phải trống. Cách duy nhất là gom m-1 đĩa nhỏ lên
+  cọc phụ. Sau khi chuyển đĩa lớn nhất, lại chuyển m-1 đĩa nhỏ từ cọc phụ về cọc
+  đích. Mỗi bước luôn chuyển đĩa trên cùng và không bao giờ đặt đĩa lớn lên đĩa nhỏ
+  (do các đĩa nhỏ hơn đều được xử lý riêng và nằm gọn nhau).
+- Số bước ít nhất: T(n) = 2*T(n-1) + 1, T(0) = 0 => T(n) = 2^n - 1. Đây là số bước
+  tối thiểu đã chứng minh của bài toán Tháp Hà Nội.
+
+Độ phức tạp:
+- Thời gian: O(2^n) vì số bước (và số dòng in ra) chính là 2^n - 1.
+- Bộ nhớ: O(2^n) nếu lưu toàn bộ danh sách bước để in một lần (n <= 16 nên tối đa
+  65535 bước, rất nhỏ). Độ sâu đệ quy chỉ O(n).
+
+Với n <= 16, số bước tối đa 2^16 - 1 = 65535 nên chạy rất nhanh trong Python.
+Không có rủi ro TLE.

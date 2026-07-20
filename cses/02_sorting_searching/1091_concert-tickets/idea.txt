@@ -1,0 +1,47 @@
+Concert Tickets - https://cses.fi/problemset/task/1091
+
+BÀI TOÁN:
+Có n vé với giá h_i và m khách hàng. Khách hàng đến lần lượt. Mỗi khách có mức
+giá tối đa t_i mà họ sẵn sàng trả. Với mỗi khách, ta phải bán cho họ tấm vé còn
+lại có giá CAO NHẤT nhưng KHÔNG vượt quá t_i. Nếu không còn vé nào phù hợp thì in
+ra -1. Mỗi tấm vé chỉ bán được một lần (bán xong thì bị loại khỏi tập vé).
+
+Ý TƯỞNG CHÍNH:
+Ta cần một cấu trúc multiset hỗ trợ hai thao tác:
+  1) Tìm phần tử lớn nhất <= t (predecessor / floor).
+  2) Xóa đúng phần tử đó khỏi tập hợp.
+Cả hai thao tác cần nhanh (O(log n)).
+
+Vì Python trên CSES không có sẵn thư viện sortedcontainers, ta tự cài đặt bằng
+Fenwick tree (BIT) kết hợp binary lifting (find_kth):
+
+  - Coordinate compression: nén các giá vé h_i về các chỉ số 1..K theo thứ tự
+    tăng dần (unique). Mảng "unique" lưu giá thực tại từng chỉ số.
+  - BIT lưu SỐ LƯỢNG vé còn lại tại mỗi chỉ số nén. Ban đầu tăng đếm cho mỗi vé.
+
+Với mỗi khách có ngân sách t:
+  - Dùng bisect_right(unique, t) = pos_idx: số lượng giá <= t, tức các chỉ số
+    1..pos_idx tương ứng mọi mức giá không vượt quá t.
+  - cnt = prefix(pos_idx) = tổng số vé còn lại có giá <= t.
+      * Nếu cnt == 0 -> in -1 (không còn vé phù hợp).
+      * Ngược lại, vé cần bán chính là vé còn lại LỚN NHẤT trong nhóm giá <= t,
+        tức là vé đứng thứ hạng cnt (phần tử lớn nhất) trong đám vé <= t.
+        Dùng find_kth(cnt) trên BIT (binary lifting) để lấy chỉ số j của vé đó
+        trong O(log n). In ra unique[j-1] rồi update(j, -1) để xóa vé.
+
+TẠI SAO ĐÚNG:
+Trong nhóm vé có giá <= t, có đúng cnt vé còn lại. Phần tử thứ cnt (theo thứ tự
+tăng dần) chính là phần tử lớn nhất trong nhóm đó, và nó <= t theo định nghĩa
+pos_idx. Đây đúng là tấm vé giá cao nhất không vượt quá t. find_kth trả về chỉ số
+nhỏ nhất có prefix sum >= cnt, tương ứng đúng vị trí phần tử thứ cnt. Sau khi bán,
+ta giảm số đếm để phản ánh vé đã bị loại.
+
+ĐỘ PHỨC TẠP:
+  - Thời gian: O((n + m) log n) cho mọi thao tác BIT và bisect.
+  - Bộ nhớ: O(n) cho BIT và mảng unique.
+Với n, m <= 2*10^5 thì hoàn toàn an toàn.
+
+LƯU Ý TLE: Với I/O chuẩn (input()) Python có thể chậm; ở đây đã dùng
+sys.stdin.buffer.read và gộp output bằng "\n".join nên rủi ro TLE thấp. Nếu vẫn
+bị giới hạn thời gian, bản C++ dùng cùng thuật toán (Fenwick + find_kth, hoặc
+std::multiset với upper_bound rồi --it) sẽ chạy nhanh hơn nhiều nhờ hằng số nhỏ.

@@ -1,0 +1,27 @@
+Bài toán: Đếm số đường đi từ ô trên-trái (0,0) đến ô dưới-phải (n-1,n-1) trên lưới n x n,
+chỉ được đi sang phải hoặc xuống dưới, không được đi vào ô có bẫy ('*'). Kết quả lấy modulo 1000000007.
+
+Ý tưởng (DP trên lưới):
+- DP state: dp[i][j] = số đường đi hợp lệ từ ô (0,0) đến ô (i,j).
+- Transition: nếu ô (i,j) là bẫy ('*') thì dp[i][j] = 0 (không thể đứng ở đó).
+  Ngược lại dp[i][j] = dp[i-1][j] + dp[i][j-1] (đường đến (i,j) phải đi từ ô phía trên
+  hoặc ô bên trái), tất cả lấy modulo MOD = 1000000007.
+- Base case: dp[0][0] = 1 nếu ô (0,0) không phải bẫy, ngược lại = 0 (khi đó đáp án là 0).
+  Với hàng đầu tiên và cột đầu tiên, các ô ngoài lưới coi như 0 nên công thức tổng quát
+  vẫn đúng khi ta xử lý cẩn thận biên (dùng giá trị 0 cho i-1<0 hoặc j-1<0).
+- Answer: dp[n-1][n-1].
+
+Vì sao đúng: mỗi đường đi hợp lệ đến (i,j) có bước cuối cùng hoặc là từ (i-1,j) đi xuống,
+hoặc từ (i,j-1) đi sang phải; hai tập này rời nhau và bao phủ mọi khả năng, nên số đường
+bằng tổng hai giá trị đó. Ô bẫy không thể đến được nên đặt bằng 0, tự động loại mọi đường
+đi qua bẫy khỏi các ô sau. Đây là quy hoạch động không có chu trình (chỉ phụ thuộc ô phía
+trên và bên trái đã tính trước), nên duyệt theo thứ tự hàng trên xuống, trong mỗi hàng từ
+trái sang phải là hợp lệ.
+
+Tối ưu bộ nhớ: chỉ cần một mảng 1 chiều dp có độ dài n (rolling array theo từng hàng),
+vì dp[j] mới = dp[j] (giá trị hàng trên) + dp[j-1] (giá trị vừa cập nhật ở bên trái cùng hàng).
+
+Độ phức tạp: thời gian O(n^2), bộ nhớ O(n). Với n <= 1000, n^2 = 10^6 phép cộng modulo.
+
+LƯU Ý TLE: n^2 = 10^6 nên Python thuần vẫn chạy trong giới hạn thời gian một cách an toàn;
+dùng sys.stdin để đọc nhanh và cập nhật mảng 1 chiều là đủ.

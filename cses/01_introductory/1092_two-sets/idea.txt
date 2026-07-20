@@ -1,0 +1,47 @@
+Bài toán: Two Sets (CSES 1092)
+URL: https://cses.fi/problemset/task/1092
+
+1) Đề bài
+Chia các số 1, 2, ..., n thành hai tập hợp có tổng bằng nhau.
+In "YES" nếu chia được, kèm theo mô tả hai tập; ngược lại in "NO".
+
+2) Ý tưởng
+- Tổng của tất cả các số từ 1 đến n là S = n*(n+1)/2.
+- Để chia thành hai tập có tổng bằng nhau thì S phải chẵn, tức mỗi tập có tổng
+  target = S/2 = n*(n+1)/4.
+- S chẵn khi và chỉ khi n*(n+1) chia hết cho 4. Xét n theo modulo 4:
+    + n % 4 == 0  -> chia hết -> chia được.
+    + n % 4 == 1  -> n+1 ≡ 2 (mod 4), tích ≡ 2 (mod 4) -> không chia được.
+    + n % 4 == 2  -> n ≡ 2 (mod 4), tích ≡ 2 (mod 4) -> không chia được.
+    + n % 4 == 3  -> n+1 ≡ 0 (mod 4) -> chia được.
+  Vậy chia được khi n % 4 == 0 hoặc n % 4 == 3, ngược lại in "NO".
+
+3) Cách xây dựng một tập có tổng = target (tham lam)
+- Duyệt i từ n giảm dần về 1. Giữ biến remaining khởi tạo = target.
+- Nếu i <= remaining thì cho i vào tập 1 và trừ remaining đi i; ngược lại cho i vào tập 2.
+- Vì luôn lấy số lớn nhất còn "vừa" được, tham lam này chắc chắn làm remaining về 0
+  (giống biểu diễn tham lam một số bằng các số 1..n phân biệt). Các số còn lại
+  tự động tạo thành tập 2 có tổng = S - target = target.
+
+Tại sao đúng: khi remaining > 0, luôn tồn tại số i <= remaining chưa dùng
+(thậm chí số 1 luôn có thể dùng nếu remaining >= 1), nên quá trình tham lam luôn
+lấp đầy được đúng target mà không "nhảy qua". Do đó tập 1 có tổng đúng bằng target,
+tập 2 có tổng bằng phần còn lại cũng bằng target.
+
+4) Định dạng xuất
+Dòng 1: YES
+Dòng 2: số phần tử của tập 1
+Dòng 3: các phần tử tập 1 (cách nhau bởi dấu cách)
+Dòng 4: số phần tử của tập 2
+Dòng 5: các phần tử tập 2
+CSES chấp nhận bất kỳ cách chia hợp lệ nào (thứ tự tập và thứ tự phần tử tùy ý).
+
+5) Độ phức tạp
+- Thời gian: O(n) để duyệt và phân loại các số.
+- Bộ nhớ: O(n) để lưu hai tập.
+Với n <= 10^6 hoàn toàn trong giới hạn.
+
+LƯU Ý TLE: Với n = 10^6, việc tạo và nối (join) trên một triệu chuỗi số trong Python
+có thể chậm và tốn bộ nhớ; đã dùng sys.stdin/sys.stdout và ' '.join(map(str, ...))
+để tối ưu I/O. Nếu vẫn bị TLE trên CSES, bản C++ sẽ nhanh hơn nhờ xuất trực tiếp số
+nguyên (không tạo chuỗi trung gian) và I/O buffer mạnh hơn.

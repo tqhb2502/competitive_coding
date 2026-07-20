@@ -1,0 +1,35 @@
+Bài toán: Đếm số lượng subarray (đoạn con liên tiếp) có tổng đúng bằng x.
+
+Điểm khác biệt so với "Subarray Sums I": ở bài này các phần tử a_i CÓ THỂ ÂM
+(-10^9 <= a_i <= 10^9). Vì vậy prefix sum KHÔNG còn đơn điệu tăng, nên kỹ thuật
+two-pointer (sliding window) không áp dụng được. Ta phải dùng prefix sum kết hợp
+với hash map.
+
+Ý tưởng (prefix sum + hash map):
+- Gọi P[i] = a_1 + a_2 + ... + a_i là prefix sum, với P[0] = 0.
+- Một subarray (l, r) có tổng bằng x khi và chỉ khi P[r] - P[l-1] = x,
+  tức là P[l-1] = P[r] - x.
+- Duyệt r từ 1 tới n, giữ một hash map (dict) đếm số lần mỗi giá trị prefix sum
+  đã xuất hiện trong các chỉ số trước đó (P[0], P[1], ..., P[r-1]).
+- Với mỗi r, số subarray kết thúc tại r và có tổng x chính là số lần giá trị
+  (P[r] - x) đã xuất hiện trong map. Cộng dồn số này vào đáp án.
+- Sau đó thêm P[r] vào map để phục vụ các chỉ số sau.
+- Khởi tạo map với {0: 1} để tính đúng các subarray bắt đầu từ vị trí 1.
+
+Tính đúng đắn:
+- Mỗi subarray tương ứng 1-1 với một cặp chỉ số (l-1, r) sao cho
+  P[l-1] = P[r] - x và l-1 < r. Vì ta chỉ đếm các prefix sum đã đưa vào map
+  TRƯỚC KHI xử lý r, điều kiện l-1 < r luôn được bảo đảm, nên không đếm trùng
+  và không bỏ sót cặp nào.
+
+Độ phức tạp:
+- Thời gian: O(n) trung bình (mỗi bước thao tác hash map là O(1) trung bình).
+- Bộ nhớ: O(n) cho hash map.
+
+Đáp án có thể lớn (tối đa cỡ n*(n+1)/2 ~ 2*10^10) nên cần kiểu số nguyên lớn;
+trong Python điều này tự nhiên được xử lý.
+
+LƯU Ý TLE: Với n = 2*10^5 thuật toán O(n) là đủ nhanh, nhưng hằng số của dict
+trong Python khá lớn. Cần dùng fast I/O (sys.stdin.buffer để đọc, tránh input()).
+Nếu vẫn TLE, bản C++ dùng std::unordered_map (hoặc sort prefix sums rồi đếm)
+với I/O nhanh sẽ chạy an toàn trong giới hạn thời gian.

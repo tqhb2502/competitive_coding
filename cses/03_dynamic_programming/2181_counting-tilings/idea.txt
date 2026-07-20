@@ -1,0 +1,37 @@
+Bài toán: Đếm số cách lát kín lưới n x m bằng các quân domino 1x2 và 2x1, kết quả lấy modulo 1000000007. Ràng buộc: 1 <= n <= 10, 1 <= m <= 1000.
+
+Ý tưởng: Profile DP (broken/column profile) duyệt theo từng cột. Vì n <= 10 nên ta dùng bitmask trên n hàng, tổng cộng 2^n <= 1024 trạng thái. Ta lát lưới lần lượt từ cột trái sang cột phải.
+
+DP state:
+- dp[mask] = số cách lát hợp lệ toàn bộ các cột đã xử lý xong, sao cho mask biểu diễn tập các ô của cột SẮP xử lý mà đã bị một quân domino ngang từ cột trước "thò" sang chiếm chỗ. Nói cách khác mask là "phần thừa ra" mà cột hiện tại đã bị chiếm trước.
+
+Transition (chuyển từ một cột sang cột kế):
+- Với mask cur (các ô đã bị chiếm sẵn trong cột hiện tại), ta phải lát đầy phần còn lại của cột này. Duyệt từng hàng row = 0..n-1:
+  + Nếu bit row trong cur đã bật: ô này đã bị chiếm, bỏ qua, không thò sang cột kế.
+  + Nếu ô trống: có 2 lựa chọn.
+      1) Đặt domino ngang (1x2) thò sang cột kế: bật bit row trong mask nxt.
+      2) Đặt domino dọc (2x1) phủ (row, row+1) ngay trong cột này, với điều kiện row+1 < n và ô (row+1) cũng đang trống; hai ô này KHÔNG thò sang cột kế.
+- Kết thúc việc lát đầy cột, mask nxt (tập các ô bị domino ngang thò sang) chính là mask cur cho cột kế tiếp. Với mỗi cặp (cur, nxt) hợp lệ có đúng một cách hoàn tất (phần còn lại được lấp bởi domino dọc là duy nhất nếu tồn tại), nên ta liệt kê được toàn bộ cạnh chuyển.
+- Ta precompute incoming[nxt] = danh sách các cur sinh ra nxt để cộng dồn nhanh: ndp[nxt] = sum(dp[cur] for cur in incoming[nxt]) % MOD.
+
+Tối ưu hằng số cho CPython (code-gen):
+- Nếu để nguyên vòng lặp Python cộng dồn (m cột x ~5741 cạnh với n = 10 => ~5.7 triệu phép cộng), CPython chạy khoảng 1.4 giây, dễ vượt giới hạn 1 giây. PyPy thì thoải mái.
+- Cách khắc phục thuần Python (không cần thư viện ngoài): sinh sẵn một hàm step(dp) bằng cách nối chuỗi các biểu thức cộng đã biết trước chỉ số, ví dụ ndp[nxt] = (d3 + d5 + d9) % MOD, rồi exec để biên dịch. Nhờ hardcode chỉ số, toàn bộ phép cộng chạy trực tiếp ở tầng bytecode, loại bỏ chi phí vòng lặp/iterator Python. Thời gian giảm còn khoảng 0.2-0.3 giây (kể cả khởi động), an toàn cho cả CPython lẫn PyPy.
+- Trước khi chạy DP, ta đọc từng hàng của return list: mỗi phần tử tương ứng một nxt và là tổng modulo của các dp[cur] thuộc incoming[nxt] (hoặc 0 nếu incoming[nxt] rỗng).
+
+Đối xứng chuyển vị (tối ưu):
+- Số cách lát lưới (n x m) bằng số cách lát (m x n): phép chuyển vị lưới là song ánh giữa hai tập cách lát (domino ngang đổi thành domino dọc và ngược lại). Vì vậy ta hoán đổi để n là chiều nhỏ hơn, giữ 2^n nhỏ nhất, giảm số trạng thái bitmask khi đầu vào có n > m.
+
+Base case:
+- Trước cột đầu tiên: dp[0] = 1 (chưa có ô nào bị thò sang), các mask khác = 0.
+
+Answer:
+- Áp dụng transition đúng m lần (m cột). Sau cột cuối cùng không được có ô nào thò ra ngoài lưới, nên đáp án = dp[0].
+- Nếu n*m lẻ thì tự nhiên dp[0] = 0.
+
+Tính đúng đắn: mỗi trạng thái mask mô tả đầy đủ ranh giới giữa hai cột liên tiếp (những ô nào đã bị chiếm bởi domino ngang xuất phát từ cột trước). Do quân domino chỉ ảnh hưởng tối đa sang cột kề, thông tin mask là đủ để đảm bảo không chồng lấn và không hở. Việc liệt kê mọi cách lát đầy một cột (domino dọc trong cột + domino ngang thò sang) bao phủ đúng và không trùng lặp mọi cấu hình, nên DP đếm chính xác mọi cách lát toàn lưới.
+
+Độ phức tạp:
+- Precompute transitions: O(2^n * (số cách lát một cột)) = O(a(n)) với a(n) ~ 2*a(n-1)+a(n-2); a(10) = 5741 cạnh, rất nhỏ.
+- DP: mỗi cột duyệt qua tổng số cạnh (<= 5741 với n=10), nhân m cột => O(m * a(n)) ~ 5.7 triệu phép cộng cho trường hợp lớn nhất. Space: O(2^n).
+- Rất nhẹ, chạy tốt trong Python trên CSES.

@@ -1,0 +1,43 @@
+Bài toán: Josephus Problem II (CSES 2163)
+
+Đề bài: Có n đứa trẻ đánh số 1..n xếp thành vòng tròn. Lặp lại thao tác: bỏ qua k đứa
+rồi loại 1 đứa ra khỏi vòng. In ra thứ tự các đứa trẻ bị loại.
+
+Ràng buộc: 1 <= n <= 2*10^5, 0 <= k <= 10^9.
+
+Ý tưởng chính:
+- Ta mô phỏng quá trình loại. Điều mấu chốt: các đứa trẻ còn lại luôn giữ nguyên thứ tự
+  tăng dần theo số hiệu, và đó cũng chính là thứ tự trên vòng tròn. Vì vậy ta chỉ cần một
+  cấu trúc dữ liệu hỗ trợ hai thao tác: tìm phần tử đang đứng ở vị trí thứ i (theo thứ tự
+  các phần tử còn lại) và xóa phần tử đó, mỗi thao tác O(log n).
+- Duy trì biến pos (chỉ số 0-based của điểm bắt đầu đếm trong mảng các phần tử còn lại) và
+  remaining (số phần tử còn lại). Ở mỗi bước:
+    idx = (pos + k) % remaining   là chỉ số 0-based của đứa trẻ bị loại lần này.
+  Ta tìm đứa trẻ đứng thứ (idx+1) trong số các đứa còn tồn tại, ghi vào kết quả, rồi xóa nó.
+- Sau khi xóa, đứa đứng ngay sau đứa vừa bị loại sẽ dồn về đúng chỉ số idx trong mảng mới,
+  nên ta gán pos = idx cho bước kế tiếp và giảm remaining đi 1. (Phép % ở bước sau sẽ tự
+  xử lý trường hợp idx trỏ ra ngoài mảng mới.)
+
+Cấu trúc dữ liệu (order-statistics segment tree):
+- Segment tree đếm số phần tử còn tồn tại trên đoạn [1..n]: mỗi lá = 1 nếu còn, 0 nếu đã bị
+  loại; mỗi node trong lưu tổng của hai con.
+- Để tìm phần tử thứ target (1-based) trong các phần tử còn lại, ta đi xuống từ gốc: nếu số
+  phần tử ở cây con trái (tree[left]) >= target thì rẽ trái, ngược lại trừ target đi số lượng
+  bên trái rồi rẽ phải. Ta kết hợp luôn việc xóa: mỗi khi đi qua một node trên đường đi, giảm
+  bộ đếm của node đó đi 1. Nhờ vậy chỉ cần MỘT lần đi xuống O(log n) là vừa tìm được vừa xóa
+  xong phần tử, tiết kiệm một nửa công việc so với làm find rồi update riêng.
+
+Tính đúng đắn:
+- Công thức idx = (pos + k) % remaining phản ánh chính xác việc bỏ qua k đứa rồi loại đứa kế
+  tiếp trên vòng tròn. Việc gán pos = idx đúng vì sau khi xóa, đứa ngay sau đứa bị loại chiếm
+  đúng chỉ số idx trong mảng còn lại mới.
+- Kiểm chứng với ví dụ n=7, k=2: kết quả 3 6 2 7 5 1 4, khớp với đáp án của đề.
+
+Độ phức tạp:
+- Thời gian: O(n log n) vì có n lần loại, mỗi lần một lần đi xuống segment tree O(log n).
+- Bộ nhớ: O(n) cho segment tree (mảng kích thước 2*size, với size là lũy thừa 2 nhỏ nhất >= n).
+
+LƯU Ý TLE: Với n = 2*10^5, thuật toán O(n log n) tương ứng khoảng 3.6 triệu vòng lặp lồng
+nhau trong CPython thuần; time limit 1.00 s của CSES được đặt cho C++ nên bản Python có nguy
+cơ TLE. Bản port C++ dùng Fenwick/segment tree tương tự (hoặc GNU pbds ordered_set / policy
+tree order_of_key + find_by_order) chạy chỉ vài mili-giây nên vượt qua thoải mái.

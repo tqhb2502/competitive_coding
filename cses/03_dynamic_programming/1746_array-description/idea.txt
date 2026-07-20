@@ -1,0 +1,45 @@
+Bài toán: Array Description (CSES 1746)
+
+Đề bài: Cho mảng gồm n phần tử, mỗi phần tử là số nguyên trong [1, m].
+Giá trị 0 nghĩa là vị trí đó chưa biết (có thể điền tự do trong [1, m]).
+Điều kiện: hai phần tử kề nhau có hiệu tuyệt đối tối đa 1 (|a[i] - a[i+1]| <= 1).
+Đếm số mảng hợp lệ, kết quả lấy modulo 1000000007.
+
+Ý tưởng DP:
+- Định nghĩa state: dp[i][v] = số cách điền hợp lệ cho tiền tố gồm i phần tử đầu
+  sao cho phần tử thứ i mang giá trị v (với v trong [1, m]).
+- Transition (chuyển trạng thái): vì hai phần tử kề nhau chênh nhau tối đa 1 nên
+  phần tử thứ i-1 chỉ có thể là v-1, v hoặc v+1. Do đó:
+      dp[i][v] = dp[i-1][v-1] + dp[i-1][v] + dp[i-1][v+1]   (lấy modulo)
+  Nếu x[i] != 0 (đã biết trước) thì chỉ giữ lại v = x[i], các giá trị khác dp[i][*] = 0.
+  Nếu x[i] == 0 thì mọi v trong [1, m] đều được phép.
+- Base case (điều kiện khởi tạo, i = 1):
+      Nếu x[1] == 0: dp[1][v] = 1 cho mọi v trong [1, m].
+      Nếu x[1] != 0: dp[1][x[1]] = 1, còn lại 0.
+- Đáp án: sum_{v=1..m} dp[n][v] (mod 1000000007).
+
+Tính đúng đắn: mỗi mảng hợp lệ được xây dựng lần lượt từ trái sang phải; state
+dp[i][v] gói trọn thông tin cần thiết cho bước kế tiếp (chỉ cần biết giá trị v của
+phần tử cuối là đủ để áp ràng buộc |chênh lệch| <= 1). Ràng buộc x[i] != 0 được
+tôn trọng bằng cách chỉ cho phép đúng giá trị x[i]. Do đó tổng dp[n][*] đếm đúng
+và không trùng lặp tất cả các mảng hợp lệ.
+
+Tối ưu bộ nhớ: chỉ cần một hàng dp hiện tại, dùng mảng 1 chiều độ dài m+2 với
+hai ô đệm (padding) ở đầu và cuối luôn bằng 0 để tránh kiểm tra biên khi cộng
+v-1 và v+1. Khi x[i] != 0 chỉ cần tính đúng một giá trị nên bỏ qua vòng lặp đầy
+đủ, chỉ đặt đúng ô x[i] và xoá các ô còn lại.
+
+Độ phức tạp: thời gian O(n * m) (tối đa khoảng 10^7 phép tính), bộ nhớ O(m).
+
+Tối ưu tốc độ cho Python thuần (chống TLE): với n = 10^5 và m = 100, vòng lặp
+lõi có thể tới ~10^7 phép cộng, Python thuần sẽ TLE so với time limit của CSES.
+Vì vậy code dùng numpy để vector hoá phép chuyển trạng thái trên trục v:
+dp_new[1..m] = dp[0..m-1] + dp[1..m] + dp[2..m+1] (cộng ba slice cùng lúc).
+Ngoài ra áp dụng kỹ thuật "hoãn mod" (defer modulo): thay vì lấy modulo ở mỗi
+bước, ta cộng dồn không mod trong tối đa 16 bước liên tiếp rồi mới lấy modulo một
+lần. Giá trị mỗi phần tử tăng tối đa gấp 3 sau mỗi bước, nên sau 16 bước vẫn nhỏ
+hơn 3^16 * 10^9 ~ 4.3*10^16, an toàn với int64 (không tràn số). Hoãn mod bảo toàn
+đúng giá trị nguyên (chỉ chưa rút gọn) nên kết quả hoàn toàn chính xác. Lưu ý
+mảng numpy phải khai báo rõ dtype=np.int64 vì trên Windows kiểu số nguyên mặc
+định là int32 và sẽ bị tràn. Nhờ vector hoá và hoãn mod, phần lõi worst-case chạy
+khoảng 0.4 giây, thoải mái trong giới hạn thời gian.

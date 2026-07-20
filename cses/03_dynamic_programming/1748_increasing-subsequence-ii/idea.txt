@@ -1,0 +1,44 @@
+Increasing Subsequence II - CSES 1748
+
+Bài toán: Đếm số lượng dãy con tăng ngặt (strictly increasing subsequence) không rỗng của
+mảng gồm n số nguyên. Các dãy con ở vị trí khác nhau được tính riêng dù giá trị có thể trùng.
+Kết quả lấy modulo 1000000007.
+
+State (trạng thái DP):
+- Gọi dp[i] = số lượng dãy con tăng ngặt kết thúc tại vị trí i (tức phần tử cuối cùng là a[i]).
+
+Transition (công thức chuyển):
+- dp[i] = 1 + tổng của dp[j] với mọi j < i mà a[j] < a[i].
+  + Số 1 tương ứng dãy con chỉ gồm riêng phần tử a[i].
+  + Mỗi dãy con tăng kết thúc tại j (với a[j] < a[i]) có thể nối thêm a[i] vào cuối để tạo
+    thành một dãy con tăng mới kết thúc tại i.
+
+Base case (trường hợp cơ sở):
+- Mỗi phần tử tự nó là một dãy con tăng độ dài 1, nên luôn có ít nhất giá trị 1 trong dp[i].
+
+Answer (đáp án):
+- Tổng tất cả dp[i] với i từ 0 đến n-1, lấy modulo 1000000007.
+
+Tại sao đúng:
+- Mỗi dãy con tăng ngặt có một phần tử cuối cùng duy nhất, nên việc phân hoạch theo vị trí
+  kết thúc i không bỏ sót và không đếm trùng. Công thức dp[i] duyệt qua tất cả khả năng cho
+  phần tử kề trước phần tử cuối (hoặc không có phần tử nào trước), do đó bao phủ đầy đủ.
+
+Tối ưu bằng Fenwick tree (BIT) + nén tọa độ (coordinate compression):
+- Nếu tính dp[i] bằng cách duyệt mọi j < i thì độ phức tạp O(n^2), quá chậm với n = 2*10^5.
+- Ta nên tính nhanh "tổng dp[j] với a[j] < a[i]" bằng prefix sum theo giá trị.
+- Vì a[i] tới 10^9 nên phải nén tọa độ: sắp xếp các giá trị phân biệt, gán rank.
+- Duyệt mảng từ trái sang phải. Với mỗi phần tử giá trị v có rank r:
+    dp = 1 + query(r-1)   (tổng dp của các giá trị có rank < r đã xử lý trước đó -> a[j] < a[i])
+    cộng dp vào total
+    update(r, dp)         (cộng dp vào BIT tại vị trí rank r)
+  Vì ta duyệt theo thứ tự i tăng dần, BIT chỉ chứa các j < i, đảm bảo điều kiện j < i.
+  Truy vấn prefix đến r-1 (không bao gồm r) đảm bảo điều kiện tăng NGẶT a[j] < a[i].
+
+Độ phức tạp:
+- Thời gian: O(n log n) cho sort + n lần query/update trên Fenwick tree, mỗi lần O(log n).
+- Bộ nhớ: O(n).
+
+LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản) có thể chậm,
+giới hạn thời gian CSES (1s) hướng đến C++. Đã dùng sys.stdin fast I/O, biến cục bộ và vòng lặp
+BIT tối giản để giảm nguy cơ TLE, nhưng vẫn có thể vượt thời gian trên CPython.

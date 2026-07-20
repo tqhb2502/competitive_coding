@@ -1,0 +1,51 @@
+Bài toán: Factory Machines (CSES 1620)
+
+Đề bài:
+- Có n máy, máy thứ i cần k_i giây để làm ra 1 sản phẩm.
+- Tất cả các máy chạy song song. Cần tìm thời gian nhỏ nhất để làm ra tổng cộng t sản phẩm.
+
+Ý tưởng chính: binary search on the answer (chặt nhị phân trên đáp án).
+
+1. Nhận xét đơn điệu (monotonic):
+   - Gọi f(T) = tổng số sản phẩm tối đa mà tất cả các máy làm được trong T giây.
+   - Trong T giây, máy i làm được floor(T / k_i) sản phẩm.
+   - Vậy f(T) = sum_{i=1..n} (T // k_i).
+   - Khi T tăng thì f(T) không giảm (non-decreasing). Do đó tồn tại một
+     ngưỡng T nhỏ nhất sao cho f(T) >= t. Đây chính là đáp án.
+
+2. Vì tính đơn điệu này, ta dùng binary search để tìm T nhỏ nhất thỏa mãn
+   f(T) >= t.
+   - Cận dưới lo = 1.
+   - Cận trên hi = min(k_i) * t: nếu chỉ dùng riêng máy nhanh nhất (k nhỏ nhất)
+     thì sau min(k_i) * t giây nó đã tự làm đủ t sản phẩm, nên đáp án chắc chắn
+     không vượt quá giá trị này. Đây là một cận trên hợp lệ.
+
+3. Với mỗi giá trị T ở giữa (mid), tính check = sum(mid // k_i). Nếu check >= t
+   thì T = mid là khả thi, thu nhỏ về bên trái (hi = mid); ngược lại lo = mid + 1.
+   Kết thúc khi lo == hi, đó là đáp án.
+
+Tính đúng (correctness):
+- f(T) đúng bằng số sản phẩm tối đa vì mỗi máy độc lập và chạy song song, máy i
+  đóng góp floor(T / k_i).
+- Do f đơn điệu không giảm, binary search tìm đúng ngưỡng nhỏ nhất T* với
+  f(T*) >= t, và không có giá trị nhỏ hơn thỏa mãn.
+
+Độ phức tạp:
+- Thời gian: O(n log(hi)) với hi = min(k) * t <= 10^9 * 10^9 = 10^18, nên
+  log2(hi) khoảng 60. Tổng cộng khoảng 60 * n phép tính, với n <= 2*10^5.
+- Bộ nhớ: O(n) để lưu danh sách k.
+
+CÁCH TĂNG TỐC (tránh TLE):
+- Với n = 2*10^5 và khoảng 60 vòng lặp binary search, nếu tính sum(mid // k_i)
+  bằng vòng for thuần trong Python thì cần khoảng 1.2*10^7 phép chia số nguyên
+  lớn mỗi lần chạy toàn mảng, và thực đo cho thấy khoảng 1.8 giây trên máy thử
+  nghiệm, vượt giới hạn 1.00 giây của CSES.
+- Do đó ta lưu mảng k dưới dạng numpy array kiểu int64 và tính tổng theo kiểu
+  vector hóa: (mid // k).sum(). Mỗi vòng lặp chỉ còn một phép chia vector và một
+  phép cộng dồn ở tầng C, nên toàn bộ chương trình chạy dưới 0.5 giây (thực đo
+  khoảng 0.26 - 0.50 giây kể cả thời gian khởi động numpy).
+- An toàn tràn số: vì k_i >= min(k) và mid <= hi = min(k) * t, nên mỗi số hạng
+  mid // k_i <= mid // min(k) <= t <= 10^9. Tổng tối đa là n * t = 2*10^14, vẫn
+  nằm gọn trong phạm vi int64 (khoảng 9.22*10^18), không bao giờ tràn.
+- CSES có sẵn numpy trong môi trường CPython3 (không có trong PyPy3), nên nộp bài
+  bằng CPython3.

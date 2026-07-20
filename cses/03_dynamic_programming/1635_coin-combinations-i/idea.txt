@@ -1,0 +1,42 @@
+Bài toán: đếm số cách CÓ THỨ TỰ (ordered, tức "compositions") để tạo ra tổng
+tiền đúng bằng x từ n loại đồng xu (mỗi loại dùng bao nhiêu lần cũng được).
+Ví dụ 2+3 và 3+2 được tính là HAI cách khác nhau. Kết quả lấy modulo 1000000007.
+
+DP state:
+  dp[s] = số cách có thứ tự để tạo ra tổng đúng bằng s.
+
+Base case:
+  dp[0] = 1  (đúng một cách: không dùng đồng xu nào).
+
+Transition:
+  dp[s] = tổng của dp[s - c] với mọi đồng xu c thỏa c <= s.
+  Ý tưởng: cố định đồng xu ĐỨNG CUỐI trong dãy là c. Phần đầu của dãy là một
+  cách có thứ tự tạo ra tổng (s - c), tức dp[s - c]. Vì ta duyệt qua MỌI c ở vị
+  trí cuối nên các hoán vị (permutation) được đếm tách biệt -> đúng với "thứ tự
+  quan trọng".
+
+Answer:
+  dp[x] mod 1000000007.
+
+Tính đúng đắn (correctness):
+  Mỗi dãy có thứ tự tạo tổng s (với s > 0) tương ứng DUY NHẤT với cặp (đồng cuối
+  c, dãy có thứ tự tạo tổng s - c). Do đó công thức truy hồi bao phủ đủ và không
+  trùng lặp mọi dãy. Với s = 0 chỉ có dãy rỗng nên dp[0] = 1.
+
+Độ phức tạp:
+  Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tối đa ~10^8
+  phép cộng cơ bản.
+
+Tối ưu bằng numpy (block / vectorization):
+  Đặt block size B = min(coins). Xét block các tổng s trong đoạn [L, L + B).
+  Với mọi đồng xu c ta có c >= B, nên chỉ số nguồn s - c <= (L + B - 1) - B =
+  L - 1 < L, tức mọi dp[s - c] cần dùng đều nằm ở phần ĐÃ tính xong (trước block
+  hiện tại). Nhờ vậy cả block được cộng dồn bằng phép cộng vector của numpy trên
+  các slice, giảm số vòng lặp mức Python xuống còn (x / B) * n. Cộng dồn trong
+  int64 (mỗi hạng < MOD, tối đa n = 100 hạng nên < 100 * 10^9 < 9.2 * 10^18, an
+  toàn) rồi mới lấy % MOD cho từng block.
+
+LƯU Ý TLE: khi đồng xu nhỏ nhất bằng 1 thì B = 1, block co lại còn kích thước 1
+và thuật toán suy biến về ~n * x = 10^8 thao tác với overhead numpy trên mỗi
+block -> có nguy cơ TLE trên CSES với CPython (giới hạn 1.0s vốn nhắm cho C++).
+Trường hợp xấu nhất này nên dùng PyPy hoặc C++ để chắc chắn AC.

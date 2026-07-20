@@ -1,0 +1,45 @@
+Bài toán: Rectangle Cutting (CSES 1744)
+Cho hình chữ nhật a × b, mỗi bước chọn một hình chữ nhật và cắt nó thành hai
+hình chữ nhật (mọi cạnh vẫn là số nguyên). Tìm số bước tối thiểu để cắt toàn bộ
+thành các hình vuông.
+
+1) DP state
+   dp[i][j] = số lần cắt tối thiểu để chia một hình chữ nhật i × j thành các
+   hình vuông. Vì thứ tự cắt các phần độc lập không ảnh hưởng tổng số cắt, ta
+   chỉ cần biết kích thước hiện tại của hình chữ nhật.
+
+2) Base case
+   dp[i][i] = 0, vì hình vuông không cần cắt thêm.
+
+3) Transition
+   Với i ≠ j, lần cắt đầu tiên của hình i × j hoặc là cắt ngang (horizontal)
+   hoặc là cắt dọc (vertical):
+   - Cắt dọc theo cạnh dài j thành i×k và i×(j-k):
+       dp[i][j] = min over 1<=k<j của ( dp[i][k] + dp[i][j-k] ) + 1
+   - Cắt ngang theo cạnh dài i thành k×j và (i-k)×j:
+       dp[i][j] = min over 1<=k<i của ( dp[k][j] + dp[i-k][j] ) + 1
+   dp[i][j] là min của hai nhóm trên. Cộng thêm 1 vì đây chính là lần cắt đầu,
+   hai phần con được giải tối ưu độc lập.
+
+4) Answer
+   Đáp án là dp[a][b]. Trường hợp a == b in ngay 0.
+
+5) Tính đúng đắn
+   Bất kỳ cách cắt tối ưu nào cũng có một lần cắt đầu tiên trên toàn bộ hình,
+   chia nó thành đúng hai hình chữ nhật con qua một đường thẳng (ngang hoặc dọc)
+   với vị trí nguyên k. Ta thử mọi hướng và mọi vị trí k, mỗi phần con lại được
+   tính tối ưu qua dp của các kích thước nhỏ hơn (giá trị chỉ số nhỏ hơn), nên
+   DP bao phủ toàn bộ không gian phương án và cho kết quả tối ưu. Thứ tự điền:
+   duyệt i tăng dần, trong mỗi i duyệt j tăng dần; các phụ thuộc đều tới ô có
+   chỉ số nhỏ hơn nên luôn sẵn sàng.
+
+6) Độ phức tạp
+   Với N = max(a, b) <= 500: thời gian O(N^3) (mỗi ô O(N) chuyển tiếp), bộ nhớ
+   O(N^2). Tận dụng đối xứng dp[i][j] = dp[j][i] để chỉ tính nửa tam giác trên
+   và soi gương, giảm một nửa công việc. Chiều vertical được vectorize bằng
+   numpy trên cả hàng, chiều horizontal tính theo từng ô bằng numpy.
+
+LƯU Ý TLE: O(N^3) ≈ 1.25e8 phép tính; time limit CSES nhắm C++ nên pure Python
+gần như chắc chắn TLE ở test lớn (a, b ~ 500). Lời giải ưu tiên dùng numpy để
+đạt ~1 giây; nếu môi trường chấm không có numpy, code tự chuyển sang pure Python
+(đúng nhưng chậm, dễ TLE ở test tối đa).

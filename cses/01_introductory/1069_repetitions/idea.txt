@@ -1,0 +1,25 @@
+Bài toán: Repetitions (CSES 1069)
+
+Đề bài:
+- Cho một chuỗi DNA gồm các ký tự A, C, G, T (độ dài n, 1 <= n <= 10^6).
+- Tìm độ dài của đoạn lặp dài nhất: là substring dài nhất chỉ gồm một loại ký tự (các ký tự giống nhau liên tiếp).
+
+Ý tưởng:
+- Duyệt chuỗi một lần từ trái sang phải.
+- Duy trì biến "cur" = độ dài dãy các ký tự giống nhau liên tiếp hiện tại.
+- Nếu ký tự hiện tại giống ký tự trước đó thì cur += 1, ngược lại reset cur = 1.
+- Cập nhật đáp án "best" = max(best, cur) sau mỗi bước.
+
+Tính đúng đắn:
+- Mỗi đoạn các ký tự giống nhau liên tiếp sẽ được đếm chính xác bởi biến cur (tăng dần khi còn giống, reset khi đổi ký tự).
+- Vì ta lấy max qua tất cả các vị trí, best chính là độ dài đoạn lặp dài nhất.
+
+Độ phức tạp:
+- Thời gian: O(n) - duyệt chuỗi một lần.
+- Bộ nhớ: O(n) để lưu chuỗi đầu vào (hoặc O(1) ngoài chuỗi).
+
+Ghi chú cài đặt:
+- Đọc dữ liệu bằng sys.stdin.buffer để nhanh với n đến 10^6.
+- Chuỗi có thể có ký tự xuống dòng ở cuối, cần strip.
+
+LƯU Ý TLE: Với n = 10^6, vòng lặp trên từng ký tự trong Python có thể chậm nhưng vẫn an toàn trong giới hạn thời gian CSES vì chỉ O(n). Để tối ưu hơn, có thể dùng kỹ thuật itertools.groupby để đếm các đoạn liên tiếp bằng code C bên trong, tránh vòng lặp Python thuần túy. Nếu port sang C++ thì vòng lặp for đơn giản chạy rất nhanh, không lo TLE.

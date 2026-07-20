@@ -1,0 +1,45 @@
+Bài toán: Nested Ranges Check (CSES 2168)
+
+ĐỀ BÀI
+Cho n đoạn [x, y]. Với mỗi đoạn, ta cần trả lời hai câu hỏi:
+  (1) Đoạn này có CHỨA một đoạn khác nào đó hay không?
+  (2) Đoạn này có BỊ CHỨA bởi một đoạn khác nào đó hay không?
+Đoạn [a, b] chứa đoạn [c, d] khi và chỉ khi a <= c và d <= b.
+In ra hai dòng: dòng 1 gồm n giá trị 0/1 cho câu hỏi (1) theo thứ tự nhập,
+dòng 2 gồm n giá trị 0/1 cho câu hỏi (2) theo thứ tự nhập.
+
+Ý TƯỞNG CHÍNH (sorting + quét một lượt)
+
+A) Kiểm tra "bị chứa" (contained):
+   Đoạn i bị chứa nếu tồn tại j != i với x_j <= x_i và y_j >= y_i.
+   Ta sort các đoạn theo x tăng dần, nếu bằng x thì theo y giảm dần.
+   Duyệt lần lượt và giữ biến max_y = y lớn nhất trong các đoạn đã xét trước đó.
+   Khi tới đoạn i, mọi đoạn đã xét đều có x_j <= x_i. Nếu y_i <= max_y thì
+   chắc chắn có một đoạn trước đó bao trọn đoạn i (x_j <= x_i và y_j >= y_i),
+   nên đánh dấu contained[i] = 1. Ngược lại cập nhật max_y = y_i.
+   Lý do sort y giảm dần khi x bằng nhau: đoạn có y lớn hơn được xét trước,
+   nhờ đó đoạn có y nhỏ hơn (cùng x) sẽ bị bắt đúng là bị chứa.
+
+B) Kiểm tra "chứa đoạn khác" (contains):
+   Đoạn i chứa đoạn khác nếu tồn tại j != i với x_j >= x_i và y_j <= y_i.
+   Ta sort theo x giảm dần, nếu bằng x thì theo y tăng dần.
+   Duyệt và giữ biến min_y = y nhỏ nhất trong các đoạn đã xét trước đó.
+   Khi tới đoạn i, mọi đoạn đã xét đều có x_j >= x_i. Nếu y_i >= min_y thì
+   có một đoạn trước đó nằm gọn trong đoạn i, nên contains[i] = 1.
+   Ngược lại cập nhật min_y = y_i.
+
+TÍNH ĐÚNG ĐẮN
+Vì đề bảo đảm không có hai đoạn trùng nhau, nên trường hợp x bằng và y bằng
+không xảy ra. Cách sort phụ (y giảm/tăng khi x bằng) bảo đảm khi ta so sánh
+y_i với max_y/min_y thì giá trị đó luôn đến từ một đoạn KHÁC và thực sự bao/bị
+bao đúng theo định nghĩa. Do đó hai lượt quét cho kết quả chính xác cho mọi đoạn.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n log n) do hai lần sort; hai lượt quét là O(n).
+- Bộ nhớ: O(n) để lưu các đoạn và mảng kết quả.
+
+LƯU Ý TLE: với n <= 2*10^5 lời giải Python này (dùng sys.stdin.buffer đọc nhanh,
+sort trên tuple thay vì lambda, join khi in) thường đủ nhanh trên CSES, nhưng
+do time limit hướng tới C++ nên vẫn có rủi ro TLE nhẹ. Bản C++ tương đương sẽ
+tránh được nhờ I/O nhanh (scanf/printf) và sort std::sort trên struct, chạy
+nhanh hơn nhiều lần so với Python.

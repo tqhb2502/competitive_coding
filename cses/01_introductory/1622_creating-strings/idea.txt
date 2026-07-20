@@ -1,0 +1,32 @@
+Bài toán: Creating Strings (CSES 1622)
+
+ĐỀ BÀI
+Cho một xâu ký tự (chỉ gồm chữ cái a-z, độ dài n với 1 <= n <= 8).
+Hãy sinh ra tất cả các hoán vị KHÁC NHAU của các ký tự trong xâu.
+In ra:
+  - Dòng đầu: số lượng k xâu phân biệt.
+  - k dòng tiếp theo: các xâu phân biệt, sắp xếp theo thứ tự từ điển (alphabetical).
+
+Ý TƯỞNG
+1. Vì n rất nhỏ (tối đa 8), số hoán vị tối đa là 8! = 40320. Ta có thể
+   sinh toàn bộ hoán vị mà không lo về hiệu năng.
+2. Trước tiên sắp xếp các ký tự của xâu. Dùng itertools.permutations để
+   sinh mọi hoán vị. Vì có ký tự trùng nhau nên sẽ có hoán vị trùng lặp.
+3. Dùng một set để loại bỏ trùng lặp, sau đó sắp xếp lại theo thứ tự từ điển.
+   (Có thể sinh từ xâu đã sort để permutations ra gần đúng thứ tự, nhưng
+    vẫn sort lại lần cuối cho chắc chắn.)
+4. In ra số lượng và từng xâu, mỗi xâu một dòng.
+
+TÍNH ĐÚNG ĐẮN
+- itertools.permutations duyệt qua tất cả cách sắp xếp các VỊ TRÍ, nên chắc
+  chắn bao phủ mọi hoán vị có thể của các ký tự.
+- set đảm bảo mỗi xâu chỉ xuất hiện đúng một lần (loại trùng do ký tự lặp).
+- sorted() đảm bảo thứ tự từ điển như đề yêu cầu.
+- Số lượng k chính là len của tập phân biệt.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n! * n) để sinh và ghép các hoán vị, cộng O(k log k * n) để
+  sắp xếp. Với n <= 8 thì rất nhỏ, chạy tức thời.
+- Bộ nhớ: O(k * n) để lưu tập các xâu phân biệt (tối đa ~40320 xâu độ dài 8).
+
+Không có rủi ro TLE vì không gian trạng thái bị chặn bởi 8! = 40320.

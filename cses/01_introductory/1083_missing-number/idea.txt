@@ -1,0 +1,22 @@
+Bài toán: Missing Number (CSES 1083)
+
+Đề bài:
+- Cho số nguyên n. Dòng thứ hai chứa n-1 số phân biệt, mỗi số nằm trong đoạn [1, n].
+- Tìm số duy nhất bị thiếu trong dãy 1, 2, ..., n.
+
+Ý tưởng:
+- Tổng của tất cả các số từ 1 đến n là S = n * (n + 1) / 2.
+- Giả sử tổng của n-1 số đã cho là T.
+- Số bị thiếu chính là S - T.
+
+Tại sao đúng:
+- Nếu không thiếu số nào thì tổng dãy đầy đủ bằng S.
+- Vì dãy chỉ thiếu đúng 1 số và các số còn lại phân biệt, nên tổng còn lại T = S - (số bị thiếu).
+- Suy ra số bị thiếu = S - T.
+
+Độ phức tạp:
+- Thời gian: O(n) để đọc và cộng dồn các số.
+- Bộ nhớ: O(1) ngoài phần đọc input (chỉ lưu tổng).
+- Python hỗ trợ số nguyên lớn nên không lo tràn số với n <= 2*10^5.
+
+LƯU Ý TLE: Không có rủi ro TLE. n <= 2*10^5, thuật toán O(n) với fast I/O (sys.stdin.buffer) chạy rất nhanh trong Python. Nếu cần tối ưu thêm, bản C++ cũng dùng công thức S - T với kiểu long long để tránh tràn số.

@@ -1,0 +1,22 @@
+Bài toán: Distinct Numbers (CSES 1621)
+
+Đề bài:
+- Cho một danh sách gồm n số nguyên, hãy đếm xem có bao nhiêu giá trị phân biệt (distinct) trong danh sách đó.
+- Ràng buộc: 1 <= n <= 2*10^5, 1 <= x_i <= 10^9.
+
+Ý tưởng chính:
+- Số lượng giá trị phân biệt chính là kích thước của tập hợp (set) các phần tử.
+- Ta đọc toàn bộ n số, đưa tất cả vào một set (bảng băm/hash set). Set tự động loại bỏ các phần tử trùng lặp, nên số lượng phần tử còn lại trong set chính là đáp án.
+- Cách khác tương đương: sort mảng rồi đếm số vị trí mà giá trị khác với phần tử liền trước (đây là lý do bài nằm trong chuyên đề Sorting and Searching). Tuy nhiên dùng set đơn giản và đủ nhanh.
+
+Vì sao đúng:
+- Theo định nghĩa, set không chứa phần tử trùng lặp. Do đó len(set(a)) đúng bằng số giá trị phân biệt trong danh sách gốc.
+
+Độ phức tạp:
+- Thời gian: O(n) trung bình khi dùng hash set (hoặc O(n log n) nếu dùng cách sort). Với n <= 2*10^5, cả hai đều rất nhanh.
+- Bộ nhớ: O(n) để lưu các phần tử.
+
+Chi tiết cài đặt để tránh chậm:
+- Đọc toàn bộ input một lần bằng sys.stdin.buffer.read() rồi split() để tách thành các token (dạng chuỗi byte), tránh chi phí đọc từng dòng.
+- Không cần chuyển các token sang kiểu int: ta đếm trực tiếp số token chuỗi byte phân biệt bằng len(set(...)). Điều này vẫn đúng vì mỗi số nguyên trong ràng buộc (1 <= x_i <= 10^9, không có số 0 ở đầu, không dấu) có duy nhất một biểu diễn chuỗi thập phân, nên hai số bằng nhau khi và chỉ khi hai chuỗi bằng nhau. Bỏ qua bước ép kiểu int giúp chạy nhanh hơn.
+- Chỉ cần bỏ qua token đầu tiên (n) và đếm số phần tử phân biệt của đúng n token tiếp theo (data[1:1+n]); thực tế có thể tạo set từ toàn bộ token số (vì n cũng là một số) nhưng để chính xác ta chỉ lấy đúng n số sau đó.

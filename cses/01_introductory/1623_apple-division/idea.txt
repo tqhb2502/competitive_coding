@@ -1,0 +1,42 @@
+Bài toán: Apple Division (CSES 1623)
+
+Đề bài:
+- Có n quả táo (1 <= n <= 20), mỗi quả có trọng lượng p_i (1 <= p_i <= 10^9).
+- Chia n quả táo thành 2 nhóm sao cho hiệu tổng trọng lượng giữa 2 nhóm là nhỏ nhất.
+- In ra hiệu nhỏ nhất đó.
+
+Ý tưởng:
+- Gọi total = tổng trọng lượng tất cả quả táo.
+- Nếu chọn 1 nhóm là tập con S (nhóm còn lại là phần bù), thì hiệu 2 nhóm là:
+      |(total - sum(S)) - sum(S)| = |total - 2*sum(S)|.
+- Ta cần tìm tập con S sao cho giá trị |total - 2*sum(S)| nhỏ nhất.
+
+Cách làm (Meet in the middle - chia đôi để duyệt):
+- n tối đa 20, nếu duyệt toàn bộ 2^20 tập con thì khoảng 1 triệu trường hợp
+  (chạy được nhưng trong Python có thể chậm).
+- Ta chia mảng trọng lượng thành 2 nửa L (nửa đầu) và R (nửa sau),
+  mỗi nửa có tối đa 10 phần tử.
+- Sinh tất cả tổng tập con của L (mảng A, tối đa 2^10 = 1024 giá trị)
+  và tất cả tổng tập con của R (mảng B, tối đa 1024 giá trị).
+- Mỗi tập con của toàn bộ = (một tập con của L) + (một tập con của R),
+  nên sum(S) = a + b với a thuộc A, b thuộc B.
+- Ta muốn |total - 2*(a+b)| nhỏ nhất.
+  Với mỗi a cố định, đặt key = total - 2*a, ta cần chọn b sao cho 2*b gần key nhất,
+  tức là b gần key/2 nhất.
+- Sắp xếp B tăng dần, dùng tìm kiếm nhị phân (bisect) để tìm vị trí gần key/2,
+  chỉ cần kiểm tra 2 ứng viên liền kề (vị trí trước và sau) là đủ.
+
+Tính đúng đắn:
+- Mỗi cách chia 2 nhóm đều tương ứng với một tập con S (nhóm 1) và phần bù (nhóm 2),
+  và mỗi tập con S đều được biểu diễn qua (a, b) với a subset-sum của L, b subset-sum của R.
+  Vì vậy ta duyệt hết mọi cách chia. Với mỗi a, việc chọn b gần key/2 nhất cho kết quả
+  tối ưu cho a đó; lấy min trên tất cả a => đáp án toàn cục.
+
+Độ phức tạp:
+- Sinh tổng tập con: O(2^(n/2)) = O(2^10) = ~1024 cho mỗi nửa.
+- Sắp xếp B: O(2^(n/2) * log). Duyệt A với bisect: O(2^(n/2) * log(2^(n/2))).
+- Tổng: khoảng O(2^(n/2) * n) ~ vài chục nghìn phép tính => rất nhanh.
+- Bộ nhớ: O(2^(n/2)) cho 2 mảng A, B.
+
+Kết luận: Meet in the middle giúp giải chắc chắn trong giới hạn thời gian,
+không lo TLE kể cả với Python.

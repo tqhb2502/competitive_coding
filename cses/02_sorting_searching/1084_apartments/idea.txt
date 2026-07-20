@@ -1,0 +1,36 @@
+Bài toán: Apartments (CSES 1084)
+
+Tóm tắt đề bài:
+- Có n ứng viên và m căn hộ. Mỗi ứng viên có kích thước mong muốn a_i và sẽ
+  chấp nhận bất kỳ căn hộ nào có kích thước trong đoạn [a_i - k, a_i + k].
+- Mỗi căn hộ có kích thước b_j. Một ứng viên chỉ nhận tối đa một căn hộ, và
+  một căn hộ chỉ được cấp cho tối đa một ứng viên.
+- Cần tìm số lượng ứng viên tối đa được nhận căn hộ (số cặp ghép được nhiều nhất).
+
+Ý tưởng: greedy + two-pointer
+- Sắp xếp (sort) mảng a (ứng viên) tăng dần và mảng b (căn hộ) tăng dần.
+- Dùng hai con trỏ i (duyệt ứng viên) và j (duyệt căn hộ).
+  Xét căn hộ b[j] cho ứng viên hiện tại a[i]:
+    * Nếu b[j] < a[i] - k: căn hộ này quá nhỏ so với ứng viên hiện tại (và với
+      mọi ứng viên còn lại vì a đã sort tăng dần), nên bỏ căn hộ này -> j += 1.
+    * Nếu b[j] > a[i] + k: căn hộ này quá lớn so với ứng viên hiện tại, ứng viên
+      này không thể nhận được căn hộ nào nữa (các căn hộ sau còn lớn hơn) -> i += 1.
+    * Ngược lại (a[i]-k <= b[j] <= a[i]+k): ghép được một cặp, tăng đếm và
+      chuyển cả hai con trỏ: i += 1, j += 1.
+
+Vì sao đúng (tính đúng đắn của greedy):
+- Sau khi sort, ta luôn cố gắng cấp cho ứng viên nhỏ nhất (chưa được ghép) căn hộ
+  vừa vặn nhỏ nhất mà nó chấp nhận. Đây là lựa chọn tham lam tối ưu: dùng căn hộ
+  nhỏ nhất có thể để phục vụ ứng viên nhỏ nhất giúp "để dành" các căn hộ lớn hơn
+  cho các ứng viên lớn hơn phía sau.
+- Nếu b[j] < a[i]-k thì b[j] cũng nhỏ hơn ngưỡng của mọi ứng viên còn lại (vì
+  a tăng dần), nên b[j] vô dụng, loại bỏ an toàn.
+- Nếu b[j] > a[i]+k thì không căn hộ nào (đều >= b[j]) phục vụ được a[i], nên
+  ứng viên a[i] chắc chắn không được ghép, bỏ qua an toàn.
+- Bằng lập luận exchange argument, không có phương án ghép nào cho kết quả tốt hơn.
+
+Độ phức tạp:
+- Thời gian: O(n log n + m log m) do sort; phần two-pointer chạy O(n + m).
+- Bộ nhớ: O(n + m) để lưu hai mảng.
+
+Với n, m <= 2·10^5, thuật toán rất nhẹ nên chạy tốt trong Python với fast I/O.

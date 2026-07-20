@@ -1,0 +1,45 @@
+Bài toán: Sum of Four Values (CSES 1642)
+Cho mảng a gồm n phần tử và số x. Tìm 4 vị trí phân biệt sao cho tổng
+bốn giá trị tại các vị trí đó bằng x. In ra 4 vị trí (đánh số từ 1), nếu
+không tồn tại thì in "IMPOSSIBLE".
+
+Ràng buộc: 1 <= n <= 1000, 1 <= x, a_i <= 10^9.
+
+Ý TƯỞNG CHÍNH (hashmap các tổng cặp - pair sums):
+- Vì n <= 1000 nên số cặp (i, j) chỉ khoảng n^2/2 = 5*10^5, do đó thuật
+  toán O(n^2) là hợp lý.
+- Ta muốn tìm 4 chỉ số phân biệt. Sắp xếp chúng lại thành p1 < p2 < p3 < p4,
+  và chia thành hai cặp: cặp "thấp" (p1, p2) và cặp "cao" (p3, p4), với điều
+  kiện p2 < p3. Nghĩa là cặp thấp có chỉ số lớn hơn (p2) nhỏ hơn chỉ số bé
+  hơn của cặp cao (p3).
+- Duyệt i từ 0 đến n-1. Với mỗi i:
+    1. TÌM: coi i là chỉ số nhỏ của cặp cao. Với mọi j > i, tính
+       need = x - a[i] - a[j]. Nếu need đã có trong hashmap "seen" (lưu
+       một cặp (k, l) có tổng bằng need), thì (k, l, i, j) là đáp án.
+    2. THÊM: sau khi tìm xong cho i, thêm mọi cặp (k, i) với k < i vào
+       hashmap: seen[a[k] + a[i]] = (k, i) (chỉ lưu lần đầu cho mỗi tổng).
+- Vì bước THÊM diễn ra SAU bước TÌM, tại thời điểm tìm với chỉ số i, hashmap
+  chỉ chứa các cặp (k, l) mà cả hai chỉ số đều < i (vì chúng được thêm ở các
+  vòng lặp trước, cặp có chỉ số lớn = l < i). Kết hợp với j > i, ta có
+  k < l < i < j, đảm bảo bốn chỉ số PHÂN BIỆT.
+
+TÍNH ĐÚNG ĐẮN:
+- Mọi bộ 4 chỉ số phân biệt đều có thể sắp xếp thành p1<p2<p3<p4 và tách
+  thành cặp thấp (p1,p2), cặp cao (p3,p4) với p2 < p3. Khi vòng lặp chạy tới
+  i = p3, j = p4, giá trị need = x - a[p3] - a[p4] = a[p1] + a[p2] chắc chắn
+  đã nằm trong hashmap (được thêm ở vòng i = p2 < p3). Dù hashmap có thể lưu
+  một cặp khác (k', l') cùng tổng thay vì đúng (p1, p2), cặp đó vẫn có cả hai
+  chỉ số < i nên vẫn phân biệt với i, j -> đáp án hợp lệ.
+- Do đó nếu có nghiệm thuật toán chắc chắn tìm được; nếu duyệt hết mà không
+  thấy thì thực sự không tồn tại -> in IMPOSSIBLE.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n^2) cho cả hai bước tìm và thêm (mỗi cặp xử lý O(1) trung
+  bình với hashmap).
+- Bộ nhớ: O(n^2) trong trường hợp xấu để lưu các tổng cặp trong hashmap.
+
+LƯU Ý TLE: với n = 1000, số phép toán khoảng 10^6 thao tác trên dict; trong
+Python thuần điều này có thể chạm giới hạn thời gian 1.00s của CSES (rủi ro
+biên). Bản C++ dùng std::unordered_map hoặc sort + two-pointer sẽ nhanh hơn
+nhiều lần và vượt qua thoải mái; ngoài ra trong C++ có thể lưu chỉ số cặp
+gọn trong mảng và tránh chi phí băm của Python.

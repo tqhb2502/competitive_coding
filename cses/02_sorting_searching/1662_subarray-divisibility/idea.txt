@@ -1,0 +1,39 @@
+Bài toán: Đếm số subarray có tổng chia hết cho n.
+
+Ý tưởng chính (prefix sum + modulo):
+- Gọi P[i] là prefix sum của i phần tử đầu tiên (P[0] = 0).
+- Tổng của subarray từ l+1 đến r bằng P[r] - P[l].
+- Subarray này chia hết cho n khi và chỉ khi (P[r] - P[l]) % n == 0,
+  tức là P[r] % n == P[l] % n (hai prefix có cùng số dư khi chia cho n).
+
+Vậy bài toán quy về: với mỗi cặp chỉ số (l, r), l < r, mà P[l] và P[r]
+có cùng residue modulo n thì tạo thành một subarray hợp lệ.
+
+Thuật toán:
+- Duyệt từng phần tử, cộng dồn prefix sum, lấy residue r = prefix % n.
+  (Vì a_i có thể âm nên prefix có thể âm, nhưng toán tử % của Python luôn
+   trả về kết quả không âm khi số chia dương, nên r luôn nằm trong [0, n-1]
+   mà không cần điều chỉnh thêm.)
+- Dùng một mảng đếm cnt[0..n-1], khởi tạo cnt[0] = 1 tương ứng prefix rỗng P[0] = 0.
+- Với mỗi prefix mới có residue r: số subarray kết thúc tại vị trí đó và hợp lệ
+  chính là cnt[r] (số prefix trước đó cùng residue). Cộng cnt[r] vào đáp án
+  rồi tăng cnt[r] lên 1.
+
+Tại sao đúng:
+- Mỗi subarray hợp lệ tương ứng đúng một cặp (l, r) với P[l] % n == P[r] % n.
+  Cách đếm tích lũy ở trên đảm bảo mỗi cặp được đếm đúng một lần (khi gặp r
+  ta cộng số l < r đã có cùng residue). Tương đương công thức tổng
+  sum of C(cnt[r], 2) trên mọi residue.
+
+Lưu ý về kiểu dữ liệu:
+- Tổng có thể rất lớn nhưng Python dùng số nguyên vô hạn nên không tràn.
+- Đáp án có thể lên tới ~ C(2e5, 2) ≈ 2e10, vượt 32-bit, nhưng Python xử lý được.
+
+Độ phức tạp:
+- Thời gian: O(n) để duyệt mảng.
+- Bộ nhớ: O(n) cho mảng cnt.
+
+LƯU Ý TLE: Với n = 2e5, O(n) cùng fast I/O (sys.stdin.buffer + split) là rất
+an toàn trong Python, gần như không có rủi ro TLE. Nếu cần cực nhanh, bản C++
+đọc bằng scanf/getchar và dùng mảng long long cnt sẽ nhanh hơn nữa nhưng
+không cần thiết cho bài này.

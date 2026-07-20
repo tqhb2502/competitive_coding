@@ -1,0 +1,42 @@
+Bài toán: Book Shop (CSES 1158)
+
+Đây chính là bài 0/1 knapsack (bài toán cái túi) kinh điển.
+- Có n cuốn sách, mỗi cuốn i có giá price[i] và số trang pages[i].
+- Ngân sách tối đa là x. Mỗi cuốn chỉ được mua nhiều nhất một lần.
+- Cần tối đa hóa tổng số trang mua được sao cho tổng giá không vượt quá x.
+
+DP state:
+- dp[j] = số trang lớn nhất có thể đạt được khi tổng giá tiền không vượt quá j
+  (với j chạy từ 0 đến x).
+
+Base case:
+- dp[j] = 0 với mọi j (chưa xét cuốn sách nào thì số trang bằng 0).
+
+Transition (xét lần lượt từng cuốn sách i với giá p = price[i], số trang v = pages[i]):
+- Với mỗi j: dp[j] = max(dp[j], dp[j - p] + v) khi j >= p.
+- Vì đây là 0/1 knapsack (mỗi cuốn dùng tối đa 1 lần) nên khi cập nhật bằng mảng 1
+  chiều ta phải duyệt j GIẢM DẦN (từ x xuống p) để dp[j - p] vẫn là giá trị của
+  "trước khi xét cuốn i", tránh việc dùng lại cùng một cuốn nhiều lần.
+- Cách vectorize tương đương (dùng numpy): dp[p:] = maximum(dp[p:], dp[:x+1-p] + v).
+  Ở đây dp[:x+1-p] đọc toàn bộ giá trị cũ của dp nên không có xung đột thứ tự, kết
+  quả giống hệt vòng lặp duyệt ngược.
+
+Answer:
+- dp[x] là số trang lớn nhất mua được với ngân sách x.
+- (Mảng dp không giảm theo j nên dp[x] cũng bằng max(dp)).
+
+Vì sao đúng:
+- Đây là công thức chuẩn của 0/1 knapsack: mỗi trạng thái j xét hai lựa chọn "không
+  mua cuốn i" (giữ dp[j]) hoặc "mua cuốn i" (dp[j - p] + v). Duyệt j giảm dần đảm bảo
+  mỗi cuốn chỉ được tính đúng một lần. Sau khi xét hết n cuốn, dp[x] là tối ưu.
+
+Độ phức tạp:
+- Thời gian: O(n * x) = 1000 * 100000 = 1e8 phép cập nhật.
+- Bộ nhớ: O(x).
+
+Solution dùng numpy để vectorize phần cập nhật (nhanh, chạy ở tầng C), và có nhánh
+dự phòng bằng Python thuần nếu môi trường không có numpy.
+
+LƯU Ý TLE: Với Python thuần (không numpy), vòng lặp O(n * x) = 1e8 rất dễ TLE trên
+CSES (giới hạn thời gian nhắm cho C++). Bản numpy vectorized chạy nhanh hơn nhiều lần;
+nếu CSES không có numpy hoặc vẫn TLE thì nên nộp bằng PyPy3 hoặc viết lại bằng C++.

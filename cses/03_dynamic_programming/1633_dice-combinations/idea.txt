@@ -1,0 +1,24 @@
+Bài toán: Đếm số cách tạo ra tổng n bằng cách tung một con xúc xắc (mỗi lần ra giá trị từ 1 đến 6) một hoặc nhiều lần. Thứ tự các lần tung được coi là khác nhau. Kết quả lấy modulo 10^9+7.
+
+DP state:
+- dp[i] = số cách tạo ra tổng đúng bằng i.
+
+Base case:
+- dp[0] = 1 (có đúng một cách để tạo tổng 0: không tung lần nào — đây là điểm neo cho công thức truy hồi).
+
+Transition (công thức truy hồi):
+- Lần tung cuối cùng ra giá trị j với j thuộc {1, 2, 3, 4, 5, 6}. Trước lần tung đó ta phải đã tạo được tổng i - j.
+- Do đó dp[i] = tổng của dp[i - j] với j từ 1 đến 6, chỉ cộng khi i - j >= 0.
+- Tất cả phép cộng đều lấy modulo MOD = 10^9+7.
+
+Answer (đáp án):
+- dp[n].
+
+Tại sao đúng:
+- Mỗi dãy các lần tung (một composition của n với các phần tử trong khoảng 1..6) được đếm đúng một lần, vì ta phân loại theo giá trị của lần tung CUỐI CÙNG. Với mỗi giá trị j cố định của lần cuối, số dãy còn lại tương ứng đúng bằng số cách tạo tổng i - j, tức dp[i - j]. Các trường hợp j khác nhau cho các dãy khác nhau (khác nhau ở phần tử cuối) nên không đếm trùng và không bỏ sót. Vì thứ tự có ý nghĩa nên đây là bài đếm composition, khớp hoàn toàn với cách phân loại theo phần tử cuối.
+
+Time / Space complexity:
+- Time: O(6 * n) = O(n), với n <= 10^6.
+- Space: O(n) cho mảng dp.
+
+LƯU Ý TLE: n có thể tới 10^6 nên vòng lặp cộng 6 số hạng mỗi bước (6*n phép cộng) có thể chậm trong pure Python. Trong solution.py ta tối ưu bằng sliding window: giữ biến window = dp[i-1]+...+dp[i-6], mỗi bước chỉ cộng dp[i-1], trừ dp[i-7] và lấy modulo một lần — chỉ còn O(1) thao tác/bước, tổng O(n). Đọc I/O bằng sys.stdin. Nếu vẫn TLE trên CSES, có thể nộp bằng PyPy.
