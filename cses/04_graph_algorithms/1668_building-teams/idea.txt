@@ -1,0 +1,33 @@
+Bài toán: Building Teams (CSES 1668)
+
+MÔ HÌNH ĐỒ THỊ
+- Mỗi học sinh là một đỉnh (n đỉnh), mỗi tình bạn là một cạnh vô hướng (m cạnh).
+- Yêu cầu chia học sinh thành 2 đội sao cho hai người bạn không cùng đội.
+- Đây chính là bài toán tô 2 màu (2-coloring) đồ thị: gán mỗi đỉnh màu 1 hoặc màu 2
+  sao cho mọi cạnh nối hai đỉnh khác màu. Điều này tồn tại khi và chỉ khi đồ thị là
+  BIPARTITE (đồ thị hai phía), tức là không chứa chu trình độ dài lẻ.
+
+THUẬT TOÁN
+- Xây dựng danh sách kề (adjacency list) dạng list-of-lists cho đồ thị vô hướng. Trong
+  CPython thuần, duyệt trực tiếp "for w in adj[u]" nhanh hơn cách CSR (range + index),
+  nên chọn cách này để có biên an toàn về thời gian.
+- Duyệt qua tất cả các thành phần liên thông. Với mỗi đỉnh chưa tô màu, dùng BFS
+  (collections.deque) để lan truyền màu: đỉnh gốc tô màu 1, các đỉnh kề tô màu ngược lại
+  (3 - màu hiện tại).
+- Trong lúc BFS, nếu gặp một đỉnh kề đã được tô CÙNG màu với đỉnh đang xét thì đồ thị
+  có chu trình lẻ, không thể chia đội -> in "IMPOSSIBLE".
+- Nếu tô màu thành công toàn bộ, in màu của từng đỉnh theo thứ tự 1..n trên một dòng,
+  cách nhau bởi dấu cách.
+
+TÍNH ĐÚNG ĐẮN
+- BFS/DFS 2-coloring là điều kiện cần và đủ để kiểm tra tính bipartite: nếu và chỉ nếu
+  không phát hiện xung đột màu trên bất kỳ cạnh nào thì tồn tại cách chia hợp lệ, và cách
+  tô màu tìm được chính là một lời giải hợp lệ (mọi cạnh nối hai màu khác nhau).
+- Ta dùng BFS lặp (iterative) nên không bị RecursionError khi n lớn (tới 1e5).
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh được duyệt một số lần hằng số.
+- Bộ nhớ: O(n + m) cho danh sách kề và mảng màu.
+
+LƯU Ý TLE: Với n <= 1e5 và m <= 2e5, thuật toán O(n+m) đọc/ghi I/O nhanh (sys.stdin.buffer)
+chạy an toàn trong giới hạn thời gian của CSES ngay cả với CPython thuần.

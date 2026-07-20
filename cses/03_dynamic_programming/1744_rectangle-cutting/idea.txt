@@ -1,45 +1,66 @@
 Bài toán: Rectangle Cutting (CSES 1744)
 Cho hình chữ nhật a × b, mỗi bước chọn một hình chữ nhật và cắt nó thành hai
 hình chữ nhật (mọi cạnh vẫn là số nguyên). Tìm số bước tối thiểu để cắt toàn bộ
-thành các hình vuông.
+thành các hình vuông. Ràng buộc: 1 ≤ a, b ≤ 500. Không có phép chia dư (modulo).
 
-1) DP state
+Định dạng vào/ra:
+- Vào: một dòng gồm hai số nguyên a và b.
+- Ra: một số nguyên duy nhất là số lần cắt tối thiểu.
+- Ví dụ: "3 5" -> "3".
+
+1) Trạng thái quy hoạch động
    dp[i][j] = số lần cắt tối thiểu để chia một hình chữ nhật i × j thành các
-   hình vuông. Vì thứ tự cắt các phần độc lập không ảnh hưởng tổng số cắt, ta
-   chỉ cần biết kích thước hiện tại của hình chữ nhật.
+   hình vuông. Vì thứ tự cắt các phần độc lập không ảnh hưởng tổng số lần cắt,
+   ta chỉ cần biết kích thước hiện tại của hình chữ nhật.
 
-2) Base case
+2) Trường hợp cơ sở
    dp[i][i] = 0, vì hình vuông không cần cắt thêm.
 
-3) Transition
-   Với i ≠ j, lần cắt đầu tiên của hình i × j hoặc là cắt ngang (horizontal)
-   hoặc là cắt dọc (vertical):
-   - Cắt dọc theo cạnh dài j thành i×k và i×(j-k):
-       dp[i][j] = min over 1<=k<j của ( dp[i][k] + dp[i][j-k] ) + 1
-   - Cắt ngang theo cạnh dài i thành k×j và (i-k)×j:
-       dp[i][j] = min over 1<=k<i của ( dp[k][j] + dp[i-k][j] ) + 1
+3) Công thức chuyển
+   Với i ≠ j, lần cắt đầu tiên của hình i × j hoặc cắt theo cạnh dài j, hoặc
+   cắt theo cạnh dài i:
+   - Cắt theo cạnh j (giữ i) thành i×k và i×(j-k):
+       dp[i][j] = min với 1<=k<j của ( dp[i][k] + dp[i][j-k] ) + 1
+   - Cắt theo cạnh i (giữ j) thành k×j và (i-k)×j:
+       dp[i][j] = min với 1<=k<i của ( dp[k][j] + dp[i-k][j] ) + 1
    dp[i][j] là min của hai nhóm trên. Cộng thêm 1 vì đây chính là lần cắt đầu,
    hai phần con được giải tối ưu độc lập.
 
-4) Answer
-   Đáp án là dp[a][b]. Trường hợp a == b in ngay 0.
+4) Đáp án
+   Đáp án là dp[a][b]. Trường hợp a == b thì in ngay 0.
 
 5) Tính đúng đắn
    Bất kỳ cách cắt tối ưu nào cũng có một lần cắt đầu tiên trên toàn bộ hình,
-   chia nó thành đúng hai hình chữ nhật con qua một đường thẳng (ngang hoặc dọc)
-   với vị trí nguyên k. Ta thử mọi hướng và mọi vị trí k, mỗi phần con lại được
-   tính tối ưu qua dp của các kích thước nhỏ hơn (giá trị chỉ số nhỏ hơn), nên
-   DP bao phủ toàn bộ không gian phương án và cho kết quả tối ưu. Thứ tự điền:
-   duyệt i tăng dần, trong mỗi i duyệt j tăng dần; các phụ thuộc đều tới ô có
-   chỉ số nhỏ hơn nên luôn sẵn sàng.
+   chia nó thành đúng hai hình chữ nhật con qua một đường thẳng (theo cạnh i
+   hoặc theo cạnh j) tại vị trí nguyên k. Ta thử mọi hướng và mọi vị trí k, mỗi
+   phần con lại được tính tối ưu qua dp của các kích thước nhỏ hơn, nên DP bao
+   phủ toàn bộ không gian phương án và cho kết quả tối ưu. Thứ tự điền: duyệt i
+   tăng dần, trong mỗi i duyệt j tăng dần; mọi phụ thuộc đều tới ô có chỉ số nhỏ
+   hơn nên luôn sẵn sàng.
 
-6) Độ phức tạp
+6) Cài đặt thuần thư viện chuẩn (không numpy, không thư viện bên thứ ba)
+   Dùng bảng dp dạng list các list (N+1) × (N+1) với N = max(a, b), khởi tạo 0
+   (đường chéo dp[i][i] = 0 có sẵn). Chỉ tính nửa tam giác trên (i < j) rồi soi
+   gương dp[j][i] = dp[i][j] để giảm một nửa công việc.
+
+   Mẹo tăng tốc trong CPython: nhờ tính đối xứng dp[k][j] = dp[j][k], CẢ HAI
+   hướng cắt đều viết được dưới dạng "row[k] + row[len-k]" trên một hàng:
+   - Cắt theo cạnh j dùng hàng row_i = dp[i]: min của row_i[k] + row_i[j-k],
+     k = 1..j//2.
+   - Cắt theo cạnh i dùng hàng row_j = dp[j]: min của row_j[k] + row_j[i-k],
+     k = 1..i//2 (các ô này đã được điền qua bước soi gương ở các i nhỏ hơn).
+   Mỗi phép min được gộp bằng min(map(operator.add, lát_cắt_trái, lát_cắt_phải))
+   để phần cộng và so sánh chạy trong C, nhanh hơn vòng lặp Python thuần. Đọc
+   vào bằng sys.stdin.buffer.read(), ghi ra bằng sys.stdout.write; các tên nóng
+   (min, map) được gán vào biến cục bộ.
+
+7) Độ phức tạp
    Với N = max(a, b) <= 500: thời gian O(N^3) (mỗi ô O(N) chuyển tiếp), bộ nhớ
-   O(N^2). Tận dụng đối xứng dp[i][j] = dp[j][i] để chỉ tính nửa tam giác trên
-   và soi gương, giảm một nửa công việc. Chiều vertical được vectorize bằng
-   numpy trên cả hàng, chiều horizontal tính theo từng ô bằng numpy.
+   O(N^2). Tận dụng đối xứng nên hằng số nhỏ đi khoảng một nửa, và min+map chạy
+   trong C giúp giảm đáng kể chi phí so với vòng lặp thuần Python.
 
-LƯU Ý TLE: O(N^3) ≈ 1.25e8 phép tính; time limit CSES nhắm C++ nên pure Python
-gần như chắc chắn TLE ở test lớn (a, b ~ 500). Lời giải ưu tiên dùng numpy để
-đạt ~1 giây; nếu môi trường chấm không có numpy, code tự chuyển sang pure Python
-(đúng nhưng chậm, dễ TLE ở test tối đa).
+LƯU Ý TLE: O(N^3) ≈ 1.25e8 phép tính; với a, b ~ 500 phần tính toán mất khoảng
+2.1 - 2.2 giây trên CPython (đã đo), vượt giới hạn 1 giây của CSES nên gần như
+chắc chắn TLE ở test tối đa. Lời giải này đúng và tối ưu về thuật toán nhưng để
+qua được giới hạn thời gian nên nộp bằng C++ hoặc PyPy (không dùng numpy hay bất
+kỳ thư viện ngoài nào để lách TLE).

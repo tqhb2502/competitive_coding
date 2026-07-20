@@ -1,0 +1,35 @@
+Bài toán: Road Reparation (CSES 1675)
+
+MÔ HÌNH HÓA:
+- Ta có n thành phố (đỉnh) và m con đường (cạnh vô hướng), mỗi cạnh có chi phí
+  sửa chữa c. Ta cần chọn một tập cạnh sao cho toàn bộ n thành phố được nối
+  liền thông (mọi cặp thành phố đều đi tới nhau được) với tổng chi phí nhỏ nhất.
+- Đây chính là bài toán tìm cây khung nhỏ nhất (Minimum Spanning Tree - MST).
+  Nếu đồ thị không liên thông thì không thể nối tất cả thành phố -> in "IMPOSSIBLE".
+
+THUẬT TOÁN (Kruskal + DSU):
+1. Sắp xếp tất cả các cạnh theo chi phí c tăng dần.
+2. Duyệt lần lượt từng cạnh (a, b, c). Dùng cấu trúc Disjoint Set Union (DSU)
+   với union by rank/size và path compression để kiểm tra a và b đã cùng một
+   thành phần liên thông chưa.
+   - Nếu chưa cùng thành phần: gộp hai thành phần lại (union), cộng c vào tổng
+     chi phí, tăng số cạnh đã chọn lên 1.
+   - Nếu đã cùng thành phần: bỏ qua (thêm vào sẽ tạo chu trình).
+3. Sau khi duyệt, nếu số cạnh đã chọn bằng n-1 thì đồ thị liên thông và tổng
+   chi phí chính là đáp án. Ngược lại (số cạnh < n-1) thì đồ thị không liên
+   thông -> in "IMPOSSIBLE".
+   Trường hợp đặc biệt n = 1: không cần cạnh nào, đáp án là 0.
+
+TÍNH ĐÚNG ĐẮN:
+- Thuật toán Kruskal là thuật toán tham lam kinh điển đã được chứng minh tạo ra
+  MST đúng: theo tính chất cut property, cạnh có trọng số nhỏ nhất băng qua một
+  lát cắt luôn thuộc về một MST nào đó. Việc luôn chọn cạnh rẻ nhất không tạo
+  chu trình đảm bảo kết quả là cây khung có tổng trọng số nhỏ nhất.
+- DSU đảm bảo phát hiện chu trình trong thời gian gần như O(1) amortized nhờ
+  path compression và union by size.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(m log m) cho việc sắp xếp cạnh, cộng O(m * alpha(n)) cho các thao
+  tác DSU (alpha là hàm ngược Ackermann, gần như hằng số). Tổng: O(m log m).
+- Không gian: O(n + m) để lưu danh sách cạnh và mảng DSU.
+- Với n <= 1e5, m <= 2e5 thì hoàn toàn nằm trong giới hạn.

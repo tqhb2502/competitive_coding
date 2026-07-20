@@ -1,0 +1,38 @@
+Bài toán: Đếm số đường đi từ level 1 đến level n trong một đồ thị có hướng
+không có chu trình (DAG - Directed Acyclic Graph), kết quả lấy modulo 10^9+7.
+
+MÔ HÌNH HÓA ĐỒ THỊ:
+- Mỗi level là một đỉnh (vertex), mỗi teleporter a -> b là một cạnh có hướng.
+- Đề bài bảo đảm đồ thị là DAG (không có directed cycle), nên ta có thể sắp
+  xếp topo (topological sort) và làm quy hoạch động (DP) trên thứ tự đó.
+
+THUẬT TOÁN (topo sort + DP):
+- Gọi dp[v] = số đường đi khác nhau từ đỉnh 1 đến đỉnh v.
+- Khởi tạo dp[1] = 1, các dp còn lại bằng 0.
+- Xử lý các đỉnh theo thứ tự topo (đỉnh u được xử lý trước mọi đỉnh mà u trỏ tới).
+  Với mỗi cạnh u -> v: dp[v] = (dp[v] + dp[u]) % MOD.
+- Đáp án là dp[n].
+
+Ở đây dùng Kahn's algorithm (BFS topo sort) với mảng in-degree và một deque:
+- Tính in-degree cho mọi đỉnh.
+- Đưa mọi đỉnh có in-degree = 0 vào deque.
+- Lần lượt lấy đỉnh u ra, cộng dp[u] vào dp[v] cho mọi cạnh u -> v, đồng thời
+  giảm in-degree[v]; khi in-degree[v] về 0 thì đưa v vào deque.
+Cách này hoàn toàn dùng vòng lặp (iterative) nên không lo RecursionError / tràn
+stack với n, m lớn.
+
+VÌ SAO ĐÚNG:
+- Trong thứ tự topo, khi ta xử lý đỉnh u thì mọi đường đi từ 1 tới u đã được đếm
+  đầy đủ (mọi đỉnh trước u trên đường đi đều đã xử lý xong). Do đó dp[u] là số
+  đường đi từ 1 tới u đã hoàn chỉnh, và ta an toàn cộng nó vào các đỉnh kế tiếp.
+- Vì đồ thị là DAG nên topo sort tồn tại và mỗi đường đi được đếm đúng một lần
+  theo đỉnh đứng ngay trước v trên đường đi.
+- Phép cộng modulo giữ kết quả trong phạm vi và đáp án đúng theo yêu cầu.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh được duyệt đúng một lần.
+- Bộ nhớ: O(n + m) cho adjacency list, mảng in-degree và mảng dp.
+
+LƯU Ý TLE: Với n <= 1e5, m <= 2e5 thuật toán O(n + m) là an toàn. Pure Python
+vẫn có thể chậm do hằng số lớn, nên đọc input bằng sys.stdin.buffer.read().split()
+và xây adjacency list gọn để tránh nguy cơ TLE.

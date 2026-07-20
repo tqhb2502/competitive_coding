@@ -1,69 +1,19 @@
 # Rectangle Cutting - CSES 1744
 # https://cses.fi/problemset/task/1744
 #
-# dp[i][j] = số lần cắt tối thiểu để chia hình chữ nhật i x j thành các hình vuông.
-# base: dp[i][i] = 0 (đã là hình vuông).
+# dp[i][j] = so lan cat toi thieu de chia hinh chu nhat i x j thanh cac hinh vuong.
+# base: dp[i][i] = 0 (da la hinh vuong).
 # transition:
-#   - cắt ngang (horizontal): dp[i][j] = min_{1<=k<j} dp[i][k] + dp[i][j-k] + 1
-#   - cắt dọc  (vertical)   : dp[i][j] = min_{1<=k<i} dp[k][j] + dp[i-k][j] + 1
-# đáp án: dp[a][b].
+#   - cat theo canh j (giu i): dp[i][j] = min_{1<=k<j} dp[i][k] + dp[i][j-k] + 1
+#   - cat theo canh i (giu j): dp[i][j] = min_{1<=k<i} dp[k][j] + dp[i-k][j] + 1
+# dap an: dp[a][b].
 #
-# Dùng numpy để vectorize chiều vertical + tính horizontal theo từng ô.
-# Đối xứng dp[i][j] = dp[j][i] để giảm một nửa công việc.
-# Nếu judge không có numpy -> fallback về pure Python (chậm hơn).
+# Doi xung dp[i][j] = dp[j][i] cho phep viet CA HAI huong cat duoi dang
+# "row[k] + row[len-k]" tren mot hang, nho do gop min bang map(add,...) chay C.
+# Thuan stdlib: khong numpy, khong module ben thu ba.
 
 import sys
-
-
-def solve_numpy(a, b, np):
-    N = max(a, b)
-    dp = np.zeros((N + 1, N + 1), dtype=np.int64)
-    for i in range(1, N + 1):
-        row = dp[i]
-        # best_v[j] = min_{k=1..i-1} dp[k][j] + dp[i-k][j]  (vectorize theo cột)
-        best_v = None
-        if i >= 2:
-            best_v = dp[1] + dp[i - 1]
-            for k in range(2, i):
-                np.minimum(best_v, dp[k] + dp[i - k], out=best_v)
-        # tính cho j > i, rồi mirror sang dp[j][i]
-        for j in range(i + 1, N + 1):
-            # horizontal: min_{k=1..j-1} row[k] + row[j-k]
-            bh = int((row[1:j] + row[j - 1:0:-1]).min())
-            if best_v is not None:
-                v = int(best_v[j])
-                if v < bh:
-                    bh = v
-            val = bh + 1
-            row[j] = val
-            dp[j, i] = val
-    return int(dp[a, b])
-
-
-def solve_pure(a, b):
-    N = max(a, b)
-    W = N + 1
-    INF = 1 << 30
-    dp = [0] * (W * W)  # dp[i][j] tại chỉ số i*W + j
-    for i in range(1, N + 1):
-        base = i * W
-        half_i = i // 2
-        for j in range(i + 1, N + 1):
-            best = INF
-            # horizontal (chỉ cần k đến j//2 do đối xứng 2 mảnh)
-            for k in range(1, j // 2 + 1):
-                v = dp[base + k] + dp[base + j - k]
-                if v < best:
-                    best = v
-            # vertical (chỉ cần k đến i//2)
-            for k in range(1, half_i + 1):
-                v = dp[k * W + j] + dp[(i - k) * W + j]
-                if v < best:
-                    best = v
-            best += 1
-            dp[base + j] = best
-            dp[j * W + i] = best
-    return dp[a * W + b]
+from operator import add
 
 
 def main():
@@ -73,15 +23,34 @@ def main():
     if a == b:
         sys.stdout.write("0\n")
         return
-    try:
-        import numpy as np
-    except ImportError:
-        np = None
-    if np is not None:
-        ans = solve_numpy(a, b, np)
-    else:
-        ans = solve_pure(a, b)
-    sys.stdout.write(str(ans) + "\n")
+
+    N = a if a > b else b
+    # dp la list-of-list (N+1) x (N+1), khoi tao 0 (dp[i][i] = 0 san).
+    dp = [[0] * (N + 1) for _ in range(N + 1)]
+
+    _min = min
+    _map = map
+
+    for i in range(1, N + 1):
+        row_i = dp[i]
+        hi = i >> 1  # i // 2
+        for j in range(i + 1, N + 1):
+            # Cat theo canh j (giu i): dp[i][k] + dp[i][j-k], k = 1..j//2
+            jh = j >> 1
+            best = _min(_map(add, row_i[1:jh + 1], row_i[j - 1:j - 1 - jh:-1]))
+            # Cat theo canh i (giu j): dp[k][j] + dp[i-k][j], k = 1..i//2.
+            # dp[k][j] = dp[j][k] = row_j[k] (doi xung), voi k, i-k < i < j nen
+            # cac o nay deu da duoc dien (o hang j da mirror). i >= 2 moi co huong nay.
+            if hi:
+                row_j = dp[j]
+                v = _min(_map(add, row_j[1:hi + 1], row_j[i - 1:i - 1 - hi:-1]))
+                if v < best:
+                    best = v
+            best += 1
+            row_i[j] = best
+            dp[j][i] = best  # mirror
+
+    sys.stdout.write(str(dp[a][b]) + "\n")
 
 
 main()

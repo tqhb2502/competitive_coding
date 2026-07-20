@@ -1,0 +1,38 @@
+Bài toán: Kiểm tra xem đồ thị có hướng với n thành phố và m chuyến bay có
+strongly connected (liên thông mạnh) hay không, tức là từ bất kỳ thành phố
+nào cũng có thể bay tới bất kỳ thành phố nào khác. Nếu không, in "NO" cùng
+một cặp (a, b) mà không thể đi từ a tới b.
+
+MÔ HÌNH ĐỒ THỊ:
+- Mỗi thành phố là một đỉnh, mỗi chuyến bay a -> b là một cạnh có hướng.
+- Ta xây dựng adjacency list cho đồ thị gốc (adj) và cho đồ thị đảo chiều
+  mọi cạnh (radj, reverse graph).
+
+THUẬT TOÁN:
+Một đồ thị có hướng là strongly connected khi và chỉ khi, chọn một đỉnh bất
+kỳ (ở đây là đỉnh 1), thỏa mãn đồng thời hai điều kiện:
+  1) Từ đỉnh 1 có thể đi tới TẤT CẢ các đỉnh khác trong đồ thị gốc.
+  2) Từ đỉnh 1 có thể đi tới TẤT CẢ các đỉnh khác trong đồ thị đảo chiều
+     (điều này tương đương: mọi đỉnh đều có thể đi tới đỉnh 1 trong đồ thị gốc).
+
+Cách làm:
+- Chạy BFS (dùng collections.deque) từ đỉnh 1 trên đồ thị gốc adj.
+  Nếu có đỉnh u không tới được -> không đi được từ 1 tới u -> in "NO" và "1 u".
+- Chạy BFS từ đỉnh 1 trên đồ thị đảo chiều radj.
+  Nếu có đỉnh u không tới được trong đồ thị đảo -> trong đồ thị gốc u không
+  thể tới được đỉnh 1 -> in "NO" và "u 1".
+- Nếu cả hai lần BFS đều phủ hết n đỉnh -> đồ thị strongly connected -> in "YES".
+
+TẠI SAO ĐÚNG:
+- Nếu cả (1) và (2) đúng: với hai đỉnh bất kỳ x, y ta có đường đi x -> 1
+  (do (2)) rồi 1 -> y (do (1)), nên đi được từ x tới y. Vậy đồ thị liên
+  thông mạnh.
+- Nếu (1) sai, tồn tại u mà 1 không tới được u, cặp (1, u) là phản ví dụ.
+- Nếu (2) sai, tồn tại u mà u không tới được 1, cặp (u, 1) là phản ví dụ.
+Đây chính là cấu trúc của một strongly connected component chứa đỉnh 1: đồ
+thị liên thông mạnh khi và chỉ khi SCC của đỉnh 1 là toàn bộ đồ thị.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n + m) cho việc đọc dữ liệu, xây adjacency list và hai lần BFS.
+- Bộ nhớ: O(n + m) để lưu hai adjacency list và mảng visited.
+Với n <= 1e5 và m <= 2e5, thuật toán chạy rất nhanh và an toàn về thời gian.

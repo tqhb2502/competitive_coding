@@ -1,17 +1,17 @@
 # Mountain Range - CSES task 3314
 # https://cses.fi/problemset/task/3314
 #
-# Tu nui i ta co the luon toi moi nui j nam giua L_i va R_i (khong ke i),
-# voi L_i / R_i la vi tri gan nhat co chieu cao >= h_i ben trai / ben phai.
-# Khi do i la cuc dai duy nhat cua doan [L_i+1, R_i-1] va moi nui j trong doan
-# deu thap hon h_i thuc su nen luon toi duoc.
+# Từ núi i ta có thể lượn tới mọi núi j nằm giữa L_i và R_i (không kể i),
+# với L_i / R_i là vị trí gần nhất có chiều cao >= h_i bên trái / bên phải.
+# Khi đó i là cực đại duy nhất của đoạn [L_i+1, R_i-1] và mọi núi j trong đoạn
+# đều thấp hơn h_i thực sự nên luôn lượn tới được.
 #
-# dp[i] = do dai hanh trinh dai nhat bat dau tu nui i = 1 + max(dp[j]) voi j
-# reachable tu i. Ta tinh dp theo thu tu chieu cao TANG DAN. Moi nui i, sau khi
-# tinh xong dp[i], "day" gia tri nay len hai "cha" cua no la SL[i] va SR[i] (nui
-# gan nhat cao hon THUC SU ben trai / phai). Cac cuc dai cua doan reachable cua
-# mot nui chinh la nhung nui nhan no lam SL hoac SR, nen childmax[i] tich luy dung
-# max(dp[j]) tren toan bo doan reachable cua i. O(n log n) do sort, phan con lai O(n).
+# dp[i] = độ dài hành trình dài nhất bắt đầu từ núi i = 1 + max(dp[j]) với j
+# lượn tới được từ i. Ta tính dp theo thứ tự chiều cao TĂNG DẦN. Mỗi núi i, sau khi
+# tính xong dp[i], "đẩy" giá trị này lên hai "cha" của nó là SL[i] và SR[i] (núi
+# gần nhất cao hơn THỰC SỰ bên trái / phải). Các cực đại của đoạn lượn tới được của
+# một núi chính là những núi nhận nó làm SL hoặc SR, nên childmax[i] tích lũy đúng
+# max(dp[j]) trên toàn bộ đoạn lượn tới được của i. O(n log n) do sort, phần còn lại O(n).
 
 import sys
 
@@ -26,8 +26,8 @@ def main():
         return
     h = [int(x) for x in data[1:1 + n]]
 
-    # SL[i]: vi tri gan nhat ben trai co chieu cao > h[i] (strictly), hoac -1
-    # SR[i]: vi tri gan nhat ben phai co chieu cao > h[i] (strictly), hoac n
+    # SL[i]: vị trí gần nhất bên trái có chiều cao > h[i] (lớn hơn thực sự), hoặc -1
+    # SR[i]: vị trí gần nhất bên phải có chiều cao > h[i] (lớn hơn thực sự), hoặc n
     SL = [-1] * n
     SR = [n] * n
     stack = []
@@ -48,7 +48,7 @@ def main():
         stack.append(i)
 
     childmax = [0] * n
-    order = sorted(range(n), key=h.__getitem__)  # tang dan theo chieu cao
+    order = sorted(range(n), key=h.__getitem__)  # tăng dần theo chiều cao
 
     ans = 0
     for i in order:

@@ -1,0 +1,38 @@
+Bài toán: Shortest Routes I (CSES 1671)
+
+MÔ HÌNH ĐỒ THỊ
+- Có n thành phố và m chuyến bay một chiều. Mỗi chuyến bay là một cạnh có hướng
+  từ a đến b với trọng số (độ dài) c, với 1 <= c <= 1e9.
+- Cần tìm độ dài đường đi ngắn nhất từ thành phố 1 (Syrjälä) đến tất cả các
+  thành phố còn lại. Đây là bài toán single-source shortest path trên đồ thị có
+  hướng với trọng số KHÔNG ÂM.
+
+THUẬT TOÁN
+- Vì mọi trọng số đều dương (không âm) nên ta dùng thuật toán Dijkstra với
+  priority queue (heapq / min-heap).
+- Khởi tạo dist[1] = 0, các đỉnh khác = vô cực. Đẩy (0, 1) vào heap.
+- Mỗi lần lấy đỉnh u có khoảng cách nhỏ nhất ra khỏi heap; nếu giá trị lấy ra
+  lớn hơn dist[u] hiện tại thì bỏ qua (đây là bản ghi cũ, "lazy deletion").
+  Ngược lại, duyệt các cạnh (u -> v, w) và thực hiện relax: nếu
+  dist[u] + w < dist[v] thì cập nhật dist[v] và đẩy (dist[v], v) vào heap.
+- Khi heap rỗng, dist chứa khoảng cách ngắn nhất từ đỉnh 1 tới mọi đỉnh.
+
+TÍNH ĐÚNG ĐẮN
+- Dijkstra đúng khi mọi trọng số cạnh không âm: khi một đỉnh được lấy ra khỏi
+  heap với khoảng cách nhỏ nhất hiện tại thì khoảng cách đó đã là tối ưu, vì
+  không có cạnh âm nào có thể làm giảm nó thêm được nữa. Việc dùng lazy deletion
+  (bỏ qua bản ghi cũ) không ảnh hưởng tính đúng đắn vì mỗi đỉnh chỉ được xử lý
+  "thật sự" đúng một lần với giá trị dist nhỏ nhất.
+- Có thể có nhiều cạnh song song (ví dụ input mẫu có 1->3 với độ dài 2 và 4);
+  relax tự nhiên chọn cạnh tốt hơn nên không cần xử lý đặc biệt.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O((n + m) log n) do mỗi cạnh có thể đẩy tối đa một phần tử vào heap
+  và mỗi thao tác heap là O(log n). Với n <= 1e5, m <= 2e5 là hoàn toàn ổn.
+- Bộ nhớ: O(n + m) cho danh sách kề (lưu bằng mảng CSR để gọn) và mảng dist.
+- Khoảng cách có thể lên tới ~1e5 * 1e9 = 1e14 nên cần số nguyên 64-bit; Python
+  xử lý số lớn tự động nên không tràn số.
+
+LƯU Ý TLE: Dijkstra bằng heapq trên CSES thường AC với Python, nhưng ở test lớn
+nhất (m = 2e5) vẫn có thể sát giới hạn thời gian; bản này đã tối ưu bằng cách đọc
+input theo dạng nhị phân, lưu đồ thị bằng CSR và dùng biến cục bộ để tăng tốc.

@@ -1,0 +1,51 @@
+Bài toán: Shortest Routes II (CSES 1672)
+https://cses.fi/problemset/task/1672
+
+1. Mô hình hóa đồ thị
+- Có n thành phố (đỉnh), m con đường (cạnh) hai chiều, mỗi cạnh có trọng số c >= 1
+  (không có trọng số âm nên không tồn tại chu trình âm).
+- Có q truy vấn, mỗi truy vấn hỏi độ dài đường đi ngắn nhất giữa hai đỉnh a và b.
+- Vì có tới q = 10^5 truy vấn trên cặp đỉnh bất kỳ, ta cần tính trước khoảng cách
+  ngắn nhất giữa MỌI cặp đỉnh (all-pairs shortest path), sau đó mỗi truy vấn chỉ
+  cần tra bảng trong O(1).
+
+2. Thuật toán: Floyd-Warshall
+- Với n <= 500, số cặp đỉnh là n^2 = 250000, và Floyd-Warshall chạy trong O(n^3)
+  = khoảng 1.25 * 10^8 phép cập nhật, phù hợp về mặt lý thuyết.
+- Khởi tạo ma trận dist[i][j]:
+    + dist[i][i] = 0.
+    + dist[a][b] = dist[b][a] = c cho mỗi con đường (nếu có nhiều đường giữa cùng
+      một cặp thì giữ đường nhỏ nhất).
+    + còn lại = INF.
+- Công thức quy hoạch động:
+    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+  với k lần lượt là đỉnh trung gian được phép đi qua (k = 0..n-1).
+
+3. Tại sao đúng
+- Floyd-Warshall là quy hoạch động theo tập đỉnh trung gian: sau khi xét xong đỉnh
+  trung gian thứ k, dist[i][j] là độ dài đường đi ngắn nhất từ i đến j chỉ dùng các
+  đỉnh trung gian trong {0,...,k}. Khi k chạy hết tất cả các đỉnh, dist[i][j] là
+  khoảng cách ngắn nhất thật sự.
+- Đồ thị vô hướng được xử lý bằng cách đặt cạnh cho cả hai chiều; mọi trọng số đều
+  dương nên thuật toán luôn hội tụ đúng, không có chu trình âm.
+- Chọn INF = 1<<40 (~1.1e12), lớn hơn khoảng cách thật lớn nhất có thể là
+  (n-1)*10^9 ~ 5e11. Nhờ vậy mọi tổng đi qua một cạnh không tồn tại (INF) đều >= INF,
+  không bao giờ tạo ra "đường tắt" giả. Truy vấn nào còn giá trị >= INF nghĩa là
+  không có đường -> in -1.
+
+4. Chi tiết cài đặt để tăng tốc trong pure Python
+- Đọc toàn bộ input bằng sys.stdin.buffer.read().split().
+- Vòng lặp trong cùng của Floyd-Warshall viết bằng list comprehension kết hợp zip
+  (chạy ở mức C) và dùng walrus operator để chỉ tính dik+dkj một lần.
+- Bỏ qua hàng i khi dist[i][k] = INF (không thể cải thiện gì), giúp nhanh hơn trên
+  đồ thị thưa/không liên thông.
+- Ghi kết quả một lần bằng sys.stdout.write.
+
+5. Độ phức tạp
+- Thời gian: O(n^3) cho Floyd-Warshall + O(q) cho các truy vấn.
+- Bộ nhớ: O(n^2) cho ma trận khoảng cách.
+
+LƯU Ý TLE: Với n = 500, Floyd-Warshall cần ~1.25 * 10^8 phép cập nhật; trong pure
+CPython (dù đã tối ưu bằng list comprehension + zip) thì trường hợp xấu nhất (đồ thị
+gần đầy đủ) vẫn có thể vượt giới hạn thời gian của CSES. Lời giải này ưu tiên tính
+ĐÚNG; nếu cần chắc chắn AC nên viết bằng C++ hoặc dùng ngôn ngữ nhanh hơn.

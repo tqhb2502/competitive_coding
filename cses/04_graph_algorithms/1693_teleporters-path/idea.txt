@@ -1,0 +1,61 @@
+Bài toán: Teleporters Path (CSES 1693)
+
+MÔ HÌNH ĐỒ THỊ
+Cho một đồ thị có hướng gồm n đỉnh (các level) và m cạnh (các teleporter).
+Yêu cầu tìm một đường đi bắt đầu tại đỉnh 1, kết thúc tại đỉnh n, và đi qua
+MỖI cạnh đúng ĐÚNG một lần. Đây chính là bài toán tìm đường đi Euler (Eulerian
+path / Eulerian trail) trên đồ thị có hướng, với điểm đầu cố định là 1 và điểm
+cuối cố định là n. Vì n >= 2 nên đỉnh 1 và đỉnh n luôn khác nhau, tức là ta cần
+một trail (không phải circuit) có hai đầu mút phân biệt.
+
+ĐIỀU KIỆN TỒN TẠI (directed Eulerian path)
+Gọi out[v] và in[v] lần lượt là bậc ra và bậc vào của đỉnh v. Một đường đi Euler
+có hướng từ đỉnh 1 tới đỉnh n tồn tại khi và chỉ khi:
+  1) out[1] - in[1] == 1        (đỉnh xuất phát có dư đúng một cạnh ra)
+  2) in[n] - out[n] == 1        (đỉnh kết thúc có dư đúng một cạnh vào)
+  3) out[v] == in[v] với mọi đỉnh v khác 1 và n (cân bằng bậc vào/ra)
+  4) Tính liên thông: tất cả các cạnh phải nằm trong cùng một thành phần liên
+     thông đạt được từ đỉnh 1. Nếu có cạnh nằm ngoài phần đi được từ đỉnh 1 thì
+     không thể dùng hết mọi cạnh trong một đường đi duy nhất.
+
+Nếu bất kỳ điều kiện bậc (1)-(3) nào bị vi phạm thì in ra IMPOSSIBLE.
+
+THUẬT TOÁN
+Dùng thuật toán Hierholzer để dựng đường đi Euler:
+  - Xây adjacency list adj[v] cho đồ thị có hướng.
+  - Dùng mảng con trỏ ptr[v] để nhớ cạnh kế tiếp chưa dùng của đỉnh v, nhờ đó
+    mỗi cạnh chỉ được xét đúng một lần (tổng chi phí O(n + m)).
+  - Chạy Hierholzer theo kiểu ITERATIVE bằng stack (tránh đệ quy sâu gây tràn
+    stack khi m tới 2*10^5):
+        stack = [1]; path = []
+        khi stack còn phần tử:
+            v = đỉnh trên đỉnh stack
+            nếu v còn cạnh chưa dùng: đi theo cạnh đó, đẩy đỉnh kề vào stack
+            ngược lại: pop v ra và thêm vào path
+        đảo ngược path để được thứ tự đi thực sự.
+  - Sau khi dựng xong, nếu độ dài path == m + 1 thì ta đã dùng hết mọi cạnh:
+    đây là điều kiện liên thông (4). Nếu path ngắn hơn m + 1 (còn cạnh chưa dùng)
+    thì in IMPOSSIBLE.
+
+VÌ SAO ĐÚNG
+Điều kiện bậc (1)-(3) là điều kiện cần và đủ về mặt cục bộ cho sự tồn tại của
+đường đi Euler có hướng với hai đầu mút xác định. Thuật toán Hierholzer luôn dựng
+được một trail dài nhất bắt đầu từ đỉnh 1; khi các điều kiện bậc thỏa mãn và đồ
+thị liên thông (mọi cạnh nằm trong phần đi được từ 1), trail này chắc chắn dùng
+hết cả m cạnh và kết thúc tại đỉnh n. Việc kiểm tra len(path) == m + 1 chính là
+kiểm tra đã dùng hết cạnh, đồng thời bao trọn điều kiện liên thông. Nhờ đó nếu
+qua được cả hai bước kiểm tra, đường đi thu được là hợp lệ: xuất phát từ 1, kết
+thúc tại n, đi qua mỗi cạnh đúng một lần.
+
+ĐỘ PHỨC TẠP
+  - Thời gian: O(n + m). Mỗi cạnh được duyệt đúng một lần trong Hierholzer, mỗi
+    đỉnh được kiểm tra bậc một lần.
+  - Bộ nhớ: O(n + m) cho adjacency list, mảng bậc, mảng con trỏ, stack và path.
+
+Với n <= 10^5 và m <= 2*10^5, độ phức tạp tuyến tính là an toàn.
+
+LƯU Ý TLE: Thuật toán là O(n + m) tuyến tính nên rủi ro TLE thấp; tuy nhiên
+CPython chậm hơn C++ nhiều lần, vì vậy cần đọc toàn bộ input bằng
+sys.stdin.buffer.read().split() và ghi output một lần bằng sys.stdout.write để
+tránh chậm do I/O. Vẫn có khả năng chạm giới hạn thời gian trên test cực đại,
+nhưng đây là cách tiếp cận đúng và tối ưu nhất cho pure Python.

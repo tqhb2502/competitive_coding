@@ -4,39 +4,52 @@ Bài toán: Book Shop (CSES 1158)
 - Có n cuốn sách, mỗi cuốn i có giá price[i] và số trang pages[i].
 - Ngân sách tối đa là x. Mỗi cuốn chỉ được mua nhiều nhất một lần.
 - Cần tối đa hóa tổng số trang mua được sao cho tổng giá không vượt quá x.
+- Ràng buộc: 1 <= n <= 1000, 1 <= x <= 10^5, 1 <= giá, số trang <= 1000.
+- Không có phép chia lấy dư (modulo).
 
-DP state:
-- dp[j] = số trang lớn nhất có thể đạt được khi tổng giá tiền không vượt quá j
-  (với j chạy từ 0 đến x).
+Trạng thái DP:
+- dp[j] = số trang lớn nhất có thể đạt được khi tổng giá tiền KHÔNG VƯỢT QUÁ j
+  (với j chạy từ 0 đến x). Cách hiểu "không vượt quá j" giúp mảng dp luôn không
+  giảm theo j và đáp án cuối cùng là dp[x].
 
-Base case:
+Khởi tạo:
 - dp[j] = 0 với mọi j (chưa xét cuốn sách nào thì số trang bằng 0).
 
-Transition (xét lần lượt từng cuốn sách i với giá p = price[i], số trang v = pages[i]):
-- Với mỗi j: dp[j] = max(dp[j], dp[j - p] + v) khi j >= p.
-- Vì đây là 0/1 knapsack (mỗi cuốn dùng tối đa 1 lần) nên khi cập nhật bằng mảng 1
-  chiều ta phải duyệt j GIẢM DẦN (từ x xuống p) để dp[j - p] vẫn là giá trị của
-  "trước khi xét cuốn i", tránh việc dùng lại cùng một cuốn nhiều lần.
-- Cách vectorize tương đương (dùng numpy): dp[p:] = maximum(dp[p:], dp[:x+1-p] + v).
-  Ở đây dp[:x+1-p] đọc toàn bộ giá trị cũ của dp nên không có xung đột thứ tự, kết
-  quả giống hệt vòng lặp duyệt ngược.
+Chuyển trạng thái (xét lần lượt từng cuốn i với giá p = price[i], số trang v = pages[i]):
+- Với mỗi j >= p: dp[j] = max(dp[j], dp[j - p] + v).
+- Vì đây là 0/1 knapsack (mỗi cuốn dùng tối đa 1 lần) nên khi dùng mảng 1 chiều
+  ta phải bảo đảm dp[j - p] còn là giá trị "trước khi xét cuốn i". Cách kinh điển
+  là duyệt j GIẢM DẦN (từ x xuống p) để tránh dùng lại cùng một cuốn nhiều lần.
 
-Answer:
-- dp[x] là số trang lớn nhất mua được với ngân sách x.
-- (Mảng dp không giảm theo j nên dp[x] cũng bằng max(dp)).
+Cách tối ưu cho CPython (chỉ dùng thư viện chuẩn, không numpy):
+- Thay vì vòng for chỉ số từng phần tử (rất chậm trong Python thuần), ta thực hiện
+  cả bước cập nhật một cuốn bằng thao tác cắt lát (slicing) kết hợp list
+  comprehension, cho phép phần lớn công việc chạy ở tầng C của CPython:
+    seg_new = dp[p:x+1]        # chính là các giá trị dp[j] hiện tại (không mua)
+    seg_old = dp[0:x+1-p]      # chính là các giá trị dp[j - p] (mua cuốn i)
+    dp[p:x+1] = [a + v if a + v > b else b for a, b in zip(seg_old, seg_new)]
+- Việc đọc dp qua slice tạo ra hai bản sao độc lập trước khi ghi đè, nên không có
+  xung đột thứ tự đọc/ghi. Vì seg_old là toàn bộ tiền tố dp[0..x-p] "cũ", kết quả
+  giống hệt vòng lặp duyệt j giảm dần của 0/1 knapsack và mảng dp vẫn không giảm.
+
+Đáp án:
+- dp[x] là số trang lớn nhất mua được với ngân sách x. Do dp không giảm theo j nên
+  dp[x] cũng bằng max(dp).
 
 Vì sao đúng:
 - Đây là công thức chuẩn của 0/1 knapsack: mỗi trạng thái j xét hai lựa chọn "không
-  mua cuốn i" (giữ dp[j]) hoặc "mua cuốn i" (dp[j - p] + v). Duyệt j giảm dần đảm bảo
-  mỗi cuốn chỉ được tính đúng một lần. Sau khi xét hết n cuốn, dp[x] là tối ưu.
+  mua cuốn i" (giữ dp[j]) hoặc "mua cuốn i" (dp[j - p] + v). Việc đọc giá trị cũ qua
+  slice bảo đảm mỗi cuốn chỉ được tính đúng một lần. Sau khi xét hết n cuốn, dp[x]
+  là tối ưu.
+
+Định dạng vào/ra:
+- Dòng 1: n và x. Dòng 2: n số nguyên giá của từng cuốn. Dòng 3: n số nguyên số trang.
+- In ra một số nguyên: tổng số trang lớn nhất, kèm ký tự xuống dòng.
 
 Độ phức tạp:
-- Thời gian: O(n * x) = 1000 * 100000 = 1e8 phép cập nhật.
+- Thời gian: O(n * x), tối đa 1000 * 100000 = 1e8 phép cập nhật.
 - Bộ nhớ: O(x).
 
-Solution dùng numpy để vectorize phần cập nhật (nhanh, chạy ở tầng C), và có nhánh
-dự phòng bằng Python thuần nếu môi trường không có numpy.
-
-LƯU Ý TLE: Với Python thuần (không numpy), vòng lặp O(n * x) = 1e8 rất dễ TLE trên
-CSES (giới hạn thời gian nhắm cho C++). Bản numpy vectorized chạy nhanh hơn nhiều lần;
-nếu CSES không có numpy hoặc vẫn TLE thì nên nộp bằng PyPy3 hoặc viết lại bằng C++.
+LƯU Ý TLE: Với Python thuần, khối lượng O(n * x) = 1e8 vẫn có thể vượt giới hạn ~1s của
+CSES (vốn nhắm cho C++), dù kỹ thuật slicing + list comprehension đã nhanh hơn nhiều so
+với vòng for chỉ số thông thường. Nếu bị TLE, nên nộp bằng PyPy3 hoặc viết lại bằng C++.

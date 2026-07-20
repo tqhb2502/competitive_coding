@@ -8,29 +8,31 @@ from bisect import bisect_left
 
 def main():
     data = sys.stdin.buffer.read().split()
-    idx = 0
-    n = int(data[idx]); idx += 1
+    n = int(data[0])
 
-    projects = []
-    for _ in range(n):
-        a = int(data[idx]); b = int(data[idx + 1]); p = int(data[idx + 2])
-        idx += 3
-        projects.append((b, a, p))  # sort by end day b
+    # Chuyển toàn bộ số sang int một lần (nhanh hơn vòng lặp Python).
+    nums = list(map(int, data))
+    a_list = nums[1::3]
+    b_list = nums[2::3]
+    p_list = nums[3::3]
 
-    projects.sort()
-
-    ends = [b for (b, a, p) in projects]
+    # Sắp xếp theo ngày kết thúc b tăng dần (tuple bắt đầu bằng b).
+    projects = sorted(zip(b_list, a_list, p_list))
+    ends = [t[0] for t in projects]  # mảng các b đã sắp xếp
 
     dp = [0] * (n + 1)
-    for i in range(1, n + 1):
-        b, a, p = projects[i - 1]
-        # số dự án có b < a  (dự án tương thích): cần a_next >= b_prev + 1
-        j = bisect_left(ends, a)
+    bl = bisect_left
+    prev = 0  # prev = dp[i], lợi nhuận tối đa với i dự án đầu tiên
+    for i in range(n):
+        b, a, p = projects[i]
+        # số dự án có b < a (dự án tương thích): cần a_next >= b_prev + 1
+        j = bl(ends, a, 0, i + 1)
         take = dp[j] + p
-        skip = dp[i - 1]
-        dp[i] = take if take > skip else skip
+        if take > prev:
+            prev = take
+        dp[i + 1] = prev
 
-    sys.stdout.write(str(dp[n]) + "\n")
+    sys.stdout.write(str(prev) + "\n")
 
 
 if __name__ == "__main__":

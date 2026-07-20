@@ -1,0 +1,35 @@
+Bài toán: Police Chase (CSES 1695)
+
+1. Mô hình hóa đồ thị
+- Cần tìm số con đường (cạnh) ít nhất phải đóng để ngăn không cho đi từ ngã tư 1 (ngân hàng)
+  đến ngã tư n (bến cảng). Đây chính là bài toán minimum edge cut trên đồ thị vô hướng.
+- Theo định lý max-flow min-cut, số cạnh nhỏ nhất cần cắt (min cut) đúng bằng giá trị luồng
+  cực đại (max-flow) từ đỉnh nguồn s = 1 đến đỉnh đích t = n, khi mỗi cạnh có capacity = 1.
+
+2. Xây dựng mạng luồng
+- Mỗi con đường vô hướng (a, b) được mô hình bằng HAI cung có hướng: a -> b với capacity 1
+  và b -> a với capacity 1, trong đó hai cung này là reverse edge của nhau. Cách biểu diễn
+  "cạnh vô hướng = hai cung ngược chiều, mỗi cung capacity c, cung này là residual của cung
+  kia" cho ra đúng mô hình cạnh vô hướng capacity 1 (điều này đã được chứng minh chuẩn).
+- Mỗi cạnh chỉ đóng góp tối đa 1 vào min cut, phù hợp với việc "đóng một con đường".
+
+3. Thuật toán
+- Dùng Dinic để tính max-flow từ s đến t. Với n <= 500, m <= 1000, giá trị luồng nhỏ và
+  Dinic chạy rất nhanh.
+- Sau khi có max-flow, tìm tập S các đỉnh còn đến được từ s trong residual graph (BFS chỉ đi
+  theo các cung còn cap > 0). Tập cắt (S, T) với T là phần còn lại chính là một min cut.
+- Với mỗi cạnh gốc (a, b): nếu đúng một đầu thuộc S và đầu kia thuộc T thì đó là cạnh nằm
+  trên lát cắt, tức là một con đường cần đóng. Số cạnh này đúng bằng giá trị max-flow.
+
+4. Vì sao đúng
+- Định lý max-flow min-cut bảo đảm min cut = max-flow.
+- Tập S (reachable từ s trong residual) tạo ra một lát cắt có capacity đúng bằng max-flow,
+  nên các cạnh vượt qua lát cắt chính là tập cạnh cần cắt tối thiểu. CSES chấp nhận mọi đáp án
+  hợp lệ có cùng số cạnh nhỏ nhất.
+
+5. Độ phức tạp
+- Dinic trên đồ thị đơn vị capacity: rất nhanh, thực tế O(E * sqrt(V)) cho mạng unit-capacity.
+  Với E <= 2*m = 2000 và V <= 500 thì hoàn toàn dư sức trong giới hạn thời gian.
+- Bộ nhớ O(V + E).
+
+Không có rủi ro TLE với pure Python cho giới hạn nhỏ này.

@@ -1,0 +1,48 @@
+Bài toán: Investigation (CSES 1202)
+
+MÔ HÌNH ĐỒ THỊ
+- Ta có đồ thị có hướng, có trọng số dương gồm n đỉnh (thành phố) và m cạnh
+  (chuyến bay). Cạnh (a, b, c) là chuyến bay một chiều từ a đến b với giá c.
+- Vì mọi trọng số c >= 1 (dương), ta dùng thuật toán Dijkstra để tìm đường đi
+  ngắn nhất (rẻ nhất) từ đỉnh 1 đến đỉnh n.
+
+CẦN TÍNH 4 GIÁ TRỊ
+1. dist[n]  : chi phí nhỏ nhất từ 1 đến n.
+2. ways[n]  : số lượng đường đi có chi phí nhỏ nhất, lấy modulo 10^9+7.
+3. minE[n]  : số cạnh ít nhất trong một đường đi rẻ nhất.
+4. maxE[n]  : số cạnh nhiều nhất trong một đường đi rẻ nhất.
+
+THUẬT TOÁN (Dijkstra kết hợp DP)
+- Duy trì 4 mảng: dist, ways, minE, maxE cho mỗi đỉnh.
+- Khởi tạo: dist[1]=0, ways[1]=1, minE[1]=0, maxE[1]=0; các đỉnh khác dist=INF.
+- Dùng heap (heapq) như Dijkstra chuẩn. Khi lấy đỉnh u đã "cố định"
+  (d == dist[u]), duyệt mọi cạnh (u -> v, w) và relax:
+    * Nếu d + w < dist[v]  : tìm được đường rẻ hơn -> đặt lại
+        dist[v]=d+w, ways[v]=ways[u], minE[v]=minE[u]+1, maxE[v]=maxE[u]+1,
+        rồi push (dist[v], v) vào heap.
+    * Nếu d + w == dist[v] : có thêm đường cùng chi phí nhỏ nhất ->
+        ways[v]=(ways[v]+ways[u]) % MOD,
+        minE[v]=min(minE[v], minE[u]+1),
+        maxE[v]=max(maxE[v], maxE[u]+1).
+
+TẠI SAO ĐÚNG
+- Xét "shortest-path DAG" gồm các cạnh (u -> v) thoả dist[u]+w == dist[v].
+  Vì mọi w >= 1 nên dist tăng ngặt dọc theo mỗi cạnh của DAG này:
+  dist[v] = dist[u] + w > dist[u]. Do đó mọi đỉnh tiền nhiệm (predecessor)
+  của u trên các đường đi rẻ nhất đều có dist NHỎ HƠN HẲN dist[u].
+- Dijkstra lấy các đỉnh ra theo thứ tự dist không giảm, nên khi u được lấy ra
+  và cố định, TẤT CẢ các tiền nhiệm của nó đã được lấy ra và relax trước đó.
+  Vì vậy ways[u], minE[u], maxE[u] đã được tổng hợp đầy đủ và chính xác trước
+  khi u dùng để relax tiếp -> phép DP theo thứ tự topo của DAG là hợp lệ.
+- Các bản ghi cũ trong heap (d > dist[u]) bị bỏ qua nên mỗi đỉnh chỉ relax một
+  lần đúng lúc đã cố định.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O((n + m) log n) do Dijkstra với binary heap.
+  Với n <= 1e5, m <= 2e5 thì số thao tác heap khoảng vài triệu.
+- Bộ nhớ: O(n + m) cho danh sách kề (dạng CSR) và 4 mảng trạng thái.
+
+LƯU Ý TLE: Dijkstra bằng heapq trên Python thuần có thể chậm; với m = 2e5 số
+thao tác heap cỡ vài triệu nên thường vẫn qua được, nhưng ở trường hợp xấu nhất
+có nguy cơ TLE nhẹ. Đã tối ưu bằng đọc input nhanh, danh sách kề CSR và tham
+chiếu cục bộ heappush/heappop để giảm rủi ro.

@@ -23,8 +23,8 @@ cses/
 |---|------|--------|------------|
 | 01 | Introductory Problems | 24 | ✅ xong — 24/24 đúng thuật toán (22 PASS · 1 tối ưu chống TLE · 1 đúng nhưng cần C++/PyPy cho test nặng) |
 | 02 | Sorting and Searching | 35 | ✅ xong — 35/35 đúng thuật toán (0 FAIL); 6 bài rủi ro TLE Python ghi chú trong idea.txt |
-| 03 | Dynamic Programming | 23 | ⏳ đang làm |
-| 04 | Graph Algorithms | ~36 | ⬜ chưa làm |
+| 03 | Dynamic Programming | 23 | ✅ xong — 23/23 đúng thuật toán, **thuần stdlib** (đã bỏ numpy); nhiều bài DP O(n·x) sẽ TLE Python trên CSES (ghi chú trong idea.txt, cần C++/PyPy) |
+| 04 | Graph Algorithms | 36 | ✅ xong — 36/36 đúng thuật toán, thuần stdlib (DFS/BFS lặp, tránh RecursionError); 7 bài rủi ro TLE Python ghi chú trong idea.txt |
 | 05 | Range Queries | ~19 | ⬜ chưa làm |
 | 06 | Tree Algorithms | ~16 | ⬜ chưa làm |
 | 07 | Mathematics | ~31 | ⬜ chưa làm |

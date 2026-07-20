@@ -1,0 +1,39 @@
+Bài toán: Counting Rooms (CSES 1192)
+
+1. Mô hình hóa đồ thị
+- Bản đồ là lưới n x m, mỗi ô là sàn ('.') hoặc tường ('#').
+- Coi mỗi ô sàn là một đỉnh của đồ thị. Hai ô sàn kề nhau theo 4 hướng
+  (trái, phải, lên, xuống) được nối bằng một cạnh.
+- Số "phòng" (rooms) chính là số thành phần liên thông (connected components)
+  của đồ thị gồm các ô sàn.
+
+2. Thuật toán
+- Duyệt qua toàn bộ lưới. Mỗi khi gặp một ô sàn chưa được thăm, ta tăng
+  biến đếm count lên 1 rồi thực hiện flood fill (DFS/BFS) để đánh dấu toàn bộ
+  các ô sàn cùng thành phần liên thông đó là đã thăm.
+- Ở đây dùng DFS lặp (iterative) với một stack các chỉ số phẳng (flat index)
+  để tránh lỗi tràn stack đệ quy khi lưới lớn (tối đa 1000 x 1000 = 10^6 ô).
+- Kỹ thuật tối ưu: đệm (padding) một viền tường xung quanh lưới, tạo mảng
+  kích thước (n+2) x (m+2). Nhờ viền tường, khi mở rộng sang 4 ô lân cận
+  cur+1, cur-1, cur-W, cur+W (với W = m+2) ta không cần kiểm tra biên,
+  giúp vòng lặp gọn và nhanh hơn. Mỗi ô sàn khi được thăm sẽ được đặt lại
+  thành 0 (tường) để đóng vai trò mảng visited luôn.
+- Đọc dữ liệu nhanh bằng sys.stdin.buffer.read().split(); chuyển mỗi dòng
+  ('.'/'#') sang 1/0 bằng bytes.translate (chạy ở tốc độ C).
+
+3. Tính đúng đắn
+- Flood fill duyệt hết đúng một thành phần liên thông rồi dừng, nên mỗi lần
+  bắt đầu flood fill từ một ô sàn mới (chưa thăm) tương ứng chính xác với một
+  phòng mới. Do đó count bằng số thành phần liên thông = số phòng.
+- Viền tường không chứa ô sàn nên không bao giờ khởi tạo phòng giả; nó chỉ
+  chặn việc "tràn" ra ngoài lưới.
+
+4. Độ phức tạp
+- Thời gian: O(n*m). Mỗi ô được đưa vào stack và lấy ra tối đa một lần,
+  mỗi lần xét 4 lân cận => O(n*m).
+- Bộ nhớ: O(n*m) cho mảng lưới đã đệm và stack.
+
+LƯU Ý TLE: Với trường hợp xấu nhất (toàn bộ 1000x1000 = 10^6 ô đều là sàn),
+Python thuần phải xử lý ~4*10^6 thao tác trong vòng lặp flood fill nên có thể
+chậm, có nguy cơ TLE nhẹ trên CSES. Thuật toán vẫn ĐÚNG; đã tối ưu bằng
+padding, bytes.translate và biến cục bộ (local variable) để giảm rủi ro.

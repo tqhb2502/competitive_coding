@@ -1,0 +1,38 @@
+Planets and Kingdoms - CSES 1683
+
+MÔ HÌNH HÓA (graph modeling)
+- Coi mỗi planet là một đỉnh, mỗi teleporter a -> b là một cạnh có hướng từ a đến b.
+- Hai planet a và b thuộc cùng một "kingdom" khi tồn tại đường đi từ a đến b VÀ từ b đến a.
+  Đây chính là định nghĩa của Strongly Connected Component (SCC): một tập đỉnh mà từ bất kỳ
+  đỉnh nào cũng đi được đến mọi đỉnh khác trong tập.
+- Vậy bài toán yêu cầu: tìm số lượng SCC (chính là số kingdom k) và gán cho mỗi đỉnh một nhãn
+  (label) từ 1 đến k sao cho hai đỉnh cùng SCC thì cùng nhãn.
+
+THUẬT TOÁN (algorithm) - Kosaraju
+1. Xây dựng đồ thị gốc (adj) và đồ thị đảo chiều (radj: đảo hướng mỗi cạnh).
+2. Chạy DFS trên đồ thị gốc, ghi lại thứ tự kết thúc (finish order) của các đỉnh vào một mảng
+   order (post-order). Dùng DFS lặp (iterative DFS) với con trỏ chỉ số cho từng đỉnh để tránh
+   tràn stack (RecursionError) khi n lớn.
+3. Duyệt các đỉnh theo thứ tự NGƯỢC lại của order. Với mỗi đỉnh chưa được gán nhãn, chạy DFS/BFS
+   trên đồ thị ĐẢO CHIỀU (radj); tất cả đỉnh thăm được trong lần duyệt này tạo thành một SCC và
+   được gán cùng một nhãn mới (tăng label lên 1).
+4. In ra label (số kingdom) rồi in nhãn của từng đỉnh 1..n.
+
+VÌ SAO ĐÚNG (correctness)
+- Tính chất của Kosaraju: nếu ta xử lý các đỉnh theo thứ tự giảm dần của finish time trong DFS
+  đầu tiên, thì khi DFS trên đồ thị đảo chiều, mỗi lần xuất phát từ một đỉnh chưa thăm sẽ chỉ
+  tới đúng một SCC (không "rò rỉ" sang SCC khác). Điều này dựa trên tính chất: trong đồ thị thu
+  gọn (condensation) theo SCC, đỉnh có finish time lớn nhất luôn thuộc một SCC là "nguồn" (source);
+  đảo chiều đồ thị biến nó thành "đích" (sink) nên DFS chỉ phủ hết SCC đó. Do đó số lần bắt đầu
+  DFS ở bước 3 bằng số SCC, và mỗi SCC nhận đúng một nhãn.
+- CSES chấp nhận bất kỳ cách gán nhãn hợp lệ nào (miễn là hai đỉnh cùng SCC có cùng nhãn và số
+  kingdom k đúng).
+
+ĐỘ PHỨC TẠP (complexity)
+- Thời gian: O(n + m) cho cả hai lần DFS và việc xây dựng đồ thị.
+- Bộ nhớ: O(n + m) cho adj, radj, mảng order và mảng comp.
+- Với n <= 1e5, m <= 2e5 thì tổng số thao tác khoảng vài trăm nghìn, hoàn toàn trong giới hạn.
+
+LƯU Ý TLE: Python chậm hơn C++, nhưng O(n + m) với DFS lặp dùng con trỏ chỉ số (không tạo
+tuple mới mỗi bước) và đọc/ghi I/O nhanh nên rủi ro TLE là thấp; vẫn nên giữ code gọn và tránh
+overhead không cần thiết.

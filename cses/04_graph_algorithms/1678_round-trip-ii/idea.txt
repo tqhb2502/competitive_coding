@@ -1,0 +1,58 @@
+Round Trip II - CSES 1678
+
+BÀI TOÁN
+Cho một đồ thị CÓ HƯỚNG với n thành phố và m chuyến bay một chiều. Cần tìm một
+"round trip": xuất phát từ một thành phố, đi qua một hoặc nhiều thành phố khác
+rồi quay lại đúng thành phố xuất phát, trong đó các thành phố trung gian phải
+phân biệt. Nói cách khác, ta cần tìm MỘT CHU TRÌNH (directed cycle) bất kỳ trong
+đồ thị có hướng, và in ra chu trình đó.
+
+MÔ HÌNH ĐỒ THỊ
+- Mỗi thành phố là một đỉnh, mỗi chuyến bay a -> b là một cạnh có hướng.
+- Dùng adjacency list adj[u] = danh sách các đỉnh v mà có cạnh u -> v.
+- Bài toán trở thành: phát hiện và in ra một directed cycle.
+
+THUẬT TOÁN (DFS với tô màu 3 trạng thái)
+Dùng DFS tô màu (white / gray / black):
+- color = 0 (white): chưa thăm.
+- color = 1 (gray): đang nằm trên stack DFS hiện tại (đang được xử lý).
+- color = 2 (black): đã xử lý xong hoàn toàn (đã pop khỏi stack).
+
+Khi duyệt cạnh u -> v:
+- Nếu v là white: đi tiếp, đặt parent[v] = u, tô v thành gray, push v vào stack.
+- Nếu v là gray: ta gặp một "back edge" tới một đỉnh đang nằm trên stack hiện
+  tại => tồn tại chu trình v -> ... -> u -> v. Truy vết ngược bằng mảng parent
+  từ u lên tới v để dựng lại chu trình.
+- Nếu v là black: bỏ qua (cạnh này không tạo chu trình mới với đường đi hiện tại).
+
+Vì chỉ tô một đỉnh thành black KHI pop nó ra khỏi stack, nên tập các đỉnh gray
+tại mọi thời điểm chính là các đỉnh trên đường đi DFS hiện tại. Do đó nếu color[v]
+= gray thì v chắc chắn là tổ tiên của u trên cây DFS, nên chuỗi parent từ u luôn
+đi lên tới được v => truy vết chu trình luôn đúng.
+
+Cần chạy DFS bắt đầu từ MỌI đỉnh chưa thăm để bao phủ cả đồ thị không liên thông.
+
+DFS phải viết theo kiểu ITERATIVE (dùng stack tường minh + mảng chỉ số it[]) vì
+n có thể tới 1e5, đệ quy sẽ gây RecursionError / stack overflow.
+
+TRUY VẾT VÀ IN KẾT QUẢ
+Khi tìm được back edge u -> v: đi từ u theo parent cho tới v để lấy các đỉnh
+[u, parent[u], ..., v], đảo ngược lại thành [v, ..., u] rồi thêm v vào cuối để
+đóng vòng: [v, ..., u, v]. In ra k = số đỉnh trong danh sách này (đỉnh đầu và
+đỉnh cuối trùng nhau, đúng định dạng "2 1 3 2" trong ví dụ), rồi in dãy đỉnh.
+Nếu không tìm thấy chu trình nào thì in "IMPOSSIBLE".
+
+Self-loop a -> a cũng là một chu trình hợp lệ: khi đó color[a] = gray lúc xét
+cạnh a -> a, cho ra kết quả "a a".
+
+TÍNH ĐÚNG ĐẮN
+- Đồ thị có hướng có chu trình khi và chỉ khi DFS gặp back edge (cạnh tới đỉnh
+  gray). Đây là tính chất chuẩn của DFS trên đồ thị có hướng.
+- Chuỗi parent đảm bảo đường đi cây DFS từ v xuống u; thêm cạnh u -> v (chính là
+  back edge) đóng thành chu trình. Mọi đỉnh trung gian trên cây DFS là phân biệt.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n + m) - mỗi đỉnh và mỗi cạnh được xét đúng một lần.
+- Bộ nhớ: O(n + m) cho adjacency list, mảng color, parent, it và stack.
+
+Với n <= 1e5, m <= 2e5, độ phức tạp tuyến tính này an toàn cho pure Python.

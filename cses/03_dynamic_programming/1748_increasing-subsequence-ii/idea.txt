@@ -39,6 +39,16 @@ Tối ưu bằng Fenwick tree (BIT) + nén tọa độ (coordinate compression):
 - Thời gian: O(n log n) cho sort + n lần query/update trên Fenwick tree, mỗi lần O(log n).
 - Bộ nhớ: O(n).
 
-LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản) có thể chậm,
-giới hạn thời gian CSES (1s) hướng đến C++. Đã dùng sys.stdin fast I/O, biến cục bộ và vòng lặp
-BIT tối giản để giảm nguy cơ TLE, nhưng vẫn có thể vượt thời gian trên CPython.
+Tối ưu hằng số (giảm nguy cơ TLE):
+- Vì mọi phép trong DP đều là phép cộng, kết quả cuối chỉ cần lấy mod một lần ở total.
+- Ta vẫn rút gọn dp = (s+1) % MOD để dp < MOD, nhưng KHÔNG rút gọn các ô Fenwick trong vòng update.
+  Mỗi ô tree bị cộng tối đa n lần các giá trị < MOD, nên luôn < n*MOD ~ 2*10^14, vẫn nằm trong
+  phạm vi số nguyên máy (< 2^63) và không làm CPython chuyển sang big-int chậm.
+- Nhờ bỏ được phép mod trong vòng update, vòng lặp BIT chạy nhanh hơn đáng kể (~1.3-1.7 lần) mà
+  vẫn cho kết quả chính xác. Rank được tính sẵn vào mảng ranks để tránh tra cứu dict trong vòng lặp.
+- CẢNH BÁO: KHÔNG được thay phép mod của dp bằng một lần trừ MOD; với dãy tăng ngặt dp bùng nổ theo
+  2^i khiến số nguyên phình to vô hạn và chương trình treo.
+
+LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản) vẫn có thể chậm so
+với giới hạn thời gian CSES (1s) hướng đến C++. Đã dùng sys.stdin fast I/O, biến cục bộ, tính sẵn
+rank và bỏ mod thừa để giảm hằng số, nhưng trên CPython thuần vẫn có khả năng vượt thời gian.

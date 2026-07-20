@@ -1,0 +1,40 @@
+Bài toán: Monsters (CSES 1194)
+
+MÔ HÌNH ĐỒ THỊ
+- Lưới n x m gồm các ô: '.' là ô trống, '#' là tường, 'A' là vị trí xuất phát,
+  'M' là vị trí quái vật. Mỗi bước, cả người chơi và tất cả quái vật cùng di
+  chuyển 1 ô theo 4 hướng (lên/xuống/trái/phải). Ta coi mỗi ô là một đỉnh, hai
+  ô kề nhau (không phải tường) nối bằng một cạnh trọng số 1.
+- Mục tiêu: đi từ 'A' tới một ô biên (hàng 0, hàng n-1, cột 0 hoặc cột m-1) mà
+  không bao giờ đứng cùng ô với quái vật, kể cả khi quái vật biết trước đường đi
+  của ta (tức là chiến lược phải an toàn trong mọi trường hợp).
+
+THUẬT TOÁN
+1. Multi-source BFS từ TẤT CẢ các ô 'M' cùng lúc để tính mon[ô] = số bước ít
+   nhất để MỘT quái vật bất kỳ tới được ô đó. Quái vật ở càng gần thì tới càng
+   sớm; đây chính là thời điểm sớm nhất một quái vật có thể chiếm ô.
+2. BFS từ 'A' để tính dist[ô] = số bước ít nhất người chơi tới ô đó. Khi mở rộng
+   sang ô kề nb với thời điểm tới mới nd = dist[cur] + 1, ta CHỈ cho phép đi vào
+   nb nếu nd < mon[nb] (nghiêm ngặt nhỏ hơn). Điều kiện này bảo đảm người chơi
+   tới ô nb TRƯỚC mọi quái vật, nên an toàn. Xuất phát cũng cần 0 < mon[A].
+3. Khi BFS chạm tới một ô biên thỏa điều kiện, ta truy vết cha (par) và ký tự
+   di chuyển (mv) để dựng lại đường đi rồi in ra. Nếu 'A' đã nằm ở biên thì thoát
+   ngay với đường đi rỗng (độ dài 0).
+
+TÍNH ĐÚNG ĐẮN
+- BFS trên đồ thị trọng số 1 cho khoảng cách ngắn nhất, nên mon[] và dist[] là
+  thời điểm sớm nhất tương ứng. Điều kiện dist < mon (nghiêm ngặt) đúng vì nếu
+  người chơi và quái vật cùng tới một ô ở cùng thời điểm thì bị bắt; do đó phải
+  tới trước hẳn. Nếu ta luôn tới mọi ô trên đường đi trước quái vật thì không có
+  thời điểm nào ta trùng ô với quái vật, an toàn kể cả khi quái vật đi tối ưu.
+- Do BFS mở rộng theo thứ tự thời gian tăng dần, một ô đã được thăm với dist nhỏ
+  nhất; không cần xét lại. Độ dài đường đi <= n*m.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n*m) cho cả hai lần BFS (mỗi ô và mỗi cạnh xét số lần hằng số).
+- Bộ nhớ: O(n*m) cho các mảng mon, dist, par, mv, wall.
+
+LƯU Ý TLE: n, m <= 1000 nên có tới 1e6 ô và ~4e6 lần xét cạnh cho mỗi BFS. Với
+CPython thuần, hai lần BFS trên dữ liệu lớn nhất có thể chạm sát giới hạn thời
+gian; code đã tối ưu (đọc vào bằng buffer, dùng mảng phẳng theo chỉ số ô, nội
+tuyến 4 hướng) nhưng vẫn có rủi ro TLE trên test cực đại.

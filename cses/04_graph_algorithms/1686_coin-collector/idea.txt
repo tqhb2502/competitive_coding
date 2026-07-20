@@ -1,0 +1,43 @@
+Bài toán: Coin Collector (CSES 1686)
+Link: https://cses.fi/problemset/task/1686
+
+1. MÔ HÌNH HÓA ĐỒ THỊ
+- Có n phòng, m đường hầm một chiều (đồ thị có hướng). Mỗi phòng i chứa k_i đồng
+  xu. Ta được chọn phòng bắt đầu và phòng kết thúc tùy ý, đi theo các đường hầm và
+  thu tối đa số xu (mỗi phòng đi qua chỉ được cộng xu một lần).
+- Nhận xét then chốt: nếu từ phòng u đi được tới v và từ v cũng đi được về u thì
+  u và v nằm trong cùng một strongly connected component (SCC). Khi vào một SCC ta
+  luôn có thể đi hết mọi phòng trong SCC đó rồi thoát ra, nên có thể thu toàn bộ xu
+  của cả SCC. Vì vậy ta gom (condense) mỗi SCC thành một đỉnh, giá trị đỉnh = tổng
+  xu các phòng trong SCC. Đồ thị sau khi condense là một DAG (không còn chu trình).
+
+2. THUẬT TOÁN
+- Bước 1: Tìm SCC bằng Tarjan cài đặt dạng iterative (dùng stack tường minh, tránh
+  đệ quy sâu gây RecursionError/stack overflow khi n tới 1e5).
+- Bước 2: Tính comp_val[c] = tổng xu các phòng thuộc SCC c.
+- Bước 3: Xây danh sách kề của DAG condense: với mỗi cạnh gốc a->b mà comp[a] khác
+  comp[b], thêm cạnh comp[a] -> comp[b].
+- Bước 4: DP tìm đường đi có tổng lớn nhất trên DAG:
+      dp[c] = comp_val[c] + max(dp[c']) với mọi successor c' của c (0 nếu không có).
+  Đáp án = max(dp[c]) trên tất cả các SCC (được tự do chọn điểm đầu/cuối).
+
+3. TÍNH ĐÚNG ĐẮN
+- Tarjan đánh số các SCC theo thứ tự topo ĐẢO NGƯỢC: một SCC được hoàn tất (pop khỏi
+  stack) khi mọi thứ nó tới được đã xong, nên các "sink" hoàn tất trước và nhận id
+  nhỏ, còn "source" nhận id lớn. Do đó với mọi cạnh condense c -> c' luôn có
+  c' < c (successor có id nhỏ hơn). Khi duyệt c theo id tăng dần, mọi successor c'
+  đã được tính dp trước, nên công thức dp là đúng và không cần topo sort riêng.
+- Vì mỗi SCC gộp lại đảm bảo thu hết xu bên trong và DAG không còn chu trình, bài
+  toán "đường đi tổng lớn nhất" trên DAG cho đúng đáp số bài toán gốc. Do mọi k_i
+  >= 1, giá trị mỗi SCC dương nên đáp án chính là dp lớn nhất.
+
+4. ĐỘ PHỨC TẠP
+- Thời gian: O(n + m) cho Tarjan, condense và DP.
+- Bộ nhớ: O(n + m) cho CSR adjacency, mảng Tarjan và danh sách kề condense.
+- Giá trị đáp án có thể tới n * 1e9 = 1e14 nhưng int của Python là số nguyên lớn tùy
+  ý nên không tràn số.
+
+LƯU Ý TLE: n tới 1e5 và m tới 2e5, thuật toán O(n+m) là tối ưu về mặt lý thuyết,
+nhưng CPython thuần với vòng lặp Tarjan + xây danh sách kề condense có hằng số lớn,
+nên vẫn có khả năng TLE ở giới hạn thời gian ~1s của CSES. Code đã tối ưu (đọc input
+một lần, dùng CSR, tránh tạo tuple trong stack, dùng biến cục bộ) để giảm rủi ro.

@@ -1,0 +1,27 @@
+Bài toán: Road Construction (CSES 1676)
+
+Mô hình hóa đồ thị:
+- Có n thành phố, ban đầu chưa có con đường nào nên có n thành phần liên thông
+  (connected components), mỗi thành phần chỉ gồm 1 đỉnh, kích thước lớn nhất là 1.
+- Mỗi lần xây một con đường (a, b) ta cần gộp hai thành phần chứa a và b lại,
+  rồi in ra: số thành phần liên thông hiện tại và kích thước thành phần lớn nhất.
+
+Thuật toán: DSU (Disjoint Set Union / Union-Find)
+- Dùng mảng parent để lưu cha của mỗi đỉnh và mảng size để lưu kích thước tập.
+- find(x): tìm đại diện (root) của tập chứa x, có path compression (nén đường đi).
+- union(a, b): tìm root của a và b.
+  + Nếu cùng root: con đường này nối hai đỉnh đã cùng thành phần -> không đổi gì.
+  + Nếu khác root: gộp theo union by size (gắn cây nhỏ vào cây lớn), giảm biến đếm
+    số thành phần đi 1, cập nhật kích thước tập gộp và cập nhật biến max size.
+- Sau mỗi truy vấn in "components max_size".
+
+Vì sao đúng:
+- DSU duy trì chính xác quan hệ liên thông sau khi thêm cạnh dần dần (incremental).
+  Số thành phần bắt đầu bằng n, mỗi lần gộp thành công hai tập khác nhau giảm đúng 1.
+  Kích thước tập gộp = tổng hai tập con; max size chỉ có thể tăng nên chỉ cần so sánh
+  với kích thước tập vừa gộp.
+
+Độ phức tạp:
+- Thời gian: O((n + m) * alpha(n)) với alpha là hàm Ackermann nghịch đảo (gần như hằng số)
+  nhờ path compression và union by size. Rất nhanh với n <= 1e5, m <= 2e5.
+- Bộ nhớ: O(n) cho hai mảng parent và size.

@@ -1,0 +1,41 @@
+Distinct Routes - https://cses.fi/problemset/task/1711
+
+1) Mô hình hóa bài toán
+- Cho đồ thị có hướng với n phòng và m teleporter (cạnh có hướng từ a đến b).
+- Ta bắt đầu ở phòng 1, muốn đến phòng n. Mỗi teleporter chỉ được dùng TỐI ĐA 1 lần
+  trên toàn bộ các ngày chơi. Cần tìm số ngày (số tuyến đường) tối đa, mỗi ngày là một
+  đường đi từ 1 đến n, sao cho không cạnh nào bị dùng lại giữa các đường.
+- Đây chính là bài toán tìm SỐ ĐƯỜNG ĐI EDGE-DISJOINT tối đa từ 1 đến n.
+
+2) Thuật toán
+- Xây dựng mạng luồng (flow network): đỉnh nguồn s = 1, đỉnh đích t = n.
+  Mỗi teleporter a -> b trở thành một cạnh có capacity = 1 (kèm cạnh reverse capacity 0).
+- Giá trị max-flow từ s đến t chính bằng số đường đi edge-disjoint tối đa (định lý
+  về luồng nguyên + mỗi cạnh capacity 1 => mỗi đơn vị luồng tương ứng một đường đi
+  không dùng chung cạnh). Đó là đáp án k.
+- Chạy Dinic (max-flow) để tính k.
+- Tái tạo (decompose) k đường đi:
+  + Xét các cạnh forward còn lại capacity = 0 (tức đã có 1 đơn vị luồng chạy qua,
+    net flow = 1) và đưa vào danh sách kề flowadj.
+  + Lặp đúng k lần: xuất phát từ s, mỗi bước đi theo một cạnh có luồng chưa dùng
+    (dùng con trỏ ptr cho từng đỉnh) cho đến khi tới t.
+  + Vì tại mỗi đỉnh trung gian: in-flow = out-flow, nên mỗi lần bước vào ta luôn có
+    một cạnh ra chưa dùng => luôn đi tiếp được và cuối cùng tới t.
+  + Nếu quá trình đi gặp lại một đỉnh đã nằm trên đường hiện tại (có chu trình do
+    Dinic có thể sinh ra), ta CẮT BỎ đoạn chu trình (splice) để tuyến đường là đường
+    đi đơn giản, không lặp đỉnh. Các cạnh chu trình coi như bị tiêu thụ và loại khỏi
+    luồng, không ảnh hưởng các đường khác.
+
+3) Tính đúng đắn
+- Max-flow value = số đường đi edge-disjoint tối đa (theo Menger / max-flow min-cut
+  cho đơn vị capacity).
+- Bảo toàn luồng tại mỗi đỉnh trung gian bảo đảm quá trình decompose luôn bóc tách đủ
+  đúng k đường đi và tiêu thụ hết các cạnh mang luồng.
+- Việc cắt chu trình chỉ bỏ đi các cạnh tạo thành vòng kín, giữ lại đường đi 1 -> n hợp lệ.
+
+4) Độ phức tạp
+- Dinic trên đồ thị đơn vị capacity: O(E * sqrt(V)) trong trường hợp tổng quát, ở đây
+  E <= 2m = 2000, V = n <= 500 => rất nhanh.
+- Tái tạo đường đi: O(V + E) tổng cộng.
+- Bộ nhớ: O(V + E).
+- Với n <= 500, m <= 1000 bài toán rất nhỏ, không có rủi ro TLE trong pure Python.

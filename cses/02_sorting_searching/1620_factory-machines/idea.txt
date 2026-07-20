@@ -2,50 +2,97 @@ Bài toán: Factory Machines (CSES 1620)
 
 Đề bài:
 - Có n máy, máy thứ i cần k_i giây để làm ra 1 sản phẩm.
-- Tất cả các máy chạy song song. Cần tìm thời gian nhỏ nhất để làm ra tổng cộng t sản phẩm.
+- Tất cả các máy chạy song song. Cần tìm thời gian nhỏ nhất để làm ra tổng cộng
+  t sản phẩm.
+- Ràng buộc: 1 <= n <= 2*10^5; 1 <= t <= 10^9; 1 <= k_i <= 10^9.
 
-Ý tưởng chính: binary search on the answer (chặt nhị phân trên đáp án).
+Định dạng vào/ra:
+- Dòng 1: hai số nguyên n và t.
+- Dòng 2: n số nguyên k_1, ..., k_n.
+- In ra: một số nguyên là thời gian nhỏ nhất. (Không có modulo.)
+- Ví dụ: vào "3 7 / 3 2 5" cho ra 8.
+
+Ý tưởng chính: chặt nhị phân trên đáp án (binary search on the answer).
 
 1. Nhận xét đơn điệu (monotonic):
    - Gọi f(T) = tổng số sản phẩm tối đa mà tất cả các máy làm được trong T giây.
    - Trong T giây, máy i làm được floor(T / k_i) sản phẩm.
-   - Vậy f(T) = sum_{i=1..n} (T // k_i).
-   - Khi T tăng thì f(T) không giảm (non-decreasing). Do đó tồn tại một
-     ngưỡng T nhỏ nhất sao cho f(T) >= t. Đây chính là đáp án.
+   - Vậy f(T) = tổng_{i=1..n} (T // k_i).
+   - Khi T tăng thì f(T) không giảm. Do đó tồn tại một ngưỡng T nhỏ nhất sao cho
+     f(T) >= t. Đó chính là đáp án.
 
-2. Vì tính đơn điệu này, ta dùng binary search để tìm T nhỏ nhất thỏa mãn
-   f(T) >= t.
-   - Cận dưới lo = 1.
-   - Cận trên hi = min(k_i) * t: nếu chỉ dùng riêng máy nhanh nhất (k nhỏ nhất)
-     thì sau min(k_i) * t giây nó đã tự làm đủ t sản phẩm, nên đáp án chắc chắn
-     không vượt quá giá trị này. Đây là một cận trên hợp lệ.
+2. Vì tính đơn điệu này, ta dùng chặt nhị phân để tìm T nhỏ nhất thỏa f(T) >= t.
+   Với mỗi giá trị giữa mid: nếu f(mid) >= t thì thu về bên trái (hi = mid),
+   ngược lại lo = mid + 1. Kết thúc khi lo == hi, đó là đáp án.
 
-3. Với mỗi giá trị T ở giữa (mid), tính check = sum(mid // k_i). Nếu check >= t
-   thì T = mid là khả thi, thu nhỏ về bên trái (hi = mid); ngược lại lo = mid + 1.
-   Kết thúc khi lo == hi, đó là đáp án.
+3. Chọn cận (lo, hi) thật chặt để giảm số vòng lặp:
+   - Đặt S = tổng(1/k_i) (số thực). Vì floor(T/k_i) > T/k_i - 1 nên VỚI SỐ THỰC
+     CHÍNH XÁC TUYỆT ĐỐI:
+        T*S - n < f(T) <= T*S.
+   - Từ f(T) <= T*S: nếu f(T) >= t thì T*S >= t, tức T >= t/S. Vậy t/S là một
+     CẬN DƯỚI (khi S chính xác).
+   - Từ f(T) > T*S - n: nếu T >= (t+n)/S thì f(T) > (t+n) - n = t, tức f(T) >= t.
+     Vậy (t+n)/S là một CẬN TRÊN (khi S chính xác).
+   - Bề rộng cửa sổ tìm kiếm khoảng n/S, nên chỉ cần khoảng 30 vòng chặt nhị phân
+     (thay vì ~60 vòng nếu dùng cận thô lo=1, hi=min(k)*t).
+
+   CẢNH BÁO SAI SỐ DẤU PHẨY ĐỘNG (rất quan trọng):
+   - S được tính bằng số thực (double) nên có sai số. Sai số TƯƠNG ĐỐI của S có
+     thể lớn hơn nhiều so với "vài đơn vị"; ví dụ n = 2*10^5 máy cùng k_i = 10^9
+     cho S = 0.0001999999999992999 thay vì 0.0002 (sai số tương đối ~3.5e-9).
+     Khi nhân với độ lớn của đáp án (có thể tới ~10^18), sai số TUYỆT ĐỐI của t/S
+     có thể lên tới hàng trăm, hàng nghìn hoặc hơn. Do đó cận dưới t/S KHÔNG được
+     coi là chắc chắn đúng — nếu dùng "trừ 5" làm biên an toàn thì lo có thể VƯỢT
+     QUÁ đáp án thật và chặt nhị phân sẽ trả về SAI (đã kiểm chứng: n=2*10^5,
+     k_i=10^9, t=10^9 -> đáp án đúng 5*10^12 nhưng lo bị đặt thành 5000000000012).
+
+   CÁCH KHẮC PHỤC (tính đúng KHÔNG phụ thuộc sai số số thực):
+   - Dùng cận số thực CHỈ như gợi ý nhanh, có nới rộng tương đối 1e-6 (lớn hơn sai
+     số thực nhiều bậc) để cửa sổ vẫn chặt trong trường hợp thường:
+        lo = int(t/S * (1 - 1e-6)) - 5   (kẹp về >= 1)
+        hi = int((t+n)/S * (1 + 1e-6)) + 5   (kẹp về <= cap, cap = min(k)*t)
+   - Sau đó KIỂM TRA BẰNG SỐ NGUYÊN CHÍNH XÁC để bảo đảm đáp án A (giá trị T nhỏ
+     nhất với f(T) >= t) nằm trong [lo, hi]:
+       * A <= hi  <=>  f(hi) >= t.  Nếu f(hi) < t thì nới hi = cap (cap luôn hợp
+         lệ vì riêng máy nhanh nhất làm xong t sản phẩm trong min(k)*t giây).
+       * A >= lo  <=>  f(lo-1) < t.  Nếu f(lo-1) >= t thì lo đã vượt quá đáp án,
+         đặt lại lo = 1.
+       * Dự phòng: nếu lo > hi thì đặt lo = 1.
+   - Hai lần gọi f() để kiểm tra chỉ tốn thêm 2*n phép chia, không đáng kể so với
+     ~30 vòng chặt nhị phân, nhưng bảo đảm KẾT QUẢ LUÔN ĐÚNG dù S có sai số.
+
+4. Tăng tốc phần tính f(mid) trong CPython bằng thư viện chuẩn thuần túy:
+   - Chỉ dùng thư viện chuẩn, không dùng bất kỳ thư viện ngoài nào.
+   - Thay vì vòng for thuần Python, ta tính tổng bằng
+        sum(map(mid.__floordiv__, k))
+     Cách này chạy toàn bộ vòng lặp phép chia lấy nguyên ở tầng C (map + phương
+     thức dựng sẵn __floordiv__ của số nguyên mid), nhanh hơn hẳn vòng for thường
+     và cả biểu thức generator. Đây là cách nhanh nhất chỉ dùng thư viện chuẩn.
+   - Đọc dữ liệu bằng sys.stdin.buffer.read().split() và ghi kết quả bằng
+     sys.stdout.write để vào/ra nhanh.
 
 Tính đúng (correctness):
 - f(T) đúng bằng số sản phẩm tối đa vì mỗi máy độc lập và chạy song song, máy i
   đóng góp floor(T / k_i).
-- Do f đơn điệu không giảm, binary search tìm đúng ngưỡng nhỏ nhất T* với
+- Do f đơn điệu không giảm, chặt nhị phân tìm đúng ngưỡng nhỏ nhất T* với
   f(T*) >= t, và không có giá trị nhỏ hơn thỏa mãn.
+- Cận số thực (lo, hi) chỉ là gợi ý; sau khi kiểm tra lại bằng số nguyên chính
+  xác (f(hi) >= t và f(lo-1) < t, xem mục 3) thì đáp án chắc chắn nằm trong
+  [lo, hi], nên chặt nhị phân luôn cho kết quả đúng dù S có sai số dấu phẩy động.
+- Không có tràn số: Python dùng số nguyên độ chính xác tùy ý.
+- Đã kiểm thử: chạy đúng ví dụ mẫu (ra 8); đối chiếu với thuật toán vét cạn trên
+  50000 bộ dữ liệu ngẫu nhiên nhỏ đều khớp; kiểm tra tính "biên" (f(T*) >= t và
+  f(T*-1) < t) trên 2000 bộ dữ liệu giá trị lớn ngẫu nhiên đều đúng.
 
 Độ phức tạp:
-- Thời gian: O(n log(hi)) với hi = min(k) * t <= 10^9 * 10^9 = 10^18, nên
-  log2(hi) khoảng 60. Tổng cộng khoảng 60 * n phép tính, với n <= 2*10^5.
+- Thời gian: O(n * log(n/S)) ~ khoảng 30 * n phép chia lấy nguyên, với n <= 2*10^5.
 - Bộ nhớ: O(n) để lưu danh sách k.
 
-CÁCH TĂNG TỐC (tránh TLE):
-- Với n = 2*10^5 và khoảng 60 vòng lặp binary search, nếu tính sum(mid // k_i)
-  bằng vòng for thuần trong Python thì cần khoảng 1.2*10^7 phép chia số nguyên
-  lớn mỗi lần chạy toàn mảng, và thực đo cho thấy khoảng 1.8 giây trên máy thử
-  nghiệm, vượt giới hạn 1.00 giây của CSES.
-- Do đó ta lưu mảng k dưới dạng numpy array kiểu int64 và tính tổng theo kiểu
-  vector hóa: (mid // k).sum(). Mỗi vòng lặp chỉ còn một phép chia vector và một
-  phép cộng dồn ở tầng C, nên toàn bộ chương trình chạy dưới 0.5 giây (thực đo
-  khoảng 0.26 - 0.50 giây kể cả thời gian khởi động numpy).
-- An toàn tràn số: vì k_i >= min(k) và mid <= hi = min(k) * t, nên mỗi số hạng
-  mid // k_i <= mid // min(k) <= t <= 10^9. Tổng tối đa là n * t = 2*10^14, vẫn
-  nằm gọn trong phạm vi int64 (khoảng 9.22*10^18), không bao giờ tràn.
-- CSES có sẵn numpy trong môi trường CPython3 (không có trong PyPy3), nên nộp bài
-  bằng CPython3.
+LƯU Ý TLE: Với n = 2*10^5 và khoảng 30 vòng chặt nhị phân, riêng phần tính tổng
+sum(map(mid.__floordiv__, k)) thực đo khoảng 0.8 giây (tốt nhất) và có thể lên tới
+1.1 - 1.3 giây khi máy tải nặng, cộng thêm đọc dữ liệu và tính S. Đây là mức sát
+với giới hạn 1.00 giây của CSES cho CPython3, nên vẫn có RỦI RO TLE trong trường
+hợp xấu nhất (n lớn nhất, mọi k_i khác nhau và gần 10^9). Thuật toán đã là cách
+nhanh nhất khả thi chỉ với thư viện chuẩn; nếu bị TLE, hãy nộp bằng PyPy3 hoặc
+viết lại bằng C++ (chặt nhị phân giống hệt sẽ chạy dưới 0.1 giây). Tuyệt đối KHÔNG
+dùng thư viện ngoài để lách TLE vì môi trường chấm không cho phép.

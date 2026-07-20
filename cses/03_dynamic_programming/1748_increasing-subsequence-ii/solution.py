@@ -13,18 +13,21 @@ def main():
 
     MOD = 1000000007
 
-    # Nén tọa độ: gán rank 1..m cho các giá trị phân biệt.
+    # Nén tọa độ: gán rank 1..m cho các giá trị phân biệt, tính sẵn rank cho từng phần tử.
     ints = list(map(int, a))
     sorted_vals = sorted(set(ints))
     rank = {v: i + 1 for i, v in enumerate(sorted_vals)}
     m = len(sorted_vals)
+    ranks = [rank[v] for v in ints]
 
     # Fenwick tree lưu tổng dp theo rank giá trị.
+    # dp luôn được rút gọn < MOD nên mỗi ô tree bị cộng tối đa n lần, giá trị < n*MOD ~ 2e14,
+    # vẫn nằm trong phạm vi số nguyên máy (< 2^63). Nhờ đó bỏ được phép mod trong vòng update,
+    # giảm hằng số thời gian mà không sợ tràn hay sai kết quả (mọi phép chỉ là cộng nên mod cuối là đủ).
     tree = [0] * (m + 1)
 
     total = 0
-    for v in ints:
-        r = rank[v]
+    for r in ranks:
         # truy vấn prefix sum trên [1, r-1] -> tổng dp của các phần tử trước có giá trị < v
         i = r - 1
         s = 0
@@ -33,10 +36,10 @@ def main():
             i -= i & (-i)
         dp = (s + 1) % MOD
         total += dp
-        # cập nhật: cộng dp vào vị trí rank r
+        # cập nhật: cộng dp vào vị trí rank r (không rút gọn tree, giá trị vẫn bị chặn an toàn)
         i = r
         while i <= m:
-            tree[i] = (tree[i] + dp) % MOD
+            tree[i] += dp
             i += i & (-i)
 
     sys.stdout.write(str(total % MOD))

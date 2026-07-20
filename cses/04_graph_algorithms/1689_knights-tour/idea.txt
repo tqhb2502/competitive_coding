@@ -1,0 +1,41 @@
+Bài toán: Knight's Tour (CSES 1689)
+
+Mô hình hóa bằng đồ thị (graph modeling):
+- Bàn cờ 8x8 gồm 64 ô, mỗi ô là một đỉnh (node) của đồ thị.
+- Hai ô nối với nhau bằng một cạnh (edge) nếu quân mã (knight) có thể đi từ ô này
+  sang ô kia bằng một nước đi hình chữ L (2 ô theo một hướng và 1 ô theo hướng
+  vuông góc). Mỗi ô có tối đa 8 nước đi (8 delta).
+- Cần tìm một đường đi Hamilton (Hamiltonian path) đi qua tất cả 64 ô đúng một lần,
+  bắt đầu từ ô xuất phát cho trước (x, y), trong đó x là cột, y là hàng (1-indexed).
+  Ô có giá trị 1 chính là ô xuất phát: board[y-1][x-1].
+
+Thuật toán: DFS backtracking kết hợp heuristic Warnsdorff.
+- Ta duyệt DFS đánh số bước từ 1 tới 64. Tại mỗi ô đang đứng, xét tất cả các ô kề
+  chưa thăm.
+- Heuristic Warnsdorff: sắp xếp các ô kề chưa thăm theo số nước đi tiếp theo (số ô
+  kề chưa thăm của chính chúng) tăng dần, và thử ô có ít lựa chọn tiếp theo nhất
+  trước. Trực giác là hãy đi vào những ô "khó tới" (dễ bị kẹt) sớm để tránh bỏ sót.
+- Khi hai ô có cùng số nước đi tiếp theo, ta phá hòa bằng cách ưu tiên ô xa tâm bàn
+  cờ hơn (dùng tọa độ nhân đôi để tâm 3.5 thành 7, so sánh bằng số nguyên). Cách phá
+  hòa xác định này giúp nhánh đầu tiên luôn thành công cho mọi ô xuất phát trên bàn
+  8x8, nên DFS không bao giờ phải quay lui (đúng 64 lời gọi mỗi lần giải).
+- Vì đây vẫn là backtracking đầy đủ (exhaustive), nếu một nhánh đi vào ngõ cụt thì
+  quay lui (đặt lại board = 0) và thử nhánh khác, nên thuật toán luôn tìm ra lời
+  giải nếu tồn tại. Với bàn 8x8 và mọi ô xuất phát đều tồn tại tour, nên chắc chắn
+  tìm được.
+
+Tại sao đúng:
+- Backtracking vét cạn không gian nghiệm nên đảm bảo tìm được đường đi Hamilton nếu
+  có. Heuristic Warnsdorff chỉ thay đổi THỨ TỰ thử các nhánh chứ không loại bỏ nhánh
+  nào, do đó không làm mất tính đúng đắn; nó chỉ giúp gần như luôn tìm ra nghiệm ngay
+  ở nhánh đầu tiên, gần như không phải quay lui.
+- Bài chấp nhận bất kỳ tour hợp lệ nào (special judge), nên chỉ cần in ra một lời
+  giải bất kỳ có ô xuất phát mang số 1.
+
+Độ phức tạp thời gian và bộ nhớ:
+- Bàn cờ cố định 64 ô. Nhờ heuristic Warnsdorff, DFS thực tế chạy gần như tuyến tính
+  theo số ô, mỗi bước làm O(số nước đi tối đa) = O(8) công việc để đếm và sắp xếp.
+  Tổng thời gian rất nhỏ (hằng số), thực tế tức thì.
+- Bộ nhớ O(64) cho bảng trạng thái. Độ sâu đệ quy tối đa 64.
+
+Không có rủi ro TLE vì kích thước bài cố định 8x8.

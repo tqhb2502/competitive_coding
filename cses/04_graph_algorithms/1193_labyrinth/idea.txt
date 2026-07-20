@@ -1,0 +1,36 @@
+Bài toán: Labyrinth (CSES 1193)
+
+Mô hình hóa đồ thị:
+- Bản đồ mê cung có n hàng, m cột. Mỗi ô là một đỉnh của đồ thị.
+- Ô '#' là tường (không đi được). Các ô '.', 'A', 'B' là ô đi được.
+- Từ một ô đi được, ta có thể đi sang 4 ô kề cạnh (trái L, phải R, lên U, xuống D)
+  nếu ô đó nằm trong bản đồ và không phải tường. Mỗi cạnh có trọng số 1.
+- Ta đánh số ô (r, c) thành chỉ số phẳng cur = r * m + c để tiết kiệm bộ nhớ.
+
+Thuật toán: BFS (Breadth-First Search)
+- Vì tất cả các cạnh có trọng số bằng nhau (=1), BFS xuất phát từ 'A' cho ta
+  đường đi ngắn nhất tới mọi ô, trong đó có 'B'.
+- Dùng collections.deque làm hàng đợi. Mỗi khi lần đầu thăm một ô, ta lưu lại
+  "hướng di chuyển" (U/D/L/R) đã dùng để tới ô đó vào mảng visited (mã hóa
+  bằng số nguyên nhỏ: 1=U, 2=D, 3=L, 4=R, 5=đỉnh xuất phát A).
+- Nếu sau BFS ô 'B' vẫn chưa được thăm (visited['B'] == 0) thì in "NO".
+- Ngược lại in "YES", độ dài đường đi, và chuỗi hướng. Truy vết ngược từ 'B'
+  về 'A': tại mỗi ô đọc hướng đã lưu, thêm ký tự tương ứng, rồi lùi về ô trước
+  đó bằng cách cộng offset ngược (U -> +m, D -> -m, L -> +1, R -> -1). Cuối cùng
+  đảo ngược chuỗi để có thứ tự từ 'A' tới 'B'.
+
+Tính đúng đắn:
+- BFS trên đồ thị không trọng số (hoặc trọng số đều nhau) luôn cho khoảng cách
+  ngắn nhất theo số bước, nên độ dài đường đi tìm được là nhỏ nhất.
+- Mỗi ô chỉ được thăm đúng một lần và lưu chính xác hướng tới nó, nên việc truy
+  vết ngược tái tạo đúng một đường đi ngắn nhất hợp lệ.
+
+Độ phức tạp:
+- Thời gian: O(n * m) vì mỗi ô được đưa vào/lấy ra khỏi hàng đợi tối đa một lần
+  và mỗi ô xét 4 hướng.
+- Bộ nhớ: O(n * m) cho mảng visited (bytearray) và bản đồ phẳng.
+- Với n, m <= 1000 thì n * m <= 10^6, hoàn toàn nằm trong giới hạn.
+
+LƯU Ý TLE: Với 10^6 ô, BFS thuần Python có thể gần giới hạn thời gian trên các
+test nặng, nhưng đã tối ưu bằng bytearray, bản đồ phẳng (bytes), deque và đọc I/O
+nhanh nên thực tế thường vượt qua; đây là rủi ro TLE ở mức thấp.

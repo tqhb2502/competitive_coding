@@ -1,0 +1,37 @@
+Bài toán: Building Roads (CSES 1666)
+
+MÔ HÌNH ĐỒ THỊ
+- Có n thành phố (đỉnh) và m con đường (cạnh vô hướng) đã có sẵn.
+- Cần xây thêm số con đường ÍT NHẤT để toàn bộ đồ thị trở nên liên thông (mọi
+  thành phố đều đến được nhau).
+
+Ý TƯỞNG
+- Nếu đồ thị hiện tại có c thành phần liên thông (connected components), thì để
+  nối tất cả chúng lại thành một khối liên thông duy nhất ta cần đúng c - 1
+  con đường mới. Mỗi con đường mới nối hai thành phần khác nhau sẽ làm giảm số
+  thành phần đi đúng 1, nên c - 1 là số tối thiểu và cũng đủ.
+- Cách nối: chọn một đỉnh đại diện của mỗi thành phần. Lấy đại diện đầu tiên làm
+  "gốc", rồi nối gốc với đại diện của từng thành phần còn lại. Mọi cách nối tạo
+  thành một cây trên các đại diện đều hợp lệ (đề chấp nhận nhiều đáp án đúng).
+
+THUẬT TOÁN (DSU / Union-Find)
+- Dùng cấu trúc Disjoint Set Union với path compression và union by size/rank để
+  gộp các đỉnh nối bởi cạnh có sẵn.
+- Sau khi xử lý hết m cạnh, quét các đỉnh 1..n, lấy đại diện (root) của mỗi
+  thành phần: mỗi root xuất hiện lần đầu là một đỉnh đại diện.
+- In ra k = (số đại diện) - 1, rồi in các cặp (đại diện đầu tiên, đại diện thứ i)
+  cho i = 2..số đại diện.
+- Có thể dùng BFS/DFS thay cho DSU cũng cho cùng độ phức tạp; DSU gọn và nhanh.
+
+TÍNH ĐÚNG ĐẮN
+- DSU xác định chính xác các thành phần liên thông. Mỗi cạnh mới giữa hai thành
+  phần khác nhau giảm số thành phần đúng 1; muốn từ c thành phần về 1 cần ít nhất
+  c - 1 cạnh, và việc nối gốc với từng đại diện còn lại tạo đúng c - 1 cạnh làm
+  cả đồ thị liên thông. Không có cặp trùng vì các đại diện đôi một khác nhau.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O((n + m) * α(n)) với α là hàm ngược Ackermann (gần như hằng số).
+- Bộ nhớ: O(n) cho mảng parent và size của DSU, cộng O(m) khi đọc input.
+
+Với n <= 1e5 và m <= 2e5, thuật toán rất nhẹ, đọc/ghi I/O nhanh nên chạy tốt
+trên CPython của CSES; không có rủi ro TLE đáng kể.

@@ -4,6 +4,15 @@ Bài toán: Minimizing Coins (CSES 1634)
 bằng số đồng xu ÍT NHẤT. Nếu không tạo được thì in -1.
 Đây là bài toán unbounded knapsack (knapsack không giới hạn số lần dùng).
 
+ĐỊNH DẠNG VÀO/RA:
+  - Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
+  - Dòng 2: n số nguyên là giá trị các đồng xu.
+  - In ra: một số nguyên là số đồng xu ít nhất, hoặc -1 nếu không tạo được.
+  Không có phép chia lấy dư (modulo).
+
+RÀNG BUỘC:
+  1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6.
+
 TRẠNG THÁI DP:
   dp[s] = số đồng xu ít nhất để tạo ra đúng tổng s (với 0 <= s <= x).
 
@@ -14,30 +23,32 @@ là tổng s - c đã được giải tối ưu; cộng thêm 1 đồng xu vừa
 
 BASE CASE (cơ sở):
   dp[0] = 0 (tạo tổng 0 cần 0 đồng xu).
-  Các dp[s] khác khởi tạo bằng INF (nghĩa là chưa tạo được).
+  Các dp[s] khác khởi tạo bằng INF (nghĩa là chưa tạo được). Chọn INF = x + 1
+  vì đáp án thật (nếu có) luôn <= x do mỗi đồng xu có giá trị >= 1; nhờ vậy
+  giá trị luôn nhỏ, không tràn số và dễ kiểm tra "không tạo được".
 
 ĐÁP ÁN:
-  Nếu dp[x] còn là INF (tức dp[x] > x, vì đáp án thật luôn <= x do mỗi đồng xu
-  giá trị >= 1) thì in -1; ngược lại in dp[x].
+  Nếu dp[x] vẫn > x (tức còn bằng INF) thì in -1; ngược lại in dp[x].
 
 VÌ SAO ĐÚNG:
   Vì mỗi đồng xu được dùng lại tùy ý, ta duyệt s tăng dần và cho phép dp[s - c]
-  đã có thể chứa chính đồng xu c (vòng lặp forward). Do đó dp[s] xét mọi cách
-  chọn đồng xu cuối và luôn dựa trên nghiệm con tối ưu dp[s - c]; theo nguyên lý
-  quy hoạch động (tối ưu con + không sau ảnh hưởng trước) nên dp[x] là tối ưu.
+  đã có thể chứa chính đồng xu c (vòng lặp xuôi - forward). Do đó dp[s] xét mọi
+  cách chọn đồng xu cuối và luôn dựa trên nghiệm con tối ưu dp[s - c]; theo nguyên
+  lý quy hoạch động (tối ưu con + không sau ảnh hưởng trước) nên dp[x] là tối ưu.
+
+CÁCH CÀI ĐẶT (thuần Python, chỉ dùng thư viện chuẩn):
+  - Đọc toàn bộ dữ liệu một lần bằng sys.stdin.buffer.read().split() để vào/ra nhanh.
+  - Loại các đồng xu trùng nhau và bỏ những đồng xu có giá trị > x (vô dụng).
+  - Dùng một mảng (list) dp kích thước x + 1. Với mỗi đồng xu c, quét i từ c tới x
+    và cập nhật dp[i] = min(dp[i], dp[i - c] + 1). Việc gán biến cục bộ (d = dp)
+    giúp CPython truy cập nhanh hơn trong vòng lặp nóng.
+  - In kết quả bằng sys.stdout.write.
 
 ĐỘ PHỨC TẠP:
-  Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 là khoảng 10^8
-  phép tính cơ bản.
+  Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 là tối đa khoảng
+  10^8 phép cập nhật cơ bản.
 
-CÁCH CÀI ĐẶT NHANH (numpy):
-  Với một đồng xu c, dp[i] = min_{i = j + k*c} (dp[j] + k). Nếu reshape mảng dp
-  theo bề rộng c thì các vị trí cùng residue (mod c) nằm trên cùng một cột;
-  đi xuống cột tương ứng cộng thêm 1 đồng xu. Đặt t = dp - (chỉ số hàng), lấy
-  prefix-min (np.minimum.accumulate theo cột) rồi cộng lại chỉ số hàng. Nhờ vậy
-  mỗi đồng xu chỉ tốn vài phép numpy trên toàn mảng => rất nhanh, không phụ
-  thuộc vào việc c lớn hay nhỏ.
-
-LƯU Ý TLE: trên CSES với CPython thuần, vòng lặp DP O(n*x) ~ 10^8 có thể TLE.
-Nên nộp bằng numpy (nếu môi trường có) hoặc bằng PyPy3; bản fallback thuần
-Python (hàm solve_pure) chỉ nên dùng cho x nhỏ hoặc khi chạy PyPy.
+LƯU Ý TLE: trên CSES với CPython thuần, vòng lặp DP O(n * x) tới ~10^8 bước rất
+có thể vượt quá giới hạn ~1 giây. Đây đã là thuật toán tốt nhất và trung thực chỉ
+dùng thư viện chuẩn; để chắc chắn qua giới hạn thời gian nên nộp bằng C++ hoặc
+PyPy3 (không dùng thư viện bên thứ ba).

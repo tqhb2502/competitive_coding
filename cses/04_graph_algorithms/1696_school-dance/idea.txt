@@ -1,0 +1,33 @@
+Bài toán: School Dance (CSES 1696)
+
+MÔ HÌNH ĐỒ THỊ
+- Ta có n bạn nam và m bạn nữ. Mỗi "potential pair" (a, b) nghĩa là nam a và nữ b
+  sẵn sàng nhảy cùng nhau. Mục tiêu là ghép được nhiều cặp nhất, trong đó mỗi bạn
+  chỉ thuộc tối đa một cặp.
+- Đây chính là bài toán Maximum Bipartite Matching (ghép cặp cực đại trên đồ thị hai
+  phía). Một phía là tập nam, một phía là tập nữ; mỗi potential pair là một cạnh nối
+  giữa hai phía.
+
+THUẬT TOÁN
+- Sử dụng thuật toán Kuhn (tìm đường tăng luồng bằng DFS - augmenting path).
+- Với mỗi bạn nam u, ta thử tìm một augmenting path: đi theo các cạnh tới nữ v chưa
+  được thăm trong lần DFS này; nếu v chưa được ghép hoặc bạn nam đang ghép với v là
+  matchR[v] có thể được đẩy sang một nữ khác (đệ quy), thì ta ghép u với v.
+- Mảng matchR[v] lưu bạn nam đang ghép với nữ v (hoặc -1). Mảng matchL[u] lưu bạn nữ
+  đang ghép với nam u. Mỗi lần DFS cho một nam mới, ta reset mảng visited cho các nữ.
+
+TÍNH ĐÚNG ĐẮN
+- Theo định lý Berge: một matching là cực đại khi và chỉ khi không còn augmenting path.
+  Thuật toán Kuhn lần lượt thử tăng matching cho từng nam; nếu tìm được augmenting path
+  thì kích thước matching tăng thêm 1. Sau khi duyệt hết mọi nam mà không thể tăng thêm,
+  ta thu được matching cực đại.
+- Kết quả in ra r = số cặp và r dòng "a b" là các cặp đã ghép. Đề chấp nhận mọi matching
+  cực đại hợp lệ (special judge), nên chỉ cần đúng số lượng và các cặp hợp lệ, không trùng.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(V * E) trong trường hợp xấu nhất, ở đây V = n <= 500, E = k <= 1000,
+  nên khoảng 5 * 10^5 phép cơ bản. Rất nhanh.
+- Bộ nhớ: O(n + m + k) cho danh sách kề và các mảng match/visited.
+
+Với giới hạn nhỏ như vậy, giải pháp pure Python chạy dư sức trong giới hạn thời gian,
+không có rủi ro TLE.

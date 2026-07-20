@@ -1,0 +1,45 @@
+Bài toán: Giant Pizza (CSES 1684)
+
+MÔ HÌNH HÓA (2-SAT):
+- Có m loại topping, mỗi topping là một biến boolean: TRUE = được chọn ('+'),
+  FALSE = không được chọn ('-').
+- Mỗi thành viên đưa ra 2 điều mong muốn dạng "+ x" (topping x tốt) hoặc
+  "- x" (topping x xấu). Thành viên hài lòng nếu ÍT NHẤT MỘT trong hai mong muốn
+  được thỏa mãn. Đây chính là một mệnh đề (clause) dạng (a OR b).
+- Cần tìm một cách gán TRUE/FALSE cho m biến sao cho MỌI clause đều đúng.
+  Đây đúng là bài toán 2-SAT (mỗi clause có đúng 2 literal).
+
+XÂY DỰNG IMPLICATION GRAPH:
+- Với mỗi biến i (0-indexed) tạo 2 node: 2*i = "topping i được chọn (true)",
+  2*i+1 = "topping i không được chọn (false)". Node phủ định của node v là v XOR 1.
+- Một literal (sign, x): node = 2*(x-1) nếu sign = '+', ngược lại = 2*(x-1)+1.
+- Clause (a OR b) tương đương hai mệnh đề kéo theo:
+      (NOT a => b)  và  (NOT b => a).
+  Vì vậy thêm cạnh:  node(a)^1 -> node(b)  và  node(b)^1 -> node(a).
+
+THUẬT TOÁN:
+- Tìm các thành phần liên thông mạnh (SCC) của implication graph bằng Tarjan
+  (cài đặt ITERATIVE để tránh tràn stack với tối đa 2*m = 2e5 node).
+- Tarjan gán số component theo thứ tự hoàn thành SCC (SCC sink được gán trước),
+  tức là reverse topological order: SCC càng gần sink thì comp càng nhỏ.
+- Kiểm tra tính giải được: nếu tồn tại biến i mà comp[2*i] == comp[2*i+1]
+  (literal và phủ định của nó nằm cùng một SCC) thì mâu thuẫn -> IMPOSSIBLE.
+- Ngược lại, luôn có lời giải: với mỗi biến chọn literal có comp NHỎ HƠN
+  (nằm phía sink / downstream) làm TRUE. Cụ thể topping i được chọn '+'
+  khi comp[2*i] < comp[2*i+1], ngược lại '-'.
+
+TÍNH ĐÚNG ĐẮN:
+- Định lý 2-SAT: công thức thỏa được khi và chỉ khi không có biến nào mà x và
+  NOT x cùng một SCC. Nếu chọn literal có SCC ở phía sink làm true thì không thể
+  dẫn tới việc kéo theo phủ định của nó (vì mọi cạnh kéo theo chỉ đi về phía sink,
+  không quay ngược lên phủ định đang ở phía source), nên phép gán nhất quán và
+  thỏa mãn tất cả clause.
+
+ĐỘ PHỨC TẠP:
+- Số node = 2*m, số cạnh = 2*n. Tarjan chạy O(V + E) = O(n + m).
+- Bộ nhớ O(n + m) cho adjacency list và các mảng phụ trợ.
+- Với n, m <= 1e5: khoảng 2e5 node và 2e5 cạnh, hoàn toàn nằm trong giới hạn.
+
+LƯU Ý TLE: Cài đặt Tarjan iterative bằng Python thuần cho ~2e5 node/cạnh thường
+đủ nhanh, nhưng vẫn có rủi ro chạm giới hạn thời gian trên CSES vì overhead của
+Python; input đọc bằng sys.stdin.buffer.read() và tránh đệ quy để giảm thiểu rủi ro.

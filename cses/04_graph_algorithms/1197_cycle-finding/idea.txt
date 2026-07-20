@@ -1,0 +1,49 @@
+Bài toán: Cycle Finding (CSES 1197)
+Cho đồ thị có hướng n đỉnh, m cạnh, trọng số cạnh có thể âm (có thể tới -10^9).
+Yêu cầu: kiểm tra đồ thị có tồn tại chu trình âm (negative cycle) hay không, nếu
+có thì in ra một chu trình âm bất kỳ (dãy đỉnh theo đúng thứ tự, đỉnh đầu lặp lại
+ở cuối); nếu không thì in "NO".
+
+MÔ HÌNH & THUẬT TOÁN
+--------------------
+Dùng thuật toán Bellman-Ford để phát hiện chu trình âm.
+
+- Khởi tạo dist[v] = 0 cho MỌI đỉnh v. Điều này tương đương việc thêm một đỉnh
+  nguồn ảo nối tới tất cả các đỉnh bằng cạnh trọng số 0. Nhờ vậy ta phát hiện
+  được chu trình âm ở bất kỳ vị trí nào của đồ thị, kể cả những chu trình không
+  thể đến được từ đỉnh 1.
+
+- Lặp đúng n vòng. Mỗi vòng duyệt toàn bộ m cạnh và thực hiện relax:
+  nếu dist[a] + c < dist[b] thì cập nhật dist[b] = dist[a] + c và parent[b] = a.
+  Nếu một vòng nào đó không còn relax được cạnh nào thì đồ thị đã hội tụ -> KHÔNG
+  có chu trình âm, dừng sớm (early break) và in "NO".
+
+- Nếu tới vòng thứ n vẫn còn relax được (biến x lưu đỉnh cuối cùng được relax
+  khác -1) thì chắc chắn tồn tại chu trình âm.
+
+TRUY VẾT CHU TRÌNH
+------------------
+Đỉnh x được relax ở vòng thứ n có thể chưa nằm trên chu trình mà chỉ đến được từ
+chu trình. Đi ngược theo mảng parent đúng n bước từ x sẽ chắc chắn rơi vào một
+đỉnh y nằm trong chu trình âm. Sau đó đi theo chuỗi parent từ y cho tới khi quay
+lại y để thu được các đỉnh của chu trình; do parent biểu diễn hướng ngược (cạnh
+đi từ parent -> con) nên ta đảo (reverse) danh sách để có thứ tự đi xuôi.
+
+TÍNH ĐÚNG ĐẮN
+-------------
+Với đồ thị không có chu trình âm, Bellman-Ford hội tụ sau tối đa n-1 vòng, nên
+vòng thứ n sẽ không còn relax -> in "NO" đúng. Nếu còn relax ở vòng thứ n thì
+theo lý thuyết Bellman-Ford chắc chắn có chu trình có tổng trọng số âm, và cách
+đi ngược parent n bước đảm bảo dừng lại bên trong chu trình đó. Vì phép cộng dùng
+số nguyên Python (không tràn số) nên không có lỗi overflow dù trọng số lớn.
+
+ĐỘ PHỨC TẠP
+-----------
+Thời gian: O(n * m) trong trường hợp xấu nhất = 2500 * 5000 = 1.25 * 10^7 phép
+relax. Bộ nhớ: O(n + m) cho mảng cạnh, dist và parent.
+
+LƯU Ý TLE: Với Python thuần, vòng relax O(n*m) ~ 1.25*10^7 lần trong trường hợp
+xấu nhất (chuỗi dài buộc chạy đủ n vòng) có thể chạm hoặc vượt giới hạn thời gian
+1.00s của CSES. Thuật toán vẫn ĐÚNG; đã tối ưu bằng cách lặp trực tiếp trên
+list các tuple và dừng sớm khi hội tụ, nhưng không thể vector hóa vì chỉ được
+dùng stdlib (không numpy).

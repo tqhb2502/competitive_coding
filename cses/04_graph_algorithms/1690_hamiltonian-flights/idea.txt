@@ -1,0 +1,39 @@
+Bài toán: Đếm số đường đi Hamilton từ thành phố 1 đến thành phố n trong đồ thị
+có hướng, sao cho mỗi thành phố được thăm đúng một lần. Kết quả lấy modulo 10^9+7.
+
+Mô hình hóa đồ thị:
+- Các thành phố là các đỉnh (đánh số lại 0..n-1). Mỗi chuyến bay a -> b là một
+  cạnh có hướng. Vì n <= 20, ta dùng bitmask để biểu diễn tập các đỉnh đã thăm.
+- Với mỗi đỉnh j ta lưu inadj[j] = bitmask các đỉnh i có cạnh i -> j (danh sách
+  đỉnh vào của j). Điều này giúp phép chuyển trạng thái chạy nhanh bằng thao tác bit.
+
+Thuật toán (bitmask DP):
+- Định nghĩa dp[mask][j] = số cách xuất phát từ đỉnh 0, đã thăm đúng tập đỉnh
+  `mask`, và hiện đang đứng ở đỉnh j (j phải thuộc mask, và mask phải chứa đỉnh 0).
+- Cơ sở: dp[{0}][0] = 1 (chỉ mới thăm đỉnh 0, đang ở đỉnh 0).
+- Chuyển trạng thái (kiểu "pull"): với mask chứa bit 0 và đỉnh kết thúc j (j != 0),
+  đặt prev_mask = mask bỏ đi bit j. Khi đó
+      dp[mask][j] = tổng dp[prev_mask][i] với mọi i thuộc (prev_mask AND inadj[j]).
+  Nghĩa là ta đến j từ một đỉnh i đứng trước, i nằm trong prev_mask và có cạnh i -> j.
+- Đáp án: dp[(1<<n)-1][n-1] (đã thăm hết mọi đỉnh và kết thúc tại đỉnh n-1).
+
+Vì sao đúng:
+- Mỗi đường đi Hamilton kết thúc tại j tương ứng duy nhất với một đường đi Hamilton
+  ngắn hơn (bỏ đỉnh cuối j) kết thúc tại đỉnh liền trước i, cộng thêm cạnh i -> j.
+  Do đó công thức tổng theo mọi i hợp lệ đếm đúng, không trùng, không sót.
+- Duyệt mask theo thứ tự tăng dần đảm bảo prev_mask = mask ^ (1<<j) < mask luôn được
+  tính trước, nên quy hoạch động không bị phụ thuộc vòng. Mọi mask hợp lệ đều chứa
+  bit 0 nên prev_mask cũng luôn chứa bit 0 và luôn tồn tại.
+- Việc lấy modulo được thực hiện một lần cho mỗi ô dp (tổng tối đa 19 giá trị < MOD
+  nên không tràn khi cộng dồn trong Python).
+
+Độ phức tạp:
+- Thời gian: O(2^n * n^2) trong trường hợp xấu nhất (đồ thị dày). Với n = 20 nghĩa là
+  khoảng n(n-1)*2^(n-2) ~ 10^8 thao tác bit ở vòng lặp trong.
+- Bộ nhớ: O(2^n * n). Ta chỉ cấp phát hàng dp cho các mask lẻ (chứa bit 0), tức
+  khoảng 2^(n-1) hàng, mỗi hàng n số nguyên.
+
+LƯU Ý TLE: Với n = 20 và đồ thị gần đầy đủ, số thao tác cỡ 10^8 chạy trong Python
+thuần rất có thể vượt giới hạn thời gian của CSES (dù thuật toán và độ phức tạp là
+tối ưu cho bài này). Bản C++ cùng thuật toán chạy trong thời gian cho phép; lời giải
+Python này đúng về mặt logic nhưng có nguy cơ TLE cao trên test nặng nhất.

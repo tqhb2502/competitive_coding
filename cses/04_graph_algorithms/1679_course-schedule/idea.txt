@@ -1,0 +1,31 @@
+Bài toán: Course Schedule (CSES 1679)
+
+Mô hình đồ thị:
+- Có n khóa học (đỉnh) và m ràng buộc (cạnh có hướng).
+- Mỗi ràng buộc "a phải hoàn thành trước b" được biểu diễn bằng một cạnh có hướng a -> b.
+- Ta cần tìm một thứ tự học tất cả các khóa sao cho mọi ràng buộc đều được thỏa mãn.
+  Đây chính là bài toán sắp xếp topo (topological sort) trên đồ thị có hướng.
+
+Thuật toán (Kahn's algorithm / topo sort bằng BFS):
+1. Xây dựng danh sách kề adj và mảng bậc vào indeg (in-degree) cho từng đỉnh.
+2. Đưa tất cả các đỉnh có indeg = 0 (không có khóa học tiên quyết) vào một hàng đợi (deque).
+3. Lặp: lấy một đỉnh u ra khỏi hàng đợi, thêm u vào thứ tự kết quả. Với mỗi cạnh u -> v,
+   giảm indeg[v] đi 1; nếu indeg[v] về 0 thì đưa v vào hàng đợi.
+4. Sau khi xử lý xong: nếu thứ tự kết quả chứa đủ n đỉnh thì in ra thứ tự đó; ngược lại
+   (còn đỉnh chưa được lấy ra do bị kẹt trong một chu trình) thì in "IMPOSSIBLE".
+
+Vì sao đúng:
+- Một đỉnh chỉ được thêm vào kết quả khi mọi khóa tiên quyết của nó đã được xử lý (indeg = 0),
+  do đó mọi ràng buộc a -> b luôn được bảo đảm: a xuất hiện trước b.
+- Đồ thị có sắp xếp topo hợp lệ khi và chỉ khi nó là DAG (không có chu trình). Nếu có chu trình,
+  các đỉnh trong chu trình sẽ không bao giờ có indeg = 0 nên không được lấy ra, khiến số đỉnh
+  trong kết quả nhỏ hơn n -> ta kết luận IMPOSSIBLE. Điều này chính xác vì một chu trình khiến
+  các khóa phụ thuộc lẫn nhau, không thể tồn tại thứ tự hoàn thành.
+- Bài toán chấp nhận bất kỳ thứ tự topo hợp lệ nào, nên dùng deque (không cần ưu tiên) là đủ.
+
+Độ phức tạp:
+- Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh được duyệt đúng một lần.
+- Bộ nhớ: O(n + m) cho danh sách kề và mảng bậc vào.
+
+Với n <= 1e5 và m <= 2e5, thuật toán O(n + m) chạy rất nhẹ. Dùng BFS (deque) nên không có
+nguy cơ tràn stack như DFS đệ quy.

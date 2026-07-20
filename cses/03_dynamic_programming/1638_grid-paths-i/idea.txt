@@ -21,7 +21,15 @@ trái sang phải là hợp lệ.
 Tối ưu bộ nhớ: chỉ cần một mảng 1 chiều dp có độ dài n (rolling array theo từng hàng),
 vì dp[j] mới = dp[j] (giá trị hàng trên) + dp[j-1] (giá trị vừa cập nhật ở bên trái cùng hàng).
 
-Độ phức tạp: thời gian O(n^2), bộ nhớ O(n). Với n <= 1000, n^2 = 10^6 phép cộng modulo.
+Tối ưu tốc độ (quan trọng cho Python thuần): trong vòng lặp mỗi hàng ta giữ một biến cục bộ
+'left' chính là dp[j-1] vừa tính của hàng hiện tại, tránh truy cập dp[j-1] và tránh nhánh
+kiểm tra j>0. Ngoài ra thay phép chia lấy dư bằng một phép trừ có điều kiện (nếu tổng >= MOD
+thì trừ MOD), vì tổng của hai giá trị đều < MOD nên chỉ cần trừ nhiều nhất một lần. Đọc dữ
+liệu bằng sys.stdin.buffer và so sánh mã byte của '*' (bằng 42) để không phải giải mã chuỗi.
 
-LƯU Ý TLE: n^2 = 10^6 nên Python thuần vẫn chạy trong giới hạn thời gian một cách an toàn;
-dùng sys.stdin để đọc nhanh và cập nhật mảng 1 chiều là đủ.
+Độ phức tạp: thời gian O(n^2), bộ nhớ O(n). Với n <= 1000, n^2 = 10^6 phép cộng.
+
+LƯU Ý TLE: với n = 1000 (10^6 ô), một cài đặt Python thuần dùng phép chia lấy dư ở mọi ô
+và kiểm tra biên j>0 chạy sát mức giới hạn 1.00s và có thể vượt quá trong trường hợp lưới
+toàn ô trống (mọi ô đều đi vào nhánh cộng). Các tối ưu ở trên (biến 'left', trừ thay cho
+lấy dư, đọc theo byte) đưa thời gian xuống khoảng 0.7s, an toàn dưới giới hạn.
