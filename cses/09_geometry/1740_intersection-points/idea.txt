@@ -1,0 +1,61 @@
+Ý tưởng: Intersection Points (CSES 1740)
+
+Bài toán
+--------
+Cho n đoạn thẳng, mỗi đoạn hoặc nằm ngang (horizontal, y1 = y2) hoặc nằm dọc
+(vertical, x1 = x2). Đề đảm bảo: không có hai đoạn song song cắt nhau, và không
+có endpoint nào là giao điểm. Vì thế mỗi giao điểm nhất thiết là giao của đúng
+một đoạn ngang với một đoạn dọc, và chúng cắt nhau tại điểm bên trong (strict
+interior) của cả hai đoạn (mọi bất đẳng thức đều là ngặt). Cần đếm tổng số
+giao điểm.
+
+Thuật toán: sweep line + Binary Indexed Tree (BIT)
+--------------------------------------------------
+Quét một đường thẳng đứng chạy theo trục x từ trái sang phải.
+
+- Mỗi đoạn ngang [xl, xr] tại độ cao y sinh ra hai sự kiện:
+    * "add"    tại x = xl  -> thêm y vào cấu trúc dữ liệu (đoạn bắt đầu hoạt động)
+    * "remove" tại x = xr  -> bỏ y ra (đoạn kết thúc hoạt động)
+- Mỗi đoạn dọc tại hoành độ x, trải từ y_low đến y_high, sinh ra một sự kiện
+  "query" tại x: đếm xem có bao nhiêu đoạn ngang đang hoạt động (đã add nhưng
+  chưa remove, tức xl < x < xr) có y nằm trong [y_low, y_high]. Đó chính là số
+  giao điểm mà đoạn dọc này tạo ra.
+
+Sắp xếp các sự kiện theo x tăng dần. Khi trùng x, dùng thứ tự type:
+add (0) < query (1) < remove (2). Nhờ đảm bảo "không endpoint nào là giao điểm",
+tọa độ x của một đoạn dọc không bao giờ trùng với endpoint x của một đoạn ngang
+mà lại tạo ra giao điểm, nên mọi thứ tự khi trùng x đều cho cùng kết quả; ta chọn
+thứ tự trên cho an toàn và nhất quán.
+
+Đếm số y trong khoảng [y_low, y_high] của tập điểm đang hoạt động là bài toán
+range-count động -> dùng BIT (Fenwick tree) trên trục y. Cập nhật add/remove là
+point update (+1 / -1), truy vấn là range sum = prefix(y_high) - prefix(y_low-1).
+
+Nén tọa độ (coordinate compression)
+-----------------------------------
+Chỉ những y của đoạn ngang mới được đếm, nên ta nén tập các y đó thành rank
+1..m (m = số y phân biệt của đoạn ngang). BIT chỉ cần kích thước m+1 thay vì
+2*10^6, giảm bộ nhớ và hằng số log. Với đoạn dọc, dùng bisect_left / bisect_right
+trên mảng y đã sắp để lấy nhanh khoảng rank tương ứng với [y_low, y_high].
+Toàn bộ bisect được tính trước khi sắp xếp sự kiện, nên vòng lặp xử lý chỉ còn
+các thao tác BIT thuần.
+
+Tính đúng đắn
+-------------
+- Mọi giao điểm là cặp (ngang, dọc) cắt nhau thực sự -> phương pháp đếm đúng
+  từng cặp một lần.
+- Một đoạn ngang được tính vào truy vấn của đoạn dọc tại x khi và chỉ khi
+  xl < x < xr (đang hoạt động) và y của nó thuộc [y_low, y_high]. Vì không có
+  endpoint là giao điểm, các trường hợp biên (x = xl hoặc x = xr, hoặc
+  y = y_low/y_high) không xảy ra trong input nên không gây đếm sai.
+- Toàn bộ so sánh và cộng dồn dùng số nguyên (exact integer arithmetic),
+  không dùng float, nên không có sai số.
+
+Độ phức tạp
+-----------
+- Số sự kiện O(n). Sắp xếp O(n log n). Mỗi thao tác BIT O(log m).
+- Tổng thời gian O(n log n). Bộ nhớ O(n) cho BIT và danh sách sự kiện.
+
+LƯU Ý TLE: giới hạn thời gian 1.00 s khá chặt cho CPython vì các vòng lặp BIT ở
+mức Python. Thuật toán O(n log n) là tối ưu về mặt lý thuyết; nếu CPython bị TLE
+thì nên nộp bằng PyPy (vẫn thuần stdlib, không dùng numpy hay thư viện ngoài).

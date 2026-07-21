@@ -1,0 +1,48 @@
+Bài toán: Tính tổng khoảng cách Manhattan giữa MỌI cặp điểm trong tập n điểm.
+
+Ý tưởng chính
+-------------
+Khoảng cách Manhattan giữa hai điểm i và j là:
+    dist(i, j) = |x_i - x_j| + |y_i - y_j|
+
+Vì trị tuyệt đối của phần tọa độ x và phần tọa độ y hoàn toàn độc lập nhau,
+nên tổng trên tất cả các cặp tách được thành hai bài toán một chiều (1D) riêng biệt:
+
+    Sum = ( tổng |x_i - x_j| trên mọi cặp ) + ( tổng |y_i - y_j| trên mọi cặp )
+
+Bài toán 1 chiều: tổng khoảng cách tuyệt đối theo cặp
+----------------------------------------------------
+Cho một mảng a gồm n số. Ta cần tính S = tổng |a_i - a_j| với mọi cặp i < j.
+
+Sắp xếp (sort) mảng a tăng dần. Sau khi sắp xếp, với chỉ số k (0-based),
+mọi phần tử a[0..k-1] đều nhỏ hơn hoặc bằng a[k], nên đóng góp của a[k] khi
+ghép với tất cả các phần tử đứng trước nó là:
+
+    a[k] * k - (a[0] + a[1] + ... + a[k-1])
+
+Dùng prefix sum (tổng tiền tố) để lấy nhanh (a[0]+...+a[k-1]). Cộng dồn đóng
+góp này qua mọi k sẽ cho ra S. Mỗi cặp (i, j) được đếm đúng một lần (tại k =
+vị trí phần tử lớn hơn), nên kết quả chính xác.
+
+Tính chính xác bằng số nguyên (exact integer arithmetic)
+--------------------------------------------------------
+Tọa độ là số nguyên tới ~1e9 và n tới 2e5, nên tổng có thể lớn cỡ
+n^2 * range ~ (2e5)^2 * 2e9 ~ 10^20, vượt quá 64-bit. Python dùng big integer
+tự động nên không tràn số (overflow), toàn bộ phép tính giữ nguyên số nguyên,
+không dùng float => kết quả tuyệt đối chính xác.
+
+Tính đúng đắn (correctness)
+---------------------------
+- Việc tách |x_i - x_j| + |y_i - y_j| và cộng riêng là hợp lệ vì tổng của tổng
+  bằng tổng các thành phần.
+- Công thức prefix sum sau khi sort đếm mỗi cặp đúng một lần và lấy đúng dấu
+  của hiệu (phần tử sau trừ phần tử trước, luôn không âm), nên đúng bằng
+  |a_i - a_j|.
+
+Độ phức tạp
+-----------
+- Thời gian: O(n log n) do hai lần sort (một cho x, một cho y); phần cộng dồn
+  là O(n). Với n = 2e5 chạy rất nhanh.
+- Bộ nhớ: O(n) lưu hai danh sách tọa độ.
+
+Không có rủi ro TLE trong Python thuần cho giới hạn này.

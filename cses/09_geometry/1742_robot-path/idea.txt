@@ -1,0 +1,94 @@
+Robot Path - CSES 1742
+======================
+
+Bài toán
+--------
+Robot xuất phát tại (0,0) và thực hiện n lệnh, mỗi lệnh đi một đoạn theo một
+trong bốn hướng U/D/L/R (lên/xuống/trái/phải) với độ dài nguyên. Robot dừng
+ngay khi quay lại một vị trí đã từng đi qua (bất kỳ điểm nào nằm trên đường đã
+vẽ, không chỉ các đỉnh). Cần in ra tổng quãng đường robot đã đi.
+
+Ý tưởng hình học
+----------------
+Đường đi là một polyline gồm các đoạn thẳng song song trục toạ độ (mỗi đoạn là
+horizontal H hoặc vertical V). Nhận xét mấu chốt: điểm tự cắt ĐẦU TIÊN theo thứ
+tự đi (trên toàn bộ đường vẽ hết n lệnh) chính là nơi robot dừng. Các đoạn được
+vẽ sau thời điểm dừng chỉ tạo ra những giao điểm có "reach-distance" (quãng
+đường để tới điểm đó) lớn hơn, nên không bao giờ ảnh hưởng tới giá trị nhỏ nhất.
+Vì vậy ta chỉ cần liệt kê mọi giao của toàn bộ đường, với mỗi giao tính
+reach-distance = prefixLen[j] + t, trong đó j là đoạn có chỉ số lớn hơn (đoạn
+"đến sau") trong cặp giao, t là khoảng cách dọc theo đoạn j tính từ điểm bắt đầu
+của j tới điểm giao. Đáp án là min của tất cả reach-distance; nếu không có giao
+nào thì đáp án là tổng độ dài mọi đoạn.
+
+Hai đoạn song song trục chỉ có thể cắt nhau theo đúng hai kiểu, nên ta xử lý
+tách làm hai pha rồi lấy min:
+
+Pha B - giao vuông góc (một H với một V): dùng sweep line theo trục x. Tập
+active chứa các đoạn horizontal (thêm vào tại x = xlo, xoá ra tại x = xhi). Khi
+gặp một đoạn vertical tại cột x, ta truy vấn các horizontal đang active có hàng
+y nằm trong đoạn [ylo, yhi] của vertical đó - đó chính là các giao điểm. Dùng
+một Fenwick tree (BIT) trên tập các hàng y đã nén toạ độ (coordinate
+compression) để tìm nhanh các hàng có đoạn active trong khoảng, cùng thao tác
+find-by-rank bằng binary lifting. Với mỗi giao, đoạn "đến sau" (chỉ số lớn hơn)
+là đoạn robot dùng để quay lại điểm cũ; nếu t == 0 (điểm giao trùng đúng góc nối
+giữa hai đoạn liên tiếp) thì bỏ qua vì đó chỉ là khúc cua, không phải "quay lại".
+
+Pha C - chồng lấn cùng đường thẳng (collinear, hai đoạn cùng nằm trên một đường
+x = const hoặc y = const): nhóm các đoạn theo từng đường, duyệt theo thứ tự chỉ
+số và duy trì hợp (union) các khoảng đã bị phủ (merged intervals). Với mỗi đoạn
+mới, tìm điểm đã bị phủ gần nhất nằm PHÍA TRƯỚC điểm bắt đầu theo hướng đi: nếu
+là đảo chiều (ví dụ U rồi D) thì có điểm bị phủ ngay sát phía trước nên t == 0
+(quay lại tức thì); nếu đi cùng chiều nối tiếp thì không có sự kiện.
+
+Vì sao đúng
+-----------
+Mọi giao của các đoạn vuông góc là điểm đơn (được Pha B bắt hết), mọi giao của
+các đoạn song song là chồng lấn trên cùng một đường (được Pha C bắt hết), các
+đoạn song song khác đường thì không giao. Do đó B và C phủ toàn bộ khả năng tự
+cắt. Với mỗi giao, robot chạm lại điểm đó trong lúc đi đoạn có chỉ số lớn hơn,
+nên reach-distance = prefixLen[j] + t là quãng đường thật sự tới lúc "quay lại".
+Điểm dừng thật của robot là giao có reach-distance nhỏ nhất trên toàn đường, đúng
+bằng min mà ta tính. Việc loại t == 0 ở giao vuông góc loại đúng các góc cua
+(không phải quay lại); còn ở collinear, đảo chiều cho t == 0 là quay lại thật sự.
+
+Số học chính xác
+----------------
+Mọi toạ độ đều nguyên nên t và reach-distance đều nguyên; toàn bộ tính toán dùng
+integer arithmetic (Python big int, không lo tràn số), không dùng số thực nên
+không có sai số. Điểm giao của hai đoạn song song trục luôn có toạ độ nguyên.
+
+Độ phức tạp
+-----------
+Pha B: sắp xếp sự kiện O(n log n), mỗi thao tác Fenwick O(log n), nhưng phần
+LIỆT KÊ giao điểm chạy O(k) với k là TỔNG số giao vuông góc của TOÀN BỘ hình vẽ
+(cả n lệnh), nên tổng cộng là O((n + k) log n). Pha C: O(n log n) trên tổng các
+đường (mỗi đoạn được thêm một lần). Bộ nhớ O(n).
+
+CẢNH BÁO TLE (quan trọng, đã đo thực tế)
+----------------------------------------
+Lời giải này liệt kê MỌI giao điểm của toàn bộ hình (vẽ hết n lệnh) rồi lấy min,
+chứ KHÔNG dừng ngay tại giao điểm đầu tiên. Vì vậy dù robot thật sự dừng rất sớm,
+chương trình vẫn phải duyệt hết k giao điểm. Với dữ liệu đối kháng dạng lưới dày
+(khoảng n/2 đoạn ngang, mỗi đoạn cắt n/2 đoạn dọc) thì k = O(n^2) và Pha B trở
+thành gần O(n^2). Đã đo trong CPython: ~27 giây với n = 12500 và ~116 giây với
+n = 25000 -> CHẮC CHẮN TLE (giới hạn CSES là 1 giây). Ngay cả với dữ liệu thưa
+(đường xoắn ốc không tự cắt, k = 0), n = 1e5 cũng đã mất ~1 giây trong CPython,
+tức là sát ngưỡng. Do đó lời giải Python này TLE trên các test mạnh của CSES.
+
+Hướng làm ĐÚNG (nhanh) và khuyến nghị
+-------------------------------------
+Cách tối ưu là xử lý các đoạn THEO THỨ TỰ ĐI và DỪNG ngay tại lần tự cắt đầu tiên.
+Khi đó mọi đoạn (trừ đúng đoạn dừng cuối cùng) đều KHÔNG có giao nào, nên tổng số
+giao phải liệt kê là rất nhỏ; mỗi đoạn mới chỉ cần một truy vấn "đâm xuyên"
+(stabbing) trên cấu trúc động - cây Fenwick / cây phân đoạn trên toạ độ đã nén cho
+giao vuông góc, cộng quản lý khoảng (interval) cho chồng lấn collinear - để tìm
+điểm chạm gần đầu đoạn nhất. Cách này đưa tổng chi phí về ~O(n log n) và không còn
+phụ thuộc k, nên tránh được bùng nổ O(n^2) trên lưới dày. Tuy nhiên, kể cả bản
+O(n log n) / O(n log^2 n) thuần Python (CPython) vẫn rất khó qua giới hạn 1 giây
+với n = 1e5; muốn AC chắc chắn trên CSES nên viết bằng C++ (hoặc chạy PyPy).
+
+Lời giải Python hiện tại được GIỮ NGUYÊN vì đã được kiểm chứng ĐÚNG: đối chiếu với
+một reference O(n^2) mô hình liên tục (continuum) trên ~93000 test ngẫu nhiên và
+suy biến (đảo chiều, chồng lấn collinear, chạm chữ T, lưới dày, toạ độ lớn, thứ tự
+CW/CCW). Hạn chế duy nhất là tốc độ như mô tả ở trên.

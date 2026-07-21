@@ -1,0 +1,57 @@
+Bài toán: Convex Hull (CSES 2195)
+
+Đề bài:
+- Cho n điểm (3 <= n <= 2*10^5), tọa độ nguyên trong [-10^9, 10^9], các điểm
+  phân biệt và diện tích bao lồi dương.
+- Yêu cầu in ra số lượng k và TẤT CẢ các điểm nằm trên convex hull. Lưu ý quan
+  trọng: "print all points that lie on the convex hull" nghĩa là phải in cả các
+  điểm collinear nằm TRÊN CẠNH của bao lồi, không chỉ riêng các đỉnh (vertices).
+  Thứ tự in tùy ý (đề ghi rõ "You can print the points in any order").
+
+Ý tưởng hình học:
+- Dùng Andrew's monotone chain để dựng convex hull. Sắp xếp các điểm theo (x, y).
+- Xây dựng lower hull (duyệt trái -> phải) và upper hull (duyệt phải -> trái).
+  Với mỗi điểm, ta pop đỉnh ở đỉnh stack nếu nó tạo thành góc quẹo "sai hướng".
+
+Kỹ thuật exact-integer (vì sao đúng):
+- Ta đánh giá hướng quẹo bằng cross product nguyên:
+      cross(a, b, p) = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)
+  cross > 0: quẹo trái (counter-clockwise); cross < 0: quẹo phải (clockwise);
+  cross = 0: ba điểm thẳng hàng (collinear).
+- Tọa độ <= 10^9 nên tích có thể ~10^18, vẫn nằm trong phạm vi int của Python
+  (big integer) -> không bao giờ tràn số, kết quả chính xác tuyệt đối. Không
+  dùng float nên tránh mọi sai số làm sai quyết định orientation.
+
+Giữ lại điểm collinear trên cạnh:
+- Bản convex hull tối thiểu (chỉ lấy đỉnh) pop khi cross <= 0. Để GIỮ điểm
+  collinear trên cạnh biên, ta chỉ pop khi cross < 0 (góc quẹo phải thực sự).
+  Nhờ vậy các điểm nằm ngay trên cạnh (cross == 0) không bị loại.
+- Các điểm collinear trên cạnh trái/phải (vertical) được lấy ở upper hull,
+  còn trên cạnh dưới/trên được lấy ở lower hull; nhờ slicing [:-1] ở mỗi chain,
+  các đỉnh chung không bị lặp. Các điểm nằm THỰC SỰ bên trong (interior) luôn
+  bị loại vì chúng tạo góc quẹo trái/phải làm pop.
+
+Tính đúng:
+- Monotone chain là thuật toán chuẩn, đã được chứng minh đúng cho convex hull.
+- Đã kiểm tra chương trình với brute-force O(n^3) (một điểm thuộc biên bao lồi
+  khi tồn tại đường thẳng tựa qua nó mà mọi điểm còn lại nằm một phía) trên
+  nhiều test ngẫu nhiên có nhiều điểm collinear -> kết quả trùng khớp.
+
+Độ phức tạp:
+- Thời gian: O(n log n) do sắp xếp; vòng lặp monotone chain amortized O(n).
+- Bộ nhớ: O(n).
+
+Tối ưu hằng số (constant factor) trong solution.py:
+- Đọc input một lần bằng sys.stdin.buffer.read().split(), ghi output một lần.
+- Trong vòng lặp chain: theo dõi độ dài stack bằng biến m (tránh gọi len()),
+  bind sẵn .append/.pop ra biến local, và unpack đỉnh stack ra biến local
+  (ax, ay, bx, by) để tính cross product nhanh hơn.
+
+LƯU Ý TLE: với n = 2*10^5, đây là trường hợp biên cho pure CPython trong giới
+hạn 1.00s. Trường hợp xấu nhất là khi convex hull rất nhỏ (ví dụ điểm ngẫu
+nhiên) khiến hầu hết điểm bị pop -> số phép tính cross product big-int nhiều
+nhất. Đo bench trên máy Windows cho ~2.0s phần tính toán (chưa kể thời gian
+khởi động CPython); tuy máy judge Linux của CSES thường nhanh hơn nhưng khả
+năng cao vẫn quá giờ trên CPython. Thuật toán đã CHÍNH XÁC và tối ưu hết mức
+trong stdlib; nếu bị TLE trên CPython thì nên nộp bằng PyPy3 (vẫn dùng nguyên
+code này, chỉ đổi ngôn ngữ). Tuyệt đối không dùng numpy/thư viện ngoài.

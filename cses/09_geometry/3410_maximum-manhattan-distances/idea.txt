@@ -1,0 +1,32 @@
+Bài toán: Maximum Manhattan Distances (CSES 3410)
+
+Đề bài: Ta lần lượt thêm n điểm vào một tập hợp. Sau mỗi lần thêm, in ra
+khoảng cách Manhattan lớn nhất giữa hai điểm bất kỳ trong tập hiện tại.
+Khoảng cách Manhattan giữa hai điểm là |x1 - x2| + |y1 - y2|.
+
+Ý tưởng hình học (45-degree rotation):
+Với hai điểm bất kỳ ta có đẳng thức:
+    |x1 - x2| + |y1 - y2| = max( |(x1+y1) - (x2+y2)| , |(x1-y1) - (x2-y2)| ).
+Điều này đúng vì với mọi cặp giá trị a = x1-x2, b = y1-y2 thì
+|a| + |b| = max(|a+b|, |a-b|). Đặt u = x + y và v = x - y (phép quay 45 độ,
+biến khoảng cách Manhattan thành khoảng cách Chebyshev trong hệ (u, v)).
+
+Do đó khoảng cách Manhattan lớn nhất trên toàn bộ tập điểm bằng
+    max( maxU - minU , maxV - minV ),
+trong đó maxU/minU là giá trị lớn nhất/nhỏ nhất của u = x+y, còn maxV/minV
+là của v = x-y trên tất cả các điểm đã thêm.
+
+Vì sao đúng: hàm max ở trên đạt được bởi cặp điểm cùng cho ra khoảng cách
+Manhattan lớn nhất; giá trị max(|u_i - u_j|) trên mọi cặp chính là
+maxU - minU (tương tự cho v). Lấy max của hai đại lượng này cho ra đáp án.
+
+Kỹ thuật số nguyên chính xác (exact integer arithmetic):
+Tọa độ là số nguyên tới ~1e9 nên u, v và các hiệu maxU-minU, maxV-minV đều là
+số nguyên, tính bằng big int của Python nên không tràn số và không cần dùng
+float cho phần quyết định. Đáp án luôn là số nguyên.
+
+Thuật toán: khi thêm mỗi điểm, cập nhật bốn biến running min/max của u và v,
+rồi in ra max(maxU-minU, maxV-minV). Mỗi bước O(1).
+
+Độ phức tạp: thời gian O(n), bộ nhớ O(1) ngoài phần đọc input và mảng kết quả.
+Với n <= 2e5 chạy rất nhanh, không có rủi ro TLE.

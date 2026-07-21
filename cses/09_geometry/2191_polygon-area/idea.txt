@@ -1,0 +1,25 @@
+Bài toán: tính diện tích đa giác đơn (simple polygon) cho trước n đỉnh theo thứ tự.
+Yêu cầu in ra 2a, tức là gấp đôi diện tích, để kết quả luôn là số nguyên.
+
+Ý tưởng hình học:
+Dùng công thức shoelace (định lý con lắc / Gauss's area formula). Với các đỉnh
+P_0, P_1, ..., P_{n-1} theo thứ tự vòng quanh đa giác, diện tích có dấu bằng:
+    2A = sum_{i=0}^{n-1} (x_i * y_{i+1} - x_{i+1} * y_i)   (chỉ số lấy mod n)
+Diện tích thực là |2A| / 2. Vì đề bài yêu cầu in 2a nên ta chỉ cần in |sum|.
+
+Kỹ thuật số nguyên chính xác (exact integer arithmetic):
+Mỗi số hạng x_i * y_{i+1} - x_{i+1} * y_i là cross product của hai vector từ gốc
+tọa độ, và nó là số nguyên. Ta cộng dồn toàn bộ bằng số nguyên rồi lấy giá trị
+tuyệt đối. Python dùng big integer nên không bao giờ tràn số: mỗi tích cỡ ~1e18,
+tổng qua n <= 1000 số hạng cỡ ~1e21, hoàn toàn nằm trong khả năng của int Python.
+Không dùng float nên tránh mọi sai số làm tròn (CSES geometry rất nhạy precision).
+
+Vì sao đúng:
+Công thức shoelace cho diện tích có dấu của bất kỳ đa giác đơn nào; dấu phụ thuộc
+chiều duyệt (clockwise hay counter-clockwise). Lấy trị tuyệt đối cho ra 2a đúng
+bất kể chiều duyệt đầu vào.
+
+Độ phức tạp:
+Thời gian O(n) để duyệt các đỉnh một lần. Bộ nhớ O(n) để lưu tọa độ (có thể giảm
+xuống O(1) nếu xử lý streaming, nhưng O(n) là đủ với n <= 1000).
+Không có rủi ro TLE với ràng buộc n <= 1000.

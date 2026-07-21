@@ -1,0 +1,55 @@
+Bài toán: Lines and Queries II (CSES 3430)
+
+1. Đề bài
+Có n truy vấn xử lí trực tuyến (online):
+- Loại 1 "1 a b l r": thêm một đường thẳng y = a*x + b, đường này "active"
+  (có hiệu lực) với mọi vị trí truy vấn x thuộc đoạn [l, r].
+- Loại 2 "2 x": in ra giá trị lớn nhất của a*x + b lấy trên tất cả các đường
+  đang active tại vị trí x (tức các đường có l <= x <= r và được thêm TRƯỚC
+  truy vấn này). Nếu không có đường nào active thì in "NO".
+Ràng buộc: n <= 2*10^5; -10^9 <= a,b <= 10^9; 0 <= x,l,r <= 10^5.
+
+2. Ý tưởng hình học / cấu trúc dữ liệu
+Đây thực chất là bài "add line trên đoạn vị trí [l, r], point-max query tại x".
+Ta dùng Li Chao segment tree đặt trên TRỤC VỊ TRÍ [0, M] với M = 10^5:
+- Xây một segment tree phủ [0, SZ) với SZ = 131072 = 2^17 (lũy thừa 2 nhỏ nhất
+  >= M+1). Mỗi nút phủ một đoạn vị trí liên tục và giữ TỐI ĐA MỘT đường thẳng
+  (theo đúng bất biến của Li Chao tree).
+- Khi thêm đường active trên [l, r]: phân rã [l, r] thành O(log M) nút chuẩn
+  (canonical nodes) của segment tree. Tại mỗi nút chuẩn, đường phủ trọn đoạn của
+  nút (vì nút nằm gọn trong [l, r]), nên ta thực hiện một phép Li Chao insert của
+  đường vào subtree gốc là nút đó: so sánh đường mới với đường đang giữ tại nút ở
+  điểm giữa mid, giữ đường tốt hơn ở nút, đẩy đường thua xuống nửa mà nó còn có
+  thể vượt (quyết định bằng so sánh ở đầu mút trái). Đây là Li Chao insert chuẩn.
+- Trả lời truy vấn tại x: đi từ gốc xuống lá ứng với vị trí x (đường đi
+  root -> leaf), lấy max giá trị của các đường được lưu ở các nút trên đường đi.
+
+3. Vì sao đúng (exact integer, không dùng float)
+- Mọi đường được lưu tại một nút N đều active trên toàn bộ đoạn của N: đường vào N
+  hoặc do canonical insert (N nằm trong [l, r]) hoặc do bị đẩy xuống từ cha (cha
+  đã phủ đoạn con), nên theo quy nạp nó active trên đoạn của N. Do đó khi truy vấn
+  x nằm trong đoạn của N, đánh giá đường tại x luôn là một đường active hợp lệ.
+- Với mỗi đường active trên [l, r], theo tính chất phân rã của segment tree, đúng
+  MỘT nút chuẩn của [l, r] nằm trên đường đi root -> leaf(x) khi l <= x <= r; nếu
+  x nằm ngoài [l, r] thì không có nút chuẩn nào nằm trên đường đi. Vậy lấy max
+  trên đường đi đúng bằng max của toàn bộ đường active tại x.
+- Bên trong mỗi subtree, Li Chao insert bảo toàn bất biến: max của mọi đường đã
+  chèn vào subtree tại một lá = max các đường lưu trên đường đi tới lá đó. Kết hợp
+  bằng max trên toàn đường đi root -> leaf cho ra đáp số đúng.
+- Toàn bộ tính toán a*x + b và các so sánh cross tại mid / đầu mút đều là số
+  nguyên (Python big int, không tràn, không sai số). Không dùng float ở đâu cả.
+
+4. Độ phức tạp
+- Mỗi lần thêm đường: O(log M) nút chuẩn, mỗi nút Li Chao insert O(log kích thước
+  subtree) => O(log^2 M) mỗi lần thêm.
+- Mỗi truy vấn: đi root -> leaf, chỉ đánh giá một đường mỗi nút => O(log M).
+- Tổng: O(n log^2 M) thời gian, O(SZ) = O(M) bộ nhớ (hai mảng slope/intercept
+  kích thước 2*SZ).
+
+LƯU Ý TLE: Thuật toán trên là chuẩn và tối ưu về mặt độ phức tạp (đúng như lời
+giải C++ dự kiến), nhưng trong CPython thuần phần Li Chao insert chạy tới cỡ
+6*10^7 bước với số học big int. Đo thực tế: workload ngẫu nhiên ~8 giây, worst
+case (nhiều đường active trên [1, 99999] khiến phân rã chạm mọi mức) ~24 giây,
+đều vượt xa giới hạn ~1 giây của CSES. Vì luật cứng là CHỈ dùng stdlib thuần
+(không numpy/PyPy), giải pháp giữ đúng ĐÚNG ĐẮN nhưng RẤT DỄ TLE trên CPython;
+để AC thường cần C++/PyPy.

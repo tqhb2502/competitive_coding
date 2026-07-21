@@ -1,0 +1,28 @@
+Bài toán: Cho hai đoạn thẳng, xác định xem chúng có giao nhau hay không (chia sẻ ít nhất một điểm chung). Có tối đa t = 10^5 truy vấn, tọa độ nguyên trong khoảng [-10^9, 10^9].
+
+Ý tưởng hình học:
+Gọi đoạn thứ nhất là p1p2, đoạn thứ hai là p3p4. Dùng cross product để xác định orientation (vị trí quay) của một điểm so với một đường thẳng có hướng.
+
+Định nghĩa cross((b - a) x (c - a)) = (bx - ax)*(cy - ay) - (by - ay)*(cx - ax).
+Dấu của giá trị này cho biết điểm c nằm bên trái (> 0), bên phải (< 0), hay thẳng hàng (= 0) so với hướng a -> b.
+
+Ta tính 4 orientation:
+- d1 = vị trí của p1 so với đường thẳng p3p4
+- d2 = vị trí của p2 so với đường thẳng p3p4
+- d3 = vị trí của p3 so với đường thẳng p1p2
+- d4 = vị trí của p4 so với đường thẳng p1p2
+
+Trường hợp giao nhau "thật sự" (proper intersection): hai đầu mút p1, p2 nằm khác phía so với đường thẳng p3p4 (d1 và d2 trái dấu, đều khác 0) VÀ hai đầu mút p3, p4 nằm khác phía so với đường thẳng p1p2 (d3 và d4 trái dấu, đều khác 0). Khi đó hai đoạn cắt nhau tại đúng một điểm bên trong.
+
+Trường hợp biên (collinear hoặc chạm đầu mút): nếu một trong các d = 0 thì điểm tương ứng thẳng hàng với đoạn kia; ta kiểm tra thêm on-segment bằng bounding box (điểm nằm trong hình chữ nhật bao của đoạn kia theo cả x và y). Nếu thỏa mãn thì hai đoạn có điểm chung -> giao nhau. Cách kiểm tra bounding box này xử lý đúng cả trường hợp hai đoạn cùng nằm trên một đường thẳng (overlap) lẫn trường hợp chỉ chạm một đầu mút.
+
+Tính đúng đắn:
+- Điều kiện proper là điều kiện cần và đủ cho việc hai đoạn cắt nhau strictly bên trong (không có điểm nào thẳng hàng).
+- Khi có điểm thẳng hàng (d = 0), việc kiểm tra on-segment bằng bounding box là chính xác vì điểm đã chắc chắn nằm trên đường thẳng chứa đoạn, nên chỉ cần kiểm tra nó có nằm trong khoảng của đoạn hay không.
+
+Kỹ thuật số nguyên chính xác tuyệt đối:
+Toàn bộ phép tính cross product dùng số nguyên. Với tọa độ tới 10^9, hiệu tọa độ tới ~2*10^9, mỗi tích tới ~4*10^18 và giá trị cross product (hiệu hai tích) có thể tới ~8*10^18, tức sát ngưỡng của số nguyên 64-bit có dấu. Python dùng big int nên chắc chắn không tràn số và không có sai số floating point trong mọi trường hợp. Ta chỉ so sánh dấu và dùng bất đẳng thức nguyên cho bounding box, nên kết quả hoàn toàn chính xác (precision-safe).
+
+Độ phức tạp:
+- Thời gian: O(t) — mỗi truy vấn xử lý trong O(1). Đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần bằng sys.stdout.write.
+- Bộ nhớ: O(t) cho danh sách kết quả.
