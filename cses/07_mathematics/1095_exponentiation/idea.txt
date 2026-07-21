@@ -1,0 +1,25 @@
+Bài toán: Với mỗi truy vấn gồm hai số a và b, tính a^b mod (10^9 + 7).
+
+Ý tưởng:
+- Đây là bài modular exponentiation (lũy thừa theo modulo) cơ bản.
+- Sử dụng thuật toán binary exponentiation (fast power): tách b theo hệ nhị phân,
+  a^b = tích của các a^(2^i) ứng với các bit 1 của b. Mỗi phép nhân đều lấy mod
+  để tránh số quá lớn.
+- Trong Python, hàm dựng sẵn pow(a, b, mod) đã cài đặt sẵn binary exponentiation,
+  chạy trong O(log b) cho mỗi truy vấn và rất tối ưu (viết bằng C).
+
+Trường hợp đặc biệt:
+- Đề bài quy ước 0^0 = 1. pow(0, 0, MOD) trong Python trả về 1 nên khớp với yêu cầu.
+
+Tính đúng đắn:
+- Binary exponentiation cho kết quả chính xác của a^b, và do tính chất
+  (x * y) mod m = ((x mod m) * (y mod m)) mod m nên việc lấy mod ở từng bước
+  không làm sai kết quả cuối cùng.
+
+Độ phức tạp:
+- Thời gian: O(n log b) với n là số truy vấn (n <= 2*10^5, b <= 10^9 nên log b <= 30).
+- Bộ nhớ: O(n) cho việc đọc input và lưu output, hoặc O(1) thêm ngoài input/output.
+
+Tối ưu I/O:
+- Đọc toàn bộ input bằng sys.stdin.buffer.read().split() và ghi kết quả một lần
+  bằng sys.stdout.write để tránh chậm do I/O khi n lớn.

@@ -1,0 +1,34 @@
+Bài toán: Tính n hệ số nhị thức C(a, b) modulo p = 10^9 + 7, với 0 <= b <= a <= 10^6.
+
+Công thức:
+    C(a, b) = a! / (b! * (a-b)!)  (mod p)
+
+Vì p = 10^9 + 7 là số nguyên tố, ta không thể chia trực tiếp trong số học modulo,
+nên phải dùng modular inverse. Theo định lý nhỏ Fermat (Fermat's little theorem):
+    x^(p-1) ≡ 1 (mod p)  =>  x^(-1) ≡ x^(p-2) (mod p)
+với mọi x không chia hết cho p.
+
+Ý tưởng thuật toán:
+1. Đặt MX = 10^6 (giá trị a lớn nhất). Precompute mảng giai thừa (factorial):
+       fact[i] = i! mod p, với i từ 0 đến MX.
+2. Tính nghịch đảo của fact[MX] một lần bằng pow(fact[MX], p-2, p) (Fermat).
+   Sau đó tính ngược inverse factorial theo hệ thức:
+       inv_fact[i-1] = inv_fact[i] * i mod p
+   Cách này chỉ cần MỘT lần gọi pow lũy thừa modulo, thay vì gọi cho mỗi giá trị,
+   nên rất nhanh.
+3. Với mỗi truy vấn (a, b):
+       C(a, b) = fact[a] * inv_fact[b] mod p * inv_fact[a-b] mod p
+   Vì đề bảo đảm 0 <= b <= a nên không cần xử lý trường hợp b > a.
+
+Tính đúng đắn:
+- fact[i] và inv_fact[i] thỏa mãn fact[i] * inv_fact[i] ≡ 1 (mod p), do khởi tạo
+  inv_fact[MX] = (fact[MX])^(p-2) và truy hồi inv_fact[i-1] = inv_fact[i] * i.
+- Do đó fact[a] * inv_fact[b] * inv_fact[a-b] đúng bằng a!/(b!(a-b)!) mod p.
+
+Độ phức tạp:
+- Tiền xử lý: O(MX) cho factorial + O(log p) cho một lần pow + O(MX) cho inverse factorial.
+- Mỗi truy vấn: O(1). Tổng: O(MX + n).
+- Bộ nhớ: O(MX) cho hai mảng số nguyên (khoảng 2 * 10^6 phần tử).
+
+Đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần bằng
+sys.stdout.write để tránh chậm do I/O.

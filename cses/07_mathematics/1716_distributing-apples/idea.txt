@@ -1,0 +1,32 @@
+Bài toán: Chia m quả táo cho n đứa trẻ, mỗi đứa có thể nhận 0 hoặc nhiều quả táo.
+Đếm số cách chia, kết quả lấy modulo 10^9 + 7.
+
+Ý tưởng (stars and bars):
+- Ta cần đếm số nghiệm nguyên không âm của phương trình:
+      x_1 + x_2 + ... + x_n = m,   với x_i >= 0.
+- Đây là bài toán "stars and bars" (chia kẹo Euler). Số nghiệm bằng số cách
+  sắp xếp m ngôi sao (quả táo) và n-1 thanh ngăn (vách chia giữa các đứa trẻ)
+  trên một hàng gồm m + (n-1) vị trí.
+- Do đó số cách = C(n + m - 1, m) = C(n + m - 1, n - 1).
+
+Kiểm chứng với ví dụ n=3, m=2:
+  C(3 + 2 - 1, 2) = C(4, 2) = 6. Đúng với đáp án mẫu.
+
+Cách tính modulo:
+- MOD = 10^9 + 7 là số nguyên tố nên dùng modular inverse theo định lý Fermat:
+      inverse(a) = pow(a, MOD - 2, MOD).
+- Đặt N = n + m - 1. Vì C(N, m) = C(N, N - m) và N - m = n - 1, ta chọn chỉ
+  số nhỏ hơn k = min(m, n - 1) để số phép nhân là ít nhất.
+- Tính trực tiếp một hệ số nhị thức duy nhất, KHÔNG dựng mảng giai thừa:
+      tử số num = N * (N-1) * ... * (N-k+1)   (đúng k thừa số),
+      mẫu số den = k! ,
+      C(N, k) = num * inverse(den) % MOD.
+  Chỉ dùng biến vô hướng nên không cấp phát mảng lớn -> tiết kiệm bộ nhớ.
+
+Độ phức tạp:
+- Thời gian: O(k) = O(min(m, n-1)) <= O(10^6) cho vòng nhân, cộng O(log MOD)
+  cho một lần pow. Cách này nhanh hơn nhiều so với dựng hai mảng giai thừa
+  kích thước N ~ 2*10^6 (khoảng một nửa số phép nhân, không cấp phát mảng).
+- Bộ nhớ: O(1) ngoài phần đọc dữ liệu.
+
+Với n, m <= 10^6, k <= 10^6, chạy rất nhanh và nằm gọn trong giới hạn.

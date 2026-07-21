@@ -1,0 +1,39 @@
+Bài toán: đếm số cách (có thứ tự) tung xúc xắc để tổng các mặt bằng n,
+mỗi lần tung cho giá trị từ 1 đến 6. Kết quả lấy modulo 1e9+7.
+
+Gọi f(n) là số cách tạo ra tổng n. Xét lần tung CUỐI cùng: nó cho một
+giá trị k trong {1,2,3,4,5,6}, phần còn lại có tổng n-k. Do đó ta có
+recurrence tuyến tính bậc 6:
+
+    f(n) = f(n-1) + f(n-2) + f(n-3) + f(n-4) + f(n-5) + f(n-6)
+
+với điều kiện biên f(0) = 1 (một cách rỗng), f(x) = 0 khi x < 0.
+Từ đó: f(1)=1, f(2)=2, f(3)=4, f(4)=8, f(5)=16, f(6)=32, f(7)=63, f(8)=125
+(khớp với ví dụ n=8 -> 125).
+
+Vì n có thể lên tới 1e18 nên không thể tính từng bước O(n). Ta dùng
+matrix exponentiation. Đặt vector trạng thái
+    v_k = [f(k), f(k-1), f(k-2), f(k-3), f(k-4), f(k-5)]^T
+và ma trận chuyển M kích thước 6x6:
+
+    hàng 0: 1 1 1 1 1 1
+    hàng 1: 1 0 0 0 0 0
+    hàng 2: 0 1 0 0 0 0
+    hàng 3: 0 0 1 0 0 0
+    hàng 4: 0 0 0 1 0 0
+    hàng 5: 0 0 0 0 1 0
+
+Khi đó v_{k+1} = M * v_k. Bắt đầu từ v_5 = [16, 8, 4, 2, 1, 1], ta có
+v_n = M^(n-5) * v_5 với mọi n >= 5, và đáp số là phần tử đầu tiên f(n).
+Với n = 1..4 trả lời trực tiếp (1, 2, 4, 8).
+
+Tính M^(n-5) bằng fast exponentiation (bình phương liên tiếp), mọi phép
+nhân ma trận đều lấy modulo 1e9+7.
+
+Tính đúng đắn: recurrence phản ánh chính xác việc phân loại theo lần tung
+cuối; matrix exponentiation chỉ là cách tính nhanh nghiệm của recurrence
+tuyến tính, hoàn toàn tương đương với việc lặp.
+
+Độ phức tạp: mỗi phép nhân ma trận 6x6 là O(6^3) = O(216); số bước
+log2(n) ~ 60. Tổng O(6^3 * log n), rất nhanh. Bộ nhớ O(6^2) hằng số.
+Không có rủi ro TLE.

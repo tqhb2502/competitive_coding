@@ -1,0 +1,2 @@
+Sum of Four Squares
+https://cses.fi/problemset/task/3355

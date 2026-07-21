@@ -1,0 +1,37 @@
+Bài toán: Đếm số vòng cổ (necklace) khác nhau gồm n hạt, mỗi hạt được tô một
+trong m màu. Hai vòng cổ được coi là giống nhau nếu có thể xoay (rotation) cái
+này để trùng với cái kia. In kết quả modulo 10^9 + 7.
+
+Ý tưởng — Burnside's lemma (bổ đề Burnside / Cauchy-Frobenius):
+Nhóm đối xứng ở đây là nhóm cyclic C_n gồm n phép xoay: xoay 0, 1, 2, ..., n-1
+vị trí. Số cách tô màu bất biến (fixed) dưới phép xoay k vị trí bằng
+m^(gcd(k, n)), vì phép xoay k tạo ra các chu trình (cycle) độ dài n/gcd(k,n) và
+số chu trình là gcd(k, n); mỗi chu trình phải cùng một màu.
+
+Theo Burnside, số vòng cổ khác nhau là trung bình số điểm bất biến:
+    answer = (1/n) * sum_{k=0}^{n-1} m^(gcd(k, n)).
+
+Gom nhóm theo giá trị d = gcd(k, n): với mỗi ước d của n, số các k trong
+[0, n-1] có gcd(k, n) = d đúng bằng phi(n/d) (Euler totient). Đặt lại theo ước
+ta thu được công thức gọn:
+    answer = (1/n) * sum_{d | n} phi(d) * m^(n/d).
+
+Kiểm tra ví dụ n = 4, m = 3: các ước là 1, 2, 4.
+    phi(1)*3^4 + phi(2)*3^2 + phi(4)*3^1 = 1*81 + 1*9 + 2*3 = 96.
+    96 / 4 = 24  -> đúng với đáp án mẫu.
+
+Cách tính:
+- Tìm tất cả ước d của n bằng cách duyệt i tới sqrt(n): O(sqrt(n)).
+- Với mỗi ước d, tính Euler phi(d) bằng phân tích thừa số nguyên tố
+  (factorization) trong O(sqrt(d)); vì số ước của n <= ~240 nên tổng chi phí
+  rất nhỏ.
+- m^(n/d) mod p tính bằng modular exponentiation qua pow(m, n//d, MOD).
+- Phép chia cho n dưới modulo dùng modular inverse theo Fermat:
+  pow(n, MOD-2, MOD) vì MOD = 10^9 + 7 là số nguyên tố.
+
+Tính đúng đắn: Công thức Burnside cho nhóm xoay là chuẩn mực; việc gom nhóm theo
+gcd cho ra tổng phi(d)*m^(n/d). Mọi phép tính đều thực hiện dưới modulo, và chia
+cho n hợp lệ vì gcd(n, MOD) = 1 (MOD nguyên tố lớn hơn n).
+
+Độ phức tạp: O(sqrt(n) + số_ước * log(n)) thời gian, O(số_ước) bộ nhớ. Với
+n, m <= 10^6 chương trình chạy tức thời, không có nguy cơ TLE trong pure Python.

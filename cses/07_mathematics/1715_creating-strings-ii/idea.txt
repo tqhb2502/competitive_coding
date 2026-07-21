@@ -1,0 +1,29 @@
+Bài toán: Cho một chuỗi độ dài n (chỉ gồm chữ cái a-z), đếm số chuỗi khác nhau
+có thể tạo ra bằng cách hoán vị các ký tự của nó. In kết quả theo modulo 1e9+7.
+
+Ý tưởng (multinomial coefficient):
+- Nếu tất cả n ký tự đều phân biệt thì số hoán vị là n!.
+- Vì có các ký tự lặp lại, ta phải chia cho giai thừa của số lần xuất hiện của
+  từng ký tự để loại bỏ các hoán vị trùng nhau.
+- Gọi cnt[c] là số lần xuất hiện của ký tự c. Đáp án là hệ số multinomial:
+        n! / ( cnt['a']! * cnt['b']! * ... * cnt['z']! )
+- Ví dụ "aabac": n = 5, cnt[a] = 3, cnt[b] = 1, cnt[c] = 1
+        5! / (3! * 1! * 1!) = 120 / 6 = 20.
+
+Tính toán theo modulo p = 1e9+7 (số nguyên tố):
+- Precompute mảng factorial fact[0..n] với fact[i] = i! mod p.
+- Phép chia trong modular arithmetic thực hiện bằng modular inverse. Vì p là số
+  nguyên tố, dùng Fermat's little theorem: inverse(x) = pow(x, p-2, p).
+- Đáp án = fact[n] * product( inverse(fact[cnt[c]]) ) mod p.
+  Chỉ có tối đa 26 ký tự nên chỉ cần tối đa 26 lần gọi pow modular inverse.
+
+Tính đúng đắn: công thức multinomial coefficient đếm chính xác số cách sắp xếp
+n phần tử trong đó nhóm ký tự giống nhau là không phân biệt. Fermat's little
+theorem cho nghịch đảo modulo hợp lệ vì p nguyên tố và mọi fact[k] với k < p
+đều không chia hết cho p.
+
+Độ phức tạp:
+- Thời gian: O(n) để precompute factorial và đọc chuỗi, cộng O(26 * log p) cho
+  các modular inverse. Tổng cộng O(n).
+- Bộ nhớ: O(n) cho mảng factorial.
+Với n <= 1e6 thuật toán chạy rất nhanh, không có rủi ro TLE.

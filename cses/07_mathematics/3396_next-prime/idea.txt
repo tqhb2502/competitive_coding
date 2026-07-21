@@ -1,0 +1,36 @@
+Bài toán: Cho số nguyên dương n (n <= 10^12), tìm số nguyên tố nhỏ nhất LỚN HƠN n
+(strictly greater). Có t <= 20 test case.
+
+Ý tưởng:
+- Vì n có thể lên tới 10^12 nên không thể dùng sieve of Eratosthenes toàn cục
+  (bộ nhớ và thời gian quá lớn). Thay vào đó ta dùng kiểm tra tính nguyên tố cho
+  từng số bằng thuật toán Miller-Rabin (deterministic).
+
+- Miller-Rabin deterministic: với một tập cơ số (witness) cố định, thuật toán cho
+  kết quả chính xác tuyệt đối cho mọi số dưới một ngưỡng nhất định. Sử dụng tập
+  base = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37] thì kết quả đúng chắc chắn
+  cho mọi n < 3.3 * 10^24, thừa sức bao phủ 10^12 (và cả các số nguyên tố nằm ngay
+  trên 10^12 mà ta cần tìm).
+
+- Cách kiểm tra: viết n - 1 = d * 2^s với d lẻ. Với mỗi base a, tính x = a^d mod n
+  (dùng built-in pow(a, d, n), rất nhanh). Nếu x == 1 hoặc x == n-1 thì qua vòng
+  này; nếu không, bình phương x tối đa s-1 lần, nếu gặp n-1 thì qua, ngược lại n
+  là hợp số. Nếu vượt qua mọi base thì n là số nguyên tố.
+
+- Tìm next prime: bắt đầu từ candidate = n + 1, tăng dần và kiểm tra từng số cho
+  tới khi gặp số nguyên tố. Khoảng cách giữa hai số nguyên tố liên tiếp quanh
+  10^12 rất nhỏ (trung bình ~ ln(10^12) ~ 27.6, tối đa vài trăm), nên số bước rất
+  ít. Có thể bỏ qua số chẵn để tăng tốc: sau khi xử lý riêng candidate = 2, ta chỉ
+  duyệt các số lẻ.
+
+Tính đúng đắn:
+- Miller-Rabin với tập base nêu trên là deterministic (đã được chứng minh) cho mọi
+  số dưới ngưỡng lớn hơn 10^12 rất nhiều, nên mọi phán đoán nguyên tố/hợp số đều
+  chính xác. Do đó số nguyên tố đầu tiên tìm được khi tăng dần từ n+1 chính là
+  đáp án.
+
+Độ phức tạp:
+- Mỗi lần kiểm tra Miller-Rabin: O(k * log n) phép nhân số lớn (k = số base = 12),
+  pow modular chạy rất nhanh. Số candidate phải thử cho mỗi test là O(gap) ~ vài
+  chục. Với t <= 20 test, tổng công việc cực kỳ nhỏ, chạy dưới 1 giây thoải mái.
+- Bộ nhớ: O(1).

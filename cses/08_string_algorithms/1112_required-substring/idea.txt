@@ -1,0 +1,36 @@
+Bai: Required Substring (CSES 1112)
+
+De bai:
+Dem so luong xau do dai n tren bang chu cai A-Z (26 ky tu) sao cho xau do
+chua mot pattern cho truoc (do dai m) nhu mot substring. In ket qua mod 1e9+7.
+Rang buoc: 1 <= n <= 1000, 1 <= m <= 100.
+
+Y tuong chinh: KMP automaton + DP (dem phan bu).
+- Dem truc tiep so xau CHUA pattern rat kho vi mot pattern co the xuat hien
+  nhieu lan va bi trung lap. Vi vay ta dem so xau KHONG chua pattern, roi lay
+  tong tat ca 26^n tru di.
+- Xay KMP tren pattern: tinh prefix function (failure function) pi, sau do
+  dung no de dung mot automaton (deterministic finite automaton). Trang thai j
+  (0 <= j <= m) la do dai cua tien to dai nhat cua pattern dong thoi la hau to
+  cua chuoi da doc. aut[j][c] = trang thai ke tiep khi dang o j va doc ky tu c.
+  Neu aut[j][c] == m thi pattern vua xuat hien -> xau nay bi loai.
+- DP: dp[j] = so xau (voi do dai dang xet) chua BAO GIO cham trang thai m va
+  hien dang o trang thai j (0 <= j < m). Khoi tao dp[0] = 1 (xau rong).
+  Moi buoc them 1 ky tu: voi moi trang thai j, thu ca 26 ky tu, chuyen sang
+  aut[j][c]; chi giu lai cac chuyen tiep co trang thai < m (bo nhung cai dat m
+  vi khi do xau da chua pattern). Sau n buoc, tong dp[0..m-1] la so xau KHONG
+  chua pattern.
+- Ket qua = (26^n - so_xau_khong_chua) mod 1e9+7.
+
+Toi uu: voi moi trang thai j, ta nen (gom) cac ky tu dan toi cung mot trang
+thai ke tiep thanh cap (next_state, so_luong), giup vong lap DP nhanh hon.
+
+Tinh dung dan:
+- KMP automaton la mot DFA nhan dien "da tung xuat hien pattern". Duong di do
+  dai n khong bao gio den trang thai m tuong ung 1-1 voi xau do dai n khong
+  chua pattern. Do do phep dem la chinh xac.
+- Truong hop m > n: khong the chua pattern, DP se cho tong = 26^n, ket qua = 0.
+
+Do phuc tap:
+- Thoi gian: O(n * m * 26) = 1000 * 100 * 26 ~ 2.6 trieu phep -> rat nhanh.
+- Bo nho: O(m * 26) cho automaton, O(m) cho DP.

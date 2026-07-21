@@ -1,0 +1,34 @@
+Bài toán: Nim Game I (CSES 1730)
+
+Đây là trò chơi Nim cổ điển. Có n đống que, hai người chơi luân phiên lấy đi
+một số que bất kỳ (ít nhất 1) từ MỘT đống không rỗng. Người lấy que cuối cùng
+sẽ thắng. Cần xác định người đi trước ("first") hay người đi sau ("second")
+thắng khi cả hai chơi tối ưu.
+
+Định lý Nim (Bouton's theorem):
+- Xét XOR của kích thước tất cả các đống: X = x_1 XOR x_2 XOR ... XOR x_n.
+- Nếu X != 0 thì người đi trước ("first") thắng.
+- Nếu X == 0 thì người đi sau ("second") thắng.
+
+Tại sao đúng (ý tưởng Sprague-Grundy / lý luận XOR):
+- Trạng thái có X == 0 gọi là trạng thái thua (P-position): mọi nước đi đều làm
+  X trở thành khác 0 (vì thay đổi đúng một đống thì bit cao nhất bị đổi khiến
+  XOR không thể vẫn bằng 0).
+- Trạng thái có X != 0 gọi là trạng thái thắng (N-position): luôn tồn tại một
+  nước đi đưa XOR về 0. Cụ thể, gọi b là bit cao nhất của X; chọn một đống có
+  bit đó bằng 1 (chắc chắn tồn tại), giảm đống đó xuống giá trị (giá trị hiện
+  tại XOR X), giá trị mới nhỏ hơn giá trị cũ nên hợp lệ, và làm XOR toàn cục
+  bằng 0.
+- Trạng thái kết thúc (mọi đống rỗng) có X == 0 và là trạng thái thua cho người
+  đến lượt. Bằng quy nạp, X == 0 luôn là thua, X != 0 luôn là thắng.
+
+Cài đặt:
+- Với mỗi test case, đọc n và n số, tính XOR dồn tất cả, in "first" nếu khác 0,
+  ngược lại in "second".
+- Đọc toàn bộ input bằng sys.stdin.buffer.read().split() cho nhanh, gộp kết quả
+  và ghi một lần bằng sys.stdout.write.
+
+Độ phức tạp:
+- Thời gian: O(tổng n) trên tất cả test case, tức O(2*10^5). Rất nhẹ.
+- Bộ nhớ: O(1) thêm cho mỗi test case (chỉ cần biến XOR dồn); tổng thể chi phối
+  bởi buffer input.

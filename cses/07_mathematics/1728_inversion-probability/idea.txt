@@ -1,0 +1,46 @@
+Bài toán: Inversion Probability (CSES 1728)
+
+Đề bài:
+- Có mảng n phần tử, phần tử thứ i là số nguyên chọn ngẫu nhiên đều (uniform) trong [1, r_i].
+- Một inversion là cặp (a, b) với a < b và x_a > x_b.
+- Cần tính kỳ vọng (expected value) số lượng inversion.
+
+Ý tưởng: Linearity of Expectation (tính tuyến tính của kỳ vọng)
+- Số inversion = tổng trên mọi cặp (a, b) với a < b của biến chỉ thị (indicator) [x_a > x_b].
+- Do tính tuyến tính của kỳ vọng, E[số inversion] = tổng_{a<b} P(x_a > x_b),
+  bất kể các phần tử có độc lập hay không (ở đây chúng độc lập nên càng đơn giản).
+
+Tính P(x_i > x_j) cho cặp i < j:
+- x_i đều trong [1, r_i], x_j đều trong [1, r_j], độc lập.
+- Số cặp có thứ tự (u, v) với u thuộc [1, r_i], v thuộc [1, r_j] là r_i * r_j (mẫu số).
+- Số cặp thỏa u > v (tử số):
+      count = tổng_{v=1}^{r_j} max(0, r_i - v)
+  (với mỗi v, số u trong [1, r_i] mà u > v là max(0, r_i - v)).
+- Vậy P(x_i > x_j) = count / (r_i * r_j).
+
+Công thức đóng (closed form) tương đương:
+- Đặt m = min(r_j, r_i - 1).
+- Nếu r_j <= r_i - 1: count = r_i * r_j - r_j*(r_j+1)/2.
+- Nếu r_j >= r_i:     count = r_i*(r_i-1)/2.
+Trong code chỉ cần vòng lặp trực tiếp vì r nhỏ.
+
+Kiểm chứng với ví dụ r = [5, 2, 7]:
+- (1,2): 7/10 = 0.7
+- (1,3): 10/35 = 0.285714...
+- (2,3): 1/14 = 0.071429...
+- Tổng = 1.057143 (đúng với đáp án mẫu).
+
+Tại sao đúng:
+- Kỳ vọng của biến chỉ thị bằng xác suất sự kiện xảy ra: E[[x_a>x_b]] = P(x_a>x_b).
+- Cộng tất cả các cặp cho ra kỳ vọng tổng số inversion.
+
+Độ phức tạp:
+- Có O(n^2) cặp, mỗi cặp tính trong O(min(r_i, r_j)) hoặc O(1) với công thức đóng.
+- Với n <= 100 và r_i <= 100: tối đa ~4950 cặp * ~100 = ~5*10^5 phép tính, rất nhẹ.
+- Time: O(n^2 * max_r) (hoặc O(n^2) với công thức đóng). Space: O(n).
+
+Xuất kết quả:
+- Đáp án là số thực, làm tròn 6 chữ số thập phân bằng "%.6f".
+- Sai số tuyệt đối/tương đối ~1e-6 được chấp nhận.
+
+Không có nguy cơ TLE.

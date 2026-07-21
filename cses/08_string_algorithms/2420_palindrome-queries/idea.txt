@@ -1,0 +1,42 @@
+Bài toán: Palindrome Queries (CSES 2420)
+
+Cần hỗ trợ hai loại thao tác trên một xâu độ dài n (m thao tác):
+  - Loại 1 "1 k x": đổi ký tự ở vị trí k thành x (point update).
+  - Loại 2 "2 a b": kiểm tra đoạn con [a, b] có phải là palindrome không.
+
+Ý tưởng chính: dùng polynomial hashing kết hợp với Fenwick tree (Binary Indexed
+Tree) để vừa hỗ trợ cập nhật một điểm, vừa lấy hash của một đoạn trong O(log n).
+
+Với cơ số p và modulo M, ta duy trì HAI cây Fenwick:
+  - Cây "forward" F lưu tại vị trí i giá trị val[i] * p^(i-1).
+  - Cây "backward" B lưu tại vị trí i giá trị val[i] * p^(n-i).
+(val[i] = giá trị 1..26 của ký tự, cộng thêm offset để 'a' không bằng 0.)
+
+Gọi Fsum(a,b), Bsum(a,b) là tổng đoạn [a,b] lấy từ hai cây. Khi đó:
+  - Hash đọc XUÔI của [a,b]  = Fsum(a,b) / p^(a-1)
+  - Hash đọc NGƯỢC của [a,b] = Bsum(a,b) / p^(n-b)
+Đoạn là palindrome khi hai hash này bằng nhau. Để tránh nghịch đảo modular, ta
+nhân chéo và so sánh:
+        Fsum(a,b) * p^(n-b)  ==  Bsum(a,b) * p^(a-1)   (mod M)
+
+Cập nhật loại 1: chỉ cần cộng delta = (val_mới - val_cũ) vào cả hai cây tại
+vị trí k (nhân với lũy thừa p tương ứng), mất O(log n).
+
+Vì sao đúng: nếu đoạn thật sự là palindrome thì đẳng thức hash luôn đúng (điều
+kiện cần). Chiều ngược lại là xác suất: hai xâu khác nhau có cùng hash với xác
+suất rất nhỏ. Để chống các test anti-hash của CSES, ta dùng DOUBLE HASHING với
+hai modulo khác nhau (1e9+7 và 998244353) và hai cơ số NGẪU NHIÊN chọn lúc chạy.
+Đối thủ không biết cơ số ngẫu nhiên nên không dựng được va chạm; xác suất sai
+tổng thể xấp xỉ m / (M1*M2), cực nhỏ.
+
+Xây dựng ban đầu bằng thuật toán build Fenwick O(n). Mỗi thao tác O(log n).
+Độ phức tạp thời gian: O((n + m) log n). Bộ nhớ: O(n).
+
+Tối ưu cài đặt: bốn cây (2 modulo x {forward, backward}) dùng CHUNG một chuỗi
+chỉ số Fenwick, nên gộp vào một vòng while duy nhất cho mỗi truy vấn/cập nhật,
+và chỉ lấy modulo ở cuối, giảm mạnh chi phí trên Python.
+
+LƯU Ý TLE: với n, m tới 2x10^5 và double hashing, giải pháp Python thuần vẫn có
+nguy cơ TLE trên giới hạn thời gian dành cho C++ của CSES, dù hằng số đã được tối
+ưu (gộp 4 cây trong một vòng lặp, hoãn modulo). Thuật toán là đúng và tối ưu về
+mặt độ phức tạp.

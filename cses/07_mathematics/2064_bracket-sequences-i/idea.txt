@@ -1,0 +1,36 @@
+Bracket Sequences I - CSES 2064
+
+Bài toán:
+Đếm số dãy ngoặc hợp lệ (valid bracket sequence) có độ dài n, in kết quả modulo
+M = 10^9 + 7. Ràng buộc 1 <= n <= 10^6.
+
+Nhận xét:
+- Một dãy ngoặc hợp lệ phải có số ngoặc mở bằng số ngoặc đóng, nên độ dài phải
+  là số chẵn. Nếu n lẻ thì không có dãy nào => đáp án bằng 0.
+- Khi n chẵn, đặt m = n / 2 (số cặp ngoặc). Số dãy ngoặc hợp lệ với m cặp chính
+  là số Catalan thứ m:
+      Catalan(m) = C(2m, m) / (m + 1)
+                 = (2m)! / (m! * (m+1)!)
+  Đây là kết quả kinh điển của số Catalan (đếm đường đi Dyck / cây nhị phân...).
+
+Kiểm chứng ví dụ: n = 6 => m = 3 => Catalan(3) = 5, khớp với đề bài
+  ()()(), ()(()), (())(), ((())), (()())
+
+Công thức tính modulo:
+- Vì 2m = n, ta có
+      Catalan(m) = fact[n] * inv_fact[m] % M * inv_fact[m+1] % M
+  với fact[k] = k! mod M và inv_fact[k] = nghịch đảo modular của k! mod M.
+- M = 10^9 + 7 là số nguyên tố nên dùng định lý Fermat (Fermat's little theorem):
+  nghịch đảo của a là pow(a, M-2, M). Ta tính inv_fact[n] = pow(fact[n], M-2, M)
+  rồi truy hồi ngược inv_fact[k] = inv_fact[k+1] * (k+1) % M để có toàn bộ mảng
+  chỉ với một lần lũy thừa modular.
+
+Tính đúng đắn:
+- Công thức Catalan(m) = C(2m,m)/(m+1) là đồng nhất thức đã được chứng minh cho
+  số dãy ngoặc hợp lệ. Phép chia trong modulo được thay bằng nhân với modular
+  inverse, hợp lệ vì M nguyên tố và các thừa số không chia hết cho M.
+
+Độ phức tạp:
+- Tiền xử lý factorial + inverse factorial: O(n) thời gian, O(n) bộ nhớ.
+- Một phép pow modular: O(log M).
+Tổng thể O(n) với n <= 10^6, thừa sức trong giới hạn thời gian.

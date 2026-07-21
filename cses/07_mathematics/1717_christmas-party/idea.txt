@@ -1,0 +1,31 @@
+Bài toán: Đếm số cách phân phát quà sao cho không ai nhận lại quà của chính mình.
+Đây chính là bài toán đếm số derangement (hoán vị không có điểm cố định) của n phần tử,
+ký hiệu D(n), lấy modulo 10^9+7.
+
+Ý tưởng và công thức:
+- Một derangement là hoán vị p của {1..n} sao cho p(i) != i với mọi i.
+- Công thức truy hồi (recurrence) kinh điển:
+    D(1) = 0
+    D(2) = 1
+    D(n) = (n - 1) * (D(n-1) + D(n-2))
+- Chứng minh trực giác: xét phần tử thứ n. Nó có thể đổi chỗ với 1 trong (n-1)
+  phần tử khác, gọi là k.
+    + Trường hợp 1: phần tử k cũng nhận quà của n (hai người hoán đổi nhau), n-2
+      phần tử còn lại tạo thành derangement độc lập -> D(n-2) cách.
+    + Trường hợp 2: phần tử k không nhận quà của n; khi đó bài toán quy về
+      derangement của n-1 phần tử -> D(n-1) cách.
+  Nhân với (n-1) lựa chọn của k ta được công thức trên.
+
+Cách cài đặt:
+- Với n <= 10^6, ta chỉ cần tính lặp (iterative) từ dưới lên, giữ hai giá trị
+  D(n-1) và D(n-2), mỗi bước lấy modulo. Độ phức tạp O(n) thời gian, O(1) bộ nhớ.
+- Xử lý riêng các trường hợp nhỏ: n = 1 -> 0 (một người không thể tránh quà của
+  chính mình).
+
+Tính đúng đắn: công thức truy hồi derangement là chuẩn và đã được chứng minh; mọi
+phép tính đều lấy modulo 10^9+7 nên không tràn số (Python dùng số nguyên lớn nhưng
+vẫn giữ modulo để nhanh).
+
+Kiểm tra ví dụ: n = 4 -> D(4) = 3 * (D(3) + D(2)) = 3 * (2 + 1) = 9. Đúng.
+
+Độ phức tạp: thời gian O(n), bộ nhớ O(1).

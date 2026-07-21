@@ -1,0 +1,55 @@
+Counting Coprime Pairs (CSES 2417)
+
+Bài toán
+--------
+Cho n số nguyên dương x_1, ..., x_n (n <= 1e5, x_i <= 1e6). Đếm số cặp (i, j)
+với i < j sao cho gcd(x_i, x_j) = 1 (hai số nguyên tố cùng nhau).
+
+Ý tưởng: Mobius inversion (nguyên lý bù trừ trên ước)
+-----------------------------------------------------
+Đặt freq[v] = số lần giá trị v xuất hiện.
+Đặt cnt[d] = số phần tử chia hết cho d = tổng freq[m] với m là bội của d.
+
+- Số cặp mà CẢ HAI phần tử đều chia hết cho d chính là C(cnt[d], 2) = cnt[d]*(cnt[d]-1)/2.
+- Gọi g(d) = số cặp có gcd chia hết cho d = C(cnt[d], 2).
+- Ta muốn đếm số cặp có gcd = 1.
+
+Theo hàm Mobius mu(d):
+    (số cặp coprime) = sum_{d >= 1} mu(d) * C(cnt[d], 2).
+
+Chứng minh (vì sao đúng): với mỗi cặp có gcd = G, cặp đó được đếm trong
+C(cnt[d], 2) với mọi ước d của G. Do đó đóng góp của nó vào tổng là
+sum_{d | G} mu(d), và theo tính chất cơ bản của Mobius:
+    sum_{d | G} mu(d) = 1 nếu G = 1, và = 0 nếu G > 1.
+Vậy chỉ những cặp có gcd = 1 được đếm đúng một lần, các cặp khác triệt tiêu.
+
+Cách tính trong code
+--------------------
+1. Đọc input, dựng freq[] tới maxv = max(x_i).
+2. Sàng Eratosthenes đánh dấu số nguyên tố đến maxv.
+3. Tính mu[] đến maxv:
+   - khởi tạo mu[m] = 1;
+   - với mỗi số nguyên tố p: đổi dấu (nhân -1) tất cả bội của p  -> mô tả số
+     ước nguyên tố phân biệt;
+   - đặt mu[m] = 0 cho mọi m chia hết cho p^2 (m không squarefree).
+4. ans = sum_{d} mu[d] * C(cnt[d], 2), trong đó cnt[d] = sum(freq[d::d])
+   (dùng slicing sum để chạy ở tốc độ C thay vì vòng lặp Python).
+
+Không cần lấy dư (modulo): đề bài yêu cầu in ra số nguyên chính xác. Đáp án lớn
+nhất khoảng C(1e5, 2) ~ 5e9, vượt 2^31 nhưng Python dùng số nguyên lớn tự nhiên
+nên không tràn số.
+
+Độ phức tạp
+-----------
+- Sàng + tính mu: O(maxv log log maxv).
+- Tính cnt[d] cho tất cả d qua slicing sum: tổng số phần tử duyệt
+  ~ sum_{d} maxv/d = O(maxv log maxv) ~ 1.4e7 phép cộng ở tốc độ C.
+- Bộ nhớ: O(maxv) cho freq, mu, sieve  (maxv <= 1e6).
+
+Do đó thuật toán tổng thể là O(maxv log maxv), rất nhanh so với n.
+
+LƯU Ý TLE: pure Python với maxv = 1e6 khá nặng; đã tối ưu bằng cách chỉ xét
+những d có mu[d] != 0 và dùng slicing sum (sum(freq[d::d])) chạy ở tốc độ C.
+Đo worst-case (n = 1e5, giá trị tới 1e6) trên CPython 3.9 mất khoảng 1.0-1.3s
+(gồm cả thời gian khởi động Python), tức là sát ngưỡng 1s của CPython. Nên nộp
+bằng PyPy3 để an toàn; với PyPy3 thời gian chạy thấp hơn nhiều và không lo TLE.

@@ -1,0 +1,61 @@
+Bài toán: Sum of Four Squares (CSES 3355)
+https://cses.fi/problemset/task/3355
+
+ĐỀ BÀI
+- Có t test (1 ≤ t ≤ 1000). Mỗi test cho một số nguyên n (0 ≤ n ≤ 10^7),
+  tổng tất cả các n ≤ 10^7.
+- Với mỗi n, in ra 4 số nguyên không âm a b c d sao cho
+      n = a^2 + b^2 + c^2 + d^2.
+- Chấp nhận bất kỳ nghiệm hợp lệ nào (checker chỉ kiểm tra đẳng thức và tính
+  không âm), nên thứ tự và việc dùng số 0 đều được.
+
+CƠ SỞ TOÁN HỌC
+1) Định lý bốn số chính phương của Lagrange (Lagrange's four-square theorem):
+   mọi số nguyên không âm đều biểu diễn được thành tổng của 4 số chính phương.
+   => luôn tồn tại nghiệm.
+
+2) Định lý ba số chính phương của Legendre (Legendre's three-square theorem):
+   một số m biểu diễn được thành tổng của 3 số chính phương KHI VÀ CHỈ KHI m
+   KHÔNG có dạng 4^k * (8*t + 7).
+   Đây là dạng "cấm" duy nhất, nên hầu hết các số chỉ cần 3 số chính phương.
+
+THUẬT TOÁN
+Ý tưởng: đưa bài toán về việc tìm 3 số chính phương.
+
+Bước 1 - Khử thừa số 4:
+   Viết n = 4^k * t với t không chia hết cho 4. Nếu t = a^2+b^2+c^2+d^2 thì
+   n = (2^k a)^2 + (2^k b)^2 + (2^k c)^2 + (2^k d)^2. Vậy chỉ cần giải cho t rồi
+   nhân mọi kết quả với p = 2^k. (Vì n = 4^k * t = (2^k)^2 * t = p^2 * t.)
+
+Bước 2 - Xử lý dạng cấm:
+   Sau khi khử hết thừa số 4, t không chia hết cho 4 nên dạng cấm 4^k*(8t+7)
+   chỉ còn khả năng k=0, tức t ≡ 7 (mod 8).
+   - Nếu t ≡ 7 (mod 8): đặt d = 1. Khi đó t-1 ≡ 6 (mod 8); vì t lẻ nên t-1
+     là 2*(số lẻ), không chia hết cho 4 và không ≡ 7 (mod 8), nên t-1 biểu
+     diễn được thành 3 số chính phương. Ta gọi three_squares(t-1).
+   - Ngược lại: đặt d = 0 và gọi three_squares(t) (t chắc chắn biểu diễn được
+     thành 3 số chính phương).
+
+Bước 3 - three_squares(m):
+   Duyệt c từ isqrt(m) giảm dần. Với mỗi c, kiểm tra xem m - c^2 có phải tổng
+   của 2 số chính phương không bằng two_squares (kỹ thuật two-pointer):
+       lo = 0, hi = isqrt(x); tăng lo nếu tổng nhỏ hơn x, giảm hi nếu lớn hơn.
+   Số đầu tiên c mà m - c^2 tách được thành 2 số chính phương cho ta nghiệm.
+
+VÌ SAO ĐÚNG
+- Bước 1 và 2 bảo đảm giá trị đưa vào three_squares luôn KHÔNG thuộc dạng cấm
+  của Legendre, nên chắc chắn tồn tại (a,b,c). Vòng lặp c chạy tới tận 0, tại
+  đó two_squares(m) sẽ trả về nghiệm nếu m là tổng 2 số chính phương; nói chung
+  do định lý ba số chính phương, luôn tồn tại c hợp lệ nên vòng lặp luôn dừng
+  với nghiệm.
+- Nhân lại với p = 2^k khôi phục đúng nghiệm cho n gốc.
+
+ĐỘ PHỨC TẠP
+- two_squares(x): O(sqrt(x)).
+- three_squares(m): mật độ các số là "tổng 2 số chính phương" xấp xỉ
+  K/sqrt(ln m) (hằng số Landau-Ramanujan, ~0.76), với m ~ 10^7 vào khoảng ~19%.
+  Do đó trung bình chỉ cần vài lần thử c là gặp nghiệm, mỗi lần O(sqrt(m)).
+  Chi phí mỗi truy vấn xấp xỉ O(sqrt(n)) trên thực tế.
+- Tổng thể: vì tổng các n ≤ 10^7, tổng công việc rất nhỏ (cỡ vài triệu phép
+  toán trong trường hợp xấu), thừa sức trong giới hạn thời gian.
+- Bộ nhớ: O(1) ngoài mảng input.

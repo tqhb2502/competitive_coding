@@ -1,0 +1,28 @@
+Bài toán: Tung n con xúc xắc (mỗi con cho giá trị từ 1 đến 6). Tính xác suất
+để tổng các mặt nằm trong đoạn [a, b].
+
+Ý tưởng: Quy hoạch động (dynamic programming) trên phân phối xác suất của tổng.
+
+Gọi dp[s] = xác suất để tổng hiện tại (sau khi đã tung một số con xúc xắc) bằng s.
+- Khởi tạo: dp[0] = 1.0 (khi chưa tung con nào, tổng chắc chắn bằng 0).
+- Với mỗi con xúc xắc tiếp theo, mỗi mặt k (k = 1..6) xuất hiện với xác suất 1/6,
+  nên chuyển trạng thái:
+      ndp[s + k] += dp[s] * (1/6)   với mọi s và mọi k = 1..6.
+- Sau khi xử lý đủ n con xúc xắc, đáp số là tổng dp[s] với a <= s <= b.
+
+Vì sao đúng: Các lần tung độc lập, nên phân phối tổng sau khi thêm một con xúc xắc
+là tích chập (convolution) của phân phối cũ với phân phối đều {1..6}. dp[s] chính
+là xác suất tổng bằng s theo đúng định nghĩa. Cộng dp[s] trên đoạn [a, b] cho xác
+suất cần tìm.
+
+Cách khác tương đương: đếm số cách (count DP) rồi chia cho 6^n. Ở đây ta dùng trực
+tiếp xác suất bằng float để tránh số nguyên khổng lồ và cho kết quả ổn định về mặt
+số học.
+
+Độ phức tạp:
+- Thời gian: O(n * (6n) * 6) = O(n^2). Với n <= 100 thì tổng tối đa 6n = 600, khối
+  lượng tính toán chỉ vài trăm nghìn phép, chạy tức thời.
+- Bộ nhớ: O(n) cho mảng dp có kích thước 6n + 1.
+
+Định dạng kết quả: In với 6 chữ số thập phân bằng "%.6f" (làm tròn half-to-even như
+yêu cầu; sai số tuyệt đối/tương đối 1e-6 được chấp nhận).

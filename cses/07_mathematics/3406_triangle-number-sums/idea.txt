@@ -1,0 +1,48 @@
+Bài toán: Cho số nguyên dương n (đến 10^12), tìm số lượng ít nhất các số tam giác
+(triangle number) T_k = k(k+1)/2 sao cho tổng của chúng bằng n. Có t <= 100 test.
+
+Ý tưởng:
+Theo định lý Gauss's Eureka theorem (Fermat polygonal number theorem cho trường hợp
+số tam giác): mọi số nguyên dương đều biểu diễn được thành tổng của NHIỀU NHẤT 3 số
+tam giác. Vì vậy đáp án chỉ có thể là 1, 2 hoặc 3. Ta chỉ cần phân biệt 3 trường hợp.
+
+1) Đáp án = 1  <=>  n là số tam giác.
+   n = k(k+1)/2  <=>  8n+1 = (2k+1)^2, tức là 8n+1 phải là số chính phương
+   (perfect square). Kiểm tra bằng math.isqrt trong O(1).
+
+2) Đáp án = 2  <=>  n = T_a + T_b với a,b >= 1.
+   Nhân 8 và thêm 2:
+       8(T_a + T_b) + 2 = (2a+1)^2 + (2b+1)^2.
+   Vậy 8n+2 = (2a+1)^2 + (2b+1)^2, tức n là tổng hai số tam giác khi và chỉ khi
+   8n+2 là tổng của hai bình phương (sum of two squares). Vì 8n+2 = 2 * (4n+1) và
+   2 = 1^2 + 1^2, điều kiện tương đương: 4n+1 là tổng của hai bình phương.
+
+   Theo định lý tổng hai bình phương (sum of two squares theorem): m biểu diễn được
+   thành tổng hai bình phương khi và chỉ khi trong phân tích thừa số nguyên tố của m,
+   mọi số nguyên tố p == 3 (mod 4) xuất hiện với số mũ CHẴN.
+
+   Lưu ý: nếu n KHÔNG phải số tam giác (đã loại ở bước 1) thì mọi cách viết
+   8n+2 = x^2 + y^2 đều có x,y > 1 (nếu x = 1 thì 8n+1 = y^2, mâu thuẫn). Do đó
+   cả hai số tam giác tương ứng đều dương => thật sự là tổng của 2 số tam giác dương.
+
+3) Đáp án = 3: các trường hợp còn lại (Gauss bảo đảm luôn đủ với 3 số tam giác).
+
+Cách phân tích thừa số:
+4n+1 <= 4*10^12 + 1 (nhỏ hơn 2^42). Ta phân tích thừa số bằng Miller-Rabin
+(kiểm tra nguyên tố tất định với các base 2..37, đúng cho mọi số < 3.2*10^18) kết hợp
+Pollard's rho. Mỗi lần phân tích rất nhanh (cơ bản O(m^{1/4})), với t <= 100 test là
+không đáng kể.
+
+Kiểm tra ví dụ:
+- n=1: 8n+1=9=3^2 -> 1.
+- n=2: 8n+1=17 không chính phương; 4n+1=9=3^2, prime 3==3 mod4 số mũ 2 chẵn -> 2.
+- n=3: 8n+1=25=5^2 -> 1.
+- n=42: 8n+1=337 không chính phương; 4n+1=169=13^2, 13==1 mod4 -> 2 (42=36+6).
+- n=1337: 8n+1=10697 không chính phương; 4n+1=5349=3*1783, cả 3 và 1783 đều ==3 mod4
+  với số mũ lẻ -> 3.
+Tất cả khớp với output mẫu.
+
+Độ phức tạp:
+- Thời gian: mỗi test O((4n+1)^{1/4}) cho phân tích thừa số + O(1) kiểm tra chính phương.
+  Tổng thể O(t * n^{1/4}), rất nhanh với t <= 100.
+- Bộ nhớ: O(1) (chỉ lưu vài thừa số nguyên tố).

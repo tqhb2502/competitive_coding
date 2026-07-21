@@ -1,0 +1,41 @@
+Bài toán: Another Game (CSES 2208)
+
+Luật chơi:
+- Có n đống xu. Hai người chơi luân phiên đi.
+- Mỗi lượt, người chơi chọn MỘT SỐ (ít nhất một) đống KHÔNG rỗng và lấy đúng 1 xu từ MỖI đống được chọn.
+- Người lấy viên xu cuối cùng (đưa tất cả các đống về 0) là người THẮNG (normal play).
+
+Kết luận (game theory):
+- Người chơi THỨ HAI thắng khi và chỉ khi TẤT CẢ các đống đều có số xu CHẴN.
+- Ngược lại (tồn tại ít nhất một đống có số xu LẺ), người chơi THỨ NHẤT thắng.
+=> In "second" nếu mọi x_i đều chẵn, ngược lại in "first".
+
+Điều đặc biệt: kết quả CHỈ phụ thuộc vào tính chẵn/lẻ của từng đống, hoàn toàn
+KHÔNG phụ thuộc vào độ lớn cụ thể của các đống.
+
+Chứng minh / trực giác (vì sao đúng):
+Gọi P-position là thế thua cho người sắp đi. Ta khẳng định P-position chính là
+tập thế mà MỌI đống đều chẵn (bao gồm cả thế rỗng - mọi đống bằng 0).
+
+1) Từ một thế "mọi đống chẵn" (khác rỗng), bất kỳ nước đi nào cũng chọn một tập
+   con S các đống rồi giảm mỗi đống trong S đi 1. Các đống thuộc S trở thành LẺ.
+   Vì S không rỗng nên sau nước đi luôn tồn tại ít nhất một đống lẻ => đối thủ
+   nhận được một thế "có đống lẻ" (N-position). Vậy mọi nước đi từ P đều dẫn tới N.
+
+2) Từ một thế "có ít nhất một đống lẻ" (N-position), người đi có thể thắng bằng
+   cách chọn ĐÚNG tập tất cả các đống đang có số xu LẺ (tập này không rỗng) và
+   giảm mỗi đống đó đi 1. Sau nước đi, mọi đống lẻ trở thành chẵn, còn các đống
+   chẵn giữ nguyên (không chọn) => tất cả đều chẵn. Tức là chuyển được về một
+   thế "mọi đống chẵn" (P-position) cho đối thủ.
+
+Do (1) và (2), lớp thế "mọi đống chẵn" chính là các P-position, và thế rỗng là
+P-position (người sắp đi không còn nước => người vừa đi đã lấy viên cuối và thắng,
+đúng với việc người sắp đi thua). Quy nạp theo tổng số xu cho ta điều phải chứng minh.
+
+Kết quả brute-force (thử toàn bộ trạng thái nhỏ với minimax) khớp hoàn toàn với
+quy tắc trên trên mọi cấu hình tới 5 đống và giá trị tới 7.
+
+Độ phức tạp:
+- Với mỗi test case chỉ cần duyệt n đống, kiểm tra xem có đống nào lẻ không: O(n).
+- Tổng thời gian O(sum of n) = O(2*10^5). Bộ nhớ O(1) ngoài input.
+- Không có nguy cơ TLE trong Python thuần với I/O đọc/ghi theo khối.

@@ -1,0 +1,31 @@
+Bài toán: Đếm số nguyên trong [1, n] chia hết cho ít nhất một trong k số nguyên tố cho trước.
+
+Ý tưởng chính: Inclusion-Exclusion Principle (nguyên lý bao hàm - loại trừ).
+
+- Với một số nguyên tố p (hoặc tổng quát một số d), số lượng bội của d trong [1, n]
+  là floor(n / d), viết là n // d.
+- Ta cần đếm hợp của các tập bội của a_1, a_2, ..., a_k.
+- Theo nguyên lý bao hàm - loại trừ:
+    |A_1 ∪ ... ∪ A_k| = Σ_{S ⊆ {1..k}, S ≠ ∅} (-1)^(|S|+1) * floor(n / prod(a_i, i∈S))
+  Vì các a_i là các số nguyên tố PHÂN BIỆT nên tích của một tập con chính là bội chung
+  nhỏ nhất (LCM) của tập đó, do đó số bội của toàn bộ tập con trong [1, n] đúng bằng
+  floor(n / tích). Dấu (+) cho tập con có kích thước lẻ, dấu (-) cho kích thước chẵn.
+
+Cài đặt hiệu quả (duyệt tập con có cắt tỉa):
+- Duyệt dần từng số nguyên tố, xây dựng danh sách các tích tập con đã tạo (dp).
+- Khi thêm p vào một tích prod đã có: nếu prod*p > n thì floor(n/(prod*p)) = 0 và MỌI
+  mở rộng tiếp theo cũng có tích lớn hơn n, nên đóng góp = 0 => cắt tỉa (không lưu, không
+  mở rộng). Điều này giúp danh sách dp nhỏ đi rất nhiều.
+- Với mỗi tập con mới tạo (kích thước cnt), cộng/trừ n // tích tùy theo cnt lẻ/chẵn.
+
+Vì sao đúng: Python dùng số nguyên arbitrary precision nên tích không bị tràn số; các
+a_i phân biệt và là số nguyên tố nên tích tập con = LCM, đảm bảo công thức bao hàm - loại
+trừ áp dụng chính xác.
+
+Độ phức tạp:
+- Số tập con có tích <= n bị chặn (k <= 20; tích 20 số nguyên tố phân biệt nhỏ nhất đã
+  vượt 1e18 nên rất nhiều tập con bị cắt tỉa). Trường hợp xấu nhất tối đa 2^k = ~10^6
+  tập con, mỗi tập con xử lý O(1) phép nhân/chia số lớn.
+- Thời gian: O(số tập con hợp lệ) <= O(2^k). Bộ nhớ: O(số tập con hợp lệ).
+
+Với k <= 20 và cắt tỉa, chương trình chạy rất nhanh, không có rủi ro TLE trong Python.

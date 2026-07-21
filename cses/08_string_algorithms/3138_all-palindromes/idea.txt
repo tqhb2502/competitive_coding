@@ -1,0 +1,42 @@
+Bai: All Palindromes (CSES 3138)
+
+De bai:
+- Cho mot xau s gom cac ki tu 'a'..'z', do dai n (n <= 2*10^5).
+- Voi moi vi tri i (1-indexed) in ra do dai cua palindrome DAI NHAT KET THUC tai vi tri i.
+
+Vi du: s = "ababbababaa" -> "1 1 3 3 2 4 6 8 5 5 2".
+
+Thuat toan: Eertree (Palindromic Tree)
+- Eertree la cau truc luu tru TAT CA cac palindrome-substring PHAN BIET cua xau, moi
+  palindrome la mot nut. Cay co 2 goc: imaginary root (do dai = -1) va empty root
+  (do dai = 0). Moi nut co:
+    + length: do dai palindrome.
+    + link (suffix link): tro toi palindrome-suffix that su dai nhat cua no.
+    + transition trans[node, c]: nut ung voi palindrome c + P + c (them ki tu c hai dau).
+- Ta them tung ki tu cua s tu trai sang phai. Bien `last` luon la nut ung voi
+  palindrome-suffix DAI NHAT cua tien to hien tai.
+- Khi them ki tu thu i:
+    + Di theo suffix link tu `last` de tim `cur` la suffix-palindrome dai nhat ma co
+      the "boc" them ki tu c o hai dau (dieu kien s[i - length[cur] - 1] == s[i]).
+    + Neu palindrome moi c + P(cur) + c da ton tai (co transition) thi chi cap nhat last.
+    + Neu chua, tao nut moi voi do dai length[cur] + 2, tim suffix link cua no bang cach
+      tiep tuc di theo suffix link tu link[cur].
+- Sau khi xu ly xong ki tu i, length[last] chinh la do dai palindrome-suffix dai nhat
+  ket thuc tai vi tri i => day la dap an can tim.
+
+Tinh dung:
+- Theo ly thuyet eertree, moi buoc them 1 ki tu tao ra NHIEU NHAT 1 palindrome moi, va
+  `last` sau buoc do dung bang palindrome-suffix dai nhat. Do la dinh nghia truc tiep cua
+  dap an, nen ket qua chinh xac.
+- Ta dung xau 1-indexed voi mot sentinel a[0] = -1 (khac moi ma ki tu 0..25) de bao dam
+  chi so i - length[cur] - 1 luon >= 0, tranh truy cap am; imaginary root (len -1) luon
+  khop nen vong lap tim `cur` va suffix link luon dung lai.
+
+Do phuc tap:
+- Thoi gian: O(n) amortized (tong so buoc di theo suffix link tren toan bo qua trinh la
+  O(n)). Bo nho: O(n) nut, moi nut vai truong + transition.
+
+LUU Y TLE: Eertree thuan Python cho n = 2*10^5 voi gioi han 1.00s cua CSES co the cham
+(dung dict cho transition, moi vong lap co overhead). Thuat toan O(n) la toi uu ve mat
+ly thuyet; neu TLE tren CPython co the can PyPy hoac toi uu hoa hang so, nhung KHONG dung
+numpy/thu vien ngoai theo rang buoc cua judge.

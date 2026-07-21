@@ -1,0 +1,43 @@
+Bài toán: Finding Periods (CSES 1733)
+
+Định nghĩa: một "period" (chu kỳ) độ dài p của xâu s (độ dài n) là một tiền tố
+độ dài p mà khi lặp lại nhiều lần sẽ sinh ra toàn bộ xâu s (lần lặp cuối có thể
+chỉ là một phần). Tương đương: s[i] == s[i - p] với mọi i >= p, tức là s có
+period p khi và chỉ khi hai đoạn s[0 .. n-p-1] và s[p .. n-1] trùng nhau.
+
+Ý tưởng chính - dùng mối liên hệ giữa PERIOD và BORDER:
+- Một "border" độ dài b của s là một tiền tố thực sự (b < n) đồng thời cũng là
+  hậu tố của s.
+- Định lý cơ bản: p là một period của s khi và chỉ khi s có border độ dài
+  b = n - p. Lý do: nếu tiền tố độ dài (n-p) trùng với hậu tố độ dài (n-p) thì
+  dịch xâu đi p vị trí ta thấy s[i] == s[i-p] với mọi i >= p, đúng định nghĩa
+  period. Chiều ngược lại hoàn toàn tương tự.
+- Border độ dài b = 0 (border rỗng) ứng với period p = n, luôn hợp lệ (chính
+  bản thân xâu s là một period).
+
+Cách tìm tất cả các border bằng KMP prefix function (failure function):
+- Tính mảng pi với pi[i] = độ dài border dài nhất của tiền tố s[0..i].
+- Border dài nhất của toàn xâu là b1 = pi[n-1]. Border dài nhì là
+  b2 = pi[b1-1], rồi b3 = pi[b2-1], ... đi theo "border chain" cho tới khi
+  gặp 0. Đây chính là TẤT CẢ các độ dài border của s, theo thứ tự giảm dần.
+- Do đó các period p = n - b sinh ra theo thứ tự TĂNG dần khi ta đi dọc chain
+  từ border lớn nhất xuống. Cuối cùng thêm p = n (ứng với border rỗng).
+
+Vì sao đúng: prefix function của KMP cho border dài nhất của mỗi tiền tố; toàn
+bộ tập border của một xâu chính là dãy pi[n-1], pi[pi[n-1]-1], ... (một tính
+chất chuẩn của failure function). Ánh xạ b -> n - b là song ánh giữa tập border
+và tập period, nên ta thu được đầy đủ và không trùng lặp các độ dài period.
+
+Kiểm tra ví dụ s = "abcabca" (n = 7): pi = [0,0,0,1,2,3,4]. Chain border:
+b = 4 -> period 3; b = pi[3] = 1 -> period 6; b = pi[0] = 0 dừng; thêm period 7.
+Kết quả: 3 6 7 (đúng với đề bài).
+
+Độ phức tạp:
+- Thời gian: O(n) để tính prefix function, cộng O(số period) để đi chain (tối đa
+  O(n), ví dụ xâu "aaaa...a" có mọi period từ 1 tới n). Tổng O(n).
+- Bộ nhớ: O(n) cho mảng pi.
+
+LƯU Ý TLE: với n lên tới 1e6, vòng lặp tính prefix function thuần Python có hằng
+số lớn (mỗi ký tự vài phép truy cập mảng), có thể chậm ~1-2s và có nguy cơ TLE
+trên CPython của CSES; thuật toán vẫn O(n) và chính xác, đã tối ưu bằng biến cục
+bộ và làm việc trực tiếp trên bytes để giảm thời gian chạy.

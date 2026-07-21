@@ -1,0 +1,57 @@
+Bài toán: Stick Game (CSES 1729)
+
+Đề bài:
+- Có một đống n que. Hai người chơi lần lượt bốc que; mỗi lượt được bốc một số
+  lượng que thuộc tập hợp P gồm k giá trị cho trước (P luôn chứa giá trị 1).
+- Ai bốc được que cuối cùng thì thắng.
+- Với mỗi trạng thái i que (i = 1..n) cần in ra 'W' nếu người đi trước THẮNG,
+  'L' nếu người đi trước THUA (chơi tối ưu).
+
+Ràng buộc: 1 <= n <= 10^6, 1 <= k <= 100, 1 <= p_i <= n.
+
+Ý tưởng (game theory - subtraction game, kiểu Sprague-Grundy nhưng chỉ cần
+trạng thái thắng/thua):
+- Gọi win[i] = True nếu người tới lượt ở trạng thái i que sẽ thắng.
+- Trạng thái 0 que là THUA cho người tới lượt (không bốc được gì; người trước
+  đã bốc que cuối và thắng). Vậy win[0] = False (Losing).
+- Với i >= 1: win[i] = True (Winning) nếu TỒN TẠI nước đi p thuộc P (p <= i) sao
+  cho win[i - p] = False. Nghĩa là ta đẩy đối thủ vào một thế thua.
+  Ngược lại, nếu MỌI nước đi đều đưa về thế thắng của đối thủ thì i là thế THUA.
+
+Công thức:
+  win[i] = OR over p in P ( not win[i - p] )   (với i - p >= 0)
+  hay: i là thế THUA <=> không tồn tại thế thua j < i mà (i - j) thuộc P.
+
+Vì sao đúng: đây là quy nạp chuẩn của lý thuyết trò chơi tổ hợp bình thường
+(normal play). Một thế là thắng khi có ít nhất một nước đi dẫn tới thế thua của
+đối phương; là thua khi mọi nước đi đều dẫn tới thế thắng của đối phương. Cơ sở
+quy nạp là win[0] = False.
+
+Cách cài đặt hiệu quả (forward marking / lan truyền tiến):
+- Dùng mảng byte win kích thước n + maxp + 1 (maxp = max(P)) để khi đánh dấu
+  win[i + p] không cần kiểm tra biên.
+- Duyệt i từ 0 đến n theo thứ tự tăng dần. Khi tới i, tất cả j < i đã được xử lý
+  xong nên các dấu "thắng" đã được lan truyền đầy đủ:
+    + Nếu win[i] vẫn = 0 => i là thế THUA. Khi đó với mọi p thuộc P, đặt
+      win[i + p] = 1 (mọi trạng thái có thể bốc để về i đều là thế THẮNG).
+    + Nếu win[i] = 1 => i là thế THẮNG.
+- Kết quả cho vị trí i (1..n): 'W' nếu win[i] = 1, ngược lại 'L'.
+
+Tính đúng của cài đặt: một vị trí i là THẮNG khi và chỉ khi tồn tại j = i - p
+là thế THUA với j < i; đúng lúc xử lý j (j < i) ta đã set win[j + p] = win[i] = 1.
+Do duyệt tăng dần nên khi đọc win[i] mọi j < i đã lan truyền xong => quyết định
+đúng.
+
+Độ phức tạp:
+- Thời gian: O(n + (số thế thua) * k). Vì 1 thuộc P nên hai thế thua không thể
+  kề nhau (nếu i thua thì i-1 phải thắng), do đó số thế thua <= n/2. Trường hợp
+  xấu nhất ~ (n/2) * k = 5*10^7 phép gán. Cộng vòng duyệt O(n).
+- Bộ nhớ: O(n + maxp) cho mảng byte.
+
+Kiểm tra ví dụ: n=10, P={1,3,4} -> WLWWWWLWLW (khớp).
+
+LƯU Ý TLE: Trong Python thuần, trường hợp xấu nhất ~5*10^7 phép gán mức Python
+(khi số thế thua ~ n/2 và k = 100) có thể vượt giới hạn thời gian ~1s của CSES
+trên CPython. Thuật toán vẫn ĐÚNG; đây là O(n*k) tối ưu như lời giải C++ chuẩn.
+Nếu bị TLE, cần nộp bằng PyPy3 hoặc chuyển sang C++; không dùng thư viện bên
+thứ ba (numpy...) theo quy định.

@@ -1,0 +1,40 @@
+Bài toán: Đếm số đường đi (walk, cho phép lặp lại cạnh/đỉnh) có đúng k cạnh
+từ đỉnh 1 đến đỉnh n trong một đồ thị có hướng. Kết quả lấy modulo 1e9+7.
+
+Ràng buộc: 1 <= n <= 100, 1 <= m <= n(n-1), 1 <= k <= 1e9.
+
+Ý tưởng chính: matrix exponentiation (lũy thừa ma trận kề).
+- Gọi A là ma trận kề kích thước n x n, với A[i][j] = số cạnh có hướng đi từ
+  i sang j (ở đây đồ thị đơn nên A[i][j] thuộc {0,1}, nhưng ta vẫn cộng dồn để
+  an toàn với đa cạnh).
+- Tính chất cơ bản: phần tử (A^k)[i][j] chính bằng số đường đi độ dài đúng k cạnh
+  đi từ i đến j. Chứng minh bằng quy nạp: (A^{t+1})[i][j] = sum_r (A^t)[i][r]*A[r][j],
+  tức là mọi walk độ dài t+1 = một walk độ dài t đến đỉnh trung gian r rồi đi cạnh r->j.
+- Vì vậy đáp án = (A^k)[0][n-1] (chỉ số 0-based, đỉnh 1 -> index 0, đỉnh n -> index n-1).
+
+Tính A^k bằng binary exponentiation (fast/binary matrix power):
+  result = I (ma trận đơn vị); base = A;
+  while k: if k&1: result = result*base; base = base*base; k >>= 1.
+Số phép nhân ma trận là O(log k) (khoảng 60 phép cho k tới 1e9).
+Mỗi phép nhân ma trận n x n mất O(n^3). Tổng thời gian O(n^3 log k) ~ 100^3 * 60 = 6e7.
+Bộ nhớ O(n^2).
+
+Tối ưu cho Python - kỹ thuật "bignum packing" (đóng gói hàng thành số nguyên lớn):
+- Mỗi phần tử luôn nằm trong [0, mod). Mã hóa một hàng của ma trận B thành một số
+  nguyên Python duy nhất: đặt B[k][j] vào "ô" (slot) thứ j, mỗi ô rộng SHIFT bit
+  (Benc[k] = sum_j B[k][j] << (j*SHIFT)).
+- Khi đó hàng i của tích C = A*B tính được bằng acc = sum_k A[i][k] * Benc[k].
+  Vì acc = sum_j (sum_k A[i][k]*B[k][j]) << (j*SHIFT), mỗi ô j của acc đúng bằng
+  C[i][j] chưa modulo. Ta lấy ra từng ô bằng (acc >> (j*SHIFT)) & MASK rồi % mod.
+- Điều kiện không tràn/lẫn giữa các ô: mỗi tổng ô < 2^SHIFT. Giá trị lớn nhất của
+  một ô = n * (mod-1)^2 <= 100 * (1e9+6)^2 ~ 1.0e20 < 2^67 = 1.476e20. Do đó chọn
+  SHIFT = 67 là an toàn (không có carry giữa các ô).
+- Nhờ đó vòng lặp trong cùng (theo j) được thay bằng phép nhân/cộng số nguyên lớn
+  do C xử lý, nhanh hơn nhiều so với ba vòng for lồng nhau thuần Python.
+
+Độ phức tạp: O(n^3 log k) về mặt số phép tính cơ bản; với bignum packing phần lớn
+công việc dồn vào các phép toán số lớn được C tối ưu.
+
+LƯU Ý TLE: n = 100 với ~60 phép nhân ma trận là biên; Python thuần có thể chậm.
+Kỹ thuật bignum packing ở trên là cách nhanh nhất thường dùng để vượt qua trong
+Python; nếu vẫn TLE trên CPython thì cần PyPy. Lời giải này vẫn đảm bảo ĐÚNG.

@@ -1,0 +1,38 @@
+Bài toán: tìm chuỗi con palindrome dài nhất của một xâu s (độ dài n tối đa 10^6,
+gồm các ký tự a-z). Nếu có nhiều đáp án thì in ra bất kỳ đáp án nào.
+
+Thuật toán: Manacher.
+
+Ý tưởng chính:
+- Palindrome có thể có độ dài lẻ (tâm là một ký tự) hoặc chẵn (tâm nằm giữa hai
+  ký tự). Để xử lý đồng nhất cả hai trường hợp, ta biến đổi xâu bằng cách chèn
+  một ký tự phân cách (ở đây dùng giá trị 0, còn gọi là '#') vào giữa mọi cặp
+  ký tự và ở hai đầu. Ví dụ "aba" -> "#a#b#a#". Khi đó mọi palindrome trong xâu
+  gốc đều tương ứng với một palindrome CÓ ĐỘ DÀI LẺ (tâm là một vị trí) trong xâu
+  đã biến đổi, nên ta chỉ cần xét palindrome tâm lẻ.
+- Ta còn thêm hai ký tự "lính canh" (guard) khác nhau ở hai đầu (giá trị 1 và 2)
+  để vòng lặp mở rộng tự dừng mà không phải kiểm tra biên (tránh out-of-bounds).
+- Với mỗi tâm i, gọi P[i] là bán kính palindrome dài nhất nhận i làm tâm trong xâu
+  đã biến đổi. Manacher tính toàn bộ mảng P trong thời gian O(m) (m = 2n+1) nhờ
+  tận dụng tính đối xứng: nếu i nằm trong palindrome hiện tại (biên phải là right,
+  tâm là center) thì P[i] có thể khởi tạo bằng min(right - i, P[mirror]) với mirror
+  là ảnh gương của i qua center, sau đó chỉ mở rộng thêm khi cần. Nhờ vậy con trỏ
+  right không bao giờ lùi, tổng số bước mở rộng là O(m).
+
+Vì sao đúng:
+- Tính chất đối xứng: nếu P[mirror] < right - i thì palindrome tại i có cùng bán
+  kính với palindrome tại mirror (do nằm trọn trong palindrome lớn), nên P[i] =
+  P[mirror]. Nếu vượt quá biên, ta chỉ chắc chắn tới biên right và phải mở rộng
+  kiểm tra tiếp. Điều này bảo toàn tính đúng đắn của mọi P[i].
+- Trong xâu đã biến đổi, bán kính P[i] tại một tâm đúng bằng ĐỘ DÀI palindrome
+  tương ứng trong xâu gốc. Vị trí bắt đầu trong xâu gốc là (i - 1 - P[i]) // 2
+  (với i là chỉ số trong mảng đầy đủ đã có guard ở đầu). Ta lấy tâm có P[i] lớn
+  nhất để suy ra đáp án.
+
+Độ phức tạp:
+- Thời gian: O(n). Bộ nhớ: O(n) cho mảng biến đổi và mảng P.
+
+LƯU Ý TLE: n có thể tới 10^6 nên vòng lặp Manacher chạy trên ~2*10^6 vị trí bằng
+Python thuần có thể chậm và có nguy cơ TLE trên CSES (giới hạn đặt cho C++). Thuật
+toán vẫn ĐÚNG và tối ưu O(n); đã dùng bytearray, gán slice và biến cục bộ để giảm
+tối đa hằng số. Nên chạy bằng PyPy nếu có.
