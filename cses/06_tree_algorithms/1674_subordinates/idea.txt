@@ -1,0 +1,31 @@
+Bài toán: Subordinates (CSES 1674)
+
+Mô hình cây:
+- Công ty có n nhân viên đánh số 1..n, nhân viên 1 là giám đốc (gốc của cây).
+- Với mỗi nhân viên v từ 2..n ta được cho boss[v] là sếp trực tiếp. Ta coi đây là
+  một cây có gốc tại 1, với cạnh nối boss[v] -> v.
+- Số cấp dưới (subordinates) của một nhân viên u chính là số node nằm trong subtree
+  của u, KHÔNG tính chính u. Nói cách khác answer[u] = subtree_size(u) - 1.
+
+Thuật toán:
+1. Đọc mảng parent và dựng danh sách con children[] cho từng node.
+2. Duyệt cây bằng ITERATIVE DFS (dùng explicit stack, tránh đệ quy vì n tới 2e5
+   sẽ gây RecursionError / stack overflow) từ gốc 1 để lấy một thứ tự `order` mà
+   trong đó mỗi node luôn xuất hiện SAU cha của nó.
+3. Duyệt `order` theo chiều NGƯỢC lại: khi xử lý node u (khác gốc), cộng
+   count[u] + 1 vào count[parent[u]]. Vì mỗi con được xử lý trước cha nên khi tới
+   cha thì mọi con đã cộng xong -> count[u] = tổng subtree_size của các con + số con
+   = số cấp dưới của u.
+4. In ra count[1..n].
+
+Vì sao đúng:
+- Số cấp dưới của u = tổng trên mọi con c của u của (số cấp dưới của c + 1). Công
+  thức DP subtree này được tính chính xác nhờ xử lý con trước cha (reverse topo order
+  của cây có gốc). Gốc không có cha nên bỏ qua bước cộng.
+
+Độ phức tạp:
+- Thời gian O(n): mỗi node/cạnh được thăm một số lần hằng số.
+- Bộ nhớ O(n) cho parent, children, order, count.
+
+Với n <= 2e5 và thuật toán O(n) tuyến tính, đọc/ghi I/O nhanh nên chạy tốt trong
+giới hạn của CSES. Không có rủi ro TLE đáng kể.

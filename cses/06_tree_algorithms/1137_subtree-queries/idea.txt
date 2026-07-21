@@ -1,0 +1,36 @@
+Bài toán: Subtree Queries (CSES 1137)
+
+Mô hình cây:
+- Cây có gốc tại node 1. Mỗi node có một giá trị v_i.
+- Có hai loại truy vấn: "1 s x" gán lại giá trị của node s thành x; "2 s" hỏi
+  tổng các giá trị trong subtree của node s.
+
+Ý tưởng thuật toán:
+- Dùng Euler tour (DFS in-order) để "làm phẳng" cây thành một mảng một chiều.
+  Với mỗi node ta gán một chỉ số vào lúc thăm (time-in, gọi là tin) theo thứ tự
+  DFS. Điểm mấu chốt: toàn bộ subtree của node s chiếm đúng một đoạn liên tiếp
+  các chỉ số [tin[s], tout[s]], trong đó tout[s] = tin[s] + size[s] - 1 với
+  size[s] là số node trong subtree của s.
+- Vì n lên tới 2e5 nên KHÔNG dùng đệ quy (tránh RecursionError / stack overflow).
+  Ta tính parent, tin, tout, size bằng DFS lặp (iterative) với một explicit stack.
+- Sau khi làm phẳng, bài toán trở thành: point update (đổi giá trị một phần tử)
+  và range sum query (tổng một đoạn) trên mảng — đây chính là công việc cho một
+  BIT (Fenwick tree).
+  + Truy vấn loại 1 (đổi node s thành x): cập nhật điểm tại vị trí tin[s] với
+    delta = x - giá_trị_hiện_tại(s), rồi lưu lại giá trị mới.
+  + Truy vấn loại 2 (tổng subtree của s): trả về prefix_sum(tout[s]) -
+    prefix_sum(tin[s]-1).
+
+Tính đúng đắn:
+- Trong DFS, khi ta đi vào một node rồi lần lượt đi hết các con của nó trước khi
+  quay ra, tất cả các node của subtree được thăm liên tiếp nhau. Do đó tập chỉ số
+  tin của subtree(s) đúng bằng đoạn [tin[s], tin[s] + size[s] - 1]. Việc gán và
+  tính tổng đoạn trên BIT là chuẩn và chính xác.
+
+Độ phức tạp:
+- Xây cây và Euler tour: O(n).
+- Mỗi truy vấn (update hoặc sum) tốn O(log n) trên BIT.
+- Tổng thời gian: O((n + q) log n). Bộ nhớ: O(n).
+
+Với n, q <= 2e5 và giá trị tối đa 1e9, tổng có thể tới ~2e14 nên dùng số nguyên
+Python (không lo tràn số).

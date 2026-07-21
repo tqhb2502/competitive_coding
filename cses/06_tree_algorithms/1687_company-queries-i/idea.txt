@@ -1,0 +1,34 @@
+Company Queries I - https://cses.fi/problemset/task/1687
+
+MÔ HÌNH HÓA
+- Công ty gồm n nhân viên tạo thành một cây có gốc là nhân viên 1 (tổng giám đốc).
+- Mỗi nhân viên i (2 <= i <= n) có một sếp trực tiếp e_i, tức parent[i] = e_i.
+  Do e_i <= i-1 nên parent luôn là nhân viên có chỉ số nhỏ hơn, cây được cho sẵn
+  dưới dạng danh sách cha nên không cần DFS để tính parent.
+- Mỗi truy vấn (x, k): tìm tổ tiên (ancestor) đứng cách x đúng k bậc lên phía trên,
+  nếu không tồn tại thì in -1. Đây chính là bài toán tìm k-th ancestor.
+
+THUẬT TOÁN: Binary lifting (nhảy nhị phân)
+- Đặt LOG = 18 vì 2^18 = 262144 > 2*10^5 >= n, đủ để biểu diễn mọi k <= n.
+- up[j][v] = tổ tiên cách v đúng 2^j bậc; quy ước dùng 0 làm "node ảo" (không tồn tại).
+  + up[0][v] = parent[v], với parent[1] = 0 (gốc không có cha).
+  + up[j][v] = up[j-1][ up[j-1][v] ] với mọi j >= 1.
+  Vì mọi up[*][0] = 0 nên khi đã "rơi" ra ngoài cây thì luôn ở 0, rất tiện để trả -1.
+- Trả lời truy vấn (x, k): duyệt các bit của k; với mỗi bit j bật thì x = up[j][x].
+  Sau khi xử lý hết các bit, nếu x == 0 thì tổ tiên không tồn tại -> in -1, ngược lại in x.
+
+TÍNH ĐÚNG
+- k được phân tích thành tổng các luỹ thừa 2^j (biểu diễn nhị phân). Nhảy lần lượt theo
+  các luỹ thừa này tương đương nhảy tổng cộng k bậc, đúng định nghĩa k-th ancestor.
+- Bảng up được xây theo công thức tổ hợp 2^j = 2^(j-1) + 2^(j-1) nên chính xác.
+- Node ảo 0 hấp thụ mọi bước nhảy vượt gốc, đảm bảo phát hiện trường hợp không tồn tại.
+
+ĐỘ PHỨC TẠP
+- Tiền xử lý bảng up: O(n * LOG).
+- Mỗi truy vấn: O(LOG). Tổng: O((n + q) * LOG) thời gian.
+- Bộ nhớ: O(n * LOG) cho bảng binary lifting.
+- Với n, q <= 2*10^5 và LOG = 18 thì khối lượng khoảng vài triệu phép toán.
+
+LƯU Ý TLE: Với ~2*10^5 truy vấn, phần trả lời từng truy vấn trong Python thuần có thể
+chậm và có nguy cơ TLE trên giới hạn dành cho C++. Đã tối ưu bằng cách đọc toàn bộ input
+một lần, dùng danh sách phẳng cho bảng up và gom output; nếu vẫn TLE thì cần PyPy.

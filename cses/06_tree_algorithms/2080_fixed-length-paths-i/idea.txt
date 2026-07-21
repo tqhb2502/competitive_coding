@@ -1,0 +1,52 @@
+Fixed-Length Paths I - CSES 2080
+
+Bài toán: Cho một cây n đỉnh, đếm số đường đi (path) gồm ĐÚNG k cạnh.
+
+MÔ HÌNH HÓA
+- Root cây tại đỉnh 1. Mỗi đường đi trong cây có một đỉnh cao nhất duy nhất,
+  chính là LCA của hai đầu mút. Ta đếm mỗi đường đi đúng một lần tại LCA của nó.
+- Với mỗi đỉnh v, đặt cnt[v][d] = số đỉnh nằm trong subtree của v và cách v
+  đúng d cạnh (đi xuống dưới). Theo định nghĩa cnt[v][0] = 1 (chính là v).
+
+PHÂN LOẠI ĐƯỜNG ĐI CÓ LCA = L
+1) L là một đầu mút: đường đi thẳng đứng đi xuống từ L, dài k cạnh.
+   Số lượng = cnt[L][k] (số hậu duệ của L cách L đúng k cạnh).
+2) Hai đầu mút nằm trong hai subtree con KHÁC NHAU của L: độ dài = a + b với
+   a, b >= 1 và a + b = k. Khi lần lượt gộp (merge) các con của L, với mỗi con
+   c ta ghép (pairing) một đỉnh cách L là h+1 (tức cách c là h) với một đỉnh
+   thuộc phần đã gộp trước đó cách L là idx = k-(h+1). Điều kiện idx >= 1 vừa
+   loại bỏ chính L (để không trùng với trường hợp 1) vừa bảo đảm cả hai đầu mút
+   đều nằm thực sự dưới L.
+
+THUẬT TOÁN O(n) BẰNG LONG-PATH DECOMPOSITION (heavy path theo chiều cao)
+- Tính height[v] (số cạnh của đường đi xuống dài nhất từ v) và heavy[v] (con
+  cho height lớn nhất) bằng DFS ITERATIVE dùng stack tường minh, KHÔNG dùng đệ
+  quy để tránh RecursionError / stack overflow khi n tới 2*10^5.
+- Cấp phát một memory pool: mỗi heavy chain (từ đỉnh đầu chuỗi xuống tới lá sâu
+  nhất) chiếm một đoạn liên tiếp trong mảng D có kích thước height+1. Đặt con
+  trỏ Dptr[v] sao cho cnt[v][i] = D[Dptr[v] + i] và Dptr[v] = Dptr[heavy[v]] - 1.
+  Nhờ vậy đỉnh v "thừa kế" (inherit) mảng cnt của heavy child trong O(1): chỉ
+  dịch chỉ số và dùng chung bộ nhớ, sau đó chỉ cần gán cnt[v][0] = 1.
+- Duyệt các đỉnh theo thứ tự bottom-up (đảo ngược của preorder). Với mỗi đỉnh v,
+  ta chỉ lặp qua các light child (mọi con trừ heavy child): thực hiện pairing
+  rồi merge cnt[c] vào cnt[v]. Theo tính chất của long-path decomposition, tổng
+  kích thước của tất cả light child là O(n), nên toàn bộ pairing + merge là O(n).
+  Cuối cùng cộng cnt[v][k] cho trường hợp v là đầu mút.
+
+VÌ SAO ĐÚNG
+- Mỗi đường đi được đếm đúng một lần tại LCA của nó. Trường hợp (1) được cộng
+  bằng cnt[v][k] sau khi cnt[v] đã gộp đủ mọi con. Trường hợp (2) được cộng khi
+  xử lý con được duyệt SAU trong hai con chứa hai đầu mút, ghép với phần đã tích
+  lũy (bao gồm heavy child đã thừa kế và các light child trước đó). Vì heavy
+  child chỉ được thừa kế chứ không tự ghép với chính nó nên không có đường đi
+  nào bị đếm lặp; các cặp cross-child luôn có idx >= 1 nên được đếm chính xác.
+
+ĐỘ PHỨC TẠP
+- Thời gian O(n), bộ nhớ O(n). Đây là thuật toán tối ưu về mặt tiệm cận (nhanh
+  hơn centroid decomposition O(n log n)).
+
+LƯU Ý TLE: Với n = 2*10^5 và giới hạn 1.00 s dành cho C++, lời giải Python thuần
+này (dù đã tối ưu hằng số: đọc input một lần, dùng mảng phẳng, thừa kế cnt qua
+con trỏ) vẫn có RỦI RO TLE trên các test xấu (cây ngẫu nhiên nhiều nhánh) vì
+CSES chỉ chạy CPython. Thuật toán là O(n) đúng và không thể nhanh hơn về tiệm
+cận; nếu TLE thì đó là do hằng số của CPython chứ không phải do độ phức tạp.

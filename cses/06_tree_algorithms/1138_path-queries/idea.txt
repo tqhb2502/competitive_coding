@@ -1,0 +1,51 @@
+Path Queries (CSES 1138)
+
+Bài toán
+--------
+Cho một cây có gốc gồm n đỉnh (đỉnh 1 là gốc), mỗi đỉnh có một giá trị. Có q truy vấn:
+  - "1 s x": đổi giá trị của đỉnh s thành x.
+  - "2 s": tính tổng giá trị các đỉnh trên đường đi từ gốc (đỉnh 1) đến đỉnh s.
+
+Ý tưởng
+-------
+Nhận xét mấu chốt: đường đi từ gốc đến s chính là tập hợp tất cả các tổ tiên của s
+(bao gồm cả chính s). Vì vậy tổng cần tính là tổng giá trị của mọi đỉnh u là tổ tiên
+của s.
+
+Ta làm phẳng cây bằng Euler tour: dùng DFS lặp (iterative, tránh RecursionError vì
+n có thể tới 2*10^5) để gán cho mỗi đỉnh v hai mốc thời gian tin[v] (lúc vào) và
+tout[v] (lúc ra). Tính chất: u là tổ tiên của s (kể cả u = s) khi và chỉ khi
+    tin[u] <= tin[s] <= tout[u].
+
+Kỹ thuật "range-update thông qua điểm vào/ra" trên một BIT (Fenwick tree):
+Với mỗi đỉnh v có giá trị val[v], ta cộng +val[v] tại vị trí tin[v] và cộng -val[v]
+tại vị trí tout[v]+1 trong BIT. Khi đó prefix_sum(tin[s]) (tổng tiền tố tới tin[s])
+đúng bằng tổng giá trị các tổ tiên của s:
+  - Nếu u là tổ tiên của s thì tin[u] <= tin[s] <= tout[u], nên +val[u] nằm trong
+    tiền tố còn -val[u] (ở tout[u]+1 > tin[s]) thì KHÔNG nằm trong -> đóng góp +val[u].
+  - Nếu u không phải tổ tiên nhưng tin[u] <= tin[s], thì bắt buộc tout[u] < tin[s],
+    nên cả +val[u] lẫn -val[u] đều nằm trong tiền tố -> đóng góp 0.
+  - Nếu tin[u] > tin[s] thì cả hai đều không nằm trong tiền tố -> đóng góp 0.
+
+Xử lý truy vấn:
+  - Loại 2 "2 s": trả về prefix_sum(tin[s]).
+  - Loại 1 "1 s x": đặt delta = x - val[s]; cập nhật val[s] = x; cộng delta vào vị trí
+    tin[s] và cộng -delta vào vị trí tout[s]+1 của BIT (point update). Điều này giữ
+    đúng bất biến ở trên cho mọi truy vấn sau.
+
+BIT được khởi tạo trong O(n) từ một mảng hiệu (difference array) rồi dựng cây Fenwick.
+
+Tính đúng đắn
+-------------
+Suy ra trực tiếp từ tính chất tổ tiên của Euler tour và lập luận về tiền tố ở trên:
+prefix_sum(tin[s]) luôn bằng tổng giá trị hiện tại của tất cả tổ tiên của s.
+
+Độ phức tạp
+-----------
+  - Thời gian: O(n) dựng Euler tour + BIT, mỗi truy vấn O(log n). Tổng O((n + q) log n).
+  - Bộ nhớ: O(n) cho danh sách kề, tin/tout, parent và BIT.
+
+LƯU Ý TLE: Với n, q tới 2*10^5 và giới hạn thời gian nhắm cho C++, lời giải Python
+thuần (mỗi truy vấn vài vòng lặp log n) có thể chạm ngưỡng thời gian trên các test
+xấu nhất của CSES. Thuật toán vẫn ĐÚNG; đã tối ưu đọc/ghi I/O và inline các vòng BIT
+để giảm hằng số. Không dùng numpy hay thư viện bên thứ ba.

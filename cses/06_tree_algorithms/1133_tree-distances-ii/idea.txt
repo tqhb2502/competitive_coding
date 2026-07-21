@@ -1,0 +1,41 @@
+Bài toán: Tree Distances II (CSES 1133)
+
+Cho một cây có n đỉnh. Với mỗi đỉnh, cần tính tổng khoảng cách từ đỉnh đó tới
+tất cả các đỉnh còn lại.
+
+Mô hình cây:
+- Cây vô hướng, n-1 cạnh, biểu diễn bằng adjacency list.
+- Chọn đỉnh 1 làm gốc (root).
+
+Thuật toán: rerooting DP (re-rooting / quy hoạch động đổi gốc).
+
+Bước 1 - Tính cho gốc:
+- Duyệt cây bằng iterative DFS/BFS (KHÔNG đệ quy vì n tới 2e5 sẽ tràn stack).
+- Tính size[v] = số đỉnh trong subtree của v (kể cả v). Tính bằng cách xử lý
+  các đỉnh theo thứ tự ngược của BFS order (con trước, cha sau).
+- Tính depth[v] = khoảng cách từ gốc tới v.
+- ans[root] = tổng tất cả depth[v] = tổng khoảng cách từ gốc tới mọi đỉnh.
+
+Bước 2 - Đổi gốc (rerooting):
+- Duyệt các đỉnh theo BFS order từ trên xuống (cha trước con).
+- Khi chuyển gốc từ cha p sang con c: tất cả size[c] đỉnh nằm trong subtree
+  của c lại gần thêm 1 đơn vị, còn (n - size[c]) đỉnh còn lại xa thêm 1 đơn vị.
+  Do đó: ans[c] = ans[p] + (n - size[c]) - size[c] = ans[p] + n - 2*size[c].
+
+Tính đúng đắn:
+- ans[root] đúng theo định nghĩa (tổng depth).
+- Công thức chuyển gốc dựa trên nhận xét: khi di chuyển "vị trí quan sát" dọc
+  theo một cạnh (p, c), khoảng cách tới mọi đỉnh trong subtree c giảm 1, tới
+  mọi đỉnh khác tăng 1. Vì cây liên thông và mỗi cạnh chia cây thành đúng 2
+  phần (subtree c và phần còn lại), công thức này chính xác cho mọi cạnh.
+- Nhờ duyệt cha trước con, khi tính ans[c] thì ans[p] đã có sẵn.
+
+Độ phức tạp:
+- Thời gian: O(n) cho cả xây dựng, tính size/depth và rerooting.
+- Bộ nhớ: O(n).
+
+LƯU Ý TLE: Với n = 2e5 thuật toán là O(n) nên về lý thuyết rất nhanh; tuy nhiên
+Python thuần vẫn có thể chậm do overhead. Code đã tối ưu: đọc input bằng
+sys.stdin.buffer, dùng adjacency list dạng mảng, duyệt iterative, và ghi output
+một lần. Thường vượt qua được trong giới hạn 1s trên CSES; nếu TLE có thể cần
+PyPy hoặc tối ưu thêm.

@@ -1,0 +1,43 @@
+Bài toán: Counting Paths (CSES 1136)
+
+MÔ HÌNH
+- Ta có một cây n đỉnh và m đường đi. Mỗi đường đi cho bởi cặp đỉnh (a, b) là
+  đường đi duy nhất giữa a và b trên cây. Với mỗi đỉnh, cần đếm có bao nhiêu
+  đường đi đi qua nó.
+
+Ý TƯỞNG CHÍNH: DIFFERENCE ON TREE (prefix-sum trên cây)
+- Chọn gốc là đỉnh 1. Với mỗi đường đi (a, b), gọi l = LCA(a, b). Ta muốn cộng 1
+  cho mọi đỉnh nằm trên đường a -> l -> b. Dùng kỹ thuật hiệu (difference):
+      diff[a]           += 1
+      diff[b]           += 1
+      diff[l]           -= 1
+      diff[parent[l]]   -= 1   (nếu l không phải gốc)
+- Sau khi xử lý hết m đường đi, đáp án của một đỉnh u bằng TỔNG diff trên toàn bộ
+  subtree của u. Lý do: khi cộng 1 vào diff[a] và diff[b], hiệu ứng "lan lên" từ
+  a và b tới gốc qua phép lấy tổng subtree; hai lần trừ tại l và parent[l] triệt
+  tiêu phần cộng thừa phía trên l, nên chỉ còn đúng đoạn a..l..b được cộng 1.
+
+TÍNH LCA: TARJAN OFFLINE (union-find)
+- Vì tất cả truy vấn LCA đã biết trước (offline), ta dùng thuật toán Tarjan:
+  duyệt cây một lần bằng DFS, dùng cấu trúc Disjoint Set Union (DSU) với nén
+  đường đi. Khi một đỉnh được "hoàn tất", với mỗi truy vấn liên quan tới nó mà
+  đầu kia đã hoàn tất (black), LCA = ancestor[find(đầu kia)]. Độ phức tạp gần
+  tuyến tính O((n + m) * α).
+- Có thể thay bằng binary lifting (O((n+m) log n)) hoặc Euler tour + sparse
+  table (O(1) mỗi truy vấn), nhưng Tarjan có hằng số nhỏ, phù hợp Python.
+
+TÍNH ĐÚNG
+- LCA đúng theo thuật toán Tarjan kinh điển.
+- Công thức difference cộng đúng 1 cho mỗi đỉnh trên mỗi đường đi (đã kiểm chứng
+  trên ví dụ mẫu: cây 5 đỉnh, 3 đường đi -> "3 1 3 1 1").
+- Mọi phép duyệt cây (BFS dựng parent/children/order, DFS Tarjan, cộng tổng
+  subtree) đều ITERATIVE nên không bị RecursionError/tràn stack với n ~ 2*10^5.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O((n + m) * α(n)) ~ gần tuyến tính.
+- Bộ nhớ: O(n + m) cho adjacency, children, DSU, danh sách truy vấn.
+
+LƯU Ý TLE: với n, m tối đa 2*10^5 và giới hạn 1.0 s hướng tới C++, CPython thuần
+có thể chạm ngưỡng thời gian ở test xấu nhất. Thuật toán đã ở mức gần tuyến tính
+và tối ưu hằng số (đọc I/O theo khối, DSU nén đường đi, duyệt lặp), nên rủi ro
+TLE ở mức thấp; nếu vẫn TLE trên CPython thì PyPy sẽ dư sức qua.

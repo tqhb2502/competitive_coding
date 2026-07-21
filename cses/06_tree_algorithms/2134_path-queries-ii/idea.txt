@@ -1,0 +1,47 @@
+Bài toán: Path Queries II (CSES 2134)
+https://cses.fi/problemset/task/2134
+
+1. Mô hình hóa
+- Cho một cây n đỉnh (gốc chọn là đỉnh 1), mỗi đỉnh có một giá trị.
+- Có hai loại truy vấn:
+  (1 s x): cập nhật giá trị của đỉnh s thành x (point update).
+  (2 a b): tìm giá trị LỚN NHẤT trên đường đi giữa a và b (path max query).
+
+2. Thuật toán: Heavy-Light Decomposition (HLD) + segment tree (max)
+- Đầu tiên duyệt cây bằng DFS ITERATIVE (dùng stack tường minh, KHÔNG đệ quy)
+  để tính parent, depth và thứ tự pre-order.
+- Duyệt ngược thứ tự pre-order để tính subtree size và xác định heavy child
+  (con có subtree lớn nhất) của mỗi đỉnh.
+- Phân rã (decomposition) cây thành các chain: đi liên tục theo heavy child sẽ
+  tạo ra một chain, các con nhẹ (light child) mở đầu một chain mới. Gán cho mỗi
+  đỉnh: head[u] (đỉnh đầu chain chứa u) và posn[u] (vị trí trong mảng của
+  segment tree). Nhờ đi theo heavy child, mọi đỉnh trong cùng một chain có các
+  vị trí posn liên tiếp nhau.
+- Xây một iterative segment tree hỗ trợ max để: point update một vị trí và
+  truy vấn max trên một đoạn liên tiếp.
+
+- Truy vấn max trên đường đi (a, b): lặp lại
+    nếu head[a] != head[b]: chọn đỉnh có head sâu hơn (depth[head] lớn hơn),
+      lấy max trên đoạn [posn[head], posn[đỉnh]] rồi nhảy lên cha của head.
+    khi head[a] == head[b]: hai đỉnh cùng chain, lấy max trên đoạn giữa hai posn.
+  Vì các đoạn con luôn liên tiếp trong segment tree, mỗi đoạn truy vấn được
+  trong O(log n).
+
+3. Tính đúng đắn
+- HLD đảm bảo đường đi từ bất kỳ đỉnh nào lên gốc đi qua tối đa O(log n) chain,
+  nên đường đi giữa a và b (qua LCA) được chia thành O(log n) đoạn liên tiếp,
+  mỗi đoạn khớp chính xác với một khoảng vị trí trong segment tree.
+- Segment tree max cho kết quả max đúng trên từng đoạn; gộp lại bằng max cho ra
+  giá trị lớn nhất trên toàn bộ đường đi.
+- Point update chỉ đổi một lá của segment tree và cập nhật lên trên, không ảnh
+  hưởng cấu trúc HLD (chỉ giá trị đổi), nên các truy vấn sau vẫn đúng.
+
+4. Độ phức tạp
+- Tiền xử lý (DFS, size, decomposition, build segment tree): O(n).
+- Mỗi cập nhật loại 1: O(log n).
+- Mỗi truy vấn loại 2: O(log^2 n) (O(log n) chain, mỗi chain O(log n)).
+- Tổng: O(n + q log^2 n) thời gian, O(n) bộ nhớ.
+
+LƯU Ý TLE: n, q lên tới 2·10^5 và mỗi truy vấn tốn O(log^2 n) với vòng lặp
+segment tree lồng nhau. Trên CSES (giới hạn nhắm cho C++), pure Python CPython
+có nguy cơ TLE ở test xấu nhất, dù thuật toán đã tối ưu và inline vòng lặp nóng.

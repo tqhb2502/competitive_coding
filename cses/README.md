@@ -26,7 +26,7 @@ cses/
 | 03 | Dynamic Programming | 23 | ✅ xong — 23/23 đúng thuật toán, **thuần stdlib** (đã bỏ numpy); nhiều bài DP O(n·x) sẽ TLE Python trên CSES (ghi chú trong idea.txt, cần C++/PyPy) |
 | 04 | Graph Algorithms | 36 | ✅ xong — 36/36 đúng thuật toán, thuần stdlib (DFS/BFS lặp, tránh RecursionError); 7 bài rủi ro TLE Python ghi chú trong idea.txt |
 | 05 | Range Queries | 25 | ✅ xong — 25/25 đúng thuật toán, thuần stdlib (BIT/Fenwick, segment tree lặp, sparse table); nhiều bài rủi ro TLE Python (2e5 truy vấn × log) ghi chú trong idea.txt |
-| 06 | Tree Algorithms | ~16 | ⬜ chưa làm |
+| 06 | Tree Algorithms | 16 | ✅ xong — 16/16 đúng thuật toán, thuần stdlib (DFS/Euler tour lặp, binary lifting LCA, centroid decomposition); 8 bài rủi ro TLE Python ghi chú trong idea.txt |
 | 07 | Mathematics | ~31 | ⬜ chưa làm |
 | 08 | String Algorithms | ~17 | ⬜ chưa làm |
 | 09 | Geometry | ~16 | ⬜ chưa làm |
