@@ -1,0 +1,45 @@
+Counting Patterns - CSES 2103
+
+Bài toán:
+- Cho một chuỗi s độ dài n (n <= 1e5) gồm các ký tự 'a'..'z'.
+- Cho k pattern (k <= 5e5), tổng độ dài các pattern <= 5e5.
+- Với mỗi pattern, đếm số vị trí mà pattern xuất hiện trong s (số lần xuất hiện
+  của pattern như một substring của s).
+
+Ý tưởng - suffix automaton (SAM):
+- Xây dựng suffix automaton cho chuỗi s. SAM là automaton nhỏ nhất nhận biết mọi
+  substring của s, có tối đa 2n-1 state và 3n-4 cạnh (chuyển).
+- Mỗi state của SAM tương ứng với một lớp tương đương endpos: tập hợp các substring
+  có cùng tập vị trí kết thúc (endpos) trong s. Kích thước |endpos| của một state
+  chính bằng SỐ LẦN XUẤT HIỆN của mọi substring thuộc state đó trong s.
+- Cách tính |endpos| (mảng cnt):
+  + Khi thêm một ký tự và tạo state "cur" (state gốc, không phải clone), gán cnt = 1
+    vì nó tương ứng với một prefix mới của s, kết thúc tại một vị trí thật sự.
+  + State "clone" (sinh ra khi tách state) gán cnt = 0.
+  + Duyệt các state theo thứ tự len GIẢM DẦN (topological theo suffix link, vì
+    link luôn trỏ tới state có len nhỏ hơn) rồi cộng dồn: cnt[link[v]] += cnt[v].
+    Sau bước này cnt[v] = |endpos| của state v = số lần xuất hiện.
+  + Sắp xếp theo len dùng counting sort để đạt O(n).
+
+Trả lời truy vấn:
+- Với mỗi pattern p, xuất phát từ state khởi đầu (root = 0), đi theo từng ký tự của p
+  qua các chuyển (transition). Nếu tại một bước không có chuyển tương ứng thì p không
+  phải substring của s => đáp án 0. Nếu đi hết p tới state u thì đáp án = cnt[u].
+
+Vì sao đúng:
+- Đi hết pattern p trong SAM tới state u nghĩa là p thuộc lớp endpos của u, nên số vị trí
+  kết thúc của p trong s đúng bằng |endpos(u)| = cnt[u]. Số vị trí kết thúc cũng chính là
+  số lần xuất hiện của p (mỗi lần xuất hiện ứng với một vị trí kết thúc khác nhau).
+- Đây là thuật toán TẤT ĐỊNH (deterministic), không dùng hashing nên miễn nhiễm với các
+  anti-hash test của CSES.
+
+Độ phức tạp:
+- Xây SAM: O(n * log(alphabet)) do dùng dict cho transition (thực tế gần O(n)).
+- Tính cnt: O(n) nhờ counting sort theo len.
+- Trả lời truy vấn: O(tổng độ dài các pattern) = O(5e5).
+- Bộ nhớ: O(n) state, mỗi state một dict transition -> O(n) tổng.
+
+LƯU Ý TLE: n tới 1e5 và tổng độ dài pattern tới 5e5, cộng với việc dùng dict cho từng
+state trong SAM khiến hằng số lớn. Với CPython thuần trên CSES (giới hạn thời gian nhắm
+tới C++) lời giải có nguy cơ TLE; thuật toán vẫn hoàn toàn ĐÚNG. Có thể cần PyPy hoặc
+tối ưu hằng số nếu bị quá thời gian.

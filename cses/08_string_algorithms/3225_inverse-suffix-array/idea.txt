@@ -1,0 +1,46 @@
+Bài toán: Inverse Suffix Array (CSES 3225)
+
+Đề bài: Cho trước suffix array SA của một xâu (SA là một hoán vị của các vị trí
+1..n, trong đó SA[i] là vị trí bắt đầu của suffix nhỏ thứ i theo thứ tự từ điển).
+Hãy dựng lại MỘT xâu bất kỳ gồm các ký tự 'a'..'z' có đúng suffix array là SA,
+hoặc in -1 nếu không tồn tại xâu nào thỏa mãn.
+
+Thuật toán: greedy inverse suffix array (dựng lại xâu từ suffix array).
+
+Định nghĩa:
+  - rank[p] = thứ hạng của suffix bắt đầu tại vị trí p. Vì SA[i] là vị trí của
+    suffix nhỏ thứ i (0-indexed) nên rank[SA[i]] = i + 1.
+  - Quy ước rank[n+1] = 0, tức suffix rỗng là nhỏ nhất.
+
+Cách dựng xâu (gán chỉ số ký tự c[p], với 0 = 'a', 1 = 'b', ...):
+  - Suffix nhỏ nhất là SA[0]; gán c[SA[0]] = 0 (ký tự 'a').
+  - Duyệt các suffix liên tiếp theo thứ tự SA. Với cặp liên tiếp p = SA[i-1],
+    q = SA[i], ta biết suffix(p) < suffix(q). Xét ký tự đầu:
+      * Nếu giữ c[q] = c[p] thì việc so sánh suffix(p) và suffix(q) chuyển
+        thành so sánh suffix(p+1) và suffix(q+1), tức cần rank[p+1] < rank[q+1].
+        Khi điều kiện này đúng, ta GIỮ nguyên ký tự (c[q] = c[p]) để dùng ít
+        ký tự phân biệt nhất.
+      * Nếu rank[p+1] > rank[q+1] thì nếu giữ bằng nhau sẽ cho suffix(p) >
+        suffix(q), mâu thuẫn; do đó BẮT BUỘC tăng ký tự: c[q] = c[p] + 1.
+    (Hai rank luôn khác nhau vì p+1 != q+1, nên so sánh luôn chặt.)
+
+Kết quả: số ký tự phân biệt là cur+1, đạt giá trị NHỎ NHẤT có thể. Nếu cur > 25
+(cần quá 26 ký tự) thì không thể biểu diễn bằng a-z -> in -1. Ngược lại in xâu.
+
+Vì sao đúng:
+  - Mọi hoán vị đều là suffix array hợp lệ của một xâu nào đó (trên bảng chữ cái
+    đủ lớn), và thuật toán greedy trên luôn tạo ra xâu có số ký tự phân biệt ít
+    nhất. Có thể chứng minh: nếu rank[a] < rank[b] thì suffix(a) < suffix(b)
+    trong xâu dựng được. Ta có c không giảm theo thứ tự SA nên rank[a] < rank[b]
+    kéo theo c[a] <= c[b]. Nếu c[a] < c[b] thì xong; nếu bằng nhau thì a, b nằm
+    trong cùng một khối ký tự, trên khối đó mọi cặp liên tiếp đều thỏa
+    rank[.+1] tăng, suy ra rank[a+1] < rank[b+1], và đệ quy sang suffix(a+1) <
+    suffix(b+1). Mỗi bước đệ quy đẩy cả hai vị trí tiến lên 1; suffix ngắn hơn
+    sẽ chạm suffix rỗng (rank 0, nhỏ nhất) trước, cho cơ sở đúng đắn. Vậy xâu
+    dựng được có suffix array đúng bằng SA khi cur <= 25.
+
+Độ phức tạp:
+  - Thời gian O(n): tính rank O(n), duyệt một lần O(n), tạo xâu O(n).
+  - Bộ nhớ O(n) cho rank, c và xâu kết quả.
+
+Với n <= 1e5, giải pháp pure Python chạy thoải mái trong giới hạn thời gian.

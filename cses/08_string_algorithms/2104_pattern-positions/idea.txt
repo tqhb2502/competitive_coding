@@ -1,0 +1,54 @@
+Pattern Positions - CSES 2104
+
+Bài toán:
+- Cho một xâu s có độ dài n (n <= 1e5).
+- Có k pattern (k <= 5e5), tổng độ dài các pattern <= 5e5.
+- Với mỗi pattern, in ra vị trí (1-indexed) xuất hiện ĐẦU TIÊN của pattern trong s,
+  hoặc -1 nếu pattern không xuất hiện.
+
+Thuật toán: Suffix Automaton (SAM) của xâu s.
+
+Ý tưởng chính:
+- SAM của s là một automaton nhỏ (nhiều nhất 2n - 1 trạng thái) nhận diện đúng
+  toàn bộ các xâu con của s. Đi từ trạng thái khởi đầu theo các ký tự của một
+  pattern p:
+    + Nếu tại một bước không có transition tương ứng => p không phải xâu con của s
+      => in -1.
+    + Nếu đi hết p tới được trạng thái v => p là xâu con của s.
+- Với mỗi trạng thái v ta lưu firstpos[v] = vị trí KẾT THÚC nhỏ nhất (0-indexed)
+  trong tập endpos của các xâu thuộc lớp tương đương của v, tức là vị trí kết thúc
+  của lần xuất hiện đầu tiên.
+- Khi tới trạng thái v sau khi khớp p:
+    vị trí bắt đầu (0-indexed) của lần xuất hiện đầu tiên = firstpos[v] - |p| + 1
+    Đổi sang 1-indexed:  answer = firstpos[v] - |p| + 2.
+
+Cách duy trì firstpos khi xây SAM (chuẩn CP-algorithms):
+- Khi thêm ký tự ở vị trí pos và tạo trạng thái mới cur (đại diện cho toàn bộ
+  tiền tố hiện tại): firstpos[cur] = len[cur] - 1 = pos. Đây đúng là vị trí kết
+  thúc lần xuất hiện đầu tiên của các xâu mới này.
+- Khi tạo clone của q: firstpos[clone] = firstpos[q].
+
+Tại sao clone kế thừa firstpos[q] là đúng:
+- Trước bước hiện tại, các xâu (ngắn) mà clone sẽ đại diện đang được đại diện bởi
+  chính q => chúng có endpos y hệt endpos(q). Sau khi clone tại vị trí pos:
+    endpos(clone) = endpos(q) ∪ {pos}
+  còn q giữ nguyên endpos cũ. Vì pos lớn hơn mọi vị trí trước đó nên
+    min(endpos(clone)) = min(endpos(q)) = firstpos[q].
+- Ta xử lý s từ trái sang phải nên các vị trí endpos chỉ tăng dần; giá trị nhỏ
+  nhất của một trạng thái được cố định ngay lần xuất hiện đầu tiên và không đổi.
+  Do đó firstpos luôn cho đúng vị trí kết thúc SỚM NHẤT.
+
+Tính đúng đắn:
+- SAM nhận diện đúng mọi xâu con nên việc "khớp được p" tương đương "p là xâu con".
+- firstpos cho vị trí kết thúc sớm nhất => tính ra được vị trí bắt đầu sớm nhất.
+- Các pattern trùng nhau sẽ tới cùng một trạng thái nên cho cùng đáp án.
+
+Độ phức tạp:
+- Xây SAM: O(n) (transition lưu bằng dict, có hệ số bảng chữ cái).
+- Trả lời: O(tổng độ dài các pattern) = O(5e5) lần tra dict.
+- Bộ nhớ: O(n) trạng thái, mỗi trạng thái một dict transition.
+
+LƯU Ý TLE: Đây là thuật toán đúng và tối ưu về mặt lý thuyết (O(n + tổng |p|)),
+nhưng chạy bằng CPython thuần trên CSES với ~2e5 trạng thái SAM và ~5e5 ký tự truy
+vấn có thể chậm và có nguy cơ TLE (giới hạn thời gian nhắm cho C++). Không dùng
+numpy/thư viện ngoài; chỉ tối ưu bằng cách nội địa hoá biến và I/O nhanh.

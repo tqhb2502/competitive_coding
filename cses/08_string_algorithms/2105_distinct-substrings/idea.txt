@@ -1,0 +1,39 @@
+Bài toán: Đếm số lượng xâu con (substring) PHÂN BIỆT của một xâu s độ dài n
+(n <= 1e5, chỉ gồm chữ thường a-z). In ra một số nguyên duy nhất.
+
+Thuật toán: Suffix automaton (SAM).
+
+Ý tưởng chính:
+- Suffix automaton là một automaton tối thiểu chấp nhận đúng tất cả các hậu
+  tố (suffix) của s. Điểm quan trọng: mỗi ĐƯỜNG ĐI từ trạng thái khởi tạo
+  (initial) tương ứng 1-1 với một xâu con phân biệt của s. Do đó số xâu con
+  phân biệt = tổng số đường đi khác rỗng xuất phát từ trạng thái gốc.
+- Mỗi trạng thái v (khác trạng thái gốc) tương ứng một lớp các xâu con có
+  cùng tập vị trí kết thúc (endpos). Các xâu trong lớp này có độ dài liên
+  tiếp từ len[link[v]] + 1 đến len[v]. Vì vậy số xâu con MỚI mà trạng thái v
+  đóng góp chính xác là len[v] - len[link[v]].
+- Cộng tất cả các đóng góp này trên mỗi trạng thái v != 0 cho ta số xâu con
+  phân biệt.
+
+Vì sao đúng:
+- SAM đảm bảo mỗi xâu con phân biệt được biểu diễn bởi đúng một cặp
+  (trạng thái, độ dài) và độ dài nằm trong khoảng (len[link[v]], len[v]].
+  Các khoảng này không chồng lấn giữa các trạng thái, phủ hết toàn bộ xâu con,
+  nên tổng (len[v] - len[link[v]]) không đếm trùng và không bỏ sót.
+
+Xây dựng SAM: thêm từng ký tự vào cuối, cập nhật transitions, suffix link và
+có thể tạo thêm một trạng thái "clone" khi cần tách lớp. Số trạng thái <= 2n-1,
+số cạnh <= 3n-4.
+
+Độ phức tạp:
+- Thời gian: O(n) amortized (với transitions bằng dict cho bảng chữ cái nhỏ),
+  trên lý thuyết O(n * log|alphabet|) nếu dùng cấu trúc có thứ tự.
+- Bộ nhớ: O(n) trạng thái, mỗi trạng thái một dict transitions.
+
+Kết quả có thể lớn tới n*(n+1)/2 ~ 5e9 nhưng Python dùng số nguyên lớn vô hạn
+nên không tràn số; không có modulo trong bài này.
+
+LƯU Ý TLE: Với n = 1e5, việc dùng dict cho mỗi trạng thái trong pure Python
+có thể chậm (ước lượng vài trăm ms đến ~1s trên CPython). Thuật toán là đúng;
+nếu CSES báo TLE trên CPython thì nên nộp bằng PyPy hoặc chuyển sang suffix
+array + LCP với mảng phẳng để tăng tốc.

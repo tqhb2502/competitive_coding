@@ -1,8 +1,8 @@
 # Word Combinations - CSES 1731
 # https://cses.fi/problemset/task/1731
-# Trie cua tu dien + DP: dp[i] = so cach tao thanh tien to s[0..i-1].
-# Voi moi vi tri i, di tren Trie theo cac ky tu s[i..] va cong dp[i] vao dp[j]
-# moi khi gap mot nut ket thuc mot tu (s[i..j-1] la mot tu trong tu dien).
+# Dictionary trie + DP: dp[i] = number of ways to build the prefix s[0..i-1].
+# For every position i, walk the trie following characters s[i..] and add dp[i]
+# to dp[j] whenever we hit a node that ends a word (s[i..j-1] is a dictionary word).
 
 import sys
 
@@ -13,20 +13,20 @@ def main():
         sys.stdout.write("0\n")
         return
 
-    s = data[0]                       # bytes; s[j] cho ra gia tri byte (int)
+    s = data[0]                       # bytes; s[j] yields the byte value (int)
     k = int(data[1]) if len(data) > 1 else 0
     words = data[2:2 + k]
     n = len(s)
     MOD = 1000000007
 
-    # Trie luu bang mot dict chung: key = (node << 7) | char -> chi so nut con.
-    # is_word[v] = 1 neu nut v la ket thuc cua mot tu.
+    # Trie stored in one shared dict: key = (node << 7) | char -> child node index.
+    # is_word[v] = 1 if node v is the end of a word.
     trie = {}
     is_word = bytearray()
-    is_word.append(0)                 # nut goc co chi so 0
+    is_word.append(0)                 # root node has index 0
     node_count = 1
     for w in words:
-        if len(w) > n:                # tu dai hon s khong the khop -> bo qua
+        if len(w) > n:                # a word longer than s can never match -> skip
             continue
         v = 0
         for c in w:
@@ -43,7 +43,7 @@ def main():
     dp = [0] * (n + 1)
     dp[0] = 1
 
-    trie_get = trie.get               # ham cuc bo cho toc do
+    trie_get = trie.get               # local binding for speed
     isw = is_word
     ss = s
     for i in range(n):
@@ -59,7 +59,7 @@ def main():
                 break
             v = nxt
             if isw[v]:
-                dp[j + 1] += di       # di < MOD, cong don an toan (< ~5e12)
+                dp[j + 1] += di       # di < MOD, safe to accumulate (< ~5e12)
             j += 1
 
     sys.stdout.write(str(dp[n] % MOD) + "\n")

@@ -1,7 +1,7 @@
 # Required Substring - https://cses.fi/problemset/task/1112
-# Dem so xau do dai n tren bang chu A-Z chua pattern nhu mot substring, mod 1e9+7.
-# Y tuong: dung KMP automaton + DP dem so xau KHONG chua pattern,
-# roi lay 26^n tru di. Trang thai = so ky tu cua pattern dang khop (0..m-1).
+# Đếm số xâu độ dài n trên bảng chữ A-Z chứa pattern như một substring, mod 1e9+7.
+# Ý tưởng: dùng KMP automaton + DP đếm số xâu KHÔNG chứa pattern,
+# rồi lấy 26^n trừ đi. Trạng thái = số ký tự của pattern đang khớp (0..m-1).
 import sys
 
 MOD = 10**9 + 7
@@ -13,10 +13,10 @@ def main():
     pat = data[1] if len(data) > 1 else b""
     m = len(pat)
 
-    # Ma hoa pattern ve 0..25 (A=0)
+    # Mã hóa pattern về 0..25 (A=0)
     P = [b - 65 for b in pat]
 
-    # Prefix function (failure function) cua KMP
+    # Prefix function (failure function) của KMP
     pi = [0] * m
     for i in range(1, m):
         k = pi[i - 1]
@@ -26,8 +26,8 @@ def main():
             k += 1
         pi[i] = k
 
-    # Xay KMP automaton: aut[j][c] = trang thai ke tiep tu trang thai j khi doc ky tu c.
-    # j chay 0..m-1 (chua khop het). Neu aut[j][c] == m tuc la pattern da xuat hien.
+    # Xây KMP automaton: aut[j][c] = trạng thái kế tiếp từ trạng thái j khi đọc ký tự c.
+    # j chạy 0..m-1 (chưa khớp hết). Nếu aut[j][c] == m tức là pattern đã xuất hiện.
     aut = [[0] * 26 for _ in range(m)]
     for j in range(m):
         pj = P[j]
@@ -40,8 +40,8 @@ def main():
             for c in range(26):
                 row[c] = j + 1 if c == pj else prev[c]
 
-    # Nen chuyen tiep: voi moi trang thai j, gom cac ky tu dan toi cung mot trang thai < m.
-    # (Bo cac ky tu dan toi m vi day la nhung xau BI loai - da chua pattern.)
+    # Nén chuyển tiếp: với mỗi trạng thái j, gom các ký tự dẫn tới cùng một trạng thái < m.
+    # (Bỏ các ký tự dẫn tới m vì đây là những xâu BỊ loại - đã chứa pattern.)
     trans = []
     for j in range(m):
         cnt = {}
@@ -52,7 +52,7 @@ def main():
                 cnt[nx] = cnt.get(nx, 0) + 1
         trans.append(list(cnt.items()))
 
-    # DP: dp[j] = so xau do dai hien tai, chua bao gio dat trang thai m, ket thuc o trang thai j.
+    # DP: dp[j] = số xâu độ dài hiện tại, chưa bao giờ đạt trạng thái m, kết thúc ở trạng thái j.
     dp = [0] * m
     dp[0] = 1
     for _ in range(n):

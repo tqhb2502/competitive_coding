@@ -1,5 +1,5 @@
 # String Matching - https://cses.fi/problemset/task/1753
-# Dem so lan pattern xuat hien trong text bang thuat toan KMP (deterministic, O(n + m)).
+# Đếm số lần pattern xuất hiện trong text bằng thuật toán KMP (deterministic, O(n + m)).
 
 import sys
 
@@ -18,7 +18,7 @@ def main():
         sys.stdout.write("0\n")
         return
 
-    # Buoc 1: tinh failure function (prefix function) cua pattern.
+    # Bước 1: tính failure function (prefix function) của pattern.
     pi = [0] * m
     k = 0
     for i in range(1, m):
@@ -29,7 +29,7 @@ def main():
             k += 1
         pi[i] = k
 
-    # Buoc 2: quet text, dem so lan khop day du (ke ca chong lap).
+    # Bước 2: quét text, đếm số lần khớp đầy đủ (kể cả chồng lấp).
     ans = 0
     k = 0
     for i in range(n):

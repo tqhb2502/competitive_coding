@@ -1,42 +1,42 @@
-Bai: All Palindromes (CSES 3138)
+Bài: All Palindromes (CSES 3138)
 
-De bai:
-- Cho mot xau s gom cac ki tu 'a'..'z', do dai n (n <= 2*10^5).
-- Voi moi vi tri i (1-indexed) in ra do dai cua palindrome DAI NHAT KET THUC tai vi tri i.
+Đề bài:
+- Cho một xâu s gồm các kí tự 'a'..'z', độ dài n (n <= 2*10^5).
+- Với mỗi vị trí i (1-indexed) in ra độ dài của palindrome DÀI NHẤT KẾT THÚC tại vị trí i.
 
-Vi du: s = "ababbababaa" -> "1 1 3 3 2 4 6 8 5 5 2".
+Ví dụ: s = "ababbababaa" -> "1 1 3 3 2 4 6 8 5 5 2".
 
-Thuat toan: Eertree (Palindromic Tree)
-- Eertree la cau truc luu tru TAT CA cac palindrome-substring PHAN BIET cua xau, moi
-  palindrome la mot nut. Cay co 2 goc: imaginary root (do dai = -1) va empty root
-  (do dai = 0). Moi nut co:
-    + length: do dai palindrome.
-    + link (suffix link): tro toi palindrome-suffix that su dai nhat cua no.
-    + transition trans[node, c]: nut ung voi palindrome c + P + c (them ki tu c hai dau).
-- Ta them tung ki tu cua s tu trai sang phai. Bien `last` luon la nut ung voi
-  palindrome-suffix DAI NHAT cua tien to hien tai.
-- Khi them ki tu thu i:
-    + Di theo suffix link tu `last` de tim `cur` la suffix-palindrome dai nhat ma co
-      the "boc" them ki tu c o hai dau (dieu kien s[i - length[cur] - 1] == s[i]).
-    + Neu palindrome moi c + P(cur) + c da ton tai (co transition) thi chi cap nhat last.
-    + Neu chua, tao nut moi voi do dai length[cur] + 2, tim suffix link cua no bang cach
-      tiep tuc di theo suffix link tu link[cur].
-- Sau khi xu ly xong ki tu i, length[last] chinh la do dai palindrome-suffix dai nhat
-  ket thuc tai vi tri i => day la dap an can tim.
+Thuật toán: Eertree (Palindromic Tree)
+- Eertree là cấu trúc lưu trữ TẤT CẢ các palindrome-substring PHÂN BIỆT của xâu, mỗi
+  palindrome là một nút. Cây có 2 gốc: imaginary root (độ dài = -1) và empty root
+  (độ dài = 0). Mỗi nút có:
+    + length: độ dài palindrome.
+    + link (suffix link): trỏ tới palindrome-suffix thật sự dài nhất của nó.
+    + transition trans[node, c]: nút ứng với palindrome c + P + c (thêm kí tự c hai đầu).
+- Ta thêm từng kí tự của s từ trái sang phải. Biến `last` luôn là nút ứng với
+  palindrome-suffix DÀI NHẤT của tiền tố hiện tại.
+- Khi thêm kí tự thứ i:
+    + Đi theo suffix link từ `last` để tìm `cur` là suffix-palindrome dài nhất mà có
+      thể "bọc" thêm kí tự c ở hai đầu (điều kiện s[i - length[cur] - 1] == s[i]).
+    + Nếu palindrome mới c + P(cur) + c đã tồn tại (có transition) thì chỉ cập nhật last.
+    + Nếu chưa, tạo nút mới với độ dài length[cur] + 2, tìm suffix link của nó bằng cách
+      tiếp tục đi theo suffix link từ link[cur].
+- Sau khi xử lý xong kí tự i, length[last] chính là độ dài palindrome-suffix dài nhất
+  kết thúc tại vị trí i => đây là đáp án cần tìm.
 
-Tinh dung:
-- Theo ly thuyet eertree, moi buoc them 1 ki tu tao ra NHIEU NHAT 1 palindrome moi, va
-  `last` sau buoc do dung bang palindrome-suffix dai nhat. Do la dinh nghia truc tiep cua
-  dap an, nen ket qua chinh xac.
-- Ta dung xau 1-indexed voi mot sentinel a[0] = -1 (khac moi ma ki tu 0..25) de bao dam
-  chi so i - length[cur] - 1 luon >= 0, tranh truy cap am; imaginary root (len -1) luon
-  khop nen vong lap tim `cur` va suffix link luon dung lai.
+Tính đúng:
+- Theo lý thuyết eertree, mỗi bước thêm 1 kí tự tạo ra NHIỀU NHẤT 1 palindrome mới, và
+  `last` sau bước đó đúng bằng palindrome-suffix dài nhất. Đó là định nghĩa trực tiếp của
+  đáp án, nên kết quả chính xác.
+- Ta dùng xâu 1-indexed với một sentinel a[0] = -1 (khác mọi mã kí tự 0..25) để bảo đảm
+  chỉ số i - length[cur] - 1 luôn >= 0, tránh truy cập âm; imaginary root (len -1) luôn
+  khớp nên vòng lặp tìm `cur` và suffix link luôn dừng lại.
 
-Do phuc tap:
-- Thoi gian: O(n) amortized (tong so buoc di theo suffix link tren toan bo qua trinh la
-  O(n)). Bo nho: O(n) nut, moi nut vai truong + transition.
+Độ phức tạp:
+- Thời gian: O(n) amortized (tổng số bước đi theo suffix link trên toàn bộ quá trình là
+  O(n)). Bộ nhớ: O(n) nút, mỗi nút vài trường + transition.
 
-LUU Y TLE: Eertree thuan Python cho n = 2*10^5 voi gioi han 1.00s cua CSES co the cham
-(dung dict cho transition, moi vong lap co overhead). Thuat toan O(n) la toi uu ve mat
-ly thuyet; neu TLE tren CPython co the can PyPy hoac toi uu hoa hang so, nhung KHONG dung
-numpy/thu vien ngoai theo rang buoc cua judge.
+LƯU Ý TLE: Eertree thuần Python cho n = 2*10^5 với giới hạn 1.00s của CSES có thể chậm
+(dùng dict cho transition, mỗi vòng lặp có overhead). Thuật toán O(n) là tối ưu về mặt
+lý thuyết; nếu TLE trên CPython có thể cần PyPy hoặc tối ưu hóa hằng số, nhưng KHÔNG dùng
+numpy/thư viện ngoài theo ràng buộc của judge.

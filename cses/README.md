@@ -28,7 +28,7 @@ cses/
 | 05 | Range Queries | 25 | ✅ xong — 25/25 đúng thuật toán, thuần stdlib (BIT/Fenwick, segment tree lặp, sparse table); nhiều bài rủi ro TLE Python (2e5 truy vấn × log) ghi chú trong idea.txt |
 | 06 | Tree Algorithms | 16 | ✅ xong — 16/16 đúng thuật toán, thuần stdlib (DFS/Euler tour lặp, binary lifting LCA, centroid decomposition); 8 bài rủi ro TLE Python ghi chú trong idea.txt |
 | 07 | Mathematics | 37 | ✅ xong — 37/37 đúng thuật toán, thuần stdlib (pow modulo, nCr, lũy thừa ma trận, sàng, Sprague-Grundy, GF(2)); 3 bài rủi ro TLE ghi chú trong idea.txt |
-| 08 | String Algorithms | 20 | ⏳ đang làm |
+| 08 | String Algorithms | 21 | ✅ xong — 21/21 đúng thuật toán, thuần stdlib (KMP/Z, suffix array + LCP, suffix automaton, Manacher, Aho-Corasick, trie; tránh hashing đơn); nhiều bài rủi ro TLE Python ghi chú trong idea.txt |
 | 09 | Geometry | ~16 | ⬜ chưa làm |
 | 10 | Advanced Techniques | ~26 | ⬜ chưa làm |
 | 11+ | Sliding Window / Interactive / Bitwise / Construction / Advanced Graph / Counting / Additional I & II | ~110 | ⬜ chưa làm |

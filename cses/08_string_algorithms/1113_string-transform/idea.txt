@@ -1,0 +1,49 @@
+String Transform (CSES 1113)
+
+BÀI TOÁN
+--------
+Phép biến đổi thuận (giống Burrows-Wheeler transform, BWT):
+  1. Thêm ký tự '#' vào cuối chuỗi gốc s, được chuỗi s + '#' độ dài n+1.
+  2. Sinh tất cả n+1 rotation (phép quay vòng) của chuỗi đó.
+  3. Sắp xếp các rotation theo thứ tự từ điển, với '#' là ký tự nhỏ nhất.
+  4. Kết quả L = cột cuối cùng (ký tự cuối của mỗi rotation đã sắp xếp).
+Cho L, ta phải khôi phục lại s. Đây là inverse BWT.
+
+Ý TƯỞNG - LF mapping
+--------------------
+Gọi L là cột cuối (last column), F là cột đầu (first column). Vì F chỉ là L
+được sắp xếp, ta không cần lưu F tường minh.
+
+Với mỗi hàng i, ký tự L[i] là ký tự ngay TRƯỚC F[i] trong chuỗi vòng (circular
+string). LF mapping cho biết vị trí của ký tự L[i] khi nó nằm ở cột đầu F:
+    LF[i] = C[L[i]] + rank(i)
+trong đó:
+  - C[c] = số ký tự trong L nhỏ hơn c (offset bắt đầu của c trong F),
+  - rank(i) = số lần L[i] đã xuất hiện trong L[0..i-1] (đếm thứ tự xuất hiện).
+Vì thứ tự mã byte của '#'(35) nhỏ hơn 'a'(97) và các chữ cái theo đúng thứ tự
+alphabet, thứ tự byte trùng khớp thứ tự từ điển cần dùng.
+
+Khôi phục: hàng 0 (sau khi sắp xếp) luôn bắt đầu bằng '#', tương ứng rotation
+'#' + s. Xuất phát từ cur = 0, lặp m = n+1 lần: ghi L[cur] từ cuối mảng về đầu,
+rồi cur = LF[cur]. Kết quả thu được chính là T = '#' + s (vì bước đi LF sinh ra
+chuỗi theo chiều ngược, ghi ngược lại sẽ ra chuỗi thuận). Cuối cùng bỏ ký tự '#'
+ở đầu ta được chuỗi gốc s.
+
+TẠI SAO ĐÚNG
+------------
+LF mapping là một hoán vị (permutation) trên các hàng, và là nghịch đảo của phép
+"dịch rotation sang trái một bước". Do sentinel '#' là duy nhất và nhỏ nhất, các
+hàng phân biệt hoàn toàn, tạo thành đúng một chu trình (single cycle) độ dài n+1.
+Đi theo LF duyệt lần lượt các ký tự của chuỗi gốc theo chiều ngược, nên ghi ngược
+lại cho ra chính xác T = '#' + s. Đây là thuật toán inverse BWT chuẩn, deterministic
+(không dùng hashing) nên không bị anti-hash test.
+
+ĐỘ PHỨC TẠP
+-----------
+Đếm ký tự bằng bytes.count (chạy ở C) O(m * 26). Tính LF O(m). Bước đi khôi phục
+O(m). Tổng thời gian O(n), bộ nhớ O(n) (mảng lf và out). Với n <= 1e6 là tuyến tính.
+
+LƯU Ý TLE: n có thể lên tới 1e6 và có hai vòng lặp Python cấp độ phần tử (tính LF
+và bước đi LF, mỗi vòng ~1e6 lần lặp tuần tự, không thể vector hóa vì phụ thuộc
+tuần tự). Trên CPython với giới hạn 1.00 s đây là rủi ro TLE; nên nộp bằng PyPy3
+trên CSES để an toàn (PyPy3 chạy thoải mái). Thuật toán là tuyến tính và đúng.

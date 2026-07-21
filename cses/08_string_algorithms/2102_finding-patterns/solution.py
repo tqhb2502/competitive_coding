@@ -1,8 +1,8 @@
 # Finding Patterns - https://cses.fi/problemset/task/2102
-# Xay dung suffix automaton (SAM) cua text, sau do voi moi pattern chi can
-# di theo cac transition tu trang thai khoi dau: neu di het pattern -> YES,
-# neu tac (khong co transition) -> NO. SAM nhan dien dung TAP HOP moi substring
-# cua text, nen day la thuat toan deterministic (khong dung hashing).
+# Xây dựng suffix automaton (SAM) của text, sau đó với mỗi pattern chỉ cần đi
+# theo các transition từ trạng thái khởi đầu: nếu đi hết pattern thì in "YES",
+# nếu tắc (không còn transition) thì in "NO". SAM nhận diện đúng tập hợp mọi
+# substring của text, nên đây là thuật toán deterministic (không dùng hashing).
 
 import sys
 
@@ -18,9 +18,9 @@ def main():
     n = len(s)
     max_states = 2 * n + 5
 
-    sa_len = [0] * max_states      # do dai chuoi dai nhat cua moi trang thai
+    sa_len = [0] * max_states      # độ dài chuỗi dài nhất của mỗi trạng thái
     sa_link = [-1] * max_states    # suffix link
-    sa_next = [None] * max_states  # dict transition cho moi trang thai
+    sa_next = [None] * max_states  # dict transition cho mỗi trạng thái
 
     sa_next[0] = {}
     sa_len[0] = 0
@@ -28,7 +28,7 @@ def main():
     size = 1
     last = 0
 
-    for c in s:  # c la gia tri byte (int) cua ky tu
+    for c in s:  # c là giá trị byte (int) của ký tự
         cur = size
         sa_len[cur] = sa_len[last] + 1
         sa_link[cur] = -1

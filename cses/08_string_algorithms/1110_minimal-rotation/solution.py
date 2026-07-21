@@ -1,19 +1,19 @@
 # Minimal Rotation - CSES 1110
 # https://cses.fi/problemset/task/1110
-# Booth's algorithm: tim lexicographically minimal rotation trong O(n),
-# deterministic (khong dung hashing nen an toan voi anti-hash tests).
+# Booth's algorithm: tìm rotation nhỏ nhất theo thứ tự từ điển trong O(n),
+# mang tính xác định (không dùng hashing nên an toàn với anti-hash tests).
 
 import sys
 
 
 def least_rotation(S):
-    """Booth's algorithm. Tra ve chi so bat dau cua rotation nho nhat.
+    """Booth's algorithm. Trả về chỉ số bắt đầu của rotation nhỏ nhất.
 
-    S la xau da NHAN DOI (s + s). Ham lam viec tren bytes (moi phan tu la int).
+    S là xâu đã NHÂN ĐÔI (s + s). Hàm làm việc trên bytes (mỗi phần tử là int).
     """
     n2 = len(S)                 # = 2 * n
     f = [-1] * n2               # failure function
-    k = 0                       # vi tri bat dau rotation nho nhat tim duoc
+    k = 0                       # vị trí bắt đầu rotation nhỏ nhất tìm được
     for j in range(1, n2):
         sj = S[j]
         i = f[j - k - 1]
@@ -21,8 +21,8 @@ def least_rotation(S):
             if sj < S[k + i + 1]:
                 k = j - i - 1
             i = f[i]
-        if sj != S[k + i + 1]:      # tuc la i == -1
-            if sj < S[k + i + 1]:   # khi i == -1 thi S[k+i+1] == S[k]
+        if sj != S[k + i + 1]:      # tức là i == -1
+            if sj < S[k + i + 1]:   # khi i == -1 thì S[k+i+1] == S[k]
                 k = j
             f[j - k] = -1
         else:
@@ -36,7 +36,7 @@ def main():
         return
     s = data[0]                 # bytes
     n = len(s)
-    doubled = s + s             # nhan doi de tranh chi so modulo
+    doubled = s + s             # nhân đôi để tránh chỉ số modulo
     k = least_rotation(doubled)
     out = doubled[k:k + n]
     sys.stdout.buffer.write(out)

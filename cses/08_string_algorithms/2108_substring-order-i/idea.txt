@@ -1,0 +1,42 @@
+Bài toán: Cho xâu s (độ dài n) gồm các chữ cái thường và số k. In ra xâu con
+PHÂN BIỆT (distinct substring) đứng thứ k theo thứ tự từ điển.
+
+Thuật toán: suffix automaton (SAM).
+
+1) Xây dựng suffix automaton của s. Tính chất then chốt của SAM: mỗi xâu con
+   phân biệt khác rỗng của s tương ứng với ĐÚNG MỘT đường đi bắt đầu từ trạng
+   thái khởi tạo (initial state). Do đó việc liệt kê các xâu con phân biệt theo
+   thứ tự từ điển tương đương với việc duyệt các đường đi trên automaton, tại
+   mỗi trạng thái ưu tiên cạnh (transition) có ký tự nhỏ hơn.
+
+2) Đếm số đường đi. Với mỗi trạng thái v, đặt
+        paths[v] = số xâu con phân biệt sinh ra khi rời v bằng ít nhất 1 ký tự
+                 = tổng theo mọi transition (c -> u) của (1 + paths[u]).
+   Ở đây "1" là xâu kết thúc ngay sau khi đi cạnh c, còn paths[u] là mọi cách
+   kéo dài tiếp. Mọi transition đều làm TĂNG NGHIÊM NGẶT giá trị len của trạng
+   thái (len[u] >= len[v] + 1), nên xử lý các trạng thái theo thứ tự len GIẢM
+   dần là một thứ tự topo hợp lệ để tính DP. paths[root] chính là tổng số xâu
+   con phân biệt của s.
+
+3) Truy vết (greedy descent) để dựng đáp án. Xuất phát từ root:
+   - Với mỗi trạng thái, xét các ký tự c theo thứ tự 'a'..'z'.
+   - Nhánh theo ký tự c chứa cnt = 1 + paths[child] xâu con (xâu kết thúc ngay
+     tại c là nhỏ nhất trong nhánh này, rồi tới các phần mở rộng).
+   - Nếu k <= cnt: chọn c, nối vào đáp án, giảm k đi 1 (ứng với chính xâu kết
+     thúc tại c). Nếu k == 0 thì dừng; ngược lại đi tới child và lặp lại.
+   - Nếu k > cnt: k -= cnt và thử ký tự tiếp theo.
+
+Vì sao đúng: nhờ song ánh giữa xâu con phân biệt và đường đi trên SAM, các xâu
+được duyệt đúng theo thứ tự từ điển tăng dần; paths cho phép "nhảy" qua trọn một
+nhánh mà không cần liệt kê từng xâu, nên tìm được xâu thứ k một cách chính xác.
+
+Độ phức tạp:
+- Xây SAM: O(n) trạng thái (tối đa 2n) và O(n) transition (tối đa 3n), thời gian
+  gần tuyến tính O(n * alphabet) (alphabet = 26).
+- Tính paths: O(số trạng thái + số transition).
+- Truy vết: O(độ dài đáp án * alphabet), độ dài đáp án tối đa n.
+Bộ nhớ: O(n) cho các mảng và các dict transition.
+
+LƯU Ý TLE: với n = 1e5, xây suffix automaton bằng Python thuần (dùng dict cho
+transition) có thể chạm giới hạn thời gian trên CSES (limit hướng tới C++).
+Thuật toán là chính xác và tuyến tính; rủi ro chỉ nằm ở hằng số của Python.
