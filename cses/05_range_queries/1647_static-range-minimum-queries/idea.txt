@@ -1,0 +1,36 @@
+Bài toán: Static Range Minimum Queries (CSES 1647)
+Cho mảng n phần tử, xử lý q truy vấn tìm giá trị nhỏ nhất trong đoạn [a, b].
+Mảng KHÔNG thay đổi (static), chỉ có truy vấn min trên đoạn.
+
+CẤU TRÚC DỮ LIỆU: Sparse Table.
+
+Ý tưởng:
+- Vì mảng cố định và phép min là idempotent (min(x, x) = x, nên các đoạn
+  chồng lấn không gây sai lệch), ta dùng Sparse Table để trả lời mỗi truy
+  vấn trong O(1).
+- sp[k][i] = giá trị nhỏ nhất của đoạn có độ dài 2^k bắt đầu tại chỉ số i,
+  tức đoạn [i, i + 2^k - 1].
+- Công thức xây dựng (dynamic programming theo k):
+    sp[0][i] = x[i]
+    sp[k][i] = min( sp[k-1][i], sp[k-1][i + 2^(k-1)] )
+  Mỗi hàng k được tính bằng list comprehension với zip(prev, prev[half:])
+  để tận dụng vòng lặp C của Python cho nhanh.
+
+TRUY VẤN đoạn [a, b] (đã chuyển về 0-indexed):
+- Đặt len = b - a + 1, và k = floor(log2(len)) (tra bảng log dựng sẵn).
+- Kết quả = min( sp[k][a], sp[k][b - 2^k + 1] ).
+- Hai đoạn con độ dài 2^k này phủ kín [a, b] (có thể chồng lấn), và vì min
+  idempotent nên phần chồng lấn không ảnh hưởng kết quả -> đúng.
+
+ĐỘ PHỨC TẠP:
+- Xây dựng: O(n log n) thời gian, O(n log n) bộ nhớ.
+- Mỗi truy vấn: O(1).
+- Tổng: O(n log n + q).
+
+Đọc toàn bộ input bằng sys.stdin.buffer.read().split() và ghi kết quả một
+lần bằng sys.stdout.buffer.write(...) để đảm bảo xuống dòng LF và tốc độ I/O.
+
+LƯU Ý TLE: Với n, q tới 2*10^5, thuật toán O(n log n + q) là tối ưu; tuy nhiên
+hằng số của Python vẫn lớn. Cách viết bằng list comprehension + zip và tra bảng
+log giúp giảm rủi ro, nhưng trong trường hợp xấu nhất trên CPython vẫn có thể
+sát giới hạn thời gian của CSES (vốn đặt cho C++).

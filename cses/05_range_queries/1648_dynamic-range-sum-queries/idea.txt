@@ -1,0 +1,33 @@
+Bài toán: Dynamic Range Sum Queries (CSES 1648)
+
+Yêu cầu: cho mảng n phần tử, xử lý q truy vấn thuộc hai loại:
+- "1 k u": gán giá trị của phần tử tại vị trí k thành u (point update).
+- "2 a b": tính tổng các phần tử trong đoạn [a, b] (range sum query).
+
+Cấu trúc dữ liệu: Fenwick tree (Binary Indexed Tree, BIT) 1-indexed.
+BIT cho phép cả hai thao tác point update và prefix-sum query trong O(log n),
+với hằng số nhỏ hơn nhiều so với segment tree trong Python, nên là lựa chọn tối ưu ở đây.
+
+Các thao tác:
+- update(i, delta): cộng thêm delta vào phần tử tại vị trí i, cập nhật BIT bằng cách
+  đi lên theo i += i & (-i).
+- query(i): trả về prefix sum của [1, i] bằng cách đi xuống theo i -= i & (-i).
+- Tổng đoạn [a, b] = query(b) - query(a - 1).
+
+Vì truy vấn cập nhật là phép GÁN (set) chứ không phải cộng dồn, ta lưu thêm mảng
+cur giữ giá trị hiện tại của từng vị trí. Khi gặp "1 k u", ta gọi update(k, u - cur[k])
+rồi đặt cur[k] = u để BIT phản ánh đúng chênh lệch (delta).
+
+Tính đúng đắn: BIT duy trì bất biến rằng mỗi node quản lý một đoạn có độ dài bằng
+lowbit của chỉ số; phép đi lên khi update và đi xuống khi query đảm bảo mọi phần tử
+được cộng đúng một lần vào prefix sum. Do đó query(b) - query(a-1) cho đúng tổng [a, b].
+
+Độ phức tạp thời gian: O((n + q) log n). Độ phức tạp không gian: O(n).
+Với n, q <= 2*10^5, tổng thao tác khoảng vài triệu phép O(log n), hoàn toàn chấp nhận được.
+
+Đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần bằng
+sys.stdout.buffer.write để tránh CRLF và tăng tốc.
+
+LƯU Ý TLE: Với hằng số của Python thuần, trường hợp xấu nhất (q = 2*10^5 truy vấn,
+mỗi truy vấn O(log n)) có thể chạm giới hạn thời gian trên CPython; tuy nhiên BIT là
+cách nhanh nhất trong Python và thường vẫn qua được. Nếu CPython TLE thì PyPy sẽ ổn.

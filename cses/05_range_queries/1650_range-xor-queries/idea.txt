@@ -1,0 +1,26 @@
+Bài toán: Cho một mảng tĩnh gồm n số nguyên, xử lý q truy vấn. Mỗi truy vấn
+hỏi XOR của tất cả các phần tử trong đoạn [a, b] (1-indexed). Mảng không bị
+thay đổi giữa các truy vấn (static queries).
+
+Cấu trúc dữ liệu: prefix XOR (tiền tố XOR).
+- Định nghĩa mảng prefix P với P[0] = 0 và P[i] = x_1 XOR x_2 XOR ... XOR x_i.
+- Xây dựng P một lần duy nhất trong O(n) bằng công thức P[i] = P[i-1] XOR x_i.
+
+Trả lời truy vấn:
+- XOR của đoạn [a, b] = P[b] XOR P[a-1].
+- Đúng vì phép XOR có tính chất tự nghịch đảo: mỗi phần tử x_1..x_{a-1} xuất
+  hiện trong cả P[b] và P[a-1], nên khi XOR hai giá trị này chúng triệt tiêu
+  lẫn nhau (t XOR t = 0), chỉ còn lại XOR của x_a..x_b.
+- Mỗi truy vấn được trả lời trong O(1).
+
+Vì sao đúng: XOR có tính giao hoán, kết hợp, và t XOR t = 0, t XOR 0 = t.
+Do đó P[b] XOR P[a-1] = (x_1..x_b) XOR (x_1..x_{a-1}) = x_a XOR ... XOR x_b.
+
+Độ phức tạp:
+- Thời gian: O(n) để dựng prefix XOR + O(1) mỗi truy vấn = O(n + q) tổng cộng.
+- Bộ nhớ: O(n) cho mảng prefix.
+
+Với n, q lên tới 2*10^5, cách này rất nhanh và không có rủi ro TLE trong
+pure Python vì mỗi truy vấn chỉ là một phép truy cập mảng và một phép XOR.
+Đọc input nhanh bằng sys.stdin.buffer.read() và xuất một lần bằng
+sys.stdout.buffer.write().

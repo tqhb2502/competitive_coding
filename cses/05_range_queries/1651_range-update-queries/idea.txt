@@ -1,0 +1,29 @@
+Bài toán: Range Update Queries (CSES 1651)
+- Cho mảng n phần tử, xử lý q truy vấn thuộc 2 loại:
+  + "1 a b u": cộng thêm u vào mọi phần tử trong đoạn [a, b] (range update).
+  + "2 k": in ra giá trị hiện tại của phần tử tại vị trí k (point query).
+
+Ý tưởng: dùng Fenwick tree (BIT) trên MẢNG HIỆU (difference array).
+- Gọi d là mảng hiệu: d[i] = a[i] - a[i-1] (với a[0] = 0). Khi đó
+  a[k] = d[1] + d[2] + ... + d[k] = prefix sum của d đến vị trí k.
+- Một thao tác range update cộng u vào đoạn [a, b] tương đương với chỉ hai
+  cập nhật điểm trên mảng hiệu: d[a] += u và d[b+1] -= u. Lý do: hiệu chỉ
+  thay đổi ở đúng hai biên của đoạn, phần bên trong đoạn hiệu giữ nguyên.
+- Vậy point query tại k chính là prefix sum của mảng hiệu đến k.
+
+Cài đặt:
+- Khởi tạo BIT lưu mảng hiệu bằng cách với mỗi i cập nhật update(i, a[i]-a[i-1]),
+  tức là mỗi phần tử ban đầu được coi như một range update [i, i] giá trị a[i]-a[i-1].
+  (Hoặc đơn giản: point-update từng vị trí bằng chênh lệch liên tiếp.)
+- Range update [a, b] += u: update(a, u); update(b+1, -u) (bỏ qua nếu b+1 > n).
+- Point query k: trả về prefix_sum(k) của BIT.
+
+Tính đúng đắn: prefix sum của mảng hiệu luôn cho đúng giá trị hiện tại của phần
+tử, và mỗi range update chỉ chỉnh sửa hai điểm biên của mảng hiệu nên giữ bất biến.
+
+Độ phức tạp:
+- Mỗi update và mỗi query đều là O(log n) nhờ Fenwick tree.
+- Tổng thời gian O((n + q) log n), bộ nhớ O(n).
+
+Đây là cách nhanh nhất trong Python cho dạng point-update + prefix-sum: Fenwick
+tree có hằng số nhỏ hơn hẳn segment tree. Với n, q <= 2*10^5 giải pháp chạy tốt.

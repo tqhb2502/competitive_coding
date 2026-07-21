@@ -1,0 +1,57 @@
+Increasing Array Queries — https://cses.fi/problemset/task/2416
+
+BÀI TOÁN
+Cho mảng x[1..n]. Mỗi phép thao tác tăng một phần tử lên 1. Với mỗi truy vấn (a, b),
+tính số phép thao tác tối thiểu để đoạn con x[a..b] trở thành không giảm
+(non-decreasing) từ trái sang phải.
+
+NHẬN XÉT MẤU CHỐT
+Để biến một đoạn thành không giảm với chi phí nhỏ nhất, ta duyệt từ trái sang phải
+và không bao giờ hạ giá trị phần tử (chỉ được tăng). Vì vậy giá trị mới tối ưu của
+vị trí i (tính từ đầu đoạn a) chính là prefix max: runmax(i) = max(x[a], ..., x[i]).
+Chi phí cho truy vấn (a, b) bằng:
+    ans(a, b) = ( tổng runmax ) - ( tổng x )
+              = sum_{i=a}^{b} max(x[a..i])  -  ( prefX[b] - prefX[a-1] )
+trong đó prefX là prefix sum của mảng x.
+
+Phần "tổng x" tính ngay bằng prefix sum. Khó khăn nằm ở phần
+    M(a, b) = sum_{i=a}^{b} max(x[a..i])
+vì prefix max phụ thuộc điểm bắt đầu a của từng truy vấn.
+
+THUẬT TOÁN OFFLINE + MONOTONIC STACK + FENWICK (BIT)
+Nhóm các truy vấn theo a, rồi duyệt điểm trái L từ n về 1. Với mỗi L ta duy trì
+mảng ảo g[i] = max(x[L..i]) cho mọi i >= L. Khi L giảm 1 (thêm phần tử x[L] vào
+bên trái), g[i] chỉ THAY ĐỔI ở những vị trí mà prefix max cũ <= x[L]; các vị trí có
+prefix max > x[L] giữ nguyên. Vì g không giảm theo i nên các vị trí bị đổi tạo thành
+một tiền tố liên tiếp bắt đầu từ L.
+
+Ta dùng một monotonic stack các đoạn (value, count): mỗi đoạn là một dải vị trí liên
+tiếp mà g bằng hằng số value; đỉnh stack là đoạn nằm ngoài cùng bên trái (bắt đầu tại
+L+1). Khi thêm L với v = x[L]:
+  - Pop mọi đoạn ở đỉnh có value <= v (giá trị nhỏ nhất, gần L nhất), gộp chúng lại;
+    những vị trí này đổi giá trị thành v.
+  - Đẩy vào một đoạn mới (v, số vị trí vừa gộp + 1) bao [L, ...].
+Mỗi vị trí được push đúng một lần và pop tối đa một lần nên tổng thao tác stack là O(n).
+
+Để lấy được M(a, b) = sum_{i=a}^{b} g[i] với b bất kỳ, ta lưu g[i] trong một Fenwick /
+BIT hỗ trợ range update + range sum (kỹ thuật 2 BIT: một BIT cho hệ số, một BIT cho
+phần bù, prefix(i) = B1.query(i)*i - B2.query(i)). Mỗi lần pop một đoạn đổi giá trị từ
+sv sang v ta làm một range add (v - sv) trên dải vị trí của đoạn; thêm vị trí L là một
+range add v tại [L, L]. Khi L == a, đáp án:
+    ans = range_sum(a, b) - (prefX[b] - prefX[a-1]).
+
+TÍNH ĐÚNG
+Sau khi xử lý L, BIT phản ánh đúng g[i] = max(x[L..i]) cho mọi i >= L. Các vị trí < L
+mang giá trị cũ (stale) nhưng khi tính range_sum(a, b) = prefix(b) - prefix(a-1) với
+a = L thì phần 1..a-1 xuất hiện ở cả hai và triệt tiêu, nên kết quả chỉ phụ thuộc các
+vị trí [a, b] đang đúng. Prefix max là cách biến đoạn thành không giảm với chi phí nhỏ
+nhất (không hạ phần tử, mỗi phần tử vừa đủ bằng max các phần tử trước nó).
+
+ĐỘ PHỨC TẠP
+Thời gian O((n + q) log n): O(n) thao tác stack, mỗi thao tác kèm một cập nhật BIT
+O(log n); mỗi truy vấn O(log n). Bộ nhớ O(n + q).
+
+LƯU Ý TLE: với n, q tới 2·10^5 kèm hệ số log, giới hạn thời gian CSES đặt cho C++,
+lời giải pure Python (CPython) có nguy cơ TLE dù thuật toán tối ưu O((n+q) log n).
+Code đã bind biến ra local và inline vòng lặp BIT để giảm hằng số; PyPy3 nếu có thì
+gần như chắc chắn qua.

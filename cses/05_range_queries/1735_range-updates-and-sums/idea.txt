@@ -1,0 +1,58 @@
+Bài toán: quản lý một mảng có n phần tử với 3 loại truy vấn (q truy vấn):
+  1 a b x : cộng x cho mọi phần tử trong đoạn [a, b]   (range add)
+  2 a b x : gán giá trị x cho mọi phần tử trong đoạn [a, b]  (range assign)
+  3 a b   : in tổng các phần tử trong đoạn [a, b]        (range sum)
+Ràng buộc: 1 <= n, q <= 2*10^5 ; 1 <= t_i, x <= 10^6 ; 1 <= a <= b <= n.
+
+CẤU TRÚC DỮ LIỆU
+================
+Dùng lazy-propagation segment tree (kiểu iterative / bottom-up giống thư viện
+AtCoder) lưu tổng của từng đoạn. Vì có CẢ HAI phép range assign và range add,
+mỗi node cần HAI thẻ lazy lồng nhau:
+  - lz_a : giá trị assign đang chờ (NONE = -1 nghĩa là không có assign đang chờ).
+  - lz_d : giá trị add đang chờ, được CỘNG SAU khi đã assign.
+Ý nghĩa lazy của một node: nếu lz_a != NONE thì trước hết GÁN mọi phần tử bằng
+lz_a, rồi CỘNG thêm lz_d; nếu lz_a == NONE thì chỉ CỘNG lz_d.
+
+CÁC PHÉP TRÊN NODE
+==================
+- Áp assign x cho một node phủ trọn trong đoạn truy vấn:
+    seg[node] = x * (độ dài đoạn), lz_a[node] = x, lz_d[node] = 0.
+  Phép assign GHI ĐÈ mọi lazy cũ bên dưới nên việc vứt bỏ lazy cũ là đúng.
+- Áp add x cho một node phủ trọn trong đoạn:
+    seg[node] += x * (độ dài đoạn), lz_d[node] += x  (giữ nguyên lz_a nếu có).
+- push (đẩy lazy xuống hai con):
+    Nếu node có lz_a: mỗi con nhận giá trị (lz_a + lz_d): seg con = (lz_a+lz_d)*độ_dài,
+    lz_a con = lz_a+lz_d, lz_d con = 0. Sau đó xóa lazy của node.
+    Nếu node chỉ có lz_d: mỗi con cộng thêm lz_d (seg và lz_d của con tăng tương ứng).
+  Nhờ tính chất "assign rồi add" tương đương "assign (assign_val + add_val)" nên
+  hai thẻ lazy lồng vào nhau một cách nhất quán.
+
+MỖI TRUY VẤN
+============
+Chuyển [a, b] (1-indexed, đóng) sang đoạn nửa mở [a-1, b) trên cây.
+- Trước khi làm việc, push dọc theo hai biên trái/phải từ trên xuống để mọi tổ tiên
+  trên đường biên không còn lazy đang chờ.
+- Range add / range assign: duyệt các node phủ trọn đoạn (bottom-up), áp phép tương
+  ứng, rồi pull-up cập nhật lại tổng cho các tổ tiên trên biên.
+- Range sum: cộng seg của các node phủ trọn đoạn.
+Các node "phủ trọn" luôn nằm hẳn trong [a-1, b) ⊆ [0, n) nên không bao giờ chạm các
+lá "đệm" (padding) ở vị trí >= n; do đó dùng độ dài (slen) đầy đủ là chính xác.
+
+TÍNH ĐÚNG ĐẮN
+=============
+Bất biến: seg[node] luôn là tổng ĐÚNG của đoạn (đã tính cả lazy của chính node đó),
+còn lz_a/lz_d chỉ là phép còn nợ đợi đẩy xuống hai con. push chuyển lazy xuống con
+mà không đổi tổng. Vì assign ghi đè và add cộng chồng lên nhau theo đúng thứ tự thời
+gian (assign cũ -> add mới giữ lz_a, hoặc assign mới ghi đè tất cả), kết quả luôn
+khớp với trạng thái thật của mảng. Phép pull-up seg[p]=seg[con trái]+seg[con phải]
+chỉ áp dụng cho các tổ tiên đã được push (lazy = rỗng) nên hợp lệ.
+
+ĐỘ PHỨC TẠP
+===========
+Mỗi truy vấn O(log n). Tổng thể O((n + q) log n) thời gian, O(n) bộ nhớ.
+Tổng có thể rất lớn (tới ~4*10^16) nhưng Python dùng số nguyên lớn nên không tràn.
+
+LƯU Ý TLE: với n, q tới 2*10^5, lazy segment tree thuần Python có hằng số lớn; giới
+hạn thời gian của CSES được đặt cho C++ nên lời giải này CÓ THỂ bị TLE trên CPython.
+Thuật toán vẫn đúng; không thể dùng numpy hay thư viện ngoài để tăng tốc theo yêu cầu.

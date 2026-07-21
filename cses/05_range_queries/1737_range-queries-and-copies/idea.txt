@@ -1,0 +1,62 @@
+Range Queries and Copies (CSES 1737)
+
+Bài toán
+--------
+Ta có một danh sách các mảng, ban đầu chỉ gồm mảng số 1 với n phần tử. Xử lý q truy vấn:
+  1 k a x : gán phần tử vị trí a của mảng k bằng x (point update).
+  2 k a b : tính tổng các phần tử từ vị trí a đến b của mảng k (range sum).
+  3 k     : sao chép mảng k thành một mảng mới, thêm vào cuối danh sách.
+Các mảng và vị trí đều đánh chỉ số từ 1.
+
+Ý tưởng: persistent segment tree (cây phân đoạn bền vững)
+--------------------------------------------------------
+Điểm mấu chốt là truy vấn "3 k" sao chép cả mảng. Nếu copy thật sự O(n) thì với
+q copy tổng chi phí là O(n*q) -> quá lớn. Thay vào đó ta dùng persistent segment
+tree với kỹ thuật path copying:
+
+- Mỗi mảng k được đại diện bởi một "root" node: roots[k].
+- Mỗi node lưu tổng đoạn (val), con trái (left) và con phải (right). Các node
+  được lưu trong ba mảng phẳng để tiết kiệm bộ nhớ và tăng tốc:
+  left[], right[] kiểu int32 (array 'i'), val[] kiểu int64 (array 'q'). Node 0
+  là null.
+
+Các thao tác:
+- Build ban đầu: dựng một segment tree thông thường trên đoạn [1, n], tốn khoảng
+  (2n - 1) node. Cài đặt build bằng vòng lặp (iterative) với một stack để tránh
+  đệ quy: đi pre-order tạo node, rồi duyệt ngược để cộng tổng bottom-up.
+
+- Update "1 k a x": đây là point update nhưng phải tạo ra một PHIÊN BẢN MỚI theo
+  path copying. Ta đi từ root của mảng k xuống lá vị trí a, ghi nhớ đường đi
+  (các node cũ và hướng rẽ trái/phải). Sau đó tạo lá mới mang giá trị x rồi đi
+  ngược lên: tại mỗi tầng tạo một node MỚI, một con trỏ tới con vừa tạo mới, con
+  còn lại DÙNG CHUNG con cũ (chia sẻ với các phiên bản khác). Chỉ O(log n) node
+  mới được tạo. Cuối cùng gán roots[k] = root mới. Vì chỉ gán lại roots[k], các
+  bản copy đã tạo trước đó (trỏ tới root cũ) hoàn toàn không bị ảnh hưởng.
+
+- Range sum "2 k a b": duyệt cây roots[k] bằng stack tường minh (iterative). Node
+  nào nằm trọn trong [a, b] thì cộng thẳng val, ngược lại tách thành hai con. Vì
+  cây phủ toàn bộ [1, n] nên không gặp node null.
+
+- Copy "3 k": chỉ cần roots.append(roots[k]) — mảng mới DÙNG CHUNG toàn bộ cây
+  với mảng k. O(1). Về sau, bất kỳ update nào lên mảng k hoặc lên bản copy đều
+  tạo đường đi mới riêng, không đụng tới nhau (tính bền vững = persistence).
+
+Tính đúng đắn
+-------------
+Path copying bảo đảm mỗi phiên bản (root) mô tả đúng trạng thái mảng tại thời
+điểm đó: node dùng chung chỉ chứa dữ liệu bất biến, còn mọi thay đổi luôn sinh
+node mới trên đường đi nên không phá vỡ phiên bản cũ. Do đó copy = chia sẻ root
+và update = gán root mới cho đúng slot đều cho kết quả chính xác.
+
+Độ phức tạp
+-----------
+- Thời gian: build O(n); mỗi update O(log n) (tạo O(log n) node); mỗi range sum
+  O(log n); mỗi copy O(1). Tổng O((n + q) log n).
+- Bộ nhớ: O(n + q log n) node. Với n, q <= 2*10^5 ta cấp phát tối đa
+  2n + 20q + 10 node; dùng array int32/int64 nên khoảng ~70 MB, chấp nhận được.
+
+LƯU Ý TLE: Đây là persistent segment tree thuần Python với hằng số lớn. Với
+n, q ở mức 2*10^5, khoảng ~4*10^5 thao tác log n, CPython có thể chạy chậm hơn
+giới hạn thời gian của CSES (vốn đặt cho C++) và có nguy cơ TLE. Thuật toán đã
+tối ưu hằng số (mảng phẳng, gán biến cục bộ, không đệ quy) và HOÀN TOÀN chính
+xác; nếu cần vượt time limit trên CSES nên nộp bằng PyPy.

@@ -1,0 +1,27 @@
+Bài toán: Static Range Sum Queries (CSES 1646)
+Cho một mảng gồm n số nguyên và q truy vấn. Mỗi truy vấn hỏi tổng các phần tử
+trong đoạn [a, b] (1-indexed). Mảng KHÔNG bị cập nhật, nên đây là bài toán tĩnh.
+
+Cấu trúc dữ liệu: prefix sum (tổng tiền tố).
+- Ta xây dựng mảng prefix có kích thước n+1, với prefix[0] = 0 và
+  prefix[i] = x[1] + x[2] + ... + x[i]. Nói cách khác prefix[i] là tổng của
+  i phần tử đầu tiên.
+- Xây dựng bằng cách cộng dồn (running sum), có thể dùng itertools.accumulate
+  để chạy nhanh trong C-level.
+
+Thao tác truy vấn:
+- Với truy vấn (a, b), tổng đoạn [a, b] = prefix[b] - prefix[a-1].
+- Mỗi truy vấn chỉ tốn O(1) nhờ đã tính sẵn prefix sum.
+
+Vì sao đúng:
+- prefix[b] = x[1] + ... + x[b] và prefix[a-1] = x[1] + ... + x[a-1].
+- Hiệu của chúng đúng bằng x[a] + x[a+1] + ... + x[b], chính là tổng đoạn cần tìm.
+
+Độ phức tạp:
+- Thời gian: O(n) để dựng prefix sum + O(1) cho mỗi truy vấn => O(n + q).
+- Bộ nhớ: O(n) cho mảng prefix sum.
+
+Với n, q <= 2*10^5 và giá trị tối đa 10^9, tổng có thể lớn nhưng Python dùng số
+nguyên lớn tùy ý (big integer) nên không tràn số. Thuật toán O(n + q) này rất
+nhẹ, đọc/ghi I/O nhanh bằng sys.stdin.buffer nên chạy thoải mái trong giới hạn.
+Không có rủi ro TLE với cách tiếp cận prefix sum thuần này.

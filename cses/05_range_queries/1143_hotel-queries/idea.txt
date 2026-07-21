@@ -1,0 +1,42 @@
+Bài toán: Hotel Queries (CSES 1143)
+
+Ý tưởng:
+- Ta có n khách sạn, khách sạn thứ i còn h[i] phòng trống. Có m nhóm khách,
+  nhóm thứ j cần r[j] phòng. Với mỗi nhóm, xử lý tuần tự, ta phải tìm khách
+  sạn có chỉ số NHỎ NHẤT (bên trái nhất) mà số phòng trống còn lại >= r[j],
+  đặt nhóm vào đó (trừ đi r[j] phòng), và in ra chỉ số khách sạn (1-indexed).
+  Nếu không có khách sạn nào đủ phòng thì in 0.
+
+Cấu trúc dữ liệu: segment tree lưu giá trị MAX (max segment tree) trên mảng
+số phòng trống h[]. Mỗi node lưu số phòng trống lớn nhất trong đoạn nó quản lý.
+
+Hai thao tác:
+1) Tìm khách sạn trái nhất có phòng trống >= r (kết hợp cả tìm và cập nhật):
+   - Nếu max của toàn mảng (giá trị ở gốc) < r thì không có khách sạn nào,
+     trả về 0.
+   - Ngược lại, đi xuống (descent) từ gốc: tại mỗi node nội bộ, nếu con TRÁI
+     có max >= r thì đi sang con trái (vì ta ưu tiên chỉ số nhỏ nhất), ngược
+     lại đi sang con phải. Khi tới lá, đó chính là khách sạn cần tìm.
+2) Cập nhật point-update: sau khi tìm được lá, trừ r vào giá trị của lá đó,
+   rồi cập nhật lại giá trị max của tất cả các node tổ tiên trên đường đi
+   từ lá về gốc.
+
+Tính đúng đắn:
+- Vì node lưu max, điều kiện "con trái có max >= r" đảm bảo tồn tại ít nhất
+  một lá bên trái đủ phòng; đi theo con trái luôn cho ta lá đủ điều kiện có
+  chỉ số nhỏ nhất. Nếu con trái không đủ nhưng gốc/đoạn hiện tại đủ (max >= r),
+  thì chắc chắn con phải đủ, nên rẽ phải là hợp lệ.
+- Sau khi trừ r, việc cập nhật lại max của tổ tiên giữ cho segment tree luôn
+  phản ánh đúng số phòng trống hiện tại cho các truy vấn sau.
+
+Các lá dư (khi kích thước tree được làm tròn lên lũy thừa 2 lớn hơn n) được
+khởi tạo bằng 0, nên với r >= 1 chúng không bao giờ thỏa mãn, không ảnh hưởng
+kết quả.
+
+Độ phức tạp:
+- Mỗi truy vấn: tìm + cập nhật đều O(log n). Tổng cộng O((n + m) log n) thời gian.
+- Bộ nhớ: O(n) cho mảng segment tree (khoảng 2 * size phần tử).
+
+LƯU Ý TLE: với n, m tới 2*10^5 và hằng số của Python khá lớn, lời giải
+O((n+m) log n) này có thể chạm giới hạn thời gian trên CSES với CPython thuần;
+đã tối ưu bằng đọc/ghi I/O nhanh và bind biến cục bộ, nhưng rủi ro TLE là có.

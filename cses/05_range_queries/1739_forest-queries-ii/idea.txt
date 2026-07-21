@@ -1,0 +1,55 @@
+Bài toán: Forest Queries II (CSES 1739)
+
+Cho lưới n x n, mỗi ô là cây ('*') hoặc trống ('.'). Xử lý q truy vấn:
+  - Loại 1 "1 y x": đổi trạng thái (toggle) ô (y, x) giữa cây và trống.
+  - Loại 2 "2 y1 x1 y2 x2": đếm số cây trong hình chữ nhật [y1..y2] x [x1..x2].
+Ràng buộc: 1 <= n <= 1000, 1 <= q <= 2*10^5.
+
+Cấu trúc dữ liệu: Fenwick tree 2 chiều (2D BIT)
+-----------------------------------------------
+Vì đây là bài point-update (toggle một ô) + rectangle-sum (tổng trên hình chữ
+nhật), ta dùng Fenwick tree 2 chiều (2D BIT). Fenwick nhanh hơn segment tree rất
+nhiều trong Python (hằng số nhỏ), và nó vừa khít với dạng truy vấn này.
+
+Lưu trữ: một mảng phẳng 'bit' kích thước (n+1)*(n+1), chỉ số ô (i, j) là i*W + j
+với W = n+1, dùng 1-indexed. Ngoài ra có mảng 'cur' (bytearray) lưu trạng thái
+0/1 hiện tại của từng ô để biết mỗi lần toggle cần cộng +1 hay -1.
+
+Các phép toán
+-------------
+1) Xây dựng (build) O(n^2):
+   - Nạp giá trị 0/1 của lưới vào bit (dùng bytes.maketrans + gán slice, chạy ở
+     tốc độ C).
+   - Biến mảng thành Fenwick "tại chỗ": trước tiên propagate từng hàng (mỗi hàng
+     là một Fenwick 1 chiều), sau đó propagate theo cột. Cách này O(n^2), nhanh
+     hơn nhiều so với build bằng n^2 lần update riêng lẻ (sẽ là O(n^2 log^2 n)).
+
+2) Update (toggle) - O(log^2 n):
+   Nếu ô đang là cây thì delta = -1, ngược lại delta = +1; cập nhật 'cur' rồi
+   chạy hai vòng lặp Fenwick lồng nhau (theo hàng i, theo cột j).
+
+3) Rectangle sum - O(log^2 n):
+   Tổng hình chữ nhật = Q(y2,x2) - Q(y1-1,x2) - Q(y2,x1-1) + Q(y1-1,x1-1),
+   với Q(y,x) là tổng tiền tố (prefix) của hình chữ nhật (1,1)..(y,x).
+   Tối ưu: phân tích bit của cột (x2 và x1-1) chỉ làm một lần ra hai danh sách
+   chỉ số c2, c1; sau đó với mỗi chỉ số hàng trong phân tích của y2 và y1-1 chỉ
+   việc cộng/trừ các phần tử bit đã biết, tránh tính lại phân tích cột nhiều lần.
+
+Tính đúng
+---------
+Fenwick tree cho phép tổng tiền tố 2 chiều đúng trên bất kỳ hình chữ nhật góc
+(1,1). Công thức bao-trừ (inclusion-exclusion) 4 góc cho tổng hình chữ nhật bất
+kỳ là chính xác. Toggle chỉ thay đổi một ô và cập nhật đúng +/-1 nên tổng luôn
+phản ánh số cây hiện tại.
+
+Độ phức tạp
+-----------
+- Bộ nhớ: O(n^2) cho mảng bit (~10^6 số nguyên) và cur (~10^6 byte).
+- Thời gian: build O(n^2); mỗi truy vấn O(log^2 n). Tổng O(n^2 + q log^2 n).
+
+LƯU Ý TLE: Với n = 1000 và q = 2*10^5 truy vấn loại 2, phần build O(n^2) và mỗi
+truy vấn ~ (đến 15*15) phép toán trên vòng lặp Python thuần có thể vượt giới hạn
+thời gian của CSES (giới hạn nhắm cho C++); trên CPython đo được ~22s ở trường
+hợp xấu nhất (rect [512..1000] cả hai chiều). Thuật toán vẫn đúng và đã tối ưu
+hết mức bằng mảng phẳng, gán biến local và phân tích cột một lần; nên nộp bằng
+PyPy3 trên CSES để kịp thời gian.

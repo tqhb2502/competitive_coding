@@ -1,0 +1,64 @@
+Distinct Values Queries II — CSES 3356
+
+Ý tưởng chính
+-------------
+Với mỗi vị trí i, đặt prev[i] = vị trí xuất hiện gần nhất phía trước (< i) mà
+hiện đang mang CÙNG giá trị với vị trí i (bằng 0 nếu không có). Khi đó một đoạn
+[a, b] gồm toàn giá trị phân biệt khi và chỉ khi:
+
+    max(prev[i] với i thuộc [a, b]) < a
+
+Vì nếu tồn tại i trong [a, b] với prev[i] >= a thì có hai vị trí prev[i] và i
+cùng nằm trong [a, b] và cùng giá trị (trùng lặp). Ngược lại nếu mọi prev[i] < a
+thì không có cặp trùng nào nằm trọn trong đoạn.
+
+Cấu trúc dữ liệu
+----------------
+1) Range-max của prev[]:
+   Dùng một segment tree lặp (iterative, bottom-up) hỗ trợ gán điểm (point
+   assignment) và truy vấn max trên đoạn. Không dùng Fenwick/BIT cho phần này vì
+   prev[i] có thể GIẢM khi cập nhật, mà max-Fenwick chỉ xử lý được cập nhật tăng.
+
+2) Tìm predecessor / successor cùng giá trị để bảo trì prev[] khi có update:
+   Mỗi thời điểm, mỗi vị trí giữ đúng một giá trị, nên tập các cặp
+   (value, position) đang "active" luôn có đúng n phần tử. Ta nén (coordinate
+   compression) TẤT CẢ các cặp (value, position) có thể xuất hiện (mảng ban đầu
+   + mọi giá trị u trong các update) thành chỉ số theo thứ tự (value, position).
+   Trong thứ tự này, hàng xóm CÙNG giá trị của một cặp chính là hàng xóm toàn cục
+   liền kề của nó. Một Fenwick/BIT trên các chỉ số nén này lưu cờ present/absent
+   cho phép:
+     - bit_add: bật/tắt một cặp (activate / deactivate),
+     - prev_present / next_present: dùng prefix-count cộng với thao tác "select"
+       của BIT (binary lifting) để tìm phần tử active liền trước / liền sau.
+   Sau khi tìm được hàng xóm, so sánh value_rank để biết có cùng giá trị không.
+
+Thao tác update "1 k u"
+-----------------------
+- Gỡ vị trí k khỏi nhóm giá trị cũ: deactivate cặp cũ, tìm predecessor p_o và
+  successor s_o cùng giá trị; nếu có s_o thì prev[s_o] = p_o (cập nhật segment
+  tree tại s_o).
+- Thêm vị trí k vào nhóm giá trị mới: activate cặp mới, tìm predecessor p_n và
+  successor s_n; đặt prev[k] = p_n, và nếu có s_n thì prev[s_n] = k.
+- Nếu u trùng đúng giá trị hiện tại của k (cùng cặp) thì bỏ qua.
+
+Truy vấn "2 a b"
+----------------
+Trả về "YES" nếu seg_query(a, b) < a, ngược lại "NO".
+
+Tính đúng đắn
+-------------
+prev[] luôn được giữ đúng: khi gỡ k, chỉ successor cùng giá trị của k (là s_o)
+từng trỏ prev về k, nay trỏ về p_o; khi chèn k, chỉ successor mới s_n đổi prev
+sang k, còn prev[k] = p_n. Không vị trí nào khác bị ảnh hưởng. Điều kiện
+max(prev)<a tương đương "không có cặp trùng nằm trong đoạn" như chứng minh trên.
+
+Độ phức tạp
+-----------
+Nén: O((n + q) log(n + q)). Mỗi update / query: O(log) cho BIT (add, sum,
+select) và O(log n) cho segment tree. Tổng thời gian O((n + q) log(n + q)).
+Bộ nhớ O(n + q) cho BIT, mảng nén và segment tree.
+
+LƯU Ý TLE: thuật toán tối ưu O((n+q) log) nhưng với n, q tới 2*10^5 và hằng số
+lớn của Python (nhiều thao tác BIT/segment tree cùng gọi hàm), lời giải thuần
+Python có thể TLE trên CSES vì giới hạn thời gian được đặt cho C++. Thuật toán
+vẫn ĐÚNG; chỉ tuyệt đối không dùng numpy hay thư viện bên thứ ba.

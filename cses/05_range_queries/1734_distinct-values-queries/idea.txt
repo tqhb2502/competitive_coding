@@ -1,0 +1,35 @@
+Distinct Values Queries — CSES 1734
+
+Bài toán: cho mảng n số, với mỗi truy vấn (a, b) đếm số giá trị PHÂN BIỆT
+(distinct) trong đoạn [a, b]. Có n, q tối đa 2*10^5, giá trị tối đa 10^9.
+
+Ý tưởng: xử lý OFFLINE + Fenwick tree (BIT).
+
+1. Đọc toàn bộ truy vấn, SẮP XẾP các truy vấn theo đầu mút phải b tăng dần
+   (offline sorting).
+
+2. Duyệt vị trí i từ 1 tới n. Ta duy trì một BIT trên các vị trí 1..n, trong đó
+   mỗi giá trị chỉ được "đánh dấu" 1 tại LẦN XUẤT HIỆN CUỐI CÙNG (last occurrence)
+   tính đến vị trí i hiện tại. Cụ thể khi thêm phần tử x tại vị trí i:
+     - nếu x đã từng xuất hiện ở vị trí last[x], thì BIT.update(last[x], -1)
+       để gỡ bỏ đánh dấu cũ;
+     - BIT.update(i, +1) để đánh dấu vị trí mới;
+     - cập nhật last[x] = i (dùng dict, không cần coordinate compression).
+
+3. Sau khi đã xử lý xong vị trí i, mọi truy vấn có b = i được trả lời bằng
+   range_sum(a, i) = prefix(i) - prefix(a-1). Vì trong BIT chỉ còn lại đúng một
+   dấu 1 cho mỗi giá trị (ở vị trí xuất hiện cuối cùng <= i), nên tổng trên đoạn
+   [a, i] đếm đúng số giá trị phân biệt trong [a, i].
+
+Tính đúng đắn: một giá trị v có mặt trong [a, b] khi và chỉ khi lần xuất hiện
+cuối cùng của v trong [1, b] nằm trong [a, b]. Do BIT chỉ giữ dấu 1 tại vị trí
+xuất hiện cuối cùng (<= b) của mỗi giá trị, phép cộng đoạn [a, b] đếm chính xác
+số giá trị phân biệt, mỗi giá trị được tính đúng một lần.
+
+Độ phức tạp: thời gian O((n + q) * log n), bộ nhớ O(n + q). Với n, q = 2*10^5
+số phép toán khoảng vài triệu * log — chấp nhận được.
+
+LƯU Ý TLE: giới hạn CSES nhắm vào C++. Bản pure Python O((n+q) log n) có thể
+chạm ngưỡng thời gian trên test lớn nhất; đã tối ưu bằng đọc/ghi I/O theo khối,
+bind biến nóng ra local và Fenwick tree tối giản để giảm hằng số. Nếu vẫn TLE
+trên CPython, PyPy sẽ vượt qua thoải mái.

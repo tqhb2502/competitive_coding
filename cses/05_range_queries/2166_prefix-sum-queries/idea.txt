@@ -1,0 +1,43 @@
+Bài toán: Cho mảng n số nguyên và q truy vấn thuộc hai loại:
+  - "1 k u": cập nhật (point update) giá trị tại vị trí k thành u.
+  - "2 a b": tìm maximum prefix sum trong đoạn [a, b], trong đó CHO PHÉP
+    prefix rỗng (tổng 0). Nghĩa là kết quả luôn >= 0.
+
+Cấu trúc dữ liệu: iterative segment tree (bottom-up), mỗi node lưu 2 giá trị:
+  - tot: tổng tất cả phần tử trong đoạn của node.
+  - bst: maximum prefix sum của đoạn đó, đã tính cả prefix rỗng nên bst >= 0.
+
+Phép hợp nhất (merge) hai node con L (trái) và R (phải) - KHÔNG giao hoán:
+  tot = L.tot + R.tot
+  bst = max( L.bst , L.tot + R.bst )
+Giải thích: một prefix của đoạn ghép hoặc nằm hoàn toàn trong L (cho L.bst),
+hoặc phủ hết L rồi ăn thêm một prefix của R (cho L.tot + R.bst). Vì L.bst và
+R.bst đã bao gồm prefix rỗng (>= 0) nên prefix rỗng toàn cục cũng được tính,
+và L.tot + (R.bst = 0) = L.tot chính là prefix kết thúc đúng cuối L.
+
+Lá (một phần tử x): tot = x, bst = max(0, x).
+
+Phần tử đơn vị (identity) của monoid: (tot=0, bst=0). Vì bst của mọi node luôn
+>= tot của node đó (prefix đầy đủ = tot cũng là một ứng viên), nên
+merge(X, id) = X và merge(id, X) = X đều đúng => dùng an toàn trong truy vấn.
+
+Truy vấn đoạn [a, b] với segment tree lặp cần xử lý riêng vì merge KHÔNG giao
+hoán: ta gom các mảnh ở biên trái vào accumulator trái (resL) theo thứ tự
+trái->phải, gom các mảnh biên phải vào accumulator phải (resR) bằng cách
+"prepend" (ghép node vào bên trái của resR) khi r giảm; cuối cùng trả về
+merge(resL, resR). Đáp án là trường bst của kết quả hợp nhất (luôn >= 0).
+
+Cập nhật point update: gán lại giá trị lá rồi đi ngược lên gốc, mỗi tổ tiên
+tính lại (tot, bst) từ hai con.
+
+Tính đúng đắn: phép merge kết hợp (associative) và đơn vị như trên đã kiểm tra;
+segment tree phủ đúng đoạn [a, b] bằng các node rời nhau theo đúng thứ tự trái
+sang phải, nên bst cuối cùng chính là maximum prefix sum của đoạn.
+
+Độ phức tạp: build O(n); mỗi update và mỗi query O(log n). Tổng thời gian
+O((n + q) log n). Bộ nhớ O(n) (hai mảng kích thước 2*size).
+
+LƯU Ý TLE: n, q <= 2*10^5 với hệ số log ~18 => khoảng vài triệu thao tác vòng
+lặp Python thuần; giới hạn CSES nhắm cho C++, nên bản Python thuần có nguy cơ
+TLE ở test xấu nhất. Thuật toán vẫn ĐÚNG; đã bind biến nóng thành local và
+inline phép merge để giảm hằng số. (Tuyệt đối không dùng numpy/thư viện ngoài.)

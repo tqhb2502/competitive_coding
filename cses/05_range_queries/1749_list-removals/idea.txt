@@ -1,0 +1,26 @@
+Bài toán: cho danh sách n phần tử. Có n thao tác xóa; thao tác thứ i cho vị trí
+p_i tính theo danh sách HIỆN TẠI (sau khi đã xóa các phần tử trước đó). Mỗi lần
+ta phải in ra phần tử đang đứng ở vị trí p_i rồi xóa nó khỏi danh sách.
+
+Cấu trúc dữ liệu: Fenwick tree (BIT) trên n vị trí gốc (đánh số 1..n).
+- tree lưu prefix sum của mảng "sống": vals gốc ở vị trí i được đánh dấu 1 nếu
+  phần tử còn tồn tại, 0 nếu đã bị xóa.
+- Ban đầu tất cả bằng 1, được build trong O(n).
+
+Thao tác:
+- find k-th (tìm phần tử còn sống thứ k): dùng kỹ thuật binary lifting trên
+  Fenwick tree. Duyệt các bit từ cao xuống thấp; tại mỗi bước thử nhảy tới vị trí
+  nxt = pos + 2^r, nếu tree[nxt] < k thì di chuyển tới đó và trừ k đi tree[nxt].
+  Kết thúc, pos+1 chính là vị trí nhỏ nhất có prefix sum bằng k, tức phần tử còn
+  sống thứ k. Độ phức tạp O(log n).
+- Xóa: point update, đặt vị trí vừa tìm được về 0 (trừ 1 dọc theo BIT) trong
+  O(log n).
+
+Tính đúng đắn: vị trí p_i trong danh sách hiện tại tương ứng với "phần tử còn
+sống thứ p_i" trong mảng gốc, vì prefix sum đếm đúng số phần tử chưa bị xóa nằm
+trước (và tại) một vị trí. Sau khi xóa, mọi truy vấn sau đều dựa trên trạng thái
+sống/chết đã cập nhật, nên chỉ số vị trí luôn nhất quán với danh sách thực.
+
+Độ phức tạp: mỗi trong n thao tác gồm 1 lần find k-th và 1 lần point update, đều
+O(log n) => tổng O(n log n) thời gian, O(n) bộ nhớ. Với n ≤ 2×10^5 hoàn toàn
+trong giới hạn.
