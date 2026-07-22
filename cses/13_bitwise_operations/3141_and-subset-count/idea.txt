@@ -1,0 +1,53 @@
+And Subset Count (CSES 3141)
+https://cses.fi/problemset/task/3141
+
+--- Đề bài ---
+Cho mảng n số nguyên (mỗi phần tử trong đoạn [0, n]). Với mỗi k từ 0 đến n, đếm
+số tập con KHÔNG rỗng sao cho phép AND (bitwise AND) của tất cả phần tử trong tập
+con đó bằng đúng k. In ra n+1 số, tất cả lấy theo modulo 1e9 + 7.
+
+--- Kỹ thuật: SOS DP (superset sum) + Möbius inversion trên lưới tập con bit ---
+
+Ý tưởng chính:
+1) Gọi cnt[v] = số phần tử của mảng bằng v. Vì mọi a_i <= n < 2^18 nên ta làm việc
+   trên không gian mask kích thước SIZE = 2^18 = 262144 (đủ chứa mọi giá trị và mọi
+   chỉ số k = 0..n).
+
+2) Tính g[m] = số phần tử a_i là "superset" của mask m, tức (a_i & m) == m
+   (a_i chứa tất cả các bit của m). Đây chính là superset-sum SOS transform của cnt:
+       for mỗi bit b:
+           for mỗi mask m không chứa bit b:
+               g[m] += g[m | (1<<b)]
+   Sau vòng lặp, g[m] = tổng cnt trên mọi superset của m.
+
+3) Định nghĩa atleast[m] = số tập con không rỗng mà AND của chúng là superset của m.
+   Một tập con có AND chứa tất cả bit của m KHI VÀ CHỈ KHI mọi phần tử trong tập con
+   đều là superset của m. Số tập con không rỗng lấy từ g[m] phần tử đó là:
+       atleast[m] = 2^{g[m]} - 1   (mod 1e9+7)
+   (dùng bảng lũy thừa 2 dựng sẵn tới n vì g[m] <= n).
+
+4) Theo định nghĩa: atleast[m] = tổng exact[s] trên mọi s là superset của m
+   (exact[s] = số tập con có AND đúng bằng s). Đây đúng là superset zeta transform của
+   exact. Do đó exact = superset Möbius inversion của atleast:
+       for mỗi bit b:
+           for mỗi mask m không chứa bit b:
+               atleast[m] -= atleast[m | (1<<b)]
+   Sau vòng lặp mảng chứa exact[k]. Công thức tương đương:
+       exact[k] = sum_{s superset của k} (-1)^{popcount(s)-popcount(k)} * atleast[s]
+
+5) In exact[0], exact[1], ..., exact[n].
+
+--- Tính đúng đắn ---
+- Bước (2) đúng vì AND của một tập con chứa mọi bit của m khi và chỉ khi từng phần
+  tử chứa mọi bit của m; nên đếm tập con thỏa "AND superset của m" quy về đếm tập con
+  không rỗng của tập g[m] phần tử -> 2^{g[m]} - 1.
+- Bước (4) là nghịch đảo Möbius trên lưới superset, biến "at least (superset)" thành
+  "exact". Kiểm chứng với ví dụ: mảng [3,1,3,4] cho atleast = {m0:15, m1:7, m2:3,
+  m3:3, m4:1} và exact = {0:7, 1:4, 2:0, 3:3, 4:1} -> in "7 4 0 3 1", khớp đáp án.
+- Vì mọi a_i <= n nên AND của mọi tập con <= n, nên k = 0..n bao trùm toàn bộ.
+
+--- Độ phức tạp ---
+- Thời gian: O(SIZE * B) cho mỗi SOS transform, B = 18, SIZE = 2^18 -> khoảng 4.7 triệu
+  phép toán mỗi transform, hai transform ~ 9.4 triệu. Cộng O(n) đọc dữ liệu và dựng
+  lũy thừa. Tổng thể rất nhanh, dưới 1 giây với n = 2e5.
+- Bộ nhớ: O(SIZE) cho các mảng g và atleast (vài MB).

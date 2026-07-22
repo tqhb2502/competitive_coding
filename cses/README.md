@@ -34,7 +34,7 @@ cses/
 | 10 | Advanced Techniques | 25 | ✅ **C++** — 25/25 verify, compile OK, **0 TLE-risk**, 0 FAIL (24 verify kỹ + 2143 verify nhanh) |
 | 11 | Sliding Window Problems | 11 | ✅ **C++** — 11/11 compile OK + verify nhanh (3 PASS · 8 FIXED · 0 FAIL), 0 TLE-risk (monotonic deque, prefix, two heaps, BIT...) |
 | 12 | Interactive Problems | 6 | ✅ **C++** — 6/6 PASS (0 FIXED · 0 FAIL); mỗi bài test qua interactor giả (đúng đáp án, số truy vấn ≤ giới hạn, flush OK, không deadlock) |
-| 13 | Bitwise Operations | ~11 | ⬜ chưa làm |
+| 13 | Bitwise Operations | 11 | ✅ **C++** — 11/11 compile OK + verify nhanh (1 PASS · 10 FIXED · 0 FAIL), 0 TLE-risk (XOR basis, XOR trie, SOS DP, WHT, Sierpinski) |
 | 14 | Construction Problems | ~8 | ⬜ chưa làm |
 | 15 | Advanced Graph Problems | ~28 | ⬜ chưa làm |
 | 16 | Counting Problems | ~18 | ⬜ chưa làm |

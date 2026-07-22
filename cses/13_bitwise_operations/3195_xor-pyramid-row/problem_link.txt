@@ -1,0 +1,2 @@
+Xor Pyramid Row
+https://cses.fi/problemset/task/3195

@@ -1,0 +1,48 @@
+K Subset Xors - CSES 3192
+
+Kỹ thuật: XOR linear basis trên GF(2) (reduced row echelon form) + liệt kê có thứ tự tăng dần.
+
+Đề bài:
+- Cho mảng n số, xét tất cả 2^n tập con (kể cả tập rỗng -> XOR = 0).
+- In ra k giá trị XOR nhỏ nhất (theo dạng MULTISET, tức là có lặp, sắp xếp tăng dần).
+
+Ý tưởng chính:
+1. Xây dựng linear basis của mảng. Gọi r = rank (số vector độc lập trong basis).
+   Vì x_i <= 10^9 < 2^30 nên chỉ cần 30 bit, do đó r <= 30.
+2. Tập các giá trị XOR PHÂN BIỆT đạt được chính là một không gian con tuyến tính
+   kích thước 2^r. Mỗi giá trị phân biệt được tạo ra bởi đúng 2^(n-r) tập con
+   khác nhau (chọn tùy ý các phần tử phụ thuộc tuyến tính). Vậy multiset đầy đủ gồm
+   mỗi giá trị phân biệt lặp lại m = 2^(n-r) lần. Khi sắp xếp tăng dần, các bản sao
+   bằng nhau nằm liền nhau -> chuỗi kết quả là: v_0 (x m lần), v_1 (x m lần), ...
+   với v_0 < v_1 < ... là các giá trị phân biệt theo thứ tự tăng.
+3. Để liệt kê các giá trị phân biệt theo thứ tự tăng dần: đưa basis về dạng
+   reduced row echelon form (mỗi bit pivot chỉ xuất hiện ở đúng một vector basis),
+   rồi sắp xếp các vector basis theo pivot tăng dần: b_0, b_1, ..., b_{r-1}.
+   Khi đó với chỉ số i (i = 0,1,2,...), lấy biểu diễn nhị phân của i, bit thứ j
+   chọn vector b_j, giá trị value(i) = XOR các b_j được chọn. value(i) là hàm
+   TĂNG NGHIÊM NGẶT theo i, nên value(0), value(1), value(2), ... chính là các giá
+   trị phân biệt đã sắp xếp tăng dần.
+
+Chứng minh tính tăng nghiêm ngặt:
+- Sau reduce, bit pivot p_j của b_j chỉ xuất hiện ở riêng b_j. Mỗi vector chỉ có
+  các bit <= pivot của nó. Với hai chỉ số i1 < i2, gọi h là bit cao nhất mà chúng
+  khác nhau (i2 có bit h = 1, i1 = 0). Các bit cao hơn h giống nhau nên đóng góp
+  giống nhau. Tại vị trí bit p_h: chỉ b_h có bit này, và nó được chọn ở i2 chứ không
+  ở i1, các vector chỉ số > h không có bit p_h. Vậy value(i2) có bit p_h = 1 còn
+  value(i1) = 0 tại vị trí cao nhất khác nhau -> value(i2) > value(i1).
+
+Xử lý bội số m = 2^(n-r):
+- n có thể tới 2*10^5 nên n-r rất lớn; nhưng k <= 2*10^5. Nếu m >= k thì tất cả k
+  kết quả đều là giá trị nhỏ nhất (luôn là 0). Do đó chỉ cần giới hạn m (chặn) ở một
+  giá trị lớn hơn k là đủ. Số giá trị phân biệt cần liệt kê chỉ là ceil(k/m) <= k.
+
+Độ đúng: theo lập luận trên, multiset đầy đủ = mỗi giá trị phân biệt lặp m lần;
+value(i) cho thứ tự tăng đúng; ta chỉ in min(m, còn_lại) bản sao mỗi giá trị cho
+đến khi đủ k số. Vì tổng cỡ multiset = 2^r * m = 2^n >= k nên luôn đủ và chỉ số i
+dùng để liệt kê luôn < 2^r (truy cập sb hợp lệ).
+
+Độ phức tạp:
+- Xây dựng basis: O(n * 30).
+- Reduce basis: O(30^2).
+- Liệt kê: số giá trị phân biệt <= k, mỗi cái tính XOR O(r) -> O(k * 30).
+- Tổng thời gian O(n*30 + k*30), bộ nhớ O(k) cho chuỗi output.

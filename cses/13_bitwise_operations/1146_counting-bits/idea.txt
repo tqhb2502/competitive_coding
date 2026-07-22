@@ -1,0 +1,18 @@
+Bài toán: Đếm tổng số bit 1 trong biểu diễn nhị phân của tất cả các số nguyên từ 1 đến n (1 <= n <= 10^15).
+
+Kỹ thuật: Đếm theo từng vị trí bit (bit-by-bit counting), dựa trên tính tuần hoàn của từng bit khi liệt kê các số 0, 1, 2, ...
+
+Ý tưởng chính:
+- Tổng số bit 1 trong [1, n] bằng tổng số bit 1 trong [0, n] (số 0 không đóng góp bit nào), nên ta đếm trên đoạn [0, n] cho tiện.
+- Với vị trí bit thứ i (0-indexed), khi liệt kê các số 0, 1, 2, ... thì bit thứ i lặp theo chu kỳ có độ dài cycle = 2^(i+1): gồm 2^i số liên tiếp có bit i = 0, rồi 2^i số liên tiếp có bit i = 1.
+- Trong đoạn [0, n] có tất cả (n + 1) số. Gọi full = (n + 1) / cycle là số chu kỳ đầy đủ; mỗi chu kỳ đầy đủ đóng góp đúng 2^i số có bit i bật.
+- Phần dư rem = (n + 1) % cycle: trong phần dư này, 2^i số đầu có bit i = 0, các số còn lại (nếu có) có bit i = 1, nên đóng góp thêm max(0, rem - 2^i) số.
+- Số lượng số có bit i bật là: full * 2^i + max(0, rem - 2^i). Cộng dồn qua mọi vị trí bit i (từ 0 tới ~50, vì 2^50 > 10^15) cho ra đáp số.
+
+Tính đúng đắn: Với mỗi bit i, ta đếm chính xác bao nhiêu số trong [0, n] có bit đó bằng 1 nhờ cấu trúc tuần hoàn cố định của biểu diễn nhị phân. Tổng số bit 1 chính là tổng, qua tất cả các vị trí bit, của số lượng các số có bit tương ứng được bật.
+
+Tràn số: Kết quả tối đa cỡ 10^15 * 50 ~ 5 * 10^16, vẫn nằm trong long long (tối đa ~9.2 * 10^18), nên dùng long long là an toàn.
+
+Độ phức tạp:
+- Thời gian: O(log n) (duyệt khoảng 50 vị trí bit).
+- Bộ nhớ: O(1).

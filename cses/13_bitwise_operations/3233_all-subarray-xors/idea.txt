@@ -1,0 +1,36 @@
+All Subarray Xors (CSES 3233)
+
+Kỹ thuật: Walsh-Hadamard Transform (XOR convolution) trên tập các giá trị prefix XOR.
+
+Ý tưởng chính:
+- Đặt prefix[0] = 0 và prefix[i] = x_1 ^ x_2 ^ ... ^ x_i. Khi đó XOR của đoạn con
+  (l..r) bằng prefix[r] ^ prefix[l-1].
+- Do đó TẬP tất cả giá trị XOR của mọi đoạn con chính là
+      { prefix[i] ^ prefix[j] : 0 <= j < i <= n }.
+  Nói cách khác, đây là tập các XOR của mọi cặp phần tử trong dãy prefix.
+- Vì 0 <= x_i <= 10^6 < 2^20 nên mọi prefix < 2^20, và mọi giá trị XOR đều nằm
+  trong [0, 2^20). Miền giá trị nhỏ (M = 2^20 ~ 10^6) là mấu chốt.
+
+Thuật toán:
+- Xây dựng vector chỉ thị (indicator) f trên nhóm Z_2^20: f[v] = 1 nếu v là một
+  giá trị prefix PHÂN BIỆT nào đó, ngược lại 0.
+- Dùng WHT để tính XOR self-convolution g = f (*) f. Khi đó
+      g[v] = số cặp CÓ THỨ TỰ (a, b) trong tập prefix phân biệt sao cho a ^ b = v.
+- Với v != 0: v đạt được <=> g[v] > 0. Vì v != 0 nên a != b, tương ứng hai chỉ số
+  khác nhau, tức có một đoạn con thực sự.
+- Với v = 0: đạt được <=> tồn tại giá trị prefix bị lặp (số prefix phân biệt < n+1),
+  tức có một đoạn con có XOR = 0.
+
+Tính đúng đắn:
+- Mỗi cặp chỉ số phân biệt j < i (trong [0, n]) ứng đúng một đoạn con, và ngược lại.
+- Tất cả prefix phân biệt đều được đưa vào f, nên WHT đếm chính xác mọi cặp giá trị.
+- WHT cho ra g[v] = M * (số cặp), là số nguyên không âm; chỉ cần kiểm tra > 0.
+  (Kiểm tra dấu trước khi chia M cũng chính xác vì M > 0.)
+
+Kiểm chứng ví dụ: dãy 5 1 5 9 -> prefix = {0,5,4,1,8} (đều phân biệt => 0 không đạt).
+Các XOR cặp: {1,4,5,8,9,12,13} đúng 7 giá trị như đáp án.
+
+Độ phức tạp:
+- Thời gian: WHT O(M log M) với M = 2^20, ~2*10^7 phép; đọc dữ liệu O(n).
+- Bộ nhớ: O(M) kiểu long long ~ 8 MB (an toàn với overflow: giá trị trung gian
+  <= M * |S|^2 ~ 4*10^16 < 9.2*10^18).

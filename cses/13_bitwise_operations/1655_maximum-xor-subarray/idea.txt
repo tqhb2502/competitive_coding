@@ -1,0 +1,26 @@
+Bài toán: Maximum Xor Subarray (CSES 1655)
+
+Kỹ thuật: prefix XOR + binary trie (XOR trie) trên các bit.
+
+Ý tưởng chính:
+- Gọi p[0] = 0 và p[i] = a[1] ^ a[2] ^ ... ^ a[i] là mảng prefix XOR.
+- XOR của đoạn con [l, r] = p[r] ^ p[l-1]. Vì vậy bài toán trở thành:
+  tìm cặp chỉ số (i, j) với 0 <= i, j <= n sao cho p[i] ^ p[j] đạt giá trị lớn nhất
+  (đoạn con luôn có độ dài >= 1, tương ứng i != j, nhưng vì p[i] ^ p[i] = 0
+  nên việc cho phép i == j không làm tăng kết quả — kết quả tối thiểu là 0).
+- Ta chèn dần từng p[i] vào một binary trie lưu các bit từ cao xuống thấp
+  (dùng 30 bit vì x_i <= 10^9 < 2^30, ở đây dùng 31 bit cho an toàn).
+  Với mỗi p[i], trước khi/hoặc sau khi chèn, ta truy vấn giá trị XOR lớn nhất
+  giữa p[i] và một giá trị đã có trong trie bằng cách tại mỗi bit ưu tiên đi
+  theo nhánh bit ngược lại (để bit kết quả thành 1), nếu không có thì đi nhánh cùng bit.
+
+Tính đúng đắn:
+- Trie greedy từ bit cao nhất bảo đảm tối đa hoá giá trị XOR: chọn được bit cao
+  bằng 1 luôn tốt hơn mọi tổ hợp các bit thấp hơn.
+- Chèn p[0] = 0 trước bảo đảm mọi đoạn con bắt đầu từ chỉ số 1 đều được xét,
+  và mọi cặp prefix đều được so khớp khi ta lần lượt chèn và truy vấn.
+
+Độ phức tạp:
+- Thời gian: O(n * B) với B = số bit (~31), tức O(n log(maxVal)).
+- Bộ nhớ: O(n * B) node cho trie.
+- Với n <= 2*10^5 và B = 31, tổng thao tác ~ 6.2 triệu, chạy rất nhanh.

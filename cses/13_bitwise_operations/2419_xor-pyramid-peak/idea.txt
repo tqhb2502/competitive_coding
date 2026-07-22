@@ -1,0 +1,37 @@
+Bài toán: Xor Pyramid Peak (CSES 2419)
+
+Kỹ thuật: Tính chẵn lẻ của hệ số nhị thức (binomial parity) bằng định lý Lucas modulo 2
+(tam giác Sierpinski). Kết hợp với phép XOR.
+
+Mô tả:
+- Cho hàng đáy gồm n số a_0, a_1, ..., a_{n-1}.
+- Mỗi số ở tầng trên là XOR của hai số ngay bên dưới (lower-left và lower-right).
+- Cần tìm giá trị đỉnh (peak) của kim tự tháp.
+
+Ý tưởng chính:
+- Vì XOR là phép cộng trên trường GF(2), giá trị đỉnh chính là tổng XOR của các phần tử
+  hàng đáy, mỗi phần tử a_i được nhân với số đường đi từ nó lên đỉnh, tức hệ số nhị thức
+  C(n-1, i), nhưng chỉ tính theo modulo 2 (vì trong GF(2) chỉ quan trọng tính chẵn lẻ).
+- Do đó: peak = XOR của tất cả a_i sao cho C(n-1, i) là số LẺ.
+- Theo định lý Lucas cho p = 2: C(m, i) là lẻ khi và chỉ khi (i AND m) == i, nghĩa là các
+  bit bật của i là tập con của các bit bật của m (ở đây m = n-1).
+  Nói cách khác, i phải là "submask" của (n-1).
+
+Thuật toán:
+- Duyệt i từ 0 đến n-1. Nếu (i & (n-1)) == i thì đưa a_i vào tổng XOR kết quả.
+- In ra kết quả.
+
+Tính đúng đắn:
+- Mở rộng đệ quy: đỉnh của kim tự tháp là XOR của hai đỉnh con, mỗi đỉnh con lại là XOR của
+  các hệ số nhị thức của hàng nhỏ hơn. Quy nạp cho thấy hệ số của a_i tại đỉnh đúng bằng
+  C(n-1, i) mod 2. Định lý Lucas mod 2 cho ta cách kiểm tra tính lẻ trong O(1) bằng phép AND.
+- Ví dụ n=8: n-1 = 7 = 111 (nhị phân), nên mọi i trong [0,7] đều là submask của 7, tức mọi
+  C(7,i) đều lẻ, vậy peak = XOR toàn bộ hàng đáy = 9 (khớp với đề).
+
+Độ phức tạp:
+- Thời gian: O(n) cho việc đọc và duyệt một lần.
+- Bộ nhớ: O(1) ngoài mảng đầu vào (thực ra có thể xử lý trực tiếp khi đọc, chỉ cần O(1) thêm).
+
+Ghi chú tràn số:
+- a_i <= 10^9 nằm gọn trong int/long long; XOR không làm tăng độ lớn nên int cũng đủ, nhưng
+  dùng long long cho an toàn.

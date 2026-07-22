@@ -1,0 +1,33 @@
+Number of Subset Xors — CSES 3211
+
+Kỹ thuật: XOR linear basis (cơ sở tuyến tính trên trường GF(2)).
+
+Ý tưởng chính:
+- Xem mỗi số x_i như một vector trong không gian vector GF(2)^30 (vì x_i <= 10^9 < 2^30,
+  nên chỉ cần 30 bit).
+- Tập hợp tất cả các giá trị XOR sinh ra từ mọi tập con của mảng chính là span
+  (không gian con sinh) của các vector này, vì XOR chính là phép cộng vector trên GF(2).
+- Một không gian con GF(2) có hạng (rank) r sẽ chứa đúng 2^r vector phân biệt.
+  Do đó số lượng giá trị XOR phân biệt của các tập con = 2^r, với r là số vector độc lập
+  tuyến tính trong linear basis.
+- Tập con rỗng cho giá trị XOR = 0, và 0 luôn nằm trong span, nên nó đã được tính trong 2^r.
+
+Cách xây linear basis:
+- Duyệt từng số, thử chèn vào basis. Với mỗi bit cao nhất còn set, nếu vị trí bit đó
+  trong basis đang trống thì lưu số này làm phần tử basis (rank tăng 1); ngược lại
+  XOR số hiện tại với phần tử basis tại bit đó để khử bit cao nhất, rồi tiếp tục.
+- Nếu số bị khử về 0 thì nó phụ thuộc tuyến tính vào các phần tử đã có, không làm tăng rank.
+
+Kiểm chứng tính đúng đắn:
+- Với ví dụ [3, 6, 5]: 3 = 011, 6 = 110, 5 = 101, và 3 XOR 6 = 5 nên 5 phụ thuộc.
+  Rank = 2 => đáp án 2^2 = 4, khớp với kết quả mẫu.
+- Tổng quát: mọi phần tử của span biểu diễn được duy nhất theo tổ hợp tuyến tính của các
+  phần tử basis, nên đếm đúng bằng 2^r.
+
+Độ phức tạp:
+- Thời gian: O(n * B) với B = 30 (số bit) => tối đa ~6*10^6 phép toán, rất nhanh.
+- Bộ nhớ: O(B) cho mảng basis, cộng O(1) khi đọc từng số (không cần lưu cả mảng).
+
+Lưu ý tràn số:
+- r <= 30 nên 2^r <= 2^30 vẫn nằm trong int, nhưng ta dùng long long / 1LL << r cho an toàn.
+- Không có modulo trong đề bài.
