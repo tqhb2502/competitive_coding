@@ -1,0 +1,49 @@
+Bài toán: MST Edge Cost (CSES 3409)
+
+Đề bài:
+- Cho đồ thị vô hướng liên thông, có trọng số, đơn (n đỉnh, m cạnh).
+- Với MỖI cạnh (theo thứ tự nhập), tính chi phí cây khung nhỏ nhất (MST)
+  BẮT BUỘC phải chứa cạnh đó.
+
+Kỹ thuật: Kruskal (dựng MST) + Binary Lifting (LCA) để truy vấn cạnh trọng số
+lớn nhất trên đường đi giữa hai đỉnh trên cây MST.
+
+Ý tưởng chính:
+1. Dùng Kruskal dựng một MST bất kỳ của đồ thị. Gọi T là tổng trọng số MST.
+2. Với một cạnh e = (a, b, w) buộc phải nằm trong cây khung:
+   - Nếu e đã thuộc MST thì đáp án chính là T.
+   - Nếu e KHÔNG thuộc MST: thêm e vào MST tạo thành đúng một chu trình
+     (chu trình gồm e và đường đi duy nhất a..b trên cây MST). Để trở lại là
+     cây khung ta xóa đi cạnh có trọng số lớn nhất trên đường đi a..b (không
+     tính e). Đây chính là cây khung chứa e có chi phí nhỏ nhất.
+   Đáp án tổng quát: ans(e) = T + w - maxEdgeOnPath(a, b trên MST).
+
+Vì sao công thức đúng cho cả cạnh thuộc MST:
+- Nếu e thuộc MST, đường đi a..b trên cây chính là cạnh e, nên
+  maxEdgeOnPath = w, cho ans = T + w - w = T. Vậy công thức áp dụng đồng nhất
+  cho mọi cạnh, không cần phân biệt trường hợp.
+
+Vì sao đây là MST-chứa-e tối ưu (tính đúng đắn):
+- Với ràng buộc e phải nằm trong cây, ta có thể "co" hai đầu a, b của e lại
+  (contract) và tìm MST trên đồ thị co. Theo tính chất cây khung, MST của đồ
+  thị co ghép với e cho cây khung chứa e nhỏ nhất. Có thể chứng minh giá trị
+  này bằng đúng T + w - (trọng số cạnh lớn nhất trên đường a..b của MST gốc):
+  cạnh lớn nhất trên đường a..b là cạnh duy nhất cần thay thế bởi e để giữ tính
+  cây khung mà vẫn tối ưu (cycle property của MST).
+
+Chi tiết cài đặt:
+- Kruskal với DSU (union-find, path halving) để dựng MST và tính T (dùng
+  long long vì T có thể tới ~ (n-1)*1e9 ~ 1e14).
+- Dựng cây MST, gốc tại đỉnh 1, DFS/BFS lặp (iterative) để tránh tràn stack.
+  Tính depth[v], up[v][0] (cha), mx[v][0] (trọng số cạnh tới cha).
+- Binary lifting: up[v][k], mx[v][k] = trọng số cạnh lớn nhất trên đoạn nhảy
+  2^k. LOG = 17 (đủ cho n <= 1e5).
+- Truy vấn maxEdgeOnPath(a, b): nâng đỉnh sâu hơn lên cùng độ sâu, rồi nhảy
+  đồng thời tới LCA, lấy max các cạnh đi qua.
+- ans = T + w - maxEdgeOnPath(a, b).
+
+Độ phức tạp:
+- Kruskal: O(m log m).
+- Binary lifting build: O(n log n).
+- Mỗi truy vấn: O(log n); tổng m truy vấn: O(m log n).
+- Tổng: O((n + m) log n), thoải mái với n <= 1e5, m <= 2e5.

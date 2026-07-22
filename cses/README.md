@@ -41,7 +41,7 @@ cses/
 | 12 | Interactive Problems | 6 | ✅ **C++** — 6/6 PASS (0 FIXED · 0 FAIL); mỗi bài test qua interactor giả (đúng đáp án, số truy vấn ≤ giới hạn, flush OK, không deadlock) |
 | 13 | Bitwise Operations | 11 | ✅ **C++** — 11/11 compile OK + verify nhanh (1 PASS · 10 FIXED · 0 FAIL), 0 TLE-risk (XOR basis, XOR trie, SOS DP, WHT, Sierpinski) |
 | 14 | Construction Problems | 8 | ✅ **C++** — 8/8 verify (validator kiểm tính hợp lệ + khả thi); 2418 Grid Path cross-check brute-force mọi lưới ≤4×4 (0 sai) |
-| 15 | Advanced Graph Problems | ~28 | ⬜ chưa làm |
+| 15 | Advanced Graph Problems | 28 | ✅ **C++** — 28/28 compile OK, 0 FAIL, 0 TLE-risk (10 PASS · 17 FIXED · 3357 fast-verify riêng); Prüfer, tree isomorphism, SCC/bridge, MST edge classification, dominator, parity BFS |
 | 16 | Counting Problems | ~18 | ⬜ chưa làm |
 | 17 | Additional Problems I | ~28 | ⬜ chưa làm |
 | 18 | Additional Problems II | ~28 | ⬜ chưa làm |

@@ -1,0 +1,74 @@
+Tree Coin Collecting II (CSES 3149)
+
+BÀI TOÁN
+--------
+Cho một cây (unweighted) có n đỉnh. Một số đỉnh có coin. Với mỗi truy vấn (a, b),
+tìm độ dài đường đi (walk) ngắn nhất bắt đầu tại a, kết thúc tại b, và đi qua TẤT
+CẢ các đỉnh có coin. Mỗi cạnh có độ dài 1. Có q truy vấn.
+
+Ràng buộc: 1 <= n, q <= 2*10^5. Bảo đảm có ít nhất một coin.
+
+Ý TƯỞNG CHÍNH
+-------------
+Gọi S = {các đỉnh có coin} hợp {a, b}. Bất kỳ walk hợp lệ nào cũng phải phủ toàn
+bộ cây con Steiner T' (minimal subtree) spanning S, và ngược lại chỉ cần đi trong
+T' là tối ưu. Bài toán trở thành: phủ tất cả các cạnh của một cây T', xuất phát ở
+a và kết thúc ở b, độ dài nhỏ nhất.
+
+Công thức chuẩn (route inspection trên cây): mỗi cạnh của T' phải đi ít nhất một
+lần; các cạnh nằm trên đường đi a->b chỉ cần đi 1 lần (net), các cạnh còn lại phải
+đi 2 lần (đi rồi quay lại). Vậy:
+        answer = 2 * W(S) - dist(a, b)
+với W(S) = số cạnh của T' (Steiner tree của S), dist(a,b) = khoảng cách a-b trong
+cây.
+
+RÚT GỌN THÀNH DẠNG O(1) MỖI TRUY VẤN
+------------------------------------
+Đặt C = tập coin. Gọi T_C = Steiner tree của riêng C (cố định), W_C = số cạnh của
+T_C. Co (contract) toàn bộ các cạnh của T_C lại thành một điểm r (T_C liên thông
+nên co lại thành 1 đỉnh). Trong cây đã co:
+  - f(x) = dist(x, T_C) = số cạnh KHÔNG thuộc T_C từ x tới đỉnh T_C gần nhất
+           (khoảng cách tới cây con coin, tính bằng multi-source BFS).
+  - Steiner tree của S = T_C cộng thêm phần gắn a và b. Phần thêm (extra) chính là
+    Steiner 3 điểm {a, b, r} trong cây đã co:
+        extra = ( f(a) + f(b) + dist_c(a, b) ) / 2
+    với dist_c(a,b) = số cạnh KHÔNG thuộc T_C trên đường a-b
+                    = dist(a,b) - tcedges(a,b),
+    trong đó tcedges(a,b) = số cạnh thuộc T_C nằm trên đường a-b.
+
+Suy ra:
+    W(S) = W_C + extra
+    answer = 2*W(S) - dist(a,b)
+           = 2*W_C + f(a) + f(b) + dist_c(a,b) - dist(a,b)
+           = 2*W_C + f(a) + f(b) - tcedges(a,b).
+
+CÔNG THỨC CUỐI:
+    answer(a, b) = 2 * W_C + f(a) + f(b) - tcedges(a, b)
+
+CÁCH TÍNH CÁC ĐẠI LƯỢNG
+-----------------------
+Root cây tại đỉnh 1 (dùng BFS, KHÔNG đệ quy để tránh stack overflow):
+  - cnt[v] = số coin trong subtree v (duyệt ngược thứ tự BFS).
+  - Cạnh (v, par[v]) thuộc T_C <=> 0 < cnt[v] < total_coins (cả hai phía đều có coin).
+    W_C = số cạnh như vậy. Đánh dấu đỉnh thuộc T_C: mọi đỉnh coin, và hai đầu mút
+    của mỗi cạnh T_C. (Khi chỉ có 1 coin: T_C = đúng đỉnh coin đó, W_C = 0.)
+  - g[x] = số cạnh T_C trên đường từ root tới x (tiền tố theo thứ tự BFS).
+    => tcedges(a,b) = g[a] + g[b] - 2*g[lca(a,b)].
+  - f[x]: multi-source BFS xuất phát đồng thời từ mọi đỉnh thuộc T_C (khoảng cách 0).
+  - LCA bằng binary lifting; dist(a,b) = depth[a]+depth[b]-2*depth[lca] (không cần
+    dùng trực tiếp vì đã rút gọn, nhưng lca dùng cho tcedges).
+
+TÍNH ĐÚNG ĐẮN
+-------------
+- Mọi walk hợp lệ buộc phải đi qua toàn bộ T' (để tới mọi coin và tới a, b), và đi
+  ngoài T' không giúp ích trên cây => tối ưu nằm trong T'.
+- Công thức phủ cạnh của cây 2*W - dist(a,b) là kết quả kinh điển (mỗi cạnh 2 lần
+  trừ các cạnh trên đường a-b chỉ 1 lần).
+- Phép co T_C và bài toán Steiner 3 điểm cho extra là chính xác vì T_C liên thông.
+- Đã kiểm chứng khớp cả 4 truy vấn của ví dụ (6, 5, 6, 8).
+
+ĐỘ PHỨC TẠP
+-----------
+- Tiền xử lý: O(n log n) cho binary lifting, O(n) cho BFS/counts.
+- Mỗi truy vấn: O(log n) do LCA.
+- Tổng: O((n + q) log n) thời gian, O(n log n) bộ nhớ. Thoải mái với n, q <= 2*10^5.

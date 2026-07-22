@@ -1,0 +1,63 @@
+Forbidden Cities (CSES 1705)
+
+Đề bài
+------
+Cho đồ thị vô hướng liên thông n đỉnh, m cạnh (đồ thị bảo đảm liên thông:
+giữa hai thành phố bất kỳ luôn có đường đi). Có q truy vấn, mỗi truy vấn gồm
+ba số a, b, c: hỏi có tồn tại một đường đi từ a đến b mà KHÔNG đi qua thành
+phố c hay không. In "YES" nếu có, "NO" nếu không.
+
+Nhận xét mấu chốt
+-----------------
+Không có đường đi a -> b tránh c  <=>  c nằm trên MỌI đường đi từ a đến b
+<=>  c là một articulation point (khớp) chia tách a và b (bỏ c làm a, b mất
+liên thông với nhau).
+
+Kỹ thuật: Block-Cut Tree (cây khối - khớp), dạng "block-vertex tree".
+--------------------------------------------------------------------
+Ta phân rã đồ thị thành các biconnected component (BCC, thành phần song
+liên thông) bằng thuật toán Tarjan với stack các cạnh (disc/low). Sau đó dựng
+cây hai loại đỉnh:
+  - đỉnh gốc 1..n (mỗi thành phố),
+  - đỉnh "block" cho mỗi BCC,
+  - nối mỗi block với tất cả các đỉnh thuộc BCC đó.
+Đây là block-vertex tree. Trong cây này:
+  - một đỉnh thành phố có bậc > 1  <=>  nó là articulation point (nằm trong
+    nhiều BCC);
+  - đường đi (duy nhất) từ đỉnh a đến đỉnh b trong cây đan xen
+    thành-phố / block, và các ĐỈNH THÀNH PHỐ NẰM GIỮA trên đường đó chính là
+    toàn bộ các khớp tách a khỏi b.
+
+Do đó, với truy vấn (a, b, c):
+  c tách a và b  <=>  đỉnh thành phố c nằm trên đường đi từ a đến b trong
+  block-vertex tree.
+Nếu c nằm trên đường -> in "NO"; ngược lại in "YES".
+
+Cách này xử lý luôn các trường hợp biên: nếu c là đỉnh không phải khớp thì nó
+là lá của cây (chỉ thuộc 1 block) nên không bao giờ nằm giữa đường đi -> YES.
+Nếu c == a hoặc c == b thì c là đầu mút của đường đi -> coi như nằm trên
+đường -> NO (đúng, vì đường bắt buộc phải đi qua điểm đầu/cuối).
+
+Kiểm tra "c nằm trên đường a-b" trên cây
+----------------------------------------
+Dùng LCA (binary lifting). Với cây, dist(u, v) = depth[u] + depth[v]
+- 2*depth[lca(u, v)]. Đỉnh c nằm trên đường a-b khi và chỉ khi
+    dist(a, c) + dist(c, b) == dist(a, b).
+
+Tính đúng đắn
+-------------
+- Định lý block-cut tree: hai đỉnh a, b thuộc cùng một BCC (không có khớp
+  giữa chúng) thì luôn tồn tại hai đường đi trong đỉnh rời nhau, nên bỏ 1
+  đỉnh bất kỳ (khác a, b) vẫn còn đường a-b. Các khớp tách a, b đúng bằng các
+  đỉnh thành phố trên đường a-b của block-vertex tree.
+- Đẳng thức khoảng cách trên cây bảo đảm phát hiện chính xác c có nằm trên
+  đường a-b hay không.
+
+Độ phức tạp
+-----------
+- Dựng BCC: O(n + m) bằng DFS lặp (dùng stack tường minh để tránh tràn stack
+  khi n, m lớn).
+- Số đỉnh cây <= n + số BCC = O(n + m); tổng số cạnh cây = O(n + m).
+- LCA binary lifting: tiền xử lý O(V log V), mỗi truy vấn O(log V).
+- Tổng: O((n + m) log(n + m) + q log(n + m)).
+  Với n <= 1e5, m <= 2e5, q <= 1e5 -> chạy nhanh, an toàn trong giới hạn.

@@ -1,0 +1,55 @@
+Bài toán: Course Schedule II (CSES 1757)
+
+--- Đề bài ---
+Có n khóa học và m ràng buộc dạng "khóa a phải hoàn thành trước khóa b"
+(cạnh có hướng a -> b trong DAG). Cần in ra một thứ tự hoàn thành hợp lệ
+(topological order). Tiêu chí chọn thứ tự: muốn hoàn thành khóa 1 CÀNG SỚM
+CÀNG TỐT; nếu còn nhiều cách thì hoàn thành khóa 2 càng sớm càng tốt; và cứ
+thế tiếp tục. Đề bảo đảm luôn tồn tại ít nhất một thứ tự hợp lệ (không có chu
+trình), nên không cần xét trường hợp IMPOSSIBLE.
+
+--- CHÚ Ý QUAN TRỌNG: KHÔNG phải "lexicographically smallest topological order" ---
+Tiêu chí "khóa 1 sớm nhất có thể, rồi khóa 2 sớm nhất có thể, ..." tức là tối
+thiểu hóa VỊ TRÍ (position) của đỉnh 1 trước, rồi vị trí của đỉnh 2, ... theo
+thứ tự từ điển trên vector (pos(1), pos(2), ..., pos(n)). Điều này KHÁC với
+"topological order nhỏ nhất theo từ điển" (dùng min-heap chọn đỉnh nhỏ nhất có
+in-degree 0 từ đầu chuỗi).
+
+Phản ví dụ: n=3, chỉ có ràng buộc 3 -> 1 (khóa 3 trước khóa 1).
+- Min-heap (lexicographically smallest topo order) cho: 2 3 1  (khóa 1 ở vị trí 3).
+- Nhưng yêu cầu là khóa 1 sớm nhất -> vị trí sớm nhất của 1 là 2 (cần 3 đứng
+  trước), nên đáp án đúng là: 3 1 2.
+=> Phải dùng kỹ thuật khác.
+
+--- Kỹ thuật: đảo cạnh + topological sort bằng MAX-heap, rồi đảo kết quả ---
+Ý tưởng: xây thứ tự từ CUỐI về ĐẦU. Ở mỗi bước, trong số các đỉnh hiện là
+"sink" (không còn cạnh đi ra tới đỉnh chưa đặt) ta đặt đỉnh có NHÃN LỚN NHẤT
+vào vị trí cuối cùng còn trống. Đẩy các nhãn lớn về cuối giúp các nhãn nhỏ
+(nhất là 1, 2, ...) được đứng sớm nhất có thể => đúng tiêu chí đề bài.
+
+Cài đặt tương đương bằng Kahn trên đồ thị ĐẢO G^R:
+- Với mỗi cạnh gốc a -> b, thêm cạnh đảo b -> a: radj[b].push_back(a).
+- indeg[a] trong G^R = out-degree của a trong G gốc (số cạnh a -> *).
+  Đỉnh có indeg = 0 trong G^R chính là sink của G gốc.
+- Kahn với priority_queue max-heap: mỗi lần lấy đỉnh nhãn lớn nhất trong tập
+  indeg = 0, thêm vào danh sách "order" (đây là thứ tự từ CUỐI lên ĐẦU), rồi
+  giảm indeg các đỉnh w trong radj[u]; w về 0 thì đẩy vào heap.
+- Cuối cùng ĐẢO NGƯỢC danh sách "order" để ra thứ tự hoàn thành cần in.
+
+Kiểm chứng ví dụ mẫu: n=4, cạnh 2->1, 2->3.
+- radj[1]={2}, radj[3]={2}; indeg[2]=2; indeg[1]=indeg[3]=indeg[4]=0.
+- Max-heap khởi đầu {1,3,4}: lấy 4 -> 3 (giảm indeg[2]=1) -> 1 (giảm indeg[2]=0,
+  đẩy 2) -> 2. order = [4,3,1,2]. Đảo lại: 2 1 3 4. Khớp output mẫu.
+
+--- Tính đúng đắn ---
+Kết quả là reverse của topological order LỚN NHẤT theo từ điển của đồ thị đảo.
+Cạnh đảo b->a trong G^R, nếu b đứng trước a trong chuỗi G^R thì sau khi đảo,
+a đứng trước b => tôn trọng ràng buộc gốc a trước b. Việc luôn đẩy nhãn lớn
+nhất ra cuối (exchange argument chuẩn) bảo đảm mỗi đỉnh nhỏ (1, rồi 2, ...)
+được đặt ở vị trí sớm nhất có thể theo đúng thứ tự ưu tiên của đề. Đáp án là
+DUY NHẤT, nên không phải special judge — phải in đúng thứ tự này.
+
+--- Độ phức tạp ---
+Thời gian: O((n + m) log n) do dùng priority_queue.
+Bộ nhớ: O(n + m) cho danh sách kề đảo và mảng indeg.
+Với n <= 1e5, m <= 2e5 thừa sức trong giới hạn.

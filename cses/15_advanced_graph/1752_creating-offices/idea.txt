@@ -1,0 +1,43 @@
+Bài: Creating Offices (CSES 1752)
+
+Phát biểu: cho một cây n đỉnh. Chọn tập văn phòng lớn nhất sao cho khoảng cách
+(số cạnh) giữa hai văn phòng bất kỳ >= d. Đây là bài maximum d-packing trên cây.
+Cho phép in ra một nghiệm hợp lệ bất kỳ (special judge).
+
+Kỹ thuật: Greedy theo độ sâu giảm dần + BFS lan có cắt tỉa để duy trì khoảng
+cách tới văn phòng gần nhất.
+
+Ý tưởng chính:
+1. Root cây tại đỉnh 1, chạy BFS lấy thứ tự đỉnh theo độ sâu tăng dần
+   (khoảng cách tới gốc). Đảo ngược thứ tự này để duyệt theo độ sâu GIẢM DẦN
+   (đỉnh xa gốc nhất được xét trước).
+2. Duy trì mảng nearest[v] = khoảng cách từ v tới văn phòng gần nhất đã đặt
+   (khởi tạo = vô cực). Ta chỉ quan tâm các giá trị < d nên coi mọi thứ >= d
+   là "đủ xa".
+3. Xét lần lượt từng đỉnh v theo thứ tự trên. Nếu nearest[v] >= d
+   (tức chưa có văn phòng nào nằm trong bán kính d-1 quanh v) thì ĐẶT văn phòng
+   tại v. Sau đó chạy BFS từ v để cập nhật nearest[] cho các đỉnh lân cận,
+   với hai điều kiện cắt tỉa:
+      - dừng lan khi khoảng cách hiện tại >= d (ngoài bán kính cần quan tâm);
+      - chỉ đi tiếp qua đỉnh y nếu khoảng cách mới thực sự nhỏ hơn nearest[y]
+        (cải thiện). Nhờ điều kiện "cải thiện thực sự", tổng công việc được
+        khấu hao tốt.
+
+Tính đúng (exchange argument):
+- Bổ đề: luôn tồn tại một nghiệm tối ưu chứa đỉnh sâu nhất v. Vì nếu v không
+  nằm trong nghiệm tối ưu S thì phải có đỉnh của S trong bán kính d-1 quanh v
+  (nếu không đã thêm được v, mâu thuẫn tối ưu). Có thể đổi chỗ đỉnh "chặn" đó
+  lấy v mà không phá vỡ ràng buộc khoảng cách, vì v là đỉnh sâu nhất nên đường
+  đi từ v luôn hướng lên phía gốc, bao "phủ" tốt như hoặc tốt hơn đỉnh bị bỏ.
+- Áp dụng bổ đề đệ quy: chọn tham lam theo độ sâu giảm dần cho ta một nghiệm
+  có lực lượng tối đa.
+
+Tính đúng của việc duy trì nearest: BFS từ đỉnh mới đặt tính đúng khoảng cách
+trên cây (không có chu trình); điều kiện "chỉ cải thiện" đảm bảo mỗi đỉnh giữ
+đúng khoảng cách tới văn phòng gần nhất, và phép kiểm tra nearest[v] >= d tương
+đương "không có văn phòng nào ở khoảng cách <= d-1".
+
+Độ phức tạp: mỗi đỉnh chỉ được cập nhật khi có cải thiện thực sự; do các văn
+phòng đôi một cách nhau >= d nên số lần cập nhật được khống chế. Thực tế chạy
+gần O(n), trường hợp xấu khoảng O(n*sqrt(n)); thừa nhanh với n, d <= 2*10^5.
+Bộ nhớ O(n). Toàn bộ dùng BFS lặp nên không lo tràn ngăn xếp đệ quy.

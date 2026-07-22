@@ -1,0 +1,27 @@
+Bài toán: Acyclic Graph Edges (CSES 1756)
+
+Đề bài:
+Cho một đồ thị vô hướng với n đỉnh và m cạnh. Hãy định hướng (gán chiều) cho
+mỗi cạnh sao cho đồ thị có hướng thu được là đồ thị phi chu trình (DAG).
+In ra m dòng, mỗi dòng là một cạnh có hướng a -> b. Chấp nhận bất kỳ lời giải
+hợp lệ nào (special judge). Không có trường hợp IMPOSSIBLE (luôn có đáp án).
+
+Kỹ thuật: Topological ordering có sẵn theo chỉ số đỉnh.
+
+Ý tưởng chính:
+- Chọn sẵn một thứ tự topo cố định: chính là thứ tự các số hiệu đỉnh 1 < 2 < ... < n.
+- Với mỗi cạnh vô hướng (a, b), ta luôn định hướng cạnh từ đỉnh có chỉ số NHỎ HƠN
+  sang đỉnh có chỉ số LỚN HƠN, tức in ra min(a, b) -> max(a, b).
+- Vì đề bảo đảm a khác b nên không có self-loop; kể cả có cạnh song song thì cách
+  định hướng này vẫn giữ nguyên tính phi chu trình.
+
+Tính đúng đắn:
+- Sau khi định hướng, mọi cạnh đều đi từ đỉnh chỉ số nhỏ sang đỉnh chỉ số lớn.
+- Giả sử tồn tại một chu trình có hướng v1 -> v2 -> ... -> vk -> v1. Theo cách định
+  hướng thì chỉ số đỉnh tăng nghiêm ngặt dọc theo mỗi cạnh, nên
+  v1 < v2 < ... < vk < v1, mâu thuẫn. Vậy đồ thị thu được không có chu trình,
+  tức là một DAG hợp lệ.
+
+Độ phức tạp:
+- Thời gian: O(n + m) chỉ đọc và in các cạnh (thực chất O(m)).
+- Bộ nhớ: O(1) ngoài buffer vào/ra (xử lý từng cạnh ngay khi đọc).

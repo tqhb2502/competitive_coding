@@ -1,0 +1,69 @@
+Flight Route Requests — CSES 1699
+https://cses.fi/problemset/task/1699
+
+------------------------------------------------------------
+BÀI TOÁN
+------------------------------------------------------------
+Có n thành phố, ban đầu không có chuyến bay nào. Cho m yêu cầu, mỗi yêu cầu
+(a, b) nghĩa là PHẢI đi được từ a tới b (theo đường bay một chiều, có thể qua
+nhiều chặng trung gian). Ta được phép xây các chuyến bay MỘT CHIỀU tùy ý giữa
+bất kỳ cặp thành phố nào (không bắt buộc phải trùng với các yêu cầu). Hãy tìm số
+chuyến bay tối thiểu để mọi yêu cầu đều thỏa (a tới được b).
+
+------------------------------------------------------------
+Ý TƯỞNG / KỸ THUẬT: DSU (weakly-connected component) + phát hiện chu trình
+------------------------------------------------------------
+Điều mấu chốt: vì ta được xây cạnh có hướng TÙY Ý (kể cả cạnh không nằm trong
+yêu cầu), điều kiện cần thỏa chỉ là: với mọi yêu cầu (a, b) thì b phải reachable
+từ a trong đồ thị G ta xây. Tức là cần R ⊆ TransitiveClosure(G), và cho phép G
+có thêm khả năng reachable dư thừa (superset) — đây KHÔNG phải bài transitive
+reduction (đòi hỏi bằng đúng), nên đáp án nhỏ hơn và có công thức đẹp.
+
+Xét đồ thị yêu cầu (mỗi yêu cầu là một cạnh có hướng a -> b). Ta xét theo TỪNG
+weakly-connected component (WCC — thành phần liên thông khi coi cạnh là vô
+hướng). Các WCC độc lập nhau (không chia sẻ yêu cầu, nối chúng lại chỉ tốn thêm
+cạnh chứ không lợi), nên xử lý riêng rồi cộng.
+
+Với một WCC có V_c đỉnh (chỉ tính các đỉnh xuất hiện trong ít nhất một yêu cầu):
+
+1) Nếu đồ thị yêu cầu trong WCC là DAG (không có chu trình có hướng):
+   - Chỉ cần V_c - 1 cạnh. Lấy một thứ tự topo v1, v2, ..., vk của DAG rồi xây
+     đường đi Hamilton theo topo: v1 -> v2 -> ... -> vk. Mọi cạnh yêu cầu a -> b
+     đều có a đứng trước b trong mọi thứ tự topo (vì có cạnh a->b), nên đường đi
+     này khiến a tới được b cho MỌI yêu cầu. => đủ V_c - 1.
+   - Chặn dưới: G thu hẹp trên các đỉnh của WCC phải liên thông (vô hướng) vì các
+     yêu cầu nối chúng lại, nên cần >= V_c - 1 cạnh. => đúng bằng V_c - 1.
+
+2) Nếu đồ thị yêu cầu trong WCC CÓ chu trình có hướng (tồn tại SCC kích thước >= 2):
+   - Cần V_c cạnh. Xây một chu trình Hamilton v1 -> v2 -> ... -> vk -> v1 khiến
+     TẤT CẢ đỉnh reachable lẫn nhau, nên phủ mọi yêu cầu. => đủ V_c.
+   - Chặn dưới: hợp các đường đi hiện thực hóa mọi yêu cầu tạo thành đồ thị con H;
+     H liên thông (vô hướng) trên >= V_c đỉnh VÀ chứa ít nhất một chu trình có
+     hướng (vì có cặp đỉnh đòi hỏi tới được nhau hai chiều). Một đồ thị liên thông
+     có chu trình trên t đỉnh cần >= t cạnh, mà t >= V_c => cần >= V_c cạnh.
+     => đúng bằng V_c.
+
+Vậy: đáp án = tổng trên mọi WCC của [ V_c - 1 nếu WCC acyclic, ngược lại V_c ].
+Tương đương: (tổng số đỉnh xuất hiện trong yêu cầu) - (số WCC là DAG/acyclic).
+
+Kiểm tra ví dụ mẫu: yêu cầu {1->2, 2->3, 2->4, 3->1, 3->4}, một WCC gồm 4 đỉnh,
+có chu trình 1->2->3->1 => đóng góp V_c = 4. Đáp án = 4 (đúng).
+
+------------------------------------------------------------
+CÀI ĐẶT
+------------------------------------------------------------
+- Bỏ qua yêu cầu tự thân a == b (a luôn tới được a, không cần cạnh, không nối gì).
+- DSU: union(a, b) cho mọi yêu cầu -> tạo các WCC; sz[root] = V_c của thành phần
+  (chỉ các đỉnh có xuất hiện mới được union nên sz đếm đúng).
+- Phát hiện chu trình theo Kahn's topological sort (lặp, dùng hàng đợi, không đệ
+  quy -> không tràn stack): đỉnh nào bị "gỡ" (in-degree về 0) là thuộc phần
+  acyclic; nếu một WCC có đỉnh không gỡ được thì WCC đó chứa chu trình.
+  => WCC acyclic <=> mọi đỉnh của nó đều bị gỡ.
+- Cộng theo từng root: sz[root] - (cyclic ? 0 : 1).
+
+------------------------------------------------------------
+ĐỘ PHỨC TẠP
+------------------------------------------------------------
+- Thời gian: O(n + m) (đọc dữ liệu + DSU gần như O(1) khấu hao + Kahn O(n + m)).
+- Bộ nhớ: O(n + m).
+Rất nhẹ so với giới hạn n <= 1e5, m <= 2e5; không có nguy cơ TLE.
