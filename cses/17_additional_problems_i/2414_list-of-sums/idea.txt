@@ -1,0 +1,34 @@
+LIST OF SUMS - CSES 2414
+
+ĐỀ BÀI (tóm tắt)
+Danh sách A có n số nguyên dương. Biết multiset gồm tổng của mọi cặp phần tử
+khác nhau, hãy dựng một A phù hợp; được in theo thứ tự bất kỳ và có thể chọn bất
+kỳ nghiệm nào. Ràng buộc: 3<=n<=100, giá trị A<=10^9.
+
+THUẬT TOÁN
+Giả sử A đã sắp xếp a1<=a2<=... và các tổng cũng đã sắp xếp thành S. Khi đó
+S[0]=a1+a2, S[1]=a1+a3. Tổng a2+a3 phải nằm trong n phần tử đầu của S: các tổng
+nhỏ hơn nó ngoài S[0] chỉ có thể là a1+aj (j>=3), nhiều nhất n-2 tổng.
+
+Thử từng giá trị S[t] trong n phần tử đầu làm a2+a3. Khi ấy
+
+    a1 = (S[0] + S[1] - S[t]) / 2.
+
+Bỏ ứng viên không nguyên/dương. Với a1 đã biết, dựng tham lam bằng multiset các
+tổng chưa dùng. Tổng nhỏ nhất còn lại luôn là a1+x, trong đó x là phần tử nhỏ
+nhất tiếp theo của A; suy ra x, rồi xóa một bản sao của x+a với mọi a đã dựng.
+Nếu thiếu tổng, thứ tự giảm, hoặc cuối cùng multiset không rỗng thì ứng viên sai.
+
+CHỨNG MINH ĐÚNG
+Với nghiệm A sắp xếp thật, ba đẳng thức cho S[0], S[1], a2+a3 suy ra đúng a1,
+và vòng thử chắc chắn xét giá trị a2+a3 như lập luận vị trí ở trên. Khi đã biết
+a1 và một tiền tố đúng của A, mọi tổng còn lại nhỏ nhất phải chứa a1; nếu chứa
+ai>a1 thay vì a1 thì thay bằng a1 không làm tổng lớn hơn và tổng đó cũng còn
+chưa dùng. Vì thế nó bằng a1 cộng phần tử kế tiếp nhỏ nhất. Quy nạp cho thấy thủ
+tục dựng lại một nghiệm và xóa đúng toàn bộ tổng của nó. Validator multiset bảo
+đảm chỉ nghiệm thực sự mới được in; do ứng viên thật được thử, thuật toán luôn
+tìm thấy đáp án.
+
+ĐỘ PHỨC TẠP
+Thử O(n) ứng viên, mỗi lần có O(n^2) thao tác multiset: O(n^3 log n) theo cận
+thô (n<=100), O(n^2) bộ nhớ.

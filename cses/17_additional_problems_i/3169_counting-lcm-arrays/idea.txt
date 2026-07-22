@@ -1,0 +1,28 @@
+COUNTING LCM ARRAYS - CSES 3169
+
+ĐỀ BÀI (tóm tắt)
+Với mỗi test (n,k), đếm các mảng số nguyên dương a_1..a_n sao cho
+lcm(a_i,a_{i+1})=k ở mọi cặp kề. In modulo 10^9+7.
+Ràng buộc: t <= 1000, n <= 10^9, k <= 10^9.
+
+THUẬT TOÁN: TÁCH THEO SỐ MŨ NGUYÊN TỐ
+Mọi a_i phải là ước của k. Xét một thừa số p^e của k và số mũ của p trong từng
+a_i. Số mũ nằm trong 0..e, và max của hai số mũ kề phải bằng e.
+
+Đánh dấu một vị trí là cao nếu số mũ bằng e, thấp nếu nhỏ hơn e. Không được có
+hai vị trí thấp kề nhau; mỗi vị trí thấp có e cách chọn số mũ, vị trí cao có
+một cách. Gọi F_m(e) là tổng số chuỗi độ dài m, ta có
+    F_0=1, F_1=e+1, F_m=F_{m-1}+e*F_{m-2}.
+Tính F_n bằng lũy thừa ma trận 2x2 trong O(log n). Các nguyên tố độc lập nên
+đáp án là tích F_n(e) trên mọi p^e || k.
+
+CHỨNG MINH ĐÚNG
+Điều kiện LCM tương đương điều kiện cực đại số mũ cho từng nguyên tố. Với một
+nguyên tố, một cặp kề thất bại đúng khi cả hai số mũ đều thấp. Phân theo ký tự
+cuối: chuỗi hợp lệ kết thúc bằng cao đóng góp F_{m-1}; nếu kết thúc bằng thấp,
+vị trí trước bắt buộc cao và có e lựa chọn cho số mũ cuối, đóng góp eF_{m-2}.
+Do phân tích thừa số nguyên tố là duy nhất và các lựa chọn số mũ độc lập, nhân
+các kết quả một-nguyên-tố đếm đúng mọi mảng.
+
+ĐỘ PHỨC TẠP
+Mỗi test tốn O(sqrt(k) + omega(k)*log n) thời gian và O(1) bộ nhớ phụ.

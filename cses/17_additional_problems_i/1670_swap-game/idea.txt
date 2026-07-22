@@ -1,0 +1,22 @@
+SWAP GAME - CSES 1670
+
+ĐỀ BÀI (tóm tắt)
+Cho bảng 3x3 là một hoán vị của 1..9. Mỗi bước được đổi hai ô kề nhau
+theo cạnh. Tìm số bước ít nhất để đưa bảng về thứ tự 1,2,...,9.
+
+MÔ HÌNH ĐỒ THỊ VÀ BFS
+Mỗi trạng thái là một hoán vị của 9 số, nên toàn bộ đồ thị chỉ có 9! =
+362880 đỉnh. Hai trạng thái có cạnh nếu chúng khác nhau bởi một phép đổi
+ngang hoặc dọc; có 12 cặp ô như vậy.
+
+Chạy BFS từ bảng ban đầu đến bảng đích. Mã hóa mỗi ô bằng 4 bit trong một
+số 64 bit; nhờ vậy có thể sinh láng giềng và lưu tập đã thăm gọn nhẹ.
+
+CHỨNG MINH
+Mỗi phép đổi hợp lệ trong đề tương ứng đúng một cạnh không trọng số của
+đồ thị, và ngược lại. BFS duyệt các đỉnh theo khoảng cách tăng dần, nên khi
+gặp trạng thái đích, khoảng cách đó là số phép đổi nhỏ nhất.
+
+ĐỘ PHỨC TẠP
+Có tối đa 9! trạng thái và 12 cạnh sinh ra từ mỗi trạng thái. Thời gian
+O(9! * 12), bộ nhớ O(9!).

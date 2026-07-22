@@ -1,0 +1,27 @@
+MAXIMUM BUILDING I - CSES 1147
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n*m gồm ô trống và cây. Tìm diện tích hình chữ nhật lớn nhất chỉ gồm
+ô trống. Ràng buộc: n,m <= 1000.
+
+THUẬT TOÁN
+Duyệt từng hàng. heights[c] là số ô trống liên tiếp theo chiều dọc kết thúc tại
+hàng hiện tại. Khi gặp '.', tăng heights[c]; khi gặp '*', đặt về 0. Nếu coi
+heights là histogram, mọi hình chữ nhật có cạnh dưới ở hàng hiện tại tương ứng
+với một hình chữ nhật trong histogram.
+
+Tìm hình chữ nhật lớn nhất trong mỗi histogram bằng stack chỉ số có chiều cao
+không giảm. Khi gặp cột thấp hơn, pop một chiều cao h; từ sau chỉ số còn lại
+trên stack tới trước cột hiện tại là bề rộng lớn nhất mà h làm chiều cao nhỏ
+nhất. Thêm một cột sentinel cao 0 để pop hết cuối hàng.
+
+CHỨNG MINH ĐÚNG
+Mọi hình chữ nhật ô trống có một hàng dưới cùng; tại hàng đó, mỗi cột của nó có
+height ít nhất bằng chiều cao hình. Thuật toán histogram xét đúng khoảng rộng
+tối đa cho từng thanh khi thanh bị pop, nên xét một hình có diện tích không nhỏ
+hơn hình chữ nhật ấy. Ngược lại, mọi diện tích histogram tạo ra dùng các cột có
+height đủ lớn, do đó là một vùng ô trống thật. Lấy lớn nhất trên mọi hàng cho
+đúng đáp án toàn lưới.
+
+ĐỘ PHỨC TẠP
+O(nm) thời gian vì mỗi cột vào/ra stack một lần mỗi hàng, O(m) bộ nhớ.

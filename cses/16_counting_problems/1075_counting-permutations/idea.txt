@@ -1,0 +1,30 @@
+COUNTING PERMUTATIONS - CSES 1075
+
+ĐỀ BÀI (tóm tắt)
+Đếm số hoán vị của 1..n sao cho không có hai phần tử kề nhau chênh lệch 1.
+In kết quả modulo 10^9+7. Ràng buộc: n <= 1000.
+
+Ý TƯỞNG: BAO HÀM - LOẠI TRỪ TRÊN ĐƯỜNG THẲNG
+Với mỗi i=1..n-1, gọi E_i là sự kiện i và i+1 nằm cạnh nhau (không quan tâm
+thứ tự). Ta dùng bao hàm - loại trừ trên n-1 sự kiện này.
+
+Chọn j cạnh trong đường thẳng 1--2--...--n. Giả sử j cạnh được chọn tạo thành
+r đoạn liên tiếp không rỗng. Trong mọi hoán vị thuộc giao các sự kiện ấy:
+  - mỗi đoạn co lại thành một khối;
+  - các số trong mỗi khối chỉ có thể đi theo chiều tăng hoặc giảm: 2 cách;
+  - sau khi co j cạnh còn n-j khối, sắp xếp được (n-j)! cách.
+Vì vậy một tập cạnh như thế đóng góp 2^r * (n-j)!.
+
+Số cách chọn j vị trí cạnh thành đúng r đoạn là
+    C(j-1,r-1) * C(n-j,r).
+Thừa số đầu chia j cạnh thành r độ dài dương. Sau khi đặt các đoạn và ít nhất
+một cạnh trống giữa hai đoạn, thừa số sau chọn vị trí cho r đoạn trên n-1 cạnh.
+
+Do đó:
+  ans = n! + sum_{j=1}^{n-1} (-1)^j (n-j)!
+                    * sum_r C(j-1,r-1) C(n-j,r) 2^r.
+
+Tiền xử lý giai thừa và nghịch đảo giai thừa để tính tổ hợp O(1).
+
+ĐỘ PHỨC TẠP
+Thời gian O(n^2), bộ nhớ O(n).

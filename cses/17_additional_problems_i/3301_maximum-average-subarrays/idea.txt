@@ -1,0 +1,30 @@
+MAXIMUM AVERAGE SUBARRAYS - CSES 3301
+
+ĐỀ BÀI (tóm tắt)
+Với mỗi vị trí i, tìm độ dài của đoạn kết thúc tại i có trung bình lớn nhất.
+Nếu hòa, chọn đoạn dài nhất. Ràng buộc: n <= 2*10^5, x_i <= 10^6.
+
+THUẬT TOÁN: TIẾP TUYẾN TRÊN BAO LỒI DƯỚI
+Đặt prefix sum P_i. Trung bình đoạn j+1..i là hệ số góc từ điểm (j,P_j) tới
+(i,P_i). Ta cần điểm j<i cho hệ số góc lớn nhất, và nếu hòa chọn j nhỏ nhất.
+
+Duy trì bao lồi dưới của các điểm prefix đã có (hoành độ tăng). Khi thêm điểm,
+xóa đỉnh cuối trong khi ba điểm cuối không tạo một lần rẽ trái; điểm bị xóa
+nằm trên hoặc phía trên dây cung và không thể tối ưu cho truy vấn tương lai.
+
+Với điểm truy vấn Q ở bên phải, các hệ số góc từ các đỉnh bao tới Q tăng rồi
+giảm. Dùng tìm kiếm nhị phân, so sánh hai hệ số góc kề bằng nhân chéo số nguyên.
+Khi bằng nhau đi sang trái để lấy j nhỏ nhất, tức đoạn dài nhất. Trả lời x_Q-x_j,
+sau đó mới thêm Q vào bao.
+
+CHỨNG MINH ĐÚNG
+Mọi điểm prefix nằm phía trên bao lồi dưới đều cho hệ số góc tới một điểm bên
+phải không lớn hơn một đỉnh bao thích hợp, nên chỉ các đỉnh bao có thể tối ưu.
+Độ dốc các cạnh của bao tăng dần; vì thế dấu so sánh giữa hai hệ số góc kề tới
+Q chỉ đổi một lần, tạo dãy đơn đỉnh. Tìm kiếm nhị phân tìm đúng đỉnh cực đại;
+quy tắc đi trái khi hòa bảo đảm chỉ số đầu nhỏ nhất. Công thức hệ số góc đúng
+bằng trung bình đoạn, nên độ dài in ra là đáp án.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n) bộ nhớ. Mọi phép so sánh là số nguyên chính xác;
+tích lớn nhất dưới 4*10^16, vừa trong long long.

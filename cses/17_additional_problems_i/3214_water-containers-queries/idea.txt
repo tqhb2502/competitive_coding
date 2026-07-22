@@ -1,0 +1,21 @@
+WATER CONTAINERS QUERIES - CSES 3214
+
+ĐỀ BÀI (tóm tắt)
+Với nhiều bộ (a,b,x), kiểm tra có thể dùng hai bình dung tích a,b để cuối cùng
+bình A chứa x đơn vị hay không. Ràng buộc: 1000 truy vấn, a,b,x <= 10^9.
+
+THUẬT TOÁN
+Đặt g=gcd(a,b). Câu trả lời là YES đúng khi
+    x <= a và x chia hết cho g.
+
+CHỨNG MINH ĐÚNG
+Ban đầu cả hai lượng là bội của g. Mọi lần đổ đầy, đổ bỏ và rót đều bảo toàn
+tính chất các lượng là bội của g, nên x phải chia hết g; đồng thời A không thể
+chứa quá a.
+
+Chiều ngược lại là định lý hai bình: thuật toán Euclid thực hiện bằng các lần
+đổ đầy/rót/đổ bỏ tạo được mọi bội của gcd(a,b) không vượt quá dung tích của
+bình đích. Do x là một bội như vậy và x<=a, có thể đưa A về đúng x.
+
+ĐỘ PHỨC TẠP
+O(log(min(a,b))) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

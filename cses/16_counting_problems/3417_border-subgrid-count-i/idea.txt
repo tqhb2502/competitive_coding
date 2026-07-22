@@ -1,0 +1,38 @@
+BORDER SUBGRID COUNT I - CSES 3417
+https://cses.fi/problemset/task/3417
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n x n gồm k chữ cái đầu tiên. Với mỗi chữ cái, đếm số lưới con hình
+vuông có toàn bộ đường viền là chữ cái đó. Ràng buộc n <= 3000, k <= 26.
+
+Ý TƯỞNG
+Với ô p là góc trên-trái, đặt start[p] là giá trị nhỏ hơn giữa:
+  - số ký tự giống nhau liên tiếp sang phải từ p;
+  - số ký tự giống nhau liên tiếp đi xuống từ p.
+
+Với ô q là góc dưới-phải, đặt finish[q] là giá trị nhỏ hơn giữa:
+  - số ký tự giống nhau liên tiếp sang trái tới q;
+  - số ký tự giống nhau liên tiếp đi lên tới q.
+
+Hai ô p, q trên cùng đường chéo chính, cách nhau d vị trí, tạo thành một hình
+vuông có viền đồng màu khi và chỉ khi:
+
+    start[p] >= d+1 và finish[q] >= d+1.
+
+Hai điều kiện lần lượt bảo đảm cạnh trên + trái và cạnh dưới + phải. Các cạnh
+gặp nhau ở hai góc còn lại nên màu của chúng cũng bắt buộc giống nhau.
+
+Xét riêng một đường chéo, đánh số vị trí 0..m-1. Mỗi điểm bắt đầu p còn hiệu lực
+đến R[p] = p + start[p] - 1. Khi quét q tăng dần:
+  - Thêm q vào tập điểm bắt đầu đang hiệu lực.
+  - Xóa các p có R[p] < q; các thời điểm xóa được nối thành danh sách trước.
+  - Chỉ nhận p >= L[q] = q - finish[q] + 1.
+
+Tập đang hiệu lực được lưu bằng bitset động. Mỗi 64 vị trí có một bộ đếm, và
+mỗi 8 word (512 vị trí) có một bộ đếm lớn. Nhờ n <= 3000, truy vấn số bit trước
+L chỉ đi qua tối đa 6 khối lớn và 7 word, tức là một hằng số nhỏ.
+
+ĐỘ PHỨC TẠP
+- Tính các độ dài: O(n^2).
+- Quét đường chéo: O(n^2 * ceil(n/512)); với n <= 3000 hệ số khối tối đa là 6.
+- Bộ nhớ: O(n^2 + k).

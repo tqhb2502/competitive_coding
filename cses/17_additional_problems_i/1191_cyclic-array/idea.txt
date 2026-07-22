@@ -1,0 +1,28 @@
+CYCLIC ARRAY - CSES 1191
+
+ĐỀ BÀI (tóm tắt)
+Chia một mảng vòng thành ít đoạn liên tiếp nhất sao cho tổng mỗi đoạn không quá
+k. Mọi phần tử dương và không phần tử nào lớn hơn k. Ràng buộc: n<=2*10^5,
+k<=10^18.
+
+THUẬT TOÁN
+Nhân đôi mảng để mỗi cách cắt vòng tại i trở thành đoạn tuyến tính [i,i+n).
+Dùng two pointers tính next[p]: vị trí đầu tiên sau đoạn dài nhất bắt đầu ở p có
+tổng <=k. Do các số dương, với một điểm bắt đầu cố định, luôn lấy đoạn dài nhất
+là tối ưu (rút ngắn đoạn đầu không thể giảm số đoạn còn lại).
+
+Xây bảng binary lifting jump[t][p], vị trí đạt được sau 2^t đoạn tham lam. Với
+mỗi i=0..n-1, nhảy các lũy thừa lớn nhất mà vẫn chưa tới i+n, rồi thêm đoạn cuối.
+Lấy nhỏ nhất qua mọi điểm cắt.
+
+CHỨNG MINH ĐÚNG
+Với một điểm cắt cố định, đoạn đầu của mọi lời giải kết thúc không muộn hơn
+next[i]. Thay nó bằng đoạn tham lam chỉ làm phần chưa phủ ngắn hơn, nên không
+tăng số đoạn; lặp quy nạp chứng minh các bước next cho số đoạn tối thiểu của
+điểm cắt đó. Mọi phân hoạch vòng có một biên đoạn dùng làm điểm cắt, và mọi điểm
+cắt tạo một phân hoạch vòng hợp lệ. Vì vậy giá trị nhỏ nhất của số bước next qua
+n điểm cắt đúng là tối ưu toàn cục. Binary lifting chỉ tăng tốc việc đếm các bước
+này và không đổi dãy next.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n log n) bộ nhớ.

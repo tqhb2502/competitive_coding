@@ -1,0 +1,2 @@
+Beautiful Permutation II
+https://cses.fi/problemset/task/3175

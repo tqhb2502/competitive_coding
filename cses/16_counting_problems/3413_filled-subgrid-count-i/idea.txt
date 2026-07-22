@@ -1,0 +1,26 @@
+FILLED SUBGRID COUNT I - CSES 3413
+https://cses.fi/problemset/task/3413
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n x n gồm k chữ cái đầu tiên. Với mỗi chữ cái, đếm số lưới con hình
+vuông mà mọi ô đều chứa chữ cái đó. Ràng buộc n <= 3000, k <= 26.
+
+Ý TƯỞNG
+Gọi dp[c] là cạnh lớn nhất của hình vuông đồng màu có góc dưới phải tại ô đang
+xét ở cột c. Ta xử lý lưới từ trên xuống dưới, từ trái sang phải.
+
+Mỗi ô tự tạo được một hình vuông cạnh 1. Nếu chữ tại ô hiện tại giống cả ba ô
+trên, trái và chéo trên-trái, ta có:
+
+    dp_mới[c] = 1 + min(dp_trên[c], dp_trái, dp_chéo)
+
+Ngược lại dp_mới[c] = 1.
+
+Nếu giá trị này là s thì có đúng s hình vuông đồng màu kết thúc tại ô hiện tại,
+với cạnh 1, 2, ..., s. Cộng s vào đáp án của chữ tại ô đó.
+
+Chỉ cần giữ hàng dp trước và ba ký tự liên quan, vì vậy không cần lưu cả lưới.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n^2).
+- Bộ nhớ: O(n + k).

@@ -1,0 +1,33 @@
+WATER CONTAINERS MOVES - CSES 3213
+
+ĐỀ BÀI (tóm tắt)
+Hai bình A,B có dung tích a,b, ban đầu rỗng. Mỗi bước được đổ đầy, đổ bỏ hoặc
+rót giữa hai bình (khi rót phải làm đầy bình nhận hoặc làm rỗng bình cho).
+Cần để A chứa x đơn vị và tối thiểu hóa tổng lượng nước được di chuyển; in một
+chuỗi thao tác tối ưu hoặc -1. Ràng buộc: a,b,x <= 1000.
+
+THUẬT TOÁN: DIJKSTRA TRÊN TRẠNG THÁI HAI BÌNH
+Trạng thái (u,v) là lượng nước hiện có trong A,B. Sáu thao tác hợp lệ tạo cạnh:
+đổ đầy có chi phí bằng lượng thêm vào, đổ bỏ có chi phí bằng lượng bỏ đi, và
+rót có chi phí bằng lượng thực sự chuyển. Bỏ qua thao tác chuyển 0 đơn vị.
+
+Chạy Dijkstra từ (0,0), lưu trạng thái cha và loại thao tác trên mỗi lần relax.
+Khi lấy khỏi hàng đợi một trạng thái (x,v), khoảng cách của nó là nhỏ nhất; lần
+ngược các cha để in lời giải. Kiểm tra trước điều kiện cần và đủ
+    x <= a và x chia hết gcd(a,b).
+
+Mặc dù mảng khoảng cách có (a+1)(b+1) ô, mọi trạng thái đến được sau một thao
+tác đều có ít nhất một bình rỗng hoặc đầy, nên thực tế chỉ O(a+b) trạng thái
+được đưa vào hàng đợi.
+
+CHỨNG MINH ĐÚNG
+Mỗi chuỗi thao tác hợp lệ tương ứng đúng một đường đi từ (0,0), và tổng trọng
+số cạnh đúng bằng tổng lượng nước đã di chuyển. Ngược lại mọi cạnh được sinh
+ra là một thao tác hợp lệ theo đề. Vì trọng số dương, Dijkstra tìm đường có
+tổng trọng số nhỏ nhất tới tập trạng thái A=x; lưu cha tái dựng đúng đường đó.
+Định lý hai bình cho biết các lượng đo được là đúng các bội của gcd(a,b) nằm
+trong dung tích bình, nên phép kiểm tra bất khả thi là chính xác.
+
+ĐỘ PHỨC TẠP
+Giới hạn tổng quát O(ab log(ab)) thời gian và O(ab) bộ nhớ; số trạng thái thực
+sự đến được là O(a+b).

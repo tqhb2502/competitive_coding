@@ -1,0 +1,28 @@
+DISTINCT VALUES SUM - CSES 3150
+
+ĐỀ BÀI (tóm tắt)
+Với mỗi mảng con liên tiếp, gọi d(a,b) là số giá trị phân biệt trong mảng con.
+Tính tổng d(a,b) trên tất cả mảng con. Ràng buộc: n <= 2*10^5.
+
+ĐẾM ĐÓNG GÓP
+Xét phần tử x_i (chỉ số từ 1) và gọi last là vị trí xuất hiện gần nhất
+trước i của cùng giá trị, hoặc 0 nếu chưa có.
+
+x_i là lần xuất hiện đầu tiên của giá trị này trong mảng con [a,b] khi và chỉ khi
+  last < a <= i <= b.
+Có i-last cách chọn a và n-i+1 cách chọn b. Vì mỗi giá trị phân biệt
+trong một mảng con được tính đúng một lần tại lần xuất hiện đầu tiên, ta cộng
+  (i-last) * (n-i+1)
+cho mỗi vị trí i.
+
+CHỨNG MINH
+Với mỗi cặp (mảng con, giá trị có trong mảng con), lần xuất hiện đầu tiên của
+giá trị đó là một vị trí i duy nhất thỏa điều kiện trên. Ngược lại mọi lựa chọn
+được công thức đếm đều tạo ra đúng một cặp như vậy. Do đó tổng đóng góp bằng
+chính tổng cần tìm.
+
+Để lưu last, nén tọa độ các giá trị bằng cách sắp xếp một bản sao của mảng,
+rồi dùng mảng vị trí thay cho bảng băm.
+
+ĐỘ PHỨC TẠP
+Thời gian O(n log n), bộ nhớ O(n). Kết quả dùng số nguyên 64 bit.

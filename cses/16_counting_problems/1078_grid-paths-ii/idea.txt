@@ -1,0 +1,27 @@
+Bài toán: Grid Paths II (CSES 1078)
+
+Không có bẫy, số đường đơn điệu từ (y1,x1) tới (y2,x2), với y1<=y2 và x1<=x2,
+là:
+
+    C((y2-y1)+(x2-x1), y2-y1),
+
+vì chỉ cần chọn vị trí của các bước xuống trong toàn bộ chuỗi bước.
+
+Sắp xếp các ô bẫy theo (y,x), rồi thêm đích (n,n) vào cuối. Với mỗi điểm i,
+đặt ways[i] là số đường từ (1,1) tới i không đi qua bất kỳ bẫy nào đứng trước i.
+Ban đầu lấy tổng số đường không xét bẫy:
+
+    ways[i] = C(y_i+x_i-2, y_i-1).
+
+Với mỗi điểm j đứng trước có y_j<=y_i và x_j<=x_i, số đường mà j là bẫy đầu
+tiên trong danh sách đã xử lý được tính đúng một lần bởi:
+
+    ways[j] * C((y_i-y_j)+(x_i-x_j), y_i-y_j).
+
+Trừ tất cả lượng này khỏi ways[i]. Khi i là một bẫy, ways[i] lưu số đường hợp lệ
+đi tới bẫy đó để các điểm sau loại bỏ; khi i là đích, ways[i] chính là đáp án.
+
+Tiền xử lý factorial và inverse factorial tới 2n để tính hệ số nhị thức modulo
+1e9+7 trong O(1).
+
+Độ phức tạp: O(n + m^2) thời gian, O(n+m) bộ nhớ; n<=10^6, m<=1000.

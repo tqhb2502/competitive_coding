@@ -1,0 +1,29 @@
+NEAREST CAMPSITES II - CSES 3307
+
+ĐỀ BÀI (tóm tắt)
+Cho n điểm đã đặt trại và m điểm trống trên lưới. Với từng điểm trống theo
+thứ tự input, in khoảng cách Manhattan tới trại đã đặt gần nhất.
+Ràng buộc: n,m <= 10^5; tọa độ <= 10^6.
+
+BỐN PHÉP QUÉT ĐIỂM ƯU THẾ
+Với mỗi cặp dấu sx,sy thuộc {-1,+1}, biến đổi điểm (x,y) thành
+  X = sx*x, Y = sy*y.
+Trong góc X_site <= X_query, Y_site <= Y_query, khoảng cách bằng
+  X_query + Y_query - (X_site + Y_site).
+Do đó cần tìm max(X_site+Y_site) trong góc này.
+
+Sắp xếp trại và truy vấn theo X tăng dần. Khi xử lý một truy vấn, đưa vào
+Fenwick tree mọi trại có X_site <= X_query. Fenwick lưu giá trị lớn nhất theo tọa
+độ Y đã nén, nên truy vấn prefix đến Y_query cho kết quả của góc.
+
+Chạy cả bốn cặp dấu và lấy khoảng cách nhỏ nhất cho mỗi điểm trống.
+
+CHỨNG MINH
+Trong mỗi góc, dấu của hai hiệu tọa độ đã cố định, nên công thức khoảng
+cách sau biến đổi là chính xác. Quét theo X và Fenwick prefix theo Y xét đúng tập
+trại trong góc; lấy tổng tọa độ lớn nhất tương ứng khoảng cách nhỏ nhất.
+Bốn góc bao phủ mọi trại so với truy vấn. Vì vậy min của bốn kết quả là
+khoảng cách đến trại gần nhất trong toàn bộ tập.
+
+ĐỘ PHỨC TẠP
+Thời gian O((n+m) log(n+m)), bộ nhớ O(n+m).

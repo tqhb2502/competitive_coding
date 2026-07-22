@@ -1,0 +1,27 @@
+Bài toán: Empty String (CSES 1080)
+
+Nếu độ dài chuỗi là số lẻ thì không thể xóa hết.
+
+Với một đoạn có độ dài chẵn [l,r], xét ký tự s[l]. Trong mọi quá trình xóa hết
+đoạn này, s[l] sẽ được xóa cùng đúng một ký tự s[k] bằng nó. Trước thời điểm đó,
+toàn bộ đoạn [l+1,k-1] phải được xóa hết; sau khi ghép cặp l với k, các phép xóa
+thuộc [l,k] và [k+1,r] độc lập với nhau.
+
+Đặt dp[l][r] là số thứ tự phép xóa để xóa hết s[l..r]. Với mỗi k=l+1,l+3,...,r
+mà s[l]=s[k]:
+
+    left  = dp[l+1][k-1]  (bằng 1 nếu đoạn rỗng)
+    right = dp[k+1][r]    (bằng 1 nếu đoạn rỗng)
+
+Phần [l,k] dùng p=(k-l+1)/2 phép xóa (bao gồm phép xóa cặp l,k), phần bên phải
+dùng q=(r-k)/2 phép xóa. Giữ nguyên thứ tự nội bộ của mỗi phần, ta có C(p+q,p)
+cách trộn hai dãy phép xóa. Do đó:
+
+    dp[l][r] += left * right * C((r-l+1)/2, (k-l+1)/2).
+
+Mỗi quá trình xóa được phân loại duy nhất theo ký tự ghép với s[l], nên các nhóm
+trên không trùng nhau và bao phủ mọi đáp án. Tính các đoạn theo độ dài tăng dần.
+Các hệ số nhị thức chỉ cần tới n/2 và được tiền xử lý bằng tam giác Pascal.
+
+Độ phức tạp: O(n^3) thời gian trong trường hợp xấu nhất, O(n^2) bộ nhớ; n<=500.
+Vòng chuyển chỉ xét các vị trí có đúng parity nên số phép tính thực tế nhỏ.

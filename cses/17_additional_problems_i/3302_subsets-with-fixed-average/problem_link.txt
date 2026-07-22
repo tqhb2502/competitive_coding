@@ -1,0 +1,2 @@
+Subsets with Fixed Average
+https://cses.fi/problemset/task/3302

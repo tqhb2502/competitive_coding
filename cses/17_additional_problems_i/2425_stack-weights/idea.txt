@@ -1,0 +1,30 @@
+STACK WEIGHTS - CSES 2425
+
+ĐỀ BÀI (tóm tắt)
+Có n đồng xu có trọng lượng phân biệt nhưng chỉ biết w_1<w_2<...<w_n. Lần lượt
+đặt mỗi xu lên ngăn trái hoặc phải. Sau mỗi bước, in bên chắc chắn nặng hơn,
+hoặc ? nếu thứ tự trọng lượng chưa đủ để kết luận. Ràng buộc: n <= 2*10^5.
+
+THUẬT TOÁN: HỆ SỐ SUFFIX VÀ SEGMENT TREE
+Đặt d_i=1 nếu xu i ở trái, -1 nếu ở phải, 0 nếu chưa đặt. Hiệu trọng lượng là
+    D = sum d_i*w_i.
+Viết y_1=w_1 và y_j=w_j-w_{j-1} với j>1. Mọi y_j đều dương, và
+    D = sum_j y_j * S_j,  S_j=sum_{i=j}^n d_i.
+
+Vì vậy trái chắc chắn nặng hơn đúng khi mọi S_j>=0 và có ít nhất một S_j>0.
+Tương tự, phải chắc chắn nặng hơn đúng khi mọi S_j<=0 và có ít nhất một giá
+trị âm. Trường hợp còn lại in ?.
+
+Khi đặt xu c với dấu d, tất cả S_1..S_c được cộng d. Dùng segment tree lazy hỗ
+trợ cộng đoạn [1,c] và đọc min/max toàn mảng sau mỗi bước.
+
+CHỨNG MINH ĐÚNG
+Công thức đổi biến thu được bằng cách thay w_i=y_1+...+y_i và đổi thứ tự tổng.
+Nếu tất cả hệ số S_j không âm (và có hệ số dương), D dương với mọi dãy y_j
+dương; trường hợp không dương đối xứng. Nếu các S_j có cả dấu âm lẫn dương,
+ta có thể chọn khoảng tăng y tại một hệ số bất kỳ lớn tùy ý để ép mỗi dấu của
+D, nên không thể kết luận. Nếu tất cả bằng 0 thì hai bên luôn bằng nhau và đề
+cũng yêu cầu ?. Do cây duy trì đúng mọi S_j, mỗi ký tự xuất ra là chính xác.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n) bộ nhớ.

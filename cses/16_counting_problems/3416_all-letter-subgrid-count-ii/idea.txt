@@ -1,0 +1,28 @@
+ALL LETTER SUBGRID COUNT II - CSES 3416
+https://cses.fi/problemset/task/3416
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n x n gồm k chữ cái đầu tiên. Đếm số lưới con hình chữ nhật chứa đủ cả
+k chữ cái. Ràng buộc n <= 500, k <= 26.
+
+Ý TƯỞNG
+Cố định hàng trên top và tăng dần hàng dưới bottom. Với mỗi cột, lưu một bitmask
+gồm các chữ xuất hiện giữa hai hàng này. Một hình chữ nhật trên đoạn cột [l,r]
+chứa đủ chữ khi OR các bitmask trong đoạn bằng mask có k bit 1.
+
+Với một dãy bitmask cố định, dùng hai con trỏ. Với mỗi l, ta tìm r nhỏ nhất sao
+cho OR của cửa sổ [l,r] là đầy đủ; khi đó mọi điểm cuối từ r trở đi đều hợp lệ.
+
+Phép OR không có phép nghịch đảo, nên không thể xóa đầu cửa sổ bằng một biến OR
+đơn. Ta dùng hàng đợi gồm hai ngăn xếp:
+  - Mỗi phần tử ngăn xếp lưu thêm OR tích lũy.
+  - Thêm ở ngăn xếp sau.
+  - Khi cần xóa mà ngăn xếp trước rỗng, chuyển toàn bộ phần tử từ sau sang trước.
+  - OR của hàng đợi là OR của hai giá trị tích lũy trên đỉnh.
+
+Mỗi bitmask được thêm, chuyển và xóa tối đa một lần, nên việc đếm cho một cặp
+hàng mất O(n).
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n^3).
+- Bộ nhớ: O(n).

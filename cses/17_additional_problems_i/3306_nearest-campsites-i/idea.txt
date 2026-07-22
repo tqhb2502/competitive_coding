@@ -1,0 +1,31 @@
+NEAREST CAMPSITES I - CSES 3306
+
+ĐỀ BÀI (tóm tắt)
+Cho n điểm đã đặt trại và m điểm trống trên lưới. Khoảng cách là Manhattan.
+Với mỗi điểm trống, xét khoảng cách tới trại đã đặt gần nhất; in giá trị lớn
+nhất trong m giá trị này. Ràng buộc: n,m <= 10^5; tọa độ <= 10^6.
+
+BỐN PHÉP QUÉT ĐIỂM ƯU THẾ
+Xét một hướng dấu sx,sy thuộc {-1,+1}, và biến đổi mọi điểm thành
+  X = sx*x, Y = sy*y.
+Trong góc phần tư có X_site <= X_query và Y_site <= Y_query, khoảng cách là
+  X_query + Y_query - (X_site + Y_site).
+Vì vậy trại gần nhất trong góc này là trại có X_site+Y_site lớn nhất.
+
+Sắp xếp trại và truy vấn theo X tăng dần. Trong khi quét, thêm mọi trại có
+X_site <= X_query vào Fenwick tree; cây lưu max(X_site+Y_site) theo tọa độ Y đã
+nén. Truy vấn prefix Y <= Y_query cho đáp án của góc.
+
+Chạy đủ bốn cặp dấu. Mỗi trại so với một điểm truy vấn nằm trong ít nhất
+một trong bốn góc, nên lấy min của bốn lần quét là khoảng cách gần nhất.
+Cuối cùng lấy max trên m điểm trống.
+
+CHỨNG MINH
+Trong mỗi góc, biểu thức Manhattan bỏ được dấu giá trị tuyệt đối và rút gọn
+đúng thành công thức trên. Fenwick trả về giá trị X_site+Y_site lớn nhất
+trong chính tập trại thỏa cả hai bất đẳng thức, nên nó cho trại gần nhất của góc.
+Bốn lựa chọn dấu bao phủ mọi quan hệ trái/phải và trên/dưới giữa hai điểm, nên
+lấy min bao phủ tất cả trại. Bước max cuối cùng đúng theo yêu cầu đề.
+
+ĐỘ PHỨC TẠP
+Thời gian O((n+m) log(n+m)), bộ nhớ O(n+m).

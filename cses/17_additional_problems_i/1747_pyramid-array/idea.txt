@@ -1,0 +1,28 @@
+PYRAMID ARRAY - CSES 1747
+
+ĐỀ BÀI (tóm tắt)
+Mảng có n số phân biệt. Một bước được đổi chỗ hai phần tử kề nhau. Tìm số bước
+ít nhất để mảng trở thành tăng rồi giảm (được phép chỉ tăng hoặc chỉ giảm).
+Ràng buộc: n <= 2*10^5.
+
+THUẬT TOÁN
+Xử lý các phần tử theo giá trị tăng dần. Khi đến phần tử đang ở vị trí p, mọi
+phần tử nhỏ hơn đã được lấy ra, còn các phần tử lớn hơn vẫn giữ thứ tự tương đối.
+Phần tử hiện tại phải được đưa ra một trong hai đầu của dãy còn lại: đặt ở đầu
+trái của kim tự tháp hoặc đầu phải. Nếu còn L phần tử bên trái và R phần tử bên
+phải, chi phí tốt nhất là min(L,R). Sau đó xóa vị trí p khỏi tập đang hoạt động.
+
+Fenwick tree lưu 1 tại vị trí chưa xóa, nhờ đó tính L bằng tổng tiền tố và cập
+nhật xóa trong O(log n).
+
+CHỨNG MINH ĐÚNG
+Xét thứ tự đặt các giá trị từ nhỏ đến lớn. Trong một mảng kim tự tháp, mỗi giá
+trị nhỏ nhất còn lại buộc phải nằm ở một trong hai đầu: nếu ở giữa thì một phía
+sẽ chứa giá trị lớn hơn rồi lại phải đi xuống qua nó, trái với dạng tăng-giảm.
+Đưa nó tới đầu trái tốn đúng L đổi chỗ, tới đầu phải tốn đúng R đổi chỗ. Các đổi
+chỗ này chỉ đi qua phần tử lớn hơn và không thay đổi bài toán của dãy còn lại,
+nên chọn min(L,R) là tối ưu độc lập. Quy nạp qua mọi giá trị chứng minh tổng thu
+được là nhỏ nhất.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n) bộ nhớ.

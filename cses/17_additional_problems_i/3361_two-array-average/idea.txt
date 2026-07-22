@@ -1,0 +1,29 @@
+TWO ARRAY AVERAGE - CSES 3361
+
+ĐỀ BÀI (tóm tắt)
+Chọn một tiền tố không rỗng của mỗi trong hai mảng độ dài n sao cho trung bình
+của tất cả phần tử được chọn là lớn nhất. In ra hai độ dài tiền tố. Đáp án được
+chấp nhận nếu trung bình đạt được sai khác tối đa 10^(-6) so với tối ưu.
+Ràng buộc: n <= 10^5, giá trị phần tử <= 10^9.
+
+THUẬT TOÁN
+Gọi A[i], B[j] là tổng i và j phần tử đầu. Với một giá trị trung bình thử x,
+tồn tại cặp (i,j) có trung bình ít nhất x khi và chỉ khi
+
+    max_i(A[i] - x*i) + max_j(B[j] - x*j) >= 0,
+
+với i,j từ 1 đến n. Hai giá trị lớn nhất ở vế trái được tìm độc lập trong O(n).
+Tính chất trên đơn điệu theo x, vì vậy nhị phân x trong [0,10^9]. Sau 70 vòng,
+độ rộng khoảng nhỏ hơn nhiều so với 10^(-6). Tại cận dưới cuối cùng, lấy chính
+hai chỉ số tạo ra hai giá trị lớn nhất và in chúng.
+
+CHỨNG MINH ĐÚNG
+Với một cặp (i,j), trung bình của nó ít nhất x tương đương
+A[i]+B[j]-x(i+j) >= 0. Giá trị lớn nhất của biểu thức này trên mọi i,j bằng
+max_i(A[i]-xi)+max_j(B[j]-xj), do hai chỉ số độc lập. Vì thế phép kiểm tra đúng.
+Nếu x khả thi thì mọi giá trị nhỏ hơn x cũng khả thi, nên nhị phân hội tụ tới
+trung bình tối ưu. Cặp chỉ số cực đại tại cận dưới có trung bình không nhỏ hơn
+cận đó; khoảng sai số sau 70 vòng nhỏ hơn 10^(-6), nên cặp được in hợp lệ.
+
+ĐỘ PHỨC TẠP
+70 lần quét hai mảng: O(n) thời gian với hằng số cố định, O(n) bộ nhớ.

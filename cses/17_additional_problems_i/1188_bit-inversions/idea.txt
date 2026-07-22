@@ -1,0 +1,24 @@
+BIT INVERSIONS - CSES 1188
+
+ĐỀ BÀI (tóm tắt)
+Cho chuỗi bit. Sau mỗi thao tác đảo một bit, in độ dài lớn nhất của một đoạn
+liên tiếp gồm toàn bit giống nhau. Có tối đa 2*10^5 ký tự và thao tác.
+
+THUẬT TOÁN
+Lưu trong ordered set mọi biên giữa hai đoạn: luôn có 0,n và có vị trí i nếu
+s[i-1] khác s[i]. Một multiset khác lưu độ dài giữa mọi cặp biên liên tiếp; phần
+tử lớn nhất chính là đáp án.
+
+Đảo bit tại p chỉ làm trạng thái của hai biên p và p+1 bị đảo (nếu tồn tại).
+Khi thêm một biên, tách một độ dài thành hai; khi xóa, ghép hai độ dài thành
+một. Mỗi cập nhật set/multiset tốn O(log n).
+
+CHỨNG MINH ĐÚNG
+Hai biên liên tiếp bao quanh đúng một đoạn bit đồng nhất, nên multiset chứa đúng
+và đủ độ dài các đoạn cần xét. Đảo s[p] không ảnh hưởng quan hệ của bất kỳ cặp
+kề nào ngoài (p-1,p) và (p,p+1), đồng thời cả hai quan hệ này đổi từ bằng thành
+khác hoặc ngược lại. Vì vậy việc toggle đúng hai biên duy trì bất biến. Giá trị
+lớn nhất trong multiset sau đó chính là kết quả yêu cầu.
+
+ĐỘ PHỨC TẠP
+O((n+m) log n) thời gian, O(n) bộ nhớ.

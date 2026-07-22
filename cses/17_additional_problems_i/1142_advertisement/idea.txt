@@ -1,0 +1,26 @@
+ADVERTISEMENT - CSES 1142
+
+ĐỀ BÀI (tóm tắt)
+Cho n tấm ván liên tiếp, mỗi tấm rộng 1 và có chiều cao k_i. Tìm diện tích
+lớn nhất của một hình chữ nhật nằm hoàn toàn trên hàng rào.
+Ràng buộc: n <= 2*10^5, k_i <= 10^9.
+
+THUẬT TOÁN: NGĂN XẾP ĐƠN ĐIỆU
+Duyệt các cột từ trái sang phải và giữ ngăn xếp các cặp (chiều cao, vị trí
+trái nhất) với chiều cao tăng dần. Khi gặp chiều cao h nhỏ hơn hoặc bằng đỉnh
+ngăn xếp, hình chữ nhật có chiều cao ở đỉnh không thể kéo dài thêm sang phải.
+Ta lấy nó ra, cập nhật diện tích và truyền vị trí trái của nó cho h.
+
+Thêm một cột lính canh có chiều cao 0 sau cột cuối để đóng mọi hình chữ nhật
+còn lại.
+
+CHỨNG MINH ĐÚNG
+Một cặp (H,L) trong ngăn xếp biểu diễn rằng mọi cột từ L đến vị trí hiện tại
+đều cao ít nhất H, và L là vị trí trái nhất có tính chất đó. Khi gặp cột i có
+chiều cao <= H, i là vị trí đầu tiên bên phải không cao hơn H, nên hình chữ
+nhật lớn nhất nhận H làm chiều cao có đúng bề rộng i-L; thuật toán xét diện
+tích này trước khi xóa H. Mỗi chiều cao được đưa vào và lấy ra đúng một lần,
+do đó mọi ứng viên tối ưu đều được xét. Giá trị lớn nhất thu được là đáp án.
+
+ĐỘ PHỨC TẠP
+Thời gian O(n), bộ nhớ O(n).

@@ -1,0 +1,28 @@
+DISTINCT VALUES SPLITS - CSES 3190
+
+ĐỀ BÀI (tóm tắt)
+Đếm số cách chia mảng thành các đoạn liên tiếp sao cho trong mỗi đoạn, mọi
+giá trị đều phân biệt. In kết quả modulo 10^9+7. Ràng buộc: n <= 2*10^5.
+
+QUY HOẠCH ĐỘNG VÀ CỬA SỔ
+Gọi left là vị trí nhỏ nhất sao cho [left,i] không có giá trị lặp. Khi đọc x_i,
+cập nhật
+  left = max(left, last[x_i] + 1).
+Khi đó mọi đoạn [start,i] hợp lệ chính xác khi left <= start <= i.
+
+Đặt dp[i] là số cách chia prefix 1..i, với dp[0]=1. Nếu đoạn cuối bắt đầu
+tại start thì phần trước có dp[start-1] cách. Do đó
+  dp[i] = sum(dp[j]), left-1 <= j <= i-1.
+Dùng prefix[i] = dp[0]+...+dp[i] để lấy tổng đoạn trong O(1).
+
+CHỨNG MINH
+Cửa sổ đảm bảo ta xét đúng và đủ mọi đoạn cuối hợp lệ. Mỗi phép chia
+của prefix i có duy nhất một vị trí bắt đầu start của đoạn cuối; bỏ đoạn này
+cho ta một trong dp[start-1] phép chia. Chiều ngược lại cũng đúng, nên truy hồi
+không thiếu và không trùng.
+
+Để lưu last một cách tất định, nén tọa độ các giá trị bằng một bản sao đã
+sắp xếp của mảng.
+
+ĐỘ PHỨC TẠP
+Thời gian O(n log n), bộ nhớ O(n).

@@ -1,0 +1,42 @@
+Bài toán: Raab Game II (CSES 3400)
+
+Mỗi người có các lá bài 1..n. Trong mỗi ván, hai thứ tự đánh bài tạo thành một
+ghép cặp giữa các lá của người thứ nhất và các lá của người thứ hai. Nếu cố định
+ghép cặp này thì n cặp có thể được đưa ra theo n! thứ tự, nên cuối cùng cần nhân
+số ghép cặp hợp lệ với n!.
+
+Gọi m = a+b. Một cặp bằng nhau tạo ra một lượt hòa, còn mọi lá thuộc một cặp
+không bằng nhau tạo ra đúng một điểm cho một trong hai người. Vì thế hoán vị mô
+tả ghép cặp có đúng n-m điểm cố định.
+
+Chọn m giá trị nằm trong các cặp không bằng nhau theo C(n,m) cách. Sau khi chuẩn
+hóa thứ tự các giá trị đã chọn, phần còn lại là một hoán vị không có điểm cố định
+(derangement) của 1..m. Quan hệ lớn/nhỏ được giữ nguyên khi chuẩn hóa.
+
+Đặt D[i][j] là số derangement của 1..i có đúng j vị trí p với perm[p] > p
+(tức người thứ hai thắng j lượt). Ta dùng truy hồi Eulerian cho derangement:
+
+    D[i][j] = j * D[i-1][j]
+            + (i-j) * D[i-1][j-1]
+            + (i-1) * D[i-2][j-1]
+
+với D[0][0] = 1; các trạng thái ngoài miền bằng 0. Hai hạng đầu tương ứng với
+phép chèn như trong truy hồi số Eulerian; hạng cuối xử lý trường hợp phép chèn
+tạo thành một chu trình 2 phần tử, nhờ đó không sinh điểm cố định. Đây là truy
+hồi chuẩn của các số Eulerian derangement.
+
+Số ghép cặp có kết quả (a,b) là:
+
+    C(n,m) * D[m][b].
+
+Do mỗi ghép cặp có n! thứ tự lượt chơi, đáp án là:
+
+    n! * C(n,m) * D[m][b]  (mod 1e9+7).
+
+Nếu m>n thì đáp án bằng 0. Đọc trước toàn bộ truy vấn, chỉ tính DP đến giá trị m
+lớn nhất và dùng ba hàng cuộn, rồi lưu D[m][b] cần thiết cho từng truy vấn.
+
+Độ phức tạp:
+- Tiền xử lý giai thừa: O(N), N<=5000.
+- DP: O(M^2), M là max(a+b) hợp lệ và M<=5000.
+- Bộ nhớ: O(M+t).

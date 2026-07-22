@@ -1,0 +1,27 @@
+SQUARE SUBSETS - CSES 3193
+
+ĐỀ BÀI (tóm tắt)
+Cho n số nguyên. Đếm các subset (kể cả rỗng) có tích là số chính phương, modulo
+10^9+7. Ràng buộc: n <= 5000, x_i <= 5000.
+
+THUẬT TOÁN: HẠNG CỦA HỆ VECTOR TRÊN GF(2)
+Liệt kê các số nguyên tố không quá 5000. Mỗi x_i được đổi thành vector bit:
+bit của p bằng parity của số mũ p trong phân tích x_i.
+
+Tích của một subset là số chính phương khi và chỉ khi XOR các vector của nó
+bằng vector 0. Các subset như vậy chính là kernel của ánh xạ tuyến tính từ
+GF(2)^n sang không gian vector số mũ. Nếu r là hạng của các vector đầu vào,
+kernel có chiều n-r và có 2^(n-r) phần tử.
+
+Ta tìm r bằng khử Gaussian bit: giữ một vector cơ sở cho từng pivot, giảm mỗi
+vector mới từ bit cao xuống thấp, rồi thêm nó nếu còn khác 0.
+
+CHỨNG MINH ĐÚNG
+Một số là chính phương đúng khi mọi số mũ nguyên tố chẵn, nên điều kiện tích
+chính phương đúng bằng XOR parity bằng 0. Định lý hạng-kernel cho ánh xạ có n
+biến và hạng r cho đúng 2^(n-r) nghiệm; nghiệm 0 chính là subset rỗng và đề yêu
+cầu tính nó. Khử Gaussian xây một cơ sở độc lập nên r được tính chính xác.
+
+ĐỘ PHỨC TẠP
+Có 669 số nguyên tố <=5000. Thời gian O(n*669^2/64) trong trường hợp xấu nhất,
+bộ nhớ O(669^2/64).

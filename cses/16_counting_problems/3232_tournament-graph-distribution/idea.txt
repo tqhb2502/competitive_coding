@@ -1,0 +1,33 @@
+TOURNAMENT GRAPH DISTRIBUTION - CSES 3232
+
+ĐỀ BÀI (tóm tắt)
+Với n đỉnh có nhãn, đếm cho từng k=1..n số tournament (giữa mỗi cặp đỉnh có
+đúng một cạnh có hướng) có đúng k thành phần liên thông mạnh. In modulo 10^9+7.
+Ràng buộc: n <= 500.
+
+1. ĐẾM TOURNAMENT LIÊN THÔNG MẠNH
+Gọi all[m] = 2^(m chọn 2), và strong[m] là số tournament liên thông mạnh trên
+m đỉnh có nhãn.
+
+Co mỗi SCC của một tournament lại. Đồ thị co vẫn là tournament và là DAG. Mọi
+tournament không chu trình là một thứ tự toàn phần, vì vậy các SCC luôn có một
+thứ tự duy nhất; mọi cạnh giữa SCC trước và SCC sau cùng hướng về phía sau.
+
+Xét SCC đầu tiên, có kích thước s. Chọn s đỉnh, chọn một tournament mạnh bên
+trong nó; phần n-s đỉnh còn lại là tournament bất kỳ và toàn bộ cạnh nối đã bị
+ép hướng. SCC đầu tiên là duy nhất, nên
+  all[m] = sum_{s=1..m} C(m,s) strong[s] all[m-s].
+Tách số hạng s=m để tính strong[m] trong O(m).
+
+2. PHÂN PHỐI SỐ SCC
+Gọi dp[m][k] là số tournament trên m đỉnh có k SCC theo đúng thứ tự của DAG.
+Thêm SCC cuối kích thước s:
+  dp[m][k] += C(m,s) strong[s] dp[m-s][k-1].
+Tập đỉnh của SCC cuối được chọn bằng C(m,s), cấu trúc bên trong có strong[s]
+cách, và hướng mọi cạnh nối được xác định duy nhất.
+
+Khởi tạo dp[0][0]=1. Ta tiền xử lý C(m,s)*strong[s]. Vòng lặp chỉ xét
+k<=m và s<=m-k+1, tổng cộng khoảng n^3/6 trạng thái chuyển.
+
+ĐỘ PHỨC TẠP
+Thời gian O(n^3), với n=500 là khoảng 21 triệu phép chuyển; bộ nhớ O(n^2).

@@ -1,0 +1,2 @@
+Nearest Campsites I
+https://cses.fi/problemset/task/3306

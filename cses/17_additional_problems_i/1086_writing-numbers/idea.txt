@@ -1,0 +1,28 @@
+WRITING NUMBERS - CSES 1086
+
+ĐỀ BÀI (tóm tắt)
+Viết lần lượt các số dương 1,2,3,...; mỗi phím chữ số 0..9 chỉ được bấm tối đa
+n lần. Tìm số cuối cùng có thể viết. Ràng buộc: n <= 10^18.
+
+THUẬT TOÁN
+Nhị phân số cuối x. Điều kiện hợp lệ là số lần xuất hiện của từng chữ số trong
+đoạn 1..x đều không vượt n; điều kiện này đơn điệu.
+
+Đếm một chữ số d ở từng hàng factor=1,10,100,... bằng cách tách x thành phần
+higher, current, lower quanh hàng đó. Với d khác 0, các chu kỳ đầy đủ đóng góp
+higher*factor, rồi cộng phần chu kỳ cuối theo current. Với d=0, trừ một chu kỳ
+để không đếm các số 0 đứng đầu. Dùng số nguyên không dấu 64 bit; với cận x=10^18,
+mọi tích, bộ đếm trung gian đều còn nằm trong miền biểu diễn. Mốc 10^18 chắc chắn
+không hợp lệ ngay cả khi n=10^18, vì riêng
+chữ số 1 đã xuất hiện hơn 10^18 lần, nên đây là cận trên đủ lớn.
+
+CHỨNG MINH ĐÚNG
+Công thức theo từng hàng phân hoạch các số 0..x thành các chu kỳ độ dài
+10*factor; trong mỗi chu kỳ chữ số d chiếm đúng factor vị trí ở hàng đang xét.
+Phần higher đếm chu kỳ đầy đủ, current/lower đếm phần dư, và hiệu chỉnh d=0 loại
+chính xác các tiền tố chưa tồn tại. Cộng mọi hàng cho đúng tổng số lần bấm phím.
+Do các bộ đếm không giảm khi x tăng, nhị phân trả về x lớn nhất mà cả mười bộ
+đếm không vượt n, đúng là số cuối cùng có thể viết.
+
+ĐỘ PHỨC TẠP
+O(log^2 n) thời gian (khoảng 60 lần thử, mỗi lần tối đa 19 hàng), O(1) bộ nhớ.

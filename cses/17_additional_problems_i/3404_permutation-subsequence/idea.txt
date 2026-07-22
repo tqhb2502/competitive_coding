@@ -1,0 +1,26 @@
+PERMUTATION SUBSEQUENCE - CSES 3404
+
+ĐỀ BÀI (tóm tắt)
+Cho hai hoán vị (có thể có độ dài khác nhau), tìm độ dài và in một dãy con
+chung dài nhất. Ràng buộc: n,m <= 2*10^5.
+
+THUẬT TOÁN
+Lưu position[x] là vị trí duy nhất của giá trị x trong hoán vị thứ nhất. Duyệt
+hoán vị thứ hai; với mỗi giá trị cũng có trong hoán vị thứ nhất, thay nó bằng
+position[x]. Một dãy con chung tương ứng chính xác với một dãy con tăng của dãy
+vị trí này. Vì vậy bài toán trở thành LIS.
+
+Dùng thuật toán patience sorting O(N log N). Ngoài giá trị nhỏ nhất ở mỗi đuôi,
+lưu chỉ số phần tử tạo ra đuôi và predecessor của từng phần tử để truy vết một
+LIS, rồi đổi các vị trí lại thành giá trị gốc.
+
+CHỨNG MINH ĐÚNG
+Các giá trị trong mỗi mảng là duy nhất. Một dãy giá trị xuất hiện theo thứ tự ở
+mảng thứ nhất khi và chỉ khi dãy vị trí của chúng tăng. Khi duyệt theo thứ tự
+mảng thứ hai, mọi dãy con của dãy biến đổi đã tự động đúng thứ tự ở mảng hai.
+Do đó dãy con chung và dãy con tăng có song ánh bảo toàn độ dài. Thuật toán LIS
+tìm độ dài lớn nhất, còn các liên kết predecessor dựng đúng một dãy đạt độ dài
+đó, nên kết quả là LCS.
+
+ĐỘ PHỨC TẠP
+O((n+m) log n) thời gian, O(n+m) bộ nhớ.

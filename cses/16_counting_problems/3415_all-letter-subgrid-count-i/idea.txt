@@ -1,0 +1,30 @@
+ALL LETTER SUBGRID COUNT I - CSES 3415
+https://cses.fi/problemset/task/3415
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n x n gồm k chữ cái đầu tiên. Đếm số lưới con hình vuông chứa đủ cả k
+chữ cái. Ràng buộc n <= 3000, k <= 26.
+
+Ý TƯỞNG
+Với mỗi ô (r,c) và chữ x, đặt dist[x] là khoảng cách Chebyshev nhỏ nhất từ
+(r,c) tới một ô chứa x nằm ở phía trên-trái:
+
+    dist[x] = min max(r-u, c-v), với u <= r, v <= c và grid[u][v] = x.
+
+Nếu ô hiện tại chứa x thì dist[x] = 0. Nếu không, đường đi ngắn nhất từ một ô
+phía trên-trái phải đi qua ô trên, trái hoặc chéo trên-trái, nên:
+
+    dist[x] = 1 + min(dist_trên[x], dist_trái[x], dist_chéo[x]).
+
+Gọi d là giá trị lớn nhất trong k khoảng cách. Hình vuông nhỏ nhất có góc dưới
+phải tại (r,c) và chứa đủ mọi chữ có cạnh d+1. Cạnh lớn nhất tại đây là
+min(r,c)+1. Vì tính chất chứa đủ chữ là đơn điệu theo cạnh, số hình vuông hợp lệ
+kết thúc tại ô này là:
+
+    min(r,c) - d + 1, nếu d <= min(r,c), và bằng 0 nếu ngược lại.
+
+Ta chỉ lưu các khoảng cách của hàng trước, cùng trạng thái bên trái và chéo.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(k * n^2), với k <= 26.
+- Bộ nhớ: O(k * n).

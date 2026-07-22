@@ -1,0 +1,29 @@
+Bài toán: Counting Bishops (CSES 2176)
+
+Một tượng luôn đứng trên các ô cùng màu trong suốt đường đi, nên các tượng ở ô
+đen không bao giờ tấn công tượng ở ô trắng. Ta đếm độc lập trên hai màu rồi chập
+hai kết quả.
+
+Xét các đường chéo theo một hướng. Mọi ô trên cùng một đường chéo có cùng màu.
+Với mỗi màu, thu thập độ dài các đường chéo và sắp xếp tăng dần.
+
+Đặt dp[j] là số cách đặt j tượng sau khi xử lý một số đường chéo của màu đang
+xét. Khi xử lý đường chéo có L ô:
+
+- Không đặt tượng trên đường chéo mới: giữ dp[j].
+- Đặt tượng thứ j trên đó: j-1 tượng cũ đã chiếm j-1 đường chéo theo hướng còn
+  lại. Nhờ xử lý các độ dài theo thứ tự tăng dần, mỗi đường chéo bị chiếm cắt
+  đường chéo hiện tại tại một ô hợp lệ. Còn L-(j-1) ô để chọn.
+
+Do đó, cập nhật j giảm dần:
+
+    dp[j] += dp[j-1] * (L-j+1).
+
+Gọi black[i], white[j] là kết quả của hai màu. Đáp án là:
+
+    sum black[i] * white[k-i].
+
+Trên bàn n*n, số tượng không tấn công nhau tối đa là 1 nếu n=1, và 2n-2 nếu
+n>1. Nếu k vượt giới hạn này có thể trả lời 0 ngay.
+
+Độ phức tạp: O(n*k) thời gian, O(k) bộ nhớ.

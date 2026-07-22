@@ -1,0 +1,47 @@
+GRID COMPLETION - CSES 2429
+
+ĐỀ BÀI (tóm tắt)
+Điền A và B vào lưới n x n sao cho mỗi hàng và mỗi cột có đúng một A và một B.
+Một số ký tự đã được cho trước. Đếm số cách hoàn thành modulo 10^9+7.
+Ràng buộc: n <= 500; đề đảm bảo mỗi hàng/cột hiện có nhiều nhất một A và B.
+
+MÔ HÌNH HAI HOÁN VỊ
+Vị trí A là một hoán vị hàng -> cột; vị trí B là một hoán vị khác. Các ô hợp
+lệ chính là cặp hoán vị mở rộng các vị trí đã cho và không trùng nhau ở hàng
+nào. Ta đếm bằng bao hàm - loại trừ trên các sự kiện "A và B trùng tại ô này".
+
+CẤU TRÚC CÁC Ô CÓ THỂ TRÙNG
+Một ô chỉ có thể chứa cả A và B trong hai lời giải tạm thời nếu nó tương thích
+với mọi vị trí đã cố định. Các sự kiện trùng tách thành ba loại:
+
+1. Hàng chưa có cả A lẫn B và cột chưa có cả A lẫn B.
+   Nếu có x hàng và y cột như vậy, các ô tạo thành đồ thị đầy đủ K(x,y).
+   Chọn u sự kiện đôi một khác hàng/cột có
+       C(x,u) * C(y,u) * u!
+   cách.
+
+2. Hàng chỉ có A cố định, chưa có B, và cột của A cũng chưa có B.
+   Đây là một sự kiện cô lập. Gọi số sự kiện loại này là zA. Chọn p sự kiện có
+   C(zA,p) cách; chúng ép p vị trí còn thiếu của hoán vị B.
+
+3. Đối xứng, hàng chỉ có B và cột ấy chưa có A. Có zB sự kiện cô lập; chọn q
+   sự kiện sẽ ép q vị trí còn thiếu của hoán vị A.
+
+Các cạnh cô lập không chung hàng/cột với nhau hay với K(x,y), do các vị trí A,
+B đã cho đều là matching.
+
+GIÁ TRỊ CỦA MỘT TẬP SỰ KIỆN
+Gọi a, b lần lượt là số A và B còn phải điền. Sau khi chọn u,p,q sự kiện:
+  - hoán vị A còn (a-u-q)! cách hoàn thành;
+  - hoán vị B còn (b-u-p)! cách hoàn thành;
+  - dấu bao hàm - loại trừ là (-1)^(u+p+q).
+
+Không cần vòng lặp ba chiều. Với mỗi u, hai tổng theo p và q độc lập:
+  SA[u] = sum_q (-1)^q C(zB,q) (a-u-q)!
+  SB[u] = sum_p (-1)^p C(zA,p) (b-u-p)!
+
+Kết quả là tổng theo u của
+  (-1)^u C(x,u) C(y,u) u! SA[u] SB[u].
+
+ĐỘ PHỨC TẠP
+Thời gian O(n^2), bộ nhớ O(n).
