@@ -9,13 +9,14 @@ cses/
   01_introductory/
     <task_id>_<slug>/
       problem_link.txt   # đường dẫn đến đề bài
-      idea.txt           # ý tưởng giải (tiếng Việt)
-      solution.py        # code Python
+      idea.txt           # ý tưởng giải (tiếng Việt có dấu)
+      solution.py        # code (nhóm 01-09) HOẶC solution.cpp (từ nhóm 10)
 ```
 
-> Lưu ý: CSES đặt giới hạn thời gian tối ưu cho C++. Một số bài (Range Queries,
-> Graph, Advanced...) code Python thuần đúng thuật toán vẫn có thể TLE. Những bài
-> có rủi ro TLE sẽ được ghi chú trong `idea.txt`.
+> **Ngôn ngữ:** nhóm 01-09 dùng **Python thuần (stdlib)**. Từ **nhóm 10 trở đi
+> chuyển sang C++** (`solution.cpp`) — vì CSES đặt giới hạn thời gian tối ưu cho
+> C++, nên nhiều bài Python thuần dù đúng thuật toán vẫn TLE. Các lời giải Python
+> có rủi ro TLE đều được ghi chú trong `idea.txt`.
 
 ## Tiến độ theo nhóm
 
@@ -30,5 +31,5 @@ cses/
 | 07 | Mathematics | 37 | ✅ xong — 37/37 đúng thuật toán, thuần stdlib (pow modulo, nCr, lũy thừa ma trận, sàng, Sprague-Grundy, GF(2)); 3 bài rủi ro TLE ghi chú trong idea.txt |
 | 08 | String Algorithms | 21 | ✅ xong — 21/21 đúng thuật toán, thuần stdlib (KMP/Z, suffix array + LCP, suffix automaton, Manacher, Aho-Corasick, trie; tránh hashing đơn); nhiều bài rủi ro TLE Python ghi chú trong idea.txt |
 | 09 | Geometry | 16 | ✅ xong — 16/16 ĐÚNG (đã review độc lập, brute-force đối chiếu), thuần stdlib + số học nguyên chính xác; 8 bài rủi ro TLE Python (gồm 1742 Robot Path) ghi chú trong idea.txt |
-| 10 | Advanced Techniques | ~26 | ⬜ chưa làm |
+| 10 | Advanced Techniques | 25 | ✅ **C++** — 25/25 verify, compile OK, **0 TLE-risk**, 0 FAIL (24 verify kỹ + 2143 verify nhanh) |
 | 11+ | Sliding Window / Interactive / Bitwise / Construction / Advanced Graph / Counting / Additional I & II | ~110 | ⬜ chưa làm |

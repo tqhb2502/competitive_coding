@@ -1,0 +1,46 @@
+Necessary Roads (CSES 2076)
+
+Bài toán:
+Cho đồ thị vô hướng liên thông có n đỉnh và m cạnh, không có cạnh lặp và không có
+self-loop. Hãy tìm tất cả các "necessary road", tức là các cạnh mà nếu xóa đi sẽ
+làm đồ thị mất liên thông. Đây chính là bài toán tìm tất cả bridge (cầu) của đồ thị.
+
+Kỹ thuật: Tarjan bridge-finding (thuật toán low-link).
+- Duyệt DFS trên đồ thị, gán cho mỗi đỉnh u một thời điểm khám phá disc[u]
+  (discovery time) theo thứ tự DFS.
+- Định nghĩa low[u] = giá trị disc nhỏ nhất mà từ u có thể "vươn tới" được, bằng
+  cách đi theo các cạnh cây (tree edge) xuống con cháu rồi dùng tối đa một cạnh ngược
+  (back edge) leo lên tổ tiên.
+- Với một cạnh cây (p, u): cạnh này là bridge khi và chỉ khi low[u] > disc[p].
+  Ý nghĩa: từ cây con gốc u không có back edge nào leo lên được p hay tổ tiên của p,
+  nên bỏ cạnh (p, u) thì cây con u bị tách rời -> cạnh là cầu.
+
+Vì sao đúng:
+Nếu low[u] > disc[p] thì mọi đường đi từ cây con của u ra phần còn lại của đồ thị
+đều bắt buộc phải đi qua cạnh (p, u); xóa cạnh này chia đồ thị thành hai phần. Ngược
+lại nếu low[u] <= disc[p] thì tồn tại back edge từ cây con u leo lên tới p hoặc cao
+hơn, tạo một chu trình chứa cạnh (p, u), nên cạnh không phải cầu. Do đề bảo đảm không
+có cạnh song song (multi-edge), việc bỏ qua đúng cạnh cha khi cập nhật low là đủ; tuy
+vậy ta vẫn dựa trên edge id (mỗi cạnh vô hướng i lưu thành hai directed edge 2i và
+2i+1) để bỏ qua chính xác cạnh cha, an toàn cả khi có multi-edge.
+
+Chi tiết cài đặt:
+- Lưu đồ thị bằng danh sách kề dạng forward-star (mảng head/to/nxt) trên mảng phẳng
+  để nhanh và tiết kiệm bộ nhớ.
+- DFS ITERATIVE (dùng stack tường minh) vì n tối đa 1e5, đệ quy có thể tràn stack.
+  Mỗi khung stack lưu: đỉnh hiện tại và edge id của cạnh cha; con trỏ duyệt adjacency
+  được lưu trong mảng cur[] (khởi tạo bằng head[u] khi thăm u lần đầu).
+- Khi pop một đỉnh u về cha p: cập nhật low[p] = min(low[p], low[u]) và kiểm tra
+  điều kiện bridge low[u] > disc[p]; nếu đúng thì lưu cạnh (p, u) làm bridge.
+- Với back edge tới đỉnh đã thăm v (khác cạnh cha): low[u] = min(low[u], disc[v]).
+
+Xuất kết quả: in số lượng bridge k, sau đó k dòng, mỗi dòng hai đầu mút của một cạnh
+cầu (in theo cặp (a, b) gốc của cạnh). Thứ tự các cạnh và thứ tự hai đầu mút không
+quan trọng, CSES chấp nhận mọi hoán vị hợp lệ.
+
+Độ phức tạp:
+- Thời gian: O(n + m) cho toàn bộ quá trình DFS (mỗi đỉnh và mỗi cạnh xét O(1) lần).
+- Bộ nhớ: O(n + m).
+
+Với n = 1e5, m = 2e5, bản C++17 dùng DFS iterative + forward-star + fast IO chạy rất
+nhanh, thừa sức trong giới hạn thời gian của CSES.

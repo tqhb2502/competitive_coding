@@ -1,0 +1,66 @@
+Distinct Routes II - CSES 2130
+https://cses.fi/problemset/task/2130
+
+1. Tom tat bai toan
+-------------------
+Cho do thi CO HUONG voi n phong va m teleporter (canh co huong tu a den b).
+Moi teleporter chi duoc dung TOI DA MOT LAN trong toan bo tro choi, va moi lan
+dung phai tra 1 coin. Ta phai di tu phong 1 den phong n dung k lan (k ngay).
+Vi moi canh dung nhieu nhat mot lan nen k duong di nay la EDGE-DISJOINT (khong
+chung canh). Hay tim tong so coin (tong so teleporter su dung) nho nhat, roi in
+ra so coin do va k duong di. Neu khong the tao du k duong -> in -1.
+
+Rang buoc: 2 <= n <= 500, 1 <= m <= 1000, 1 <= k <= n-1.
+
+2. Mo hinh Min-Cost Max-Flow (MCMF)
+-----------------------------------
+Xay dung mang luong (flow network):
+  - Moi teleporter a->b tro thanh mot canh co capacity = 1, cost = 1.
+    Capacity 1 dam bao moi teleporter dung toi da mot lan; cost 1 dem so coin.
+  - source = phong 1, sink = phong n.
+
+Ta can mot luong (flow) co GIA TRI DUNG BANG k voi CHI PHI NHO NHAT. Chi phi
+cua luong chinh la tong so canh duoc dung = tong so coin. Neu gia tri luong
+cuc dai (max-flow) < k thi khong the tao du k duong di -> dap an -1.
+
+3. Thuat toan: Successive Shortest Paths (SSP)
+----------------------------------------------
+Lap lai: moi lan tim duong tang luong (augmenting path) NGAN NHAT theo cost
+tren do thi thang du (residual), roi bom 1 don vi luong. Vi tat ca cost ban dau
+khong am nen dung Dijkstra ket hop Johnson potentials h[] de giu reduced cost
+khong am, moi lan Dijkstra chay O(E log V).
+
+  - reduced cost cua canh u->v: c(u,v) + h[u] - h[v] >= 0.
+  - sau moi Dijkstra: h[i] += dist[i] (voi cac dinh toi duoc). Khi do h[t]
+    chinh la chi phi thuc su cua duong ngan nhat, cong don vao tong cost.
+
+Vi moi capacity = 1, moi lan tang dung 1 don vi luong, nen toi da co k lan lap.
+Do phuc tap: O(k * E log V) ~ 500 * 2000 * log(500), rat nhanh so voi gioi han.
+
+4. Phan ra luong thanh k duong di (path decomposition)
+------------------------------------------------------
+Vi moi cost > 0, luong toi uu KHONG chua chu trinh (mot chu trinh se co tong
+cost duong, bo di se giam cost ma van giu gia tri luong -> mau thuan toi uu).
+Do do luong la mot DAG-flow phan ra chinh xac thanh k duong di don gian.
+
+Cach cai dat: canh goc thu i (luu tai chi so 2*i trong mang edges) duoc DUNG khi
+capacity forward con lai = 0. Voi moi dinh, thu tu tap cac dinh ke ra tu cac
+canh da dung: nxt[u]. Sau do lap k lan: bat dau tu phong 1, moi buoc lay mot
+canh ra chua dung (dung con tro ptr[u]) di tiep cho den khi toi phong n.
+
+Tinh dung: tai moi dinh trong (khac 1 va n), so canh vao da dung = so canh ra
+da dung (bao toan luong). Moi lan "den" mot dinh se tieu thu dung mot canh ra,
+nen luon con canh ra de di tiep, va khong bao gio vuot qua so canh. Phong 1 co
+dung k canh ra (bat dau k duong), phong n co dung k canh vao (ket thuc k duong).
+
+5. In ket qua
+-------------
+  - Dong 1: tong so coin (= cost = tong so teleporter da dung).
+  - Voi moi trong k duong di: mot dong ghi SO PHONG tren duong, roi mot dong
+    liet ke cac phong theo thu tu tu 1 den n.
+
+6. Do phuc tap
+--------------
+  - Thoi gian: O(k * E log V), voi E = O(m), V = n. Rat du nhanh cho n<=500,
+    m<=1000, k<=n-1.
+  - Bo nho: O(n + m) cho do thi va cac mang phu tro.

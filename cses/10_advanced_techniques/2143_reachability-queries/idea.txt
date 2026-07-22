@@ -1,0 +1,66 @@
+Bài toán: Reachability Queries (CSES 2143)
+Cho đồ thị có hướng n đỉnh, m cạnh. Với mỗi truy vấn (a, b) hỏi: có thể đi từ
+a đến b hay không? In "YES" hoặc "NO".
+Ràng buộc: 1 <= n <= 5*10^4, 1 <= m, q <= 10^5. Giới hạn: 1s / 512MB.
+
+------------------------------------------------------------------------
+1) Ý TƯỞNG CHÍNH
+------------------------------------------------------------------------
+Reachability trên đồ thị có hướng bất kỳ tương đương reachability trên DAG sau
+khi nén các thành phần liên thông mạnh (Strongly Connected Component - SCC).
+Trong cùng một SCC mọi đỉnh tới được mọi đỉnh khác, nên ta "nén" (condensation)
+mỗi SCC thành một đỉnh; kết quả là một DAG không còn chu trình.
+
+Bước a) Tìm SCC bằng Tarjan. Vì n có thể tới 5*10^4, để chắc chắn không tràn
+stack ta cài Tarjan dạng lặp (iterative) với call-stack tường minh thay cho đệ quy.
+
+Điểm mấu chốt: Tarjan đánh số các SCC theo thứ tự REVERSE-TOPOLOGICAL của DAG.
+Nghĩa là nếu trong DAG có cạnh comp(u) -> comp(v) (u tới được v, khác SCC) thì
+SCC của v được "hoàn tất" (pop khỏi stack) trước, nên id(v) < id(u). Do đó nếu
+xử lý các component theo id TĂNG DẦN thì mọi successor của một component đều đã
+được tính xong trước đó.
+
+------------------------------------------------------------------------
+2) TRANSITIVE CLOSURE BẰNG BITSET
+------------------------------------------------------------------------
+Gọi C là số SCC (C <= n <= 5*10^4). Với mỗi component c ta lưu một bitset
+reach[c] gồm C bit: bit thứ d bằng 1 nếu component d tới được từ c.
+
+Công thức truy hồi (xử lý c theo id tăng dần):
+      reach[c] = {c}  hợp  ( union của reach[d] với mọi cạnh DAG c -> d )
+Vì mọi successor d có id(d) < id(c) nên reach[d] đã hoàn chỉnh (đã bao gồm cả
+bao đóng bắc cầu của d). Do đó reach[c] chính là tập tất cả component tới được
+từ c. Đây là phép tính transitive closure đúng đắn.
+
+Mỗi bitset lưu bằng W = ceil(C/64) từ 64-bit, gộp toàn bộ vào một mảng phẳng
+reach[c*W .. c*W+W-1]. Phép "union" là OR trên từng từ 64-bit -> nhanh.
+
+------------------------------------------------------------------------
+3) TRẢ LỜI TRUY VẤN
+------------------------------------------------------------------------
+Truy vấn (a, b): đặt ca = comp(a), cb = comp(b). Trả lời "YES" nếu bit cb được
+bật trong reach[ca], ngược lại "NO". Trường hợp a == b cho cb == ca, mà bit ca
+luôn được bật trong reach[ca] (đường đi độ dài 0), nên trả "YES" - đúng định
+nghĩa reachability (mỗi đỉnh tới chính nó). Mỗi truy vấn O(1).
+
+------------------------------------------------------------------------
+4) TÍNH ĐÚNG ĐẮN
+------------------------------------------------------------------------
+- SCC + condensation là biến đổi bảo toàn reachability: a tới b <=> comp(a) tới
+  comp(b) trên DAG.
+- Thứ tự id reverse-topological của Tarjan bảo đảm khi tính reach[c] thì reach
+  của mọi successor đã đầy đủ, nên phép truy hồi cho đúng bao đóng bắc cầu.
+- Đường chéo (bit c trong reach[c]) xử lý đường đi độ dài 0.
+
+------------------------------------------------------------------------
+5) ĐỘ PHỨC TẠP
+------------------------------------------------------------------------
+Gọi C = số SCC (<= n), E' = số cạnh chéo trên DAG (<= m).
+- Tarjan + xây CSR: O(n + m).
+- Tính closure: mỗi cạnh chéo tốn 1 phép OR W từ = tổng O(E' * C / 64). Với
+  C ~ 5*10^4, E' ~ 10^5 => khoảng 7.8*10^7 phép OR trên từ 64-bit -> rất nhanh.
+- Trả lời truy vấn: O(q).
+- Bộ nhớ: reach dùng C * ceil(C/64) * 8 byte, tối đa ~312MB khi C = 5*10^4
+  (nằm trong 512MB), cùng các mảng CSR O(n + m).
+
+Kỹ thuật: iterative Tarjan SCC + DAG condensation + bitset transitive closure.

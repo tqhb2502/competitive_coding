@@ -1,0 +1,46 @@
+Monster Game I - https://cses.fi/problemset/task/2084
+
+Ky thuat: DP toi uu bang Convex Hull Trick (CHT) dang monotonic (bao loi duoi).
+
+Mo hinh bai toan:
+- Co n con quai, do manh s_1 <= s_2 <= ... <= s_n. Khi giet mot con quai ta ton
+  thoi gian = (do manh cua no) * (he so ky nang hien tai). Sau khi giet con quai
+  thu j, he so ky nang chuyen thanh f_j. Ban dau he so ky nang la x, va thoa
+  x >= f_1 >= f_2 >= ... >= f_n >= 1. Bat buoc phai giet con quai cuoi cung (thu n).
+
+Cong thuc DP:
+- Goi dp[i] = thoi gian nho nhat de vua giet xong con quai i. De giet con quai i
+  ta phai dung he so ky nang cua con quai j da giet ngay truoc do (hoac x neu chua
+  giet con nao). Dat fac[0] = x va fac[j] = f_j:
+      dp[i] = min_{0 <= j < i} ( dp[j] + s_i * fac[j] ),   dp[0] = 0.
+  Dap an la dp[n].
+
+Nhin duoi goc do CHT:
+- Voi moi ung vien j, coi la mot duong thang  y = fac[j] * X + dp[j]  (he so goc
+  = fac[j], he so tu do = dp[j]). Tinh dp[i] chinh la lay min cac duong thang tai
+  X = s_i.
+- He so goc fac[j] khong tang dan (vi x >= f_1 >= f_2 >= ...), va cac diem truy van
+  s_i khong giam dan (s_1 <= s_2 <= ...). Do do co the duy tri lower envelope bang
+  mot stack monotonic: them duong thang o cuoi va truy van min tai X = s_i.
+- Trong solution.cpp, truy van dung binary search tren cac duong thang cua envelope
+  (ham gia tri theo chi so duong thang la unimodal - giam roi tang), rat on dinh va
+  tranh moi truong hop bien cua con tro khi vua them vua truy van xen ke.
+- Cac slope co the bang nhau (f co the trung), nen truoc khi them mot duong co cung
+  he so goc voi duong cuoi, chi giu duong co intercept nho hon (dominate). Nho vay
+  moi cap duong ke nhau trong envelope co he so goc giam THUC SU, phep so sanh "bad"
+  bang tich cheo khong chia cho 0. Dung __int128 khi so sanh tich cheo de tranh tran.
+
+Tinh dung:
+- Do ham muc tieu la min cua cac duong thang tuyen tinh, nghiem toi uu nam tren
+  lower envelope. Voi he so goc giam va X tang, duong thang toi uu dich chuyen mot
+  chieu. Ta them line j SAU khi da tinh xong dp[j], nen khi tinh dp[i] moi line
+  0..i-1 deu co san -> dung dieu kien j < i.
+- Gia tri: dp[i] <= dp[0] + s_i * x = s_i * x <= 10^6 * 10^6 = 10^12, vua long long.
+  Trong query, fac[j]*s_i <= 10^12 nen tong cung vua long long (khong can __int128).
+
+Do phuc tap:
+- Thoi gian O(n log n): moi duong thang duoc them va bi loai nhieu nhat mot lan
+  (amortized), moi truy van la mot binary search O(log n).
+- Bo nho O(n).
+
+Voi n <= 2*10^5 thuat toan nay rat nhe, chay tot trong gioi han thoi gian cua CSES.

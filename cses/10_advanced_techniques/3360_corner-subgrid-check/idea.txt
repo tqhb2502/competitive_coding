@@ -1,0 +1,57 @@
+Bài: Corner Subgrid Check (CSES 3360)
+
+ĐỀ BÀI (tóm tắt)
+- Cho lưới n×n gồm k chữ cái đầu (A..). Với mỗi chữ cái, hỏi có tồn tại một
+  "corner subgrid" hay không: chọn hai hàng r1<r2 và hai cột c1<c2 sao cho cả 4
+  góc grid[r1][c1], grid[r1][c2], grid[r2][c1], grid[r2][c2] cùng bằng chữ cái đó
+  (subgrid có chiều cao và chiều rộng đều ≥ 2). In YES/NO cho từng chữ cái.
+  Giới hạn: 1 ≤ n ≤ 3000, 1 ≤ k ≤ 26.
+
+PHÁT BIỂU LẠI
+- Với một chữ cái c cố định, xét ma trận nhị phân A (A[i][j]=1 nếu ô (i,j) là c).
+  Tồn tại corner subgrid cho c KHI VÀ CHỈ KHI A chứa một hình chữ nhật (rectangle,
+  tức đồ thị con K_{2,2}): hai hàng khác nhau cùng có bit 1 tại HAI cột giống nhau.
+
+KỸ THUẬT CHÍNH — đánh dấu "cặp cột" (column pair) + chặn Zarankiewicz
+1) Ý tưởng cốt lõi: mỗi khi trong một hàng r có hai ô cùng là chữ cái c ở cột
+   c1 < c2, ta có một "cặp cột" (c1,c2). Nếu MỘT cặp cột (c1,c2) xuất hiện ở HAI
+   hàng khác nhau thì chính bốn ô (r,c1),(r,c2),(r',c1),(r',c2) tạo thành rectangle
+   → YES. Ta dùng mảng mark[c1*n + c2] để ghi ID chữ cái đã đánh dấu cặp cột đó
+   gần nhất. Khi xử lý chữ cái c, nếu gặp một cặp cột mà mark đã bằng c nghĩa là
+   một hàng TRƯỚC của cùng chữ cái c đã đánh dấu → phát hiện rectangle → YES.
+   Vì mỗi chữ cái có ID riêng và ta xử lý tuần tự từng chữ cái, KHÔNG cần reset
+   mảng mark giữa các chữ cái: chỉ khi chính c ghi vào mới có mark == c.
+
+2) Vì sao đủ nhanh (chặn Zarankiewicz / Kővári–Sós–Turán):
+   Các cặp cột được đánh dấu (trước khi va chạm) đều PHÂN BIỆT, mà số cặp cột phân
+   biệt tối đa là C(n,2). Do đó với mỗi chữ cái:
+     - Nếu chữ cái là NO: không cặp nào lặp lại, tổng số cặp xử lý = tổng C(deg_r,2)
+       trên các hàng ≤ C(n,2).
+     - Nếu là YES: ta dừng ngay ở cặp va chạm đầu tiên, nên cũng đã xử lý ≤ C(n,2)+O(n).
+   Suy ra tổng phép trên mọi chữ cái ≤ k·(C(n,2)+n) ≈ 26·4.5·10^6 ≈ 1.2·10^8, dư
+   sức trong ~1s bằng C++. (Đây chính là hệ quả: một cấu hình không có K_{2,2}
+   trên lưới n×n chỉ có tối đa ~n^{3/2} ô, nên va chạm bị ép xảy ra sớm.)
+
+CẤU TRÚC DỮ LIỆU
+- CSR để tránh quét lại cả lưới cho mỗi chữ cái: off[r*k + c] .. off[r*k + c + 1]
+  là đoạn (tăng dần) các cột của chữ cái c trên hàng r trong mảng colBuf. Dựng bằng
+  hai lượt O(n^2): một lượt đếm (prefix sum), một lượt điền. colBuf dùng uint16_t
+  (cột < 3000). mark là mảng signed char kích thước n·n (≤ 9 MB), khởi tạo −1.
+- Chỉ số cặp p = c1*n + c2 với c1<c2<n nên 0 ≤ p < n·n, luôn nằm trong mark. Trong
+  vòng lặp trong, c2 tăng dần nên p tăng dần → truy cập mark có tính cục bộ tốt.
+
+TÍNH ĐÚNG ĐẮN
+- Chiều thuận: nếu tại chữ cái c, hàng r, cặp (c1,c2) có mark == c thì trước đó một
+  hàng r' < r của cùng c đã ghi mark[c1*n+c2] = c ⇒ bốn góc (r,c1),(r,c2),(r',c1),
+  (r',c2) đều là c ⇒ tồn tại corner subgrid.
+- Chiều nghịch: nếu tồn tại corner subgrid với hàng r'<r và cột c1<c2 thì khi xử lý
+  hàng r' ta đã đánh dấu cặp (c1,c2)=c; đến hàng r cặp đó vẫn còn (không reset, không
+  chữ cái nào khác chen giữa vì xử lý tuần tự) ⇒ mark == c ⇒ phát hiện. Vậy thuật
+  toán đầy đủ và không báo nhầm.
+- Một hàng có các cột phân biệt nên các cặp trong cùng một hàng đều khác nhau: va
+  chạm chỉ xảy ra giữa hai hàng KHÁC nhau, đúng yêu cầu chiều cao ≥ 2.
+
+ĐỘ PHỨC TẠP
+- Thời gian: O(n^2) dựng CSR + O(k·n^2) tối đa cho phần đánh dấu (thực tế bị chặn
+  bởi Zarankiewicz còn ~k·C(n,2) ≈ 1.2·10^8). Với n=3000, k=26: nhanh dưới 1s.
+- Bộ nhớ: colBuf uint16_t ~18 MB + mark signed char ~9 MB + lưới ~9 MB + off ~0.3 MB.

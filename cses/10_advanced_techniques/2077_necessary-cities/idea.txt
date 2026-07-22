@@ -1,0 +1,63 @@
+Necessary Cities (CSES 2077)
+
+BÀI TOÁN
+--------
+Cho một đồ thị vô hướng liên thông gồm n thành phố và m con đường. Một thành phố
+được gọi là "necessary" (cần thiết) nếu việc xóa nó cùng tất cả các con đường kề
+nó làm cho đồ thị bị chia cắt, tức là tồn tại một cặp thành phố không còn đường
+đi giữa chúng. Cần liệt kê tất cả các thành phố như vậy.
+
+Đây chính là bài toán tìm ARTICULATION POINTS (đỉnh cắt / cut vertices) của đồ
+thị vô hướng.
+
+KỸ THUẬT
+--------
+Dùng thuật toán Tarjan dựa trên DFS với hai mảng:
+- disc[u] (discovery time): thời điểm đỉnh u được thăm lần đầu.
+- low[u]: giá trị disc nhỏ nhất mà từ u có thể đi tới được, chỉ dùng các cạnh của
+  cây DFS đi xuống rồi tối đa một cạnh ngược (back edge).
+
+Cập nhật low[u] = min(disc[u], min low[con] của các con trong cây DFS,
+min disc[v] với mọi cạnh ngược u-v).
+
+Điều kiện một đỉnh là articulation point:
+1. Nếu u là gốc (root) của cây DFS: u là đỉnh cắt khi và chỉ khi u có từ 2 con
+   trở lên trong cây DFS.
+2. Nếu u KHÔNG phải gốc: u là đỉnh cắt khi tồn tại một con v trong cây DFS sao cho
+   low[v] >= disc[u]. Nghĩa là cây con của v không có cạnh ngược nào trèo lên phía
+   trên u, nên xóa u sẽ tách cây con đó khỏi phần còn lại.
+
+VÌ SAO ĐÚNG
+-----------
+low[v] >= disc[u] có nghĩa là toàn bộ cây con gốc v không thể vươn tới bất kỳ tổ
+tiên nào của u (kể cả u) ngoài chính u. Do đồ thị vô hướng không có cạnh chéo
+(cross edge) trong cây DFS, mọi lối thoát khỏi cây con của v đều phải đi qua u.
+Vậy bỏ u thì v và con cháu của nó bị cô lập -> u là necessary. Với gốc, bản thân
+nó không có tổ tiên nên chỉ cần đếm số con: >= 2 con nghĩa là các nhánh con chỉ
+nối với nhau qua gốc.
+
+CÀI ĐẶT (C++17)
+---------------
+Vì n <= 1e5 nên DFS đệ quy có thể tràn stack; ta dùng ITERATIVE DFS bằng một stack
+tường minh. Với mỗi đỉnh u ta lưu:
+- parent[u]: cha trong cây DFS (-1 nếu là gốc).
+- it[u]: chỉ số cạnh kề tiếp theo cần duyệt của u (con trỏ trên adjacency list).
+- childCount[u]: số con của u trong cây DFS (dùng cho trường hợp gốc).
+
+Vòng lặp: nhìn đỉnh u ở đỉnh stack. Nếu còn cạnh chưa duyệt, lấy v:
+- nếu v chưa thăm: đặt parent[v]=u, tăng childCount[u], gán disc/low cho v, push v.
+- nếu v đã thăm và v != parent[u]: đây là back edge, cập nhật low[u]=min(low[u],disc[v]).
+Nếu u đã duyệt hết cạnh: pop u, cập nhật low[parent]=min(...,low[u]) và nếu parent
+không phải gốc và low[u] >= disc[parent] thì đánh dấu parent là đỉnh cắt. Sau khi
+DFS xong một thành phần, nếu childCount[gốc] >= 2 thì gốc cũng là đỉnh cắt.
+
+Đồ thị bảo đảm không có cạnh song song (tối đa một đường giữa hai thành phố) nên
+chỉ cần bỏ qua đúng một cạnh về cha bằng phép so sánh v == parent[u].
+
+Đọc/ghi nhanh bằng ios_base::sync_with_stdio(false) và cin.tie(nullptr).
+
+ĐỘ PHỨC TẠP
+-----------
+Thời gian O(n + m): mỗi đỉnh và mỗi cạnh được xử lý một số hằng lần.
+Bộ nhớ O(n + m) cho danh sách kề và các mảng disc, low, parent, it, stack.
+Với n = 1e5, m = 2e5, C++ chạy dư sức trong giới hạn thời gian của CSES.

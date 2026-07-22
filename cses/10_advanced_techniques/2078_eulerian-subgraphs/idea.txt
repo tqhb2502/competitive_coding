@@ -1,0 +1,42 @@
+Bài toán: Eulerian Subgraphs (CSES 2078)
+
+YÊU CẦU:
+Cho một đồ thị vô hướng gồm n đỉnh và m cạnh. Ta xét mọi tập con của tập cạnh
+(giữ lại tất cả n đỉnh). Một tập con được gọi là "Eulerian subgraph" nếu trong
+subgraph đó MỌI đỉnh đều có bậc CHẴN. Hãy đếm số subgraph như vậy, lấy modulo
+10^9 + 7. Lưu ý: tập rỗng (không giữ cạnh nào) cũng hợp lệ vì mọi đỉnh có bậc 0.
+
+Ý TƯỞNG CỐT LÕI — CYCLE SPACE (không gian chu trình trên GF(2)):
+- Coi mỗi tập con cạnh là một vector trong không gian vector trên trường GF(2)
+  với chiều bằng m (mỗi cạnh là một tọa độ 0/1, phép cộng là XOR = hợp đối xứng).
+- Tập các subgraph mà mọi đỉnh có bậc chẵn chính là "cycle space" (không gian
+  chu trình) của đồ thị. Đây là một không gian con vector vì: nếu hai tập cạnh
+  đều làm mọi đỉnh có bậc chẵn thì hiệu đối xứng (XOR) của chúng cũng vậy (bậc
+  của mỗi đỉnh cộng theo modulo 2 vẫn chẵn). Tập rỗng là vector 0.
+- Số phần tử của một không gian con vector trên GF(2) có số chiều d là 2^d.
+- Định lý cơ bản của lý thuyết đồ thị: số chiều của cycle space (còn gọi là
+  circuit rank / cyclomatic number) bằng:
+        d = m - n + c
+  với c là số thành phần liên thông của đồ thị. Trực giác: một spanning forest
+  dùng đúng (n - c) cạnh (cây, không có chu trình). Mỗi cạnh còn lại (có tất cả
+  m - (n - c) cạnh) tạo ra đúng một chu trình cơ bản độc lập; các chu trình cơ
+  bản này là một cơ sở của cycle space.
+
+=> ĐÁP ÁN = 2^(m - n + c) mod (10^9 + 7).
+
+Kiểm chứng ví dụ: n=4, m=3, tam giác {1,2,3} và đỉnh 4 cô lập => c=2.
+  d = 3 - 4 + 2 = 1  =>  2^1 = 2. Đúng.
+
+CÁCH TÍNH c:
+- Dùng DSU (Disjoint Set Union / union-find) với path compression + union by
+  rank để hợp nhất hai đầu mút của mỗi cạnh. Sau khi xử lý hết m cạnh, đếm số
+  root khác nhau => đó là c.
+- Chú ý d = m - n + c luôn không âm (vì c >= n - m khi đồ thị thưa; tổng quát
+  circuit rank >= 0), nên dùng pow(2, d, MOD) an toàn.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n + m * alpha(n)) cho DSU, cộng O(log d) cho lũy thừa nhanh.
+  Với n <= 1e5 và m <= 2e5 chạy rất nhanh.
+- Bộ nhớ: O(n + m) cho mảng parent/size và dữ liệu đọc vào.
+
+Không có nguy cơ TLE: thuật toán gần như tuyến tính, thừa sức trong giới hạn.

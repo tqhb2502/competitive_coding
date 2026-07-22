@@ -1,0 +1,50 @@
+Bài toán: Reversals and Sums (CSES 2074)
+
+Yêu cầu: cho mảng n phần tử, xử lý m truy vấn trên đoạn [a, b]:
+  - type 1: đảo ngược (reverse) các phần tử trong đoạn [a, b].
+  - type 2: tính tổng các phần tử trong đoạn [a, b].
+Ràng buộc: n <= 2*10^5, m <= 10^5, 0 <= x_i <= 10^9.
+Vì tổng có thể lên tới 2*10^5 * 10^9 = 2*10^14 nên phải dùng long long.
+
+Kỹ thuật: IMPLICIT TREAP (Cartesian tree) với LAZY REVERSAL.
+
+Ý tưởng chính:
+- Dùng một balanced BST kiểu treap mà "khóa" (key) không lưu tường minh mà là VỊ TRÍ
+  hiện tại của phần tử trong mảng (implicit key). Vị trí của một node được suy ra từ
+  kích thước subtree bên trái. Duyệt in-order của treap chính là thứ tự mảng hiện tại.
+- Mỗi node lưu: giá trị val, kích thước subtree sz, tổng subtree sm (long long),
+  priority ngẫu nhiên prio, và một lazy flag rev.
+- Hai thao tác cơ bản:
+    split(t, k): tách treap thành L gồm k phần tử đầu và R gồm phần còn lại.
+    merge(a, b): ghép hai treap (a đứng trước, b đứng sau) thành một.
+  Cả hai đều chạy theo độ cao O(log n) do priority ngẫu nhiên giữ cho cây cân bằng.
+- Đảo ngược đoạn [a, b]: split ra ba phần A = [1, a-1], B = [a, b], C = [b+1, n];
+  bật lazy rev cho gốc B (applyRev: hoán đổi con trái/phải và rev[B] ^= 1) rồi merge lại
+  A, B, C.
+- Lazy reversal: khi "đẩy xuống" (pushDown) một node có rev bật, ta truyền phép hoán đổi
+  con trái/phải (kèm XOR flag rev) cho hai con rồi tắt flag ở node hiện tại. Nhờ vậy phép
+  đảo ngược chỉ tốn O(1) tại gốc đoạn, chỉ thực sự áp dụng khi ta đi qua node đó trong
+  split/merge sau này.
+- Tính tổng đoạn [a, b]: split ra ba phần như trên, đọc sm của gốc B (tổng đoạn), sau đó
+  merge lại. Tổng sm là BẤT BIẾN với phép đảo ngược (đảo thứ tự không đổi tổng), nên truy
+  vấn sum luôn đúng dù đoạn đã bị reverse.
+
+Tại sao đúng:
+- Treap với priority ngẫu nhiên có chiều cao kỳ vọng O(log n), nên split/merge đúng.
+- Implicit key = số phần tử bên trái, cập nhật qua sz sau mỗi split/merge, phản ánh đúng
+  vị trí phần tử sau các lần đảo ngược.
+- Lazy rev đảm bảo thứ tự được đảo đúng khi và chỉ khi node được pushDown; sm không bị ảnh
+  hưởng nên sum luôn chính xác.
+- Trước mỗi lần rẽ trái/phải trong split và merge đều gọi pushDown để flag rev của tất cả
+  tổ tiên trên đường đi được giải quyết, đảm bảo cấu trúc con trái/phải ở node đang xét là
+  chính xác.
+
+Chi tiết cài đặt để tăng tốc (C++):
+- Lưu trữ node bằng các mảng song song (lc, rc, sz, prio, val, sm, rev) thay vì con trỏ,
+  node 0 đóng vai trò null.
+- Xây dựng treap ban đầu bằng cách merge từng phần tử (O(n log n)) - đủ nhanh với n=2*10^5.
+- Đọc/ghi bằng scanf/printf (hoặc fast IO) để đảm bảo tốc độ.
+
+Độ phức tạp:
+- Thời gian: O((n + m) log n).
+- Bộ nhớ: O(n).

@@ -1,0 +1,38 @@
+Bài toán: Hamming Distance (CSES 2136)
+
+Cho n xâu nhị phân (n <= 2·10^4), mỗi xâu có độ dài k <= 30. Hãy tìm
+khoảng cách Hamming nhỏ nhất giữa hai xâu bất kỳ. Khoảng cách Hamming
+giữa hai xâu là số vị trí mà chúng khác nhau.
+
+Ý tưởng chính (bit-packing + popcount):
+- Vì k <= 30, mỗi xâu nhị phân có thể đóng gói (pack) gọn vào một số
+  nguyên không dấu 32 bit (unsigned int). Bit thứ j của số tương ứng
+  với ký tự thứ j của xâu.
+- Khoảng cách Hamming giữa hai xâu a và b chính bằng số bit 1 trong
+  phép XOR: popcount(a XOR b). Bởi vì a XOR b có bit 1 đúng tại những
+  vị trí mà hai xâu khác nhau.
+- Ta duyệt tất cả O(n^2) cặp; với mỗi cặp chỉ tốn một phép XOR và một
+  lệnh popcount phần cứng (__builtin_popcount), rồi lấy giá trị nhỏ
+  nhất.
+
+Tính đúng đắn:
+- Đóng gói xâu vào số nguyên là song ánh giữ nguyên vị trí bit, nên
+  vị trí khác nhau của hai xâu tương ứng chính xác với bit 1 của XOR.
+  Do đó popcount(a XOR b) đúng bằng khoảng cách Hamming.
+- Ta xét đầy đủ mọi cặp (i, j) với i < j nên chắc chắn tìm được cặp
+  có khoảng cách nhỏ nhất. Cận trên khởi tạo ans = k là hợp lệ vì hai
+  xâu độ dài k khác nhau ở nhiều nhất k vị trí.
+- Cắt tỉa: nếu ans = 0 (tồn tại hai xâu trùng nhau) thì không thể nhỏ
+  hơn, ta dừng sớm; điều này không ảnh hưởng tính đúng đắn.
+
+Độ phức tạp:
+- Thời gian: O(n^2) phép so sánh, mỗi phép O(1) nhờ XOR + popcount
+  phần cứng. Với n = 2·10^4 thì số cặp khoảng 2·10^8, chạy nhanh dưới
+  giới hạn thời gian trong C++.
+- Bộ nhớ: O(n) để lưu n số nguyên 32 bit.
+
+Ghi chú kỹ thuật:
+- Dùng scanf để đọc nhanh. __builtin_popcount trên unsigned int
+  thường biên dịch thành một lệnh POPCNT duy nhất trên phần cứng hiện
+  đại, giúp vòng lặp trong cùng cực nhanh. Đây là bài mang bản chất
+  O(n^2) với bitset, rất hợp với C++.

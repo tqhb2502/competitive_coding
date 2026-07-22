@@ -1,0 +1,73 @@
+Dynamic Connectivity - CSES 2133
+
+BAI TOAN
+--------
+Cho do thi vo huong voi n dinh va m canh ban dau. Sau do co k su kien, moi su
+kien la them mot canh (loai 1) hoac xoa mot canh (loai 2). Ta phai in ra k+1 so:
+so thanh phan lien thong cua do thi ban dau (truoc su kien dau tien), va sau moi
+su kien tiep theo.
+
+Rang buoc: 2 <= n <= 1e5; 1 <= m, k <= 1e5.
+
+Y TUONG CHINH: offline dynamic connectivity
+--------------------------------------------
+Bai toan them/xoa canh khong the giai truc tiep bang DSU thong thuong vi DSU
+khong ho tro thao tac xoa (undo). Ky thuat chuan la:
+
+  segment tree tren truc thoi gian + DSU-with-rollback (union by size, KHONG
+  path compression).
+
+Coi cac "trang thai" la 0, 1, ..., k (trang thai 0 la do thi ban dau, trang thai
+t la sau khi ap dung t su kien dau tien). Moi canh cu the ton tai trong mot (hoac
+nhieu) khoang lien tiep cac trang thai:
+
+  - Canh ban dau: bat dau ton tai tu trang thai 0.
+  - Canh them boi su kien i (loai 1): bat dau ton tai tu trang thai i.
+  - Canh xoa boi su kien i (loai 2): ton tai trong khoang [start, i-1], voi start
+    la thoi diem no duoc them vao (hoac 0 neu la canh ban dau).
+  - Canh khong bao gio bi xoa: ton tai den tan trang thai k, khoang [start, k].
+
+Ta dung mot unordered_map tu ma hoa cap dinh (min*BASE + max) sang mot stack cac
+thoi diem start dang "mo". Khi xoa canh, ta lay start o dinh stack ra va sinh mot
+khoang [start, i-1]. Cach dung stack xu ly dung ca truong hop co nhieu canh trung
+lap giua cung mot cap dinh (multi-edge), vi moi ban sao co tuoi tho rieng.
+
+SEGMENT TREE TREN THOI GIAN
+---------------------------
+Xay segment tree tren mien [0, k] (k+1 la). Voi moi (canh, khoang [l, r]), ta them
+canh do vao O(log k) node phu khoang [l, r] (giong cach cap nhat "lazy" phu doan).
+Tong so ban ghi la O((m + k) log k), vua du bo nho.
+
+Sau do DFS segment tree:
+  - Tai moi node: ghi lai checkpoint = kich thuoc stack rollback, roi union tat ca
+    cac canh luu tai node do.
+  - Neu la node la (nl == nr): so thanh phan lien thong cua trang thai nl chinh la
+    dsu.comp hien tai.
+  - Neu khong phai la: de quy xuong hai con.
+  - Truoc khi tra ve: rollback tat ca cac union da thuc hien tai node nay ve
+    checkpoint.
+
+DSU-with-rollback
+-----------------
+Dung union by size de cay find co do cao O(log n), va KHONG dung path compression
+(vi path compression khong the undo mot cach re tien). Moi lan union thuc su lam
+thay doi cau truc, ta luu (root, child) vao stack ops va giam bien dem comp. Khi
+rollback, ta bat cac ban ghi ra khoi stack, khoi phuc par[child] = child, tru lai
+sz[root], va tang comp. So thanh phan lien thong luon bang comp = n - (so union
+thanh cong tren duong tu goc xuong node hien tai).
+
+TINH DUNG DAN
+-------------
+Tai moi trang thai t, tap canh dang "song" la dung tap canh ma cac khoang ton tai
+cua chung chua t. Trong qua trinh DFS, tren duong tu goc den la t, cac node ma ta
+di qua chinh la cac node ma segment tree dung de bieu dien tap khoang chua t; do
+do tat ca (va chi) cac canh song tai t da duoc union khi ta cham la t. Vi vay
+dsu.comp tai la t la so thanh phan lien thong dung cua trang thai t.
+
+DO PHUC TAP
+-----------
+- Thoi gian: O((m + k) log k * alpha) ~ O((m + k) log k * log n). Moi canh xuat
+  hien trong O(log k) node, moi union/find ton O(log n). Voi n, m, k = 1e5 chay
+  rat nhanh trong gioi han thoi gian cua CSES.
+- Bo nho: O((m + k) log k) cho cac ban ghi canh trong segment tree, cong O(n) cho
+  DSU va O(k) cho mang ket qua.

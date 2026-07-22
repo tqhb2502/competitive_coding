@@ -1,0 +1,42 @@
+Bài toán: Reachable Nodes (CSES 2138)
+
+Đề bài
+------
+Cho một đồ thị có hướng không chu trình (DAG) gồm n đỉnh và m cạnh. Với mỗi đỉnh,
+hãy đếm số đỉnh có thể tới được từ đỉnh đó (kể cả chính nó).
+
+Ràng buộc: 1 <= n <= 5·10^4, 1 <= m <= 10^5.
+
+Ý tưởng chính
+-------------
+Gọi reach[u] là tập các đỉnh tới được từ u. Vì đây là DAG nên có công thức truy hồi:
+
+    reach[u] = {u}  hợp  (hợp của reach[v] với mọi cạnh u -> v)
+
+Để tính đúng theo truy hồi này, ta cần xử lý các đỉnh theo THỨ TỰ TOPO NGƯỢC:
+mọi đỉnh con v (đỉnh mà u trỏ tới) phải được tính xong trước u. Ta dùng thuật toán
+Kahn (queue trên bậc vào indeg) để lấy ra một thứ tự topo, rồi duyệt ngược thứ tự đó.
+Kahn hoàn toàn lặp (iterative), không đệ quy nên không lo tràn stack với n lớn.
+
+Biểu diễn mỗi tập reach[u] bằng một bitset<N> của C++ (N = 50000). Khi xử lý u:
+  - bật bit ứng với u (reach[u].set(u-1)),
+  - với mỗi cạnh u -> v thực hiện phép OR:  reach[u] |= reach[v].
+Kết quả cho u là số bit đang bật, lấy bằng reach[u].count() (popcount phần cứng).
+
+Vì phép hợp (OR) là idempotent nên các cạnh trùng hay nhiều đường đi cùng tới một
+đỉnh đều không gây đếm lặp — đây chính là lý do phải dùng bitset thay vì cộng số lượng.
+
+Tính đúng đắn
+-------------
+Do xử lý theo topo ngược, khi tính reach[u] thì mọi reach[v] (v là đỉnh kề sau của u)
+đã hoàn chỉnh. Tập tới được từ u đúng bằng chính u hợp với tập tới được của các đỉnh
+kề trực tiếp — quy nạp theo thứ tự topo cho thấy công thức đúng cho mọi đỉnh. Phép OR
+trên bitset gộp các tập không trùng lặp, count() cho đúng lực lượng của tập kết quả.
+
+Độ phức tạp
+-----------
+- Thời gian: mỗi cạnh gây một phép OR trên bitset độ dài n, tốn O(n/64). Tổng cộng
+  O(m · n / 64) ≈ 10^5 · 50000 / 64 ≈ 8·10^7 phép toán từ (word) — rất nhanh trong
+  C++. Thêm O(n + m) cho topo sort và O(n · n / 64) cho các popcount.
+- Bộ nhớ: n bitset, mỗi cái n bit => O(n^2 / 8) ≈ 5·10^4 · 6256 byte ≈ 313 MB,
+  nằm trong giới hạn bộ nhớ 512 MB của CSES.
