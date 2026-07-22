@@ -1,0 +1,39 @@
+Sliding Window Minimum (CSES 3221)
+https://cses.fi/problemset/task/3221
+
+TECHNIQUE: monotonic deque (hàng đợi đơn điệu tăng dần theo giá trị).
+
+ĐỀ BÀI:
+- Mảng có n phần tử, sinh theo công thức: x_1 = x, và với i >= 2 thì
+  x_i = (a * x_{i-1} + b) mod c.
+- Với mỗi cửa sổ (window) độ dài k trượt qua mảng, tính giá trị nhỏ nhất
+  của cửa sổ đó. In ra XOR của tất cả các giá trị nhỏ nhất này.
+- Ràng buộc: 1 <= k <= n <= 10^7; 0 <= x, a, b <= 10^9; 1 <= c <= 10^9.
+  Vì n lên tới 10^7 nên cần thuật toán O(n) và I/O nhanh.
+
+Ý TƯỞNG CHÍNH:
+- Dùng một monotonic deque lưu các CHỈ SỐ (index) của mảng sao cho các giá
+  trị arr[idx] tương ứng luôn TĂNG DẦN từ đầu (front) tới cuối (back).
+- Khi duyệt tới phần tử i:
+  1) Loại khỏi front các chỉ số đã ra khỏi cửa sổ hiện tại, tức các index
+     <= i - k (cửa sổ của i là đoạn [i-k+1, i]).
+  2) Loại khỏi back mọi chỉ số j mà arr[j] >= arr[i], vì arr[i] nhỏ hơn và
+     mới hơn nên các phần tử đó không bao giờ còn có thể là min nữa.
+  3) Đẩy i vào back.
+  4) Khi cửa sổ đã đủ độ dài (i >= k-1), phần tử ở front chính là min của
+     cửa sổ; lấy XOR giá trị này vào kết quả.
+
+TÍNH ĐÚNG ĐẮN (correctness):
+- Deque luôn giữ tính đơn điệu tăng: sau bước (2), giá trị ở front là nhỏ
+  nhất trong số các phần tử còn nằm trong cửa sổ, nên front đúng là minimum.
+- Một phần tử bị loại ở bước (2) không bao giờ cần lại: nó vừa lớn hơn/bằng
+  arr[i], vừa cũ hơn i, nên trong mọi cửa sổ tương lai còn chứa nó thì cũng
+  chứa i, mà arr[i] không lớn hơn -> nó không thể là min.
+- Bước (1) đảm bảo front luôn nằm trong cửa sổ hiện tại.
+- Sinh mảng: x_1 = x (giữ nguyên, có thể tới 10^9), các x_i sau lấy mod c.
+  Tích a * x_{i-1} có thể tới ~10^18 nên phải dùng long long để tránh tràn.
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n) vì mỗi chỉ số vào/ra deque đúng một lần.
+- Bộ nhớ: O(n) cho mảng giá trị và mảng deque (dùng mảng int cấp phát sẵn
+  để tối ưu tốc độ cho n = 10^7).

@@ -1,0 +1,35 @@
+Bài toán: Sliding Window Mex (CSES 3219)
+
+Yêu cầu:
+Cho mảng n số nguyên và cửa sổ kích thước k. Với mỗi cửa sổ gồm k phần tử
+liên tiếp, tính mex (smallest nonnegative integer không xuất hiện trong cửa
+sổ). In ra n-k+1 kết quả.
+
+Nhận xét then chốt (key idea):
+- Mỗi cửa sổ chỉ có k phần tử, nên mex luôn nằm trong đoạn [0, k]. Thật vậy,
+  nếu mex >= k+1 thì cả k+1 giá trị 0, 1, ..., k đều phải có mặt, nhưng cửa
+  sổ chỉ chứa k phần tử nên không thể. Do đó ta chỉ cần theo dõi số lần xuất
+  hiện (count) của các giá trị trong [0, k]. Mọi giá trị > k đều vô nghĩa với
+  mex nên bỏ qua (clamp / ignore). Giá trị x_i tới 1e9 nhưng vẫn xử lý được.
+
+Kỹ thuật (technique): sliding window kết hợp segment tree trên miền giá trị.
+- Dùng một segment tree phủ các giá trị 0..k, mỗi lá lưu count của giá trị đó,
+  node trong lưu min của các count. Các lá "thừa" (ngoài [0,k]) đặt +vô cực
+  để không bao giờ bị chọn.
+- Khi trượt cửa sổ: thêm phần tử mới (update +1 tại giá trị của nó nếu <= k) và
+  bỏ phần tử cũ (update -1). Mỗi update là O(log k).
+- Truy vấn mex = chỉ số nhỏ nhất có count == 0. Vì min tại root luôn bằng 0
+  (luôn tồn tại giá trị vắng mặt trong [0,k]), ta đi xuống cây: nếu con trái có
+  min == 0 thì rẽ trái, ngược lại rẽ phải (khi đó con phải chắc chắn có min ==
+  0). Tới lá thu được mex. Mỗi truy vấn O(log k).
+
+Tính đúng đắn (correctness):
+- Bất biến khi descend: node hiện tại có min == 0, nên luôn tồn tại lá con có
+  count == 0; ta luôn chọn nhánh trái nhất chứa count == 0, do đó lá cuối cùng
+  là giá trị nhỏ nhất có count == 0, chính là mex.
+- Bỏ qua giá trị > k là an toàn vì chúng không thể là mex và không ảnh hưởng
+  tới sự có mặt của các giá trị trong [0, k].
+
+Độ phức tạp:
+- Thời gian: O(n log k) cho toàn bộ thêm/bớt và truy vấn.
+- Bộ nhớ: O(k) cho segment tree.

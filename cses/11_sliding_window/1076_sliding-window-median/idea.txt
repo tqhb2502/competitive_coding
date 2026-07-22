@@ -1,0 +1,37 @@
+Bài toán: Sliding Window Median (CSES 1076)
+https://cses.fi/problemset/task/1076
+
+ĐỀ BÀI:
+Cho mảng n số, với mỗi cửa sổ liên tiếp gồm k phần tử (quét từ trái sang phải)
+hãy in ra median (trung vị) của cửa sổ đó. Khi k chẵn có hai phần tử ở giữa thì
+median được quy ước là phần tử NHỎ HƠN trong hai phần tử đó (lower median).
+Ràng buộc: 1 <= k <= n <= 2*10^5, 1 <= x_i <= 10^9. In ra n-k+1 giá trị.
+
+Ý TƯỞNG (two multisets - two heaps balancing):
+- Median cần lấy là phần tử ở vị trí hạng (rank) m = (k-1)/2 theo thứ tự sắp xếp
+  0-indexed. Suy ra tập nửa dưới cần chứa đúng target = (k+1)/2 phần tử, và đáp án
+  chính là phần tử LỚN NHẤT của nửa dưới. Kiểm tra: k=3 -> target=2, đáp án là phần
+  tử thứ hạng 1 (giữa); k=4 -> target=2, đáp án là phần tử hạng 1 = phần tử nhỏ hơn
+  trong hai phần tử giữa (đúng quy ước lower median).
+- Dùng hai multiset:
+    low  : nửa dưới (giữ sao cho đáp án = *low.rbegin(), tức max của low)
+    high : nửa trên
+  Bất biến (invariant): max(low) <= min(high) và |low| = target sau mỗi bước.
+- Thao tác trên cửa sổ trượt (mỗi phần tử được add đúng 1 lần và remove đúng 1 lần):
+    add(x)    : nếu low rỗng hoặc x <= max(low) thì thêm vào low, ngược lại thêm vào high.
+    remove(x) : nếu x <= max(low) thì xóa 1 bản sao khỏi low, ngược lại xóa khỏi high
+                (dùng multiset.find để chỉ xóa đúng MỘT phần tử, an toàn với giá trị trùng).
+    rebalance : chuyển phần tử giữa low/high để |low| = target (có bảo vệ high không rỗng
+                trong giai đoạn nạp đủ k phần tử đầu tiên).
+- Với giá trị trùng nhau: các bản sao cùng giá trị là hoán đổi được nên việc quyết định
+  xóa ở low hay high dựa trên so sánh với max(low) vẫn giữ đúng bất biến và tổng số phần tử.
+
+CORRECTNESS:
+Sau khi rebalance, low chứa target phần tử nhỏ nhất của cửa sổ và mọi phần tử của low
+đều <= mọi phần tử của high, nên max(low) đúng là phần tử ở hạng (k-1)/2 = lower median.
+add/remove duy trì tính chất phân hoạch (max(low) <= min(high)) như đã lập luận, rebalance
+khôi phục kích thước target trước khi ghi kết quả (chỉ ghi khi cửa sổ đã đủ k phần tử).
+
+ĐỘ PHỨC TẠP:
+- Thời gian: O(n log k) do mỗi phần tử vào/ra multiset một số lần hằng số, mỗi thao tác O(log k).
+- Bộ nhớ: O(k) cho hai multiset (cộng O(n) lưu mảng và kết quả).

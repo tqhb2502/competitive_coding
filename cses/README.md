@@ -32,4 +32,11 @@ cses/
 | 08 | String Algorithms | 21 | ✅ xong — 21/21 đúng thuật toán, thuần stdlib (KMP/Z, suffix array + LCP, suffix automaton, Manacher, Aho-Corasick, trie; tránh hashing đơn); nhiều bài rủi ro TLE Python ghi chú trong idea.txt |
 | 09 | Geometry | 16 | ✅ xong — 16/16 ĐÚNG (đã review độc lập, brute-force đối chiếu), thuần stdlib + số học nguyên chính xác; 8 bài rủi ro TLE Python (gồm 1742 Robot Path) ghi chú trong idea.txt |
 | 10 | Advanced Techniques | 25 | ✅ **C++** — 25/25 verify, compile OK, **0 TLE-risk**, 0 FAIL (24 verify kỹ + 2143 verify nhanh) |
-| 11+ | Sliding Window / Interactive / Bitwise / Construction / Advanced Graph / Counting / Additional I & II | ~110 | ⬜ chưa làm |
+| 11 | Sliding Window Problems | 11 | ✅ **C++** — 11/11 compile OK + verify nhanh (3 PASS · 8 FIXED · 0 FAIL), 0 TLE-risk (monotonic deque, prefix, two heaps, BIT...) |
+| 12 | Interactive Problems | 6 | ✅ **C++** — 6/6 PASS (0 FIXED · 0 FAIL); mỗi bài test qua interactor giả (đúng đáp án, số truy vấn ≤ giới hạn, flush OK, không deadlock) |
+| 13 | Bitwise Operations | ~11 | ⬜ chưa làm |
+| 14 | Construction Problems | ~8 | ⬜ chưa làm |
+| 15 | Advanced Graph Problems | ~28 | ⬜ chưa làm |
+| 16 | Counting Problems | ~18 | ⬜ chưa làm |
+| 17 | Additional Problems I | ~28 | ⬜ chưa làm |
+| 18 | Additional Problems II | ~28 | ⬜ chưa làm |

@@ -1,0 +1,39 @@
+Hidden Permutation - CSES 3139
+https://cses.fi/problemset/task/3139
+
+PROTOCOL (giao thức tương tác)
+- Có một hoán vị ẩn a[1..n] của các số nguyên 1..n (1 <= n <= 1000).
+- Ta có thể hỏi truy vấn dạng: "? i j" (với 1 <= i, j <= n).
+    Judge trả về "YES" nếu a[i] < a[j], ngược lại trả về "NO".
+- Được phép hỏi tối đa 10000 truy vấn "?".
+- Khi tìm ra hoán vị, in đáp án dạng: "! a[1] a[2] ... a[n]" rồi kết thúc.
+- QUAN TRỌNG: phải flush stdout sau MỖI truy vấn (dùng endl), nếu không judge
+  không nhận được truy vấn và chương trình sẽ treo (deadlock).
+
+Ý TƯỞNG (strategy)
+- Truy vấn "? i j" chính là một phép so sánh: cho biết a[i] có nhỏ hơn a[j] hay
+  không. Vì a là một hoán vị nên mọi giá trị đôi một khác nhau, do đó quan hệ
+  "a[i] < a[j]" là một thứ tự toàn phần (total order) chặt trên tập vị trí.
+- Do đó bài toán quy về: SẮP XẾP các vị trí 1..n theo giá trị a tăng dần, chỉ
+  dùng phép so sánh (comparison-based sorting). Sau khi sắp xếp:
+    vị trí có giá trị nhỏ nhất nhận value = 1,
+    vị trí có giá trị nhỏ thứ hai nhận value = 2, ...,
+    vị trí có giá trị lớn nhất nhận value = n.
+  Nói cách khác, value tại một vị trí chính là RANK (hạng) của vị trí đó.
+- Ta dùng MERGE SORT tự cài đặt, với hàm so sánh là truy vấn tới judge. Mỗi lần
+  merge chỉ so sánh các cặp phần tử khác nhau và không lặp lại cặp nào, nên số
+  truy vấn được kiểm soát chặt.
+
+SỐ TRUY VẤN (query-count bound vs limit)
+- Merge sort (top-down, chia đôi tại giữa) có số so sánh xấu nhất bằng
+    n*ceil(log2 n) - 2^ceil(log2 n) + 1.
+  Với n = 1000: 1000*10 - 1024 + 1 = 8977 truy vấn (đã kiểm chứng bằng đệ quy
+    worst(n) = worst(floor(n/2)) + worst(ceil(n/2)) + (n-1), worst(1)=0).
+- 8977 < 10000 => luôn nằm trong giới hạn cho phép với mọi n <= 1000.
+  (Cận dưới lý thuyết là log2(n!) ~ 8529 nên merge sort gần tối ưu.)
+
+TÍNH ĐÚNG ĐẮN (why it is correct)
+- Vì "a[i] < a[j]" là thứ tự toàn phần chặt, merge sort trả về đúng thứ tự tăng
+  dần của các vị trí theo giá trị a. Gán rank 1..n theo thứ tự này cho ra chính
+  xác giá trị a tại từng vị trí (vì a là hoán vị của 1..n).
+- Trường hợp n = 1: không cần truy vấn, đáp án là "! 1".

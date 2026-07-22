@@ -1,0 +1,2 @@
+Colored Chairs
+https://cses.fi/problemset/task/3273

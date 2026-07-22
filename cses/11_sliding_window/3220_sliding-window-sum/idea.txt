@@ -1,0 +1,34 @@
+Bài toán: Sliding Window Sum (CSES 3220)
+
+Tóm tắt đề:
+- Cho n và k. Mảng được sinh bằng công thức tuyến tính (linear congruential generator):
+  x_1 = x; x_i = (a * x_{i-1} + b) mod c, với i = 2..n.
+- Có (n - k + 1) cửa sổ liên tiếp độ dài k. Với mỗi cửa sổ tính tổng (window sum).
+- In ra XOR của tất cả các window sum.
+
+Kỹ thuật: sliding window với tổng chạy (running sum) + circular buffer.
+
+Ý tưởng chính:
+- Ta duyệt i từ 0 đến n-1, sinh phần tử cur ngay trong vòng lặp (không cần lưu toàn bộ mảng).
+- Dùng một circular buffer kích thước k để nhớ đúng k phần tử gần nhất, nhờ đó biết được
+  phần tử nào rời khỏi cửa sổ khi cửa sổ trượt.
+- Duy trì biến sum là tổng của cửa sổ hiện tại:
+    + Khi i >= k: phần tử buf[i % k] (chính là a[i-k]) rời cửa sổ, nên sum -= buf[i % k].
+    + Ghi buf[i % k] = cur rồi sum += cur.
+    + Khi i >= k-1: cửa sổ đã đủ k phần tử, đây là một window sum hợp lệ, cập nhật ans ^= sum.
+
+Tính đúng đắn:
+- Tại thời điểm i (0-indexed), cửa sổ hiện hành là [i-k+1 .. i]. Việc trừ phần tử a[i-k]
+  và cộng phần tử a[i] biến tổng cửa sổ [i-k .. i-1] thành tổng cửa sổ [i-k+1 .. i], nên
+  sum luôn bằng tổng đúng của cửa sổ kết thúc tại i. XOR các sum này cho đáp án.
+- Chỉ số buf[i % k] trước khi ghi đè chính là giá trị a[i-k] (vì (i-k) % k == i % k), đảm bảo
+  trừ đúng phần tử rời cửa sổ.
+
+Chú ý tràn số:
+- k, giá trị phần tử có thể tới ~10^9 nên window sum tối đa ~10^16, phải dùng long long.
+- Phép a * x_{i-1} tối đa ~10^18, vẫn nằm trong long long.
+- Giá trị từng phần tử < 10^9 nên lưu buffer bằng int là đủ (tiết kiệm bộ nhớ).
+
+Độ phức tạp:
+- Thời gian: O(n) — mỗi phần tử được sinh và xử lý đúng một lần.
+- Bộ nhớ: O(k) cho circular buffer (dùng int).

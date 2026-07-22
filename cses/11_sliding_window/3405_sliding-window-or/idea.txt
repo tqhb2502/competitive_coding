@@ -1,0 +1,37 @@
+Bài toán: Sliding Window Or (CSES 3405)
+
+Đề bài:
+- Mảng a[1..n] được sinh bởi công thức: x1 = x, xi = (a*x[i-1] + b) mod c.
+- Với mỗi cửa sổ (window) độ dài k liên tiếp, tính OR bit của tất cả phần tử trong cửa sổ.
+- In ra XOR của tất cả các giá trị OR đó.
+- Ràng buộc: 1 <= k <= n <= 10^7; 0 <= x, a, b <= 10^9; 1 <= c <= 10^9.
+  Suy ra mọi giá trị phần tử < 2^30 (30 bit là đủ).
+
+Kỹ thuật: sliding window + đếm số bit (bit-count) để duy trì OR động.
+
+Ý tưởng chính:
+- Phép OR KHÔNG có phần tử nghịch đảo (không "trừ" ra được như prefix sum),
+  nên khi một phần tử rời cửa sổ ta không thể đơn giản xóa nó khỏi giá trị OR.
+- Cách xử lý: với mỗi bit b (0..29) duy trì cnt[b] = số phần tử trong cửa sổ
+  hiện tại có bit b bằng 1. Giá trị OR của cửa sổ = tập các bit b có cnt[b] > 0.
+- Ta duy trì thêm biến cur là giá trị OR hiện tại một cách incremental:
+  * Khi THÊM phần tử v: với mỗi bit set của v, nếu cnt[b] tăng từ 0 lên 1 thì
+    bật bit b trong cur.
+  * Khi XÓA phần tử w: với mỗi bit set của w, nếu cnt[b] giảm về 0 thì tắt bit b
+    trong cur.
+- Duyệt i từ 0..n-1: thêm a[i], nếu i >= k thì xóa a[i-k] (phần tử rời cửa sổ);
+  khi i >= k-1 (cửa sổ đã đủ k phần tử) thì lấy cur XOR vào đáp án.
+
+Tính đúng đắn:
+- Sau khi thêm a[i] và xóa a[i-k], cửa sổ đang chứa đúng các chỉ số [i-k+1, i].
+- cnt[b] luôn phản ánh chính xác số phần tử trong cửa sổ có bit b; cur bật bit b
+  khi và chỉ khi cnt[b] > 0, tức đúng bằng OR của cửa sổ. Cập nhật cur chỉ đổi
+  trạng thái tại các thời điểm cnt[b] chuyển 0<->1 nên luôn nhất quán.
+- Việc thêm trước, xóa sau trong cùng vòng lặp không gây lỗi: nếu a[i] và a[i-k]
+  cùng có bit b thì cnt[b] chỉ dao động quanh giá trị dương, bit vẫn giữ đúng.
+
+Độ phức tạp:
+- Sinh mảng: O(n) với phép nhân dùng unsigned long long (a*prev tối đa ~10^18).
+- Mỗi phần tử được thêm và xóa đúng một lần; mỗi thao tác duyệt qua số bit đang
+  bật (tối đa 30). Tổng thời gian O(n * 30) trong trường hợp xấu nhất, thực tế
+  chỉ duyệt các bit set nên nhanh hơn. Bộ nhớ O(n) để lưu mảng (mảng int 10^7 ~ 40MB).

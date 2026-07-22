@@ -1,0 +1,55 @@
+Sliding Window Advertisement (CSES 3227)
+
+Bài toán
+--------
+Cho n tấm ván có chiều cao x_i. Với mỗi cửa sổ gồm k tấm ván liên tiếp, hãy tìm
+diện tích lớn nhất của một hình chữ nhật quảng cáo đặt lọt vào các tấm ván trong
+cửa sổ đó. Một hình chữ nhật trải trên một đoạn ván liên tiếp có chiều cao bằng
+min chiều cao các ván trong đoạn và chiều rộng bằng số ván. Vậy đáp án của mỗi
+cửa sổ chính là "largest rectangle in histogram" (diện tích hình chữ nhật lớn
+nhất trong biểu đồ cột) của đoạn k phần tử đó. In ra n - k + 1 số.
+
+Ý tưởng chính
+-------------
+Kỹ thuật: monotonic stack (previous/next smaller element) + Li Chao tree với
+segment insert (chèn đường thẳng trên một đoạn, truy vấn max tại một điểm).
+
+Bước 1 — Với mỗi cột j, tính đoạn cực đại mà a[j] là min:
+  L[j] = prevSmaller(j) + 1  (prevSmaller: chỉ số gần nhất bên trái có giá trị
+         < a[j], strict), R[j] = nextSmaller(j) - 1 (strict). Trong đoạn
+  [L[j], R[j]] mọi cột đều >= a[j]. Đây là công thức chuẩn của largest rectangle
+  in histogram: mỗi hình chữ nhật tối ưu được "đại diện" bởi cột thấp nhất của nó.
+
+Bước 2 — Với một cửa sổ bắt đầu tại s (kết thúc e = s + k - 1), diện tích tối ưu
+  là:
+      g(s) = max_{j in [s, e]}  a[j] * ( min(R[j], e) - max(L[j], s) + 1 )
+  Nghĩa là lấy đoạn cực đại của cột j rồi cắt (clip) theo biên cửa sổ [s, e].
+  Vì mỗi hình chữ nhật tối ưu trong cửa sổ có cột min j, đoạn của nó nằm gọn trong
+  [L[j], R[j]] và trong [s, e], nên độ rộng sau khi clip >= độ rộng thật, đồng
+  thời vẫn là một hình chữ nhật hợp lệ (mọi cột trong đoạn clip đều >= a[j]). Do
+  đó max theo j cho đúng đáp án.
+
+Bước 3 — Coi g(s) như hàm theo s. Với mỗi cột j, khi s chạy trên các cửa sổ chứa
+  j, biểu thức a[j]*(min(R[j],e) - max(L[j],s) + 1) chia thành 4 vùng theo việc
+  biên trái/phải có bị clip hay không (e = s + k - 1):
+    - Không clip cả hai:      giá trị hằng a[j]*(R[j]-L[j]+1),   s in [R-k+1, L]
+    - Chỉ clip trái:          a[j]*(R[j] - s + 1)  (đường dốc -a[j]), s >= max(L+1, R-k+1)
+    - Chỉ clip phải:          a[j]*(s + k - L[j])  (đường dốc +a[j]), s <= min(L, R-k)
+    - Clip cả hai:            hằng a[j]*k,                          s in [L+1, R-k]
+  Mỗi vùng là một đoạn s và một đường thẳng (line) theo s. Chèn tất cả các đoạn-
+  đường này vào một Li Chao tree hỗ trợ segment insert; sau đó g(s) = truy vấn max
+  tại điểm s. Bốn vùng là một phân hoạch của tập các cửa sổ chứa j nên không sót,
+  không đếm sai.
+
+Tính đúng đắn
+-------------
+Công thức g(s) chính là largest rectangle in histogram của đoạn cửa sổ (đã kiểm
+tra khớp toàn bộ ví dụ). Li Chao tree trả về đúng max của tất cả các đường thẳng
+phủ điểm s, tương ứng max trên mọi cột j trong cửa sổ.
+
+Độ phức tạp
+-----------
+- Monotonic stack: O(n).
+- Mỗi cột sinh tối đa 4 đoạn-đường. Segment insert vào Li Chao: O(log^2 m) mỗi
+  đường, tổng O(n log^2 m). Truy vấn mỗi điểm: O(log m), tổng O(m log m).
+- m = n - k + 1. Tổng thời gian O(n log^2 n), bộ nhớ O(n).

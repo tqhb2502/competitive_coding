@@ -1,0 +1,2 @@
+Sliding Window Sum
+https://cses.fi/problemset/task/3220

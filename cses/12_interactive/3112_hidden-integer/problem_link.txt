@@ -1,0 +1,2 @@
+Hidden Integer
+https://cses.fi/problemset/task/3112

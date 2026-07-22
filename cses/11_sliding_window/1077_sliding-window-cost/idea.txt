@@ -1,0 +1,42 @@
+Bài toán: Sliding Window Cost (CSES 1077)
+
+Kỹ thuật: two multisets (hai multiset cân bằng, tương đương two heaps) để duy trì
+median của cửa sổ trượt, cộng với hai biến sum tích lũy.
+
+Ý tưởng chính:
+- Với mỗi cửa sổ k phần tử, ta cần chọn giá trị đích x sao cho tổng chi phí
+  sum |a_i - x| là nhỏ nhất. Kết quả tối ưu đạt được khi x = median của cửa sổ
+  (đây là tính chất cổ điển: hàm sum |a_i - x| đạt cực tiểu tại trung vị).
+- Ta chia cửa sổ thành hai nửa:
+    + low: chứa nửa nhỏ hơn, phần tử lớn nhất của low chính là median.
+    + high: chứa nửa lớn hơn.
+  Duy trì bất biến low.size() == high.size() hoặc low.size() == high.size()+1,
+  và mọi phần tử của low <= mọi phần tử của high.
+- Giữ thêm sumLow (tổng phần tử của low) và sumHigh (tổng phần tử của high).
+- Gọi m = median = phần tử lớn nhất của low. Chi phí của cửa sổ:
+    cost = (m * low.size() - sumLow) + (sumHigh - m * high.size())
+  vì mọi phần tử low <= m nên phần đầu = sum (m - a_i), mọi phần tử high >= m
+  nên phần sau = sum (a_i - m). Cộng lại đúng bằng sum |a_i - m|.
+
+Cập nhật khi trượt cửa sổ:
+- add(x): chèn x vào low nếu x <= median hiện tại, ngược lại vào high; cập nhật
+  sum tương ứng rồi rebalance để phục hồi bất biến kích thước.
+- remove(x): tìm x trong low trước (nếu không có thì trong high), xóa đúng một
+  phần tử, cập nhật sum rồi rebalance.
+- rebalance: chuyển phần tử max của low sang high hoặc min của high sang low cho
+  đến khi cân bằng.
+
+Tính đúng đắn:
+- Bất biến low/high luôn được giữ nên phần tử lớn nhất của low luôn là median
+  (median dưới khi k chẵn, nhưng với hàm chi phí thì mọi giá trị giữa hai trung
+  vị đều cho cùng chi phí nhỏ nhất, nên chọn median dưới là hợp lệ).
+- Công thức cost tách theo hai nửa là chính xác vì thứ tự các phần tử được bảo
+  đảm bởi bất biến.
+
+Độ phức tạp:
+- Thời gian: O(n log k) do mỗi thao tác add/remove/rebalance trên multiset là
+  O(log k), thực hiện O(n) lần.
+- Bộ nhớ: O(k) cho hai multiset (và O(n) cho mảng đầu vào + mảng kết quả).
+
+Lưu ý tràn số: giá trị đến 1e9, k đến 2e5 nên tổng và chi phí có thể tới ~2e14,
+phải dùng long long.

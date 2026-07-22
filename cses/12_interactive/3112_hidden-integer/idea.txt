@@ -1,0 +1,36 @@
+HIDDEN INTEGER (CSES 3112)
+
+1. GIAO THỨC TƯƠNG TÁC (interactive protocol)
+   - Judge giấu một số nguyên x với 1 <= x <= 10^9.
+   - Truy vấn (query): in ra dòng "? y" với 1 <= y <= 10^9.
+     Judge trả lời:
+       + "YES"  nếu y < x  (tức là x lớn hơn y).
+       + "NO"   nếu y >= x (tức là x nhỏ hơn hoặc bằng y).
+   - Trả lời cuối cùng: in ra "! x" rồi kết thúc chương trình.
+   - Giới hạn số truy vấn (query limit): tối đa 30 query.
+   - BẮT BUỘC flush stdout sau mỗi dòng (dùng endl) nếu không judge
+     sẽ không nhận được query và bị deadlock.
+
+2. CHIẾN LƯỢC (strategy) - binary search theo giá trị
+   - Duy trì đoạn [lo, hi] chứa x, khởi tạo lo = 1, hi = 10^9.
+   - Bất biến (invariant): luôn có lo <= x <= hi.
+   - Trong khi lo < hi:
+       + Chọn mid = (lo + hi) / 2 (chia lấy phần nguyên). Vì lo < hi nên
+         lo <= mid <= hi - 1, do đó 1 <= mid <= 10^9 - 1: query hợp lệ.
+       + Query "? mid".
+         * Nếu "YES" (mid < x) => x > mid => x >= mid + 1 => lo = mid + 1.
+         * Nếu "NO"  (x <= mid)                          => hi = mid.
+   - Khi lo == hi thì x = lo, in ra "! lo".
+
+3. RÀNG BUỘC SỐ QUERY (query-count bound)
+   - Mỗi query giảm kích thước đoạn [lo, hi] đi ít nhất một nửa.
+   - Số phần tử ban đầu là 10^9, nên số query tối đa là
+     ceil(log2(10^9)) = 30 (vì 2^30 = 1073741824 > 10^9).
+   - 30 <= 30 = query limit, thoả mãn giới hạn.
+
+4. TÍNH ĐÚNG ĐẮN (correctness)
+   - Bất biến lo <= x <= hi được giữ nguyên sau mỗi query:
+       * "YES" nghĩa x > mid, nên x nằm trong [mid+1, hi], đặt lo = mid+1 an toàn.
+       * "NO"  nghĩa x <= mid, nên x nằm trong [lo, mid], đặt hi = mid an toàn.
+   - Đoạn luôn co lại (mid < hi khi lo < hi) nên vòng lặp kết thúc.
+   - Khi lo == hi, chỉ còn một ứng viên duy nhất, đó chính là x.

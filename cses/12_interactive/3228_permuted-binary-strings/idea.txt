@@ -1,0 +1,37 @@
+Permuted Binary Strings — CSES 3228
+https://cses.fi/problemset/task/3228
+
+== Giao thức tương tác (interactive protocol) ==
+- Giám khảo (judge) giữ một hoán vị (permutation) ẩn a_1, a_2, ..., a_n với a_i thuộc {1..n}.
+- Truy vấn (query): ta in ra "? b_1 b_2 ... b_n" (viết liền, mỗi b_k thuộc {0,1}).
+  Giám khảo trả về xâu đã hoán vị "b_{a_1} b_{a_2} ... b_{a_n}".
+  Nghĩa là: ký tự ở vị trí i của xâu trả lời chính là bit tại vị trí a_i của xâu ta gửi.
+- Số truy vấn tối đa (query limit): 10 câu hỏi loại "?".
+- Đáp án cuối: in ra "! a_1 a_2 ... a_n" rồi kết thúc.
+- Ràng buộc: 1 <= n <= 1000. PHẢI flush stdout sau mỗi dòng.
+
+== Chiến lược (strategy) ==
+Mỗi giá trị a_i nằm trong [1..n], mà n <= 1000 < 1024 = 2^10, nên a_i biểu diễn được
+bằng tối đa 10 bit. Ý tưởng: xác định lần lượt từng bit của tất cả a_i bằng một truy vấn.
+
+Với truy vấn thứ j (j = 0, 1, ..., B-1):
+  - Đặt b_k = bit thứ j của chỉ số k, với mọi k = 1..n. (Tức b_k = (k >> j) & 1.)
+  - Gửi xâu b này. Xâu trả lời tại vị trí i là b_{a_i} = bit thứ j của a_i.
+  - Ta thu được bit thứ j của mọi a_i cùng lúc.
+
+Sau B truy vấn, ghép các bit lại: a_i = tổng( bit_j(a_i) * 2^j ). Vì hoán vị nên các a_i
+đôi một khác nhau và mỗi a_i nằm trong [1..n], việc dùng đủ B bit đảm bảo tái tạo chính xác.
+
+Chọn B = số bit nhỏ nhất sao cho 2^B > n (tức B = floor(log2 n) + 1). Khi đó dải [0..2^B-1]
+chứa mọi giá trị 1..n, nên mọi giá trị được mã hoá phân biệt.
+
+== Cận số truy vấn (query-count bound) vs giới hạn ==
+- B là số bit cần để biểu diễn n. Với n <= 1000: 2^9 = 512 <= 1000 < 1024 = 2^10, nên B <= 10.
+- Vậy số truy vấn tối đa = 10, đúng bằng giới hạn cho phép. Với n nhỏ hơn thì cần ít hơn
+  (ví dụ n = 3 chỉ cần B = 2 truy vấn).
+
+== Vì sao đúng (correctness) ==
+- Vị trí i của xâu trả lời = b_{a_i} theo đúng định nghĩa giao thức.
+- Truy vấn j với b_k = bit_j(k) làm cho vị trí i trả về đúng bit_j(a_i).
+- Gom đủ các bit 0..B-1 tái tạo được a_i duy nhất (vì 2^B > n bao trọn dải giá trị).
+- Do đó đáp án "! a_1 ... a_n" chính là hoán vị ẩn.
