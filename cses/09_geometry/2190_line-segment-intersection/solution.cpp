@@ -1,0 +1,64 @@
+#include <algorithm>
+#include <cstdint>
+#include <iostream>
+
+using i64 = std::int64_t;
+using i128 = __int128_t;
+
+struct Point {
+    i64 x;
+    i64 y;
+};
+
+[[nodiscard]] i128 cross(const Point& first, const Point& second, const Point& third) {
+    return static_cast<i128>(second.x - first.x) * (third.y - first.y) -
+           static_cast<i128>(second.y - first.y) * (third.x - first.x);
+}
+
+[[nodiscard]] bool on_segment(const Point& first, const Point& second, const Point& point) {
+    return std::min(first.x, second.x) <= point.x && point.x <= std::max(first.x, second.x) &&
+           std::min(first.y, second.y) <= point.y && point.y <= std::max(first.y, second.y);
+}
+
+[[nodiscard]] bool opposite_signs(i128 first, i128 second) {
+    return (first < 0 && second > 0) || (first > 0 && second < 0);
+}
+
+[[nodiscard]] bool intersect(const Point& first, const Point& second,
+                             const Point& third, const Point& fourth) {
+    const i128 third_side = cross(first, second, third);
+    const i128 fourth_side = cross(first, second, fourth);
+    const i128 first_side = cross(third, fourth, first);
+    const i128 second_side = cross(third, fourth, second);
+
+    if (opposite_signs(third_side, fourth_side) && opposite_signs(first_side, second_side)) {
+        return true;
+    }
+    if (third_side == 0 && on_segment(first, second, third)) {
+        return true;
+    }
+    if (fourth_side == 0 && on_segment(first, second, fourth)) {
+        return true;
+    }
+    if (first_side == 0 && on_segment(third, fourth, first)) {
+        return true;
+    }
+    return second_side == 0 && on_segment(third, fourth, second);
+}
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+
+    int test_count = 0;
+    std::cin >> test_count;
+    while (test_count-- > 0) {
+        Point first{};
+        Point second{};
+        Point third{};
+        Point fourth{};
+        std::cin >> first.x >> first.y >> second.x >> second.y >>
+            third.x >> third.y >> fourth.x >> fourth.y;
+        std::cout << (intersect(first, second, third, fourth) ? "YES\n" : "NO\n");
+    }
+}
