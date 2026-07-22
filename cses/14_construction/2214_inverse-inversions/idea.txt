@@ -1,0 +1,44 @@
+Bài toán: Inverse Inversions (CSES 2214)
+Xây dựng một hoán vị của các số 1..n sao cho có ĐÚNG k cặp nghịch thế
+(inversion). Một inversion là cặp vị trí (a, b) với a < b và p_a > p_b.
+
+Ràng buộc: 1 ≤ n ≤ 10^6 và 0 ≤ k ≤ n(n-1)/2.
+
+KHI NÀO CÓ NGHIỆM:
+Số inversion nhỏ nhất là 0 (hoán vị tăng dần 1,2,...,n) và lớn nhất là
+n(n-1)/2 (hoán vị giảm dần n,...,2,1). Vì đề đã bảo đảm 0 ≤ k ≤ n(n-1)/2
+nên LUÔN LUÔN tồn tại nghiệm, không bao giờ có trường hợp IMPOSSIBLE.
+
+Ý TƯỞNG XÂY DỰNG (tham lam từ trái sang phải, O(n)):
+Ta lần lượt điền giá trị cho từng vị trí từ trái sang. Giả sử các giá trị
+chưa dùng luôn tạo thành một đoạn liên tục [lo, hi] (điều này đúng vì ta
+chỉ lấy phần tử ở hai đầu, hoặc kết thúc bằng cách xả toàn bộ phần còn lại
+theo thứ tự tăng dần).
+
+Tại một vị trí, nếu còn m = hi - lo + 1 giá trị chưa dùng thì:
+- Nếu đặt giá trị lớn nhất hi vào vị trí này, nó tạo ra đúng m-1 inversion
+  (m-1 giá trị nhỏ hơn còn lại đều nằm phía sau nó). Đây là mức đóng góp
+  lớn nhất có thể tại vị trí này.
+- Nếu đặt giá trị đứng thứ hạng r (0-index) trong đoạn, tức giá trị lo+r,
+  thì nó tạo ra đúng r inversion (r giá trị nhỏ hơn nó vẫn còn ở phía sau).
+
+Thuật toán:
+  lo = 1, hi = n
+  Lặp khi lo ≤ hi:
+    - Nếu k ≤ 0: xả các giá trị còn lại lo..hi theo thứ tự tăng dần
+      (đóng góp thêm 0 inversion) rồi dừng.
+    - Đặt m = hi - lo + 1.
+      + Nếu k ≥ m-1: đặt hi vào vị trí hiện tại, k -= (m-1), hi -= 1.
+      + Ngược lại (0 < k < m-1): đặt lo+k vào vị trí hiện tại (đóng góp
+        đúng k inversion), sau đó xả toàn bộ các giá trị còn lại theo thứ
+        tự tăng dần TRỪ giá trị lo+k đã dùng; đặt k = 0 rồi dừng.
+
+TẠI SAO ĐÚNG:
+Mỗi khi đặt hi ta cộng dồn m-1 vào tổng inversion và giảm k tương ứng, các
+giá trị nhỏ hơn còn nguyên phía sau nên tính đúng số inversion. Khi k còn
+lại nhỏ hơn m-1, ta đặt đúng một giá trị lo+k để đóng góp nốt k inversion,
+rồi phần còn lại xếp tăng dần nên không sinh thêm inversion nào. Tổng số
+inversion cuối cùng đúng bằng k ban đầu.
+
+ĐỘ PHỨC TẠP: O(n) thời gian, O(n) bộ nhớ cho mảng kết quả. k có thể tới
+~5*10^11 nên phải dùng long long.

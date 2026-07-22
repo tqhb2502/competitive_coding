@@ -1,0 +1,49 @@
+Monotone Subsequences - CSES 2215
+https://cses.fi/problemset/task/2215
+
+BÀI TOÁN
+Với mỗi test, cho n và k. Cần tạo một hoán vị (permutation) của 1..n sao cho
+dãy con đơn điệu (monotone subsequence) dài nhất có ĐÚNG k phần tử. Dãy con đơn
+điệu là dãy con tăng (increasing) hoặc giảm (decreasing). Nói cách khác, gọi
+LIS = độ dài dãy con tăng dài nhất, LDS = độ dài dãy con giảm dài nhất, ta cần
+max(LIS, LDS) = k. Nếu không tồn tại thì in "IMPOSSIBLE". Nhiều đáp án hợp lệ
+đều được chấp nhận (special judge).
+
+ĐIỀU KIỆN TỒN TẠI (feasibility)
+Theo định lý Erdős–Szekeres, mọi hoán vị độ dài n luôn thỏa LIS * LDS >= n. Do
+đó nếu muốn cả LIS <= k và LDS <= k thì bắt buộc n <= k * k. Ngược lại, ta luôn
+dựng được hoán vị đạt đúng k khi k <= n <= k*k. Vì đề đã bảo đảm k <= n, điều
+kiện có nghiệm gọn lại thành:
+    n <= k*k   -> CÓ NGHIỆM
+    n >  k*k   -> IMPOSSIBLE
+
+Ý TƯỞNG DỰNG (construction)
+Chia dãy đầu ra thành ĐÚNG k block (khối) liên tiếp. Mỗi block:
+  - Bên trong sắp xếp TĂNG dần.
+  - Các block đứng trước nhận dải giá trị LỚN hơn các block đứng sau (giữa các
+    block thì giá trị GIẢM dần theo thứ tự xuất hiện).
+Chia n phần tử vào k block sao cho kích thước đều nhất có thể: base = n/k,
+rem = n%k; rem block đầu có kích thước base+1, các block còn lại có kích thước
+base. Vì k <= n nên base >= 1, mọi block đều khác rỗng.
+
+Gán giá trị: duyệt các block theo thứ tự xuất hiện, block đầu tiên nhận dải giá
+trị lớn nhất. Giữ biến high = n; với mỗi block kích thước sz, block đó chiếm dải
+[high-sz+1 .. high] in theo thứ tự tăng, rồi high -= sz.
+
+TẠI SAO ĐÚNG
+- LDS = số block = k: lấy phần tử lớn nhất (cuối) của block 1, rồi một phần tử
+  bất kỳ của block 2 (đều nhỏ hơn), ... mỗi block một phần tử -> dãy giảm dài k.
+  Không thể vượt k vì trong mỗi block giá trị tăng (dãy giảm lấy tối đa 1 phần
+  tử/block) và chỉ có k block. Vậy LDS = k đúng.
+- LIS = kích thước block lớn nhất <= ceil(n/k) <= k (do n <= k*k): vì giá trị
+  giảm nghiêm ngặt giữa các block nên một dãy con tăng phải nằm gọn trong MỘT
+  block, tối đa bằng kích thước block đó.
+Do đó max(LIS, LDS) = k đúng như yêu cầu.
+
+Ví dụ n=5, k=3: sizes = [2,2,1] -> block "4 5", "2 3", "1" -> "4 5 2 3 1".
+LIS = 2, LDS = 3 (5,3,1), longest monotone = 3. Hợp lệ.
+n=5, k=2: 5 > 2*2 = 4 -> IMPOSSIBLE.
+n=7, k=7: 7 block cỡ 1 -> "7 6 5 4 3 2 1", longest = 7. Hợp lệ.
+
+ĐỘ PHỨC TẠP
+Mỗi test dựng dãy trong O(n). Tổng O(sum n) <= O(t*n) với t<=1000, n<=100 -> rất nhẹ.
