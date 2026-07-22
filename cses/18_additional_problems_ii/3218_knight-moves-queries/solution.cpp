@@ -12,6 +12,9 @@ Integer knightDistance(Integer first, Integer second) {
     if (first == 1 && second == 0) {
         return 3;
     }
+    if (first == 1 && second == 1) {
+        return 4;
+    }
     if (first == 2 && second == 2) {
         return 4;
     }
