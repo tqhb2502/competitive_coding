@@ -1,0 +1,26 @@
+REVERSAL SORTING - CSES 2075
+
+ĐỀ BÀI (tóm tắt)
+Sắp xếp một hoán vị 1..n bằng không quá n phép đảo đoạn và in các đoạn đảo.
+Ràng buộc: n <= 2*10^5.
+
+THUẬT TOÁN
+Xử lý giá trị cần đặt i từ 1 đến n. Prefix trước i đã đúng. Tìm vị trí hiện
+tại p của giá trị i; nếu p>i, đảo đoạn [i,p]. Phép đảo đưa i về vị trí i và
+không đụng prefix đã khóa. Vì mỗi i dùng nhiều nhất một phép đảo, tổng không
+quá n.
+
+Để tìm vị trí và đảo đoạn nhanh, lưu hoán vị trong implicit treap có lazy
+reverse. Giữ con trỏ tới node của từng giá trị. Vị trí của node được tính từ
+kích thước cây con trái và đường cha lên gốc; split/merge thực hiện đảo đoạn
+trong O(log n).
+
+CHỨNG MINH ĐÚNG
+Quy nạp theo i. Trước bước i, các vị trí 1..i-1 chứa đúng 1..i-1, nên node i
+nằm ở vị trí p>=i. Đảo [i,p] đưa phần tử cuối đoạn là i về đầu đoạn, tức vị trí
+i, và không thay đổi prefix trước đó. Sau bước i, prefix 1..i đúng. Cuối cùng
+toàn bộ hoán vị được sắp tăng. Mỗi vòng thêm tối đa một phép đảo nên số phép
+không vượt n; implicit treap chỉ là cách thực hiện chính xác cùng các phép đảo.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n) bộ nhớ và tối đa n-1 phép đảo.

@@ -1,0 +1,24 @@
+MEX GRID QUERIES - CSES 1157
+
+ĐỀ BÀI (tóm tắt)
+Ô (y,x) chứa mex của các số ở bên trái cùng hàng và phía trên cùng cột. Tính
+giá trị tại một ô với y,x <= 10^9.
+
+THUẬT TOÁN
+Đổi sang chỉ số từ 0: i=y-1, j=x-1. Giá trị của ô là i XOR j, nên chỉ cần in
+(y-1) XOR (x-1).
+
+CHỨNG MINH ĐÚNG
+Xét z=i XOR j và một bit cao nhất b.
+
+- z không xuất hiện bên trái: nếu i XOR j'=z thì j'=i XOR z=j, không nhỏ hơn j.
+  Tương tự z không xuất hiện phía trên.
+- Với mọi t<z, đặt b là bit cao nhất nơi t và z khác nhau; tại đó z có bit 1,
+  t có bit 0. Nếu bit b của i bằng bit b của z thì j'=i XOR t nhỏ hơn j;
+  ngược lại i'=j XOR t nhỏ hơn i. Vì vậy t đã xuất hiện ở bên trái hoặc phía
+  trên.
+
+Do tất cả số nhỏ hơn z đều có mặt còn z chưa có mặt, mex đúng bằng z.
+
+ĐỘ PHỨC TẠP
+O(1) thời gian và O(1) bộ nhớ.

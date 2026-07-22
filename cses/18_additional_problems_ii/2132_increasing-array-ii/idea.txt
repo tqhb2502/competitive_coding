@@ -1,0 +1,22 @@
+INCREASING ARRAY II - CSES 2132
+
+ĐỀ BÀI (tóm tắt)
+Được tăng hoặc giảm từng phần tử một đơn vị. Tìm tổng chi phí nhỏ nhất để biến
+mảng thành không giảm.
+
+THUẬT TOÁN
+Duyệt từ trái sang phải và duy trì một max-heap các mức đại diện của nghiệm
+hồi quy đẳng điệu L1 cho tiền tố. Với giá trị x, đưa x vào heap. Nếu phần tử
+lớn nhất top>x, trả thêm top-x, bỏ top rồi đưa thêm một bản x vào heap.
+
+CHỨNG MINH ĐÚNG
+Trong nghiệm tối ưu của một tiền tố, các vị trí liên tiếp có cùng giá trị tạo
+thành các khối; giá trị tối ưu của mỗi khối là một trung vị và các trung vị
+không giảm. Heap lưu các nửa dưới cần thiết của các khối này. Khi top<=x, x có
+thể tạo khối mới mà không vi phạm thứ tự. Khi top>x, hai khối cuối vi phạm;
+thay một bản top bằng x chính là gộp chúng và điều chỉnh trung vị, với chi phí
+tăng bắt buộc top-x. Đây là bước gộp-kề (PAVA) tối ưu cho chuẩn L1. Quy nạp theo
+tiền tố cho thấy tổng cộng dồn luôn là chi phí tối ưu, nên kết quả cuối đúng.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian, O(n) bộ nhớ; đáp án dùng số nguyên 64 bit.

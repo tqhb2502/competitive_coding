@@ -1,0 +1,2 @@
+Minimum Cost Pairs
+https://cses.fi/problemset/task/3402

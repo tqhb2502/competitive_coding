@@ -1,0 +1,29 @@
+BOOK SHOP II - CSES 1159
+
+ĐỀ BÀI (tóm tắt)
+Có n loại sách. Loại i có giá h_i, số trang s_i và nhiều nhất k_i bản. Với
+ngân sách không quá x, tìm tổng số trang lớn nhất có thể mua.
+Ràng buộc: n <= 100, x <= 10^5, h_i,s_i,k_i <= 1000.
+
+THUẬT TOÁN
+Gọi dp[c] là số trang lớn nhất khi được dùng ngân sách không quá c. Khi xử lý
+một loại sách có giá h, giá trị s và giới hạn k, ta cần
+
+  new[c] = max(dp[c-t*h] + t*s), 0 <= t <= k.
+
+Xét riêng từng lớp đồng dư r modulo h và viết c=r+q*h. Công thức trở thành
+
+  new[r+q*h] = q*s + max(dp[r+j*h]-j*s), q-k <= j <= q.
+
+Đây là cực đại trên một cửa sổ trượt. Dùng deque đơn điệu chứa các chỉ số j có
+giá trị dp[r+j*h]-j*s giảm dần; mỗi trạng thái được thêm và xóa đúng một lần.
+
+CHỨNG MINH ĐÚNG
+Với c=r+q*h, mọi cách mua t bản tương ứng duy nhất với j=q-t nằm trong
+[q-k,q], và giá trị của cách đó đúng bằng q*s + dp[r+j*h]-j*s. Deque luôn giữ
+đúng các j còn nằm trong cửa sổ và phần tử đầu có giá trị biến đổi lớn nhất,
+nên new[c] là phương án tốt nhất cho loại sách hiện tại. Quy nạp qua các loại
+sách cho thấy dp cuối cùng xét đúng mọi số bản hợp lệ của mọi loại.
+
+ĐỘ PHỨC TẠP
+O(n*x) thời gian và O(x) bộ nhớ.

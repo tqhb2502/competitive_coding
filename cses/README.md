@@ -43,5 +43,5 @@ cses/
 | 14 | Construction Problems | 8 | ✅ **C++** — 8/8 verify (validator kiểm tính hợp lệ + khả thi); 2418 Grid Path cross-check brute-force mọi lưới ≤4×4 (0 sai) |
 | 15 | Advanced Graph Problems | 28 | ✅ **C++** — 28/28 compile OK, 0 FAIL, 0 TLE-risk (10 PASS · 17 FIXED · 3357 fast-verify riêng); Prüfer, tree isomorphism, SCC/bridge, MST edge classification, dominator, parity BFS |
 | 16 | Counting Problems | 18 | ✅ **C++** — 18/18 compile + sample; oracle vét cạn/invariant cho cả 18 bài, ASan/UBSan sạch; 0 TLE-risk |
-| 17 | Additional Problems I | ~28 | ⬜ chưa làm |
-| 18 | Additional Problems II | ~28 | ⬜ chưa làm |
+| 17 | Additional Problems I | 30 | ✅ **C++** — 30/30 compile + sample/validator; audit độc lập, oracle/vét cạn, ASan/UBSan sạch; 0 TLE-risk |
+| 18 | Additional Problems II | 30 | ✅ **C++17** — 30/30 compile + sample/validator; audit độc lập, oracle/vét cạn, ASan/UBSan sạch; 3401 stress đối kháng ≤0.27s local |

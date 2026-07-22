@@ -1,0 +1,27 @@
+GRID PUZZLE II - CSES 2131
+
+ĐỀ BÀI (tóm tắt)
+Chọn đúng a_i ô ở hàng i và b_j ô ở cột j của bảng n x n. Ô (i,j) có c_ij
+đồng xu; cần tối đa hóa tổng xu và in bảng chọn, hoặc -1 nếu không thể.
+Ràng buộc: n <= 50, c_ij <= 1000.
+
+THUẬT TOÁN
+Dựng mạng giống bài ghép hàng-cột:
+- nguồn -> hàng i, capacity a_i, cost 0;
+- hàng i -> cột j, capacity 1, cost 1000-c_ij;
+- cột j -> đích, capacity b_j, cost 0.
+Mọi cost thuận không âm. Chạy min-cost max-flow bằng đường tăng ngắn nhất với
+thế đỉnh (Dijkstra trên reduced cost). Nếu không gửi được F=sum a đơn vị thì in
+-1. Nếu gửi đủ, score = 1000*F - minCost; cạnh ô đã dùng cho biết vị trí X.
+
+CHỨNG MINH ĐÚNG
+Như Grid Puzzle I, luồng nguyên F tương ứng một-một với bảng thỏa đúng mọi tổng
+hàng/cột. Mỗi ô được chọn đóng góp cost 1000-c_ij, nên với đúng F ô, tổng cost
+bằng 1000F trừ tổng số xu. Do đó bảng có min-cost chính là bảng có số xu lớn
+nhất. Thuật toán successive shortest augmenting path với reduced cost duy trì
+luồng min-cost cho từng giá trị; khi đạt F nó trả đúng tối ưu. Nếu không đạt F
+thì không tồn tại bảng thỏa yêu cầu.
+
+ĐỘ PHỨC TẠP
+Có O(n) đỉnh, O(n^2) cạnh và F<=n^2. Độ phức tạp
+O(F*n^2*log n), bộ nhớ O(n^2).

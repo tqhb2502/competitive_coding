@@ -1,0 +1,25 @@
+SWAP ROUND SORTING - CSES 1698
+
+ĐỀ BÀI (tóm tắt)
+Sắp xếp một hoán vị bằng số vòng ít nhất. Trong một vòng được đổi chỗ tùy ý
+nhiều cặp chỉ số đôi một rời nhau; cần in ra các cặp của từng vòng.
+
+THUẬT TOÁN
+Tách hoán vị vị trí -> giá trị thành các chu trình c[0..L-1]. Với mỗi chu trình
+không tầm thường, đưa vào vòng 1 các cặp (c[i],c[L-1-i]). Với L>=3, đưa vào
+vòng 2 các cặp (c[i],c[L-i]) cho i bắt đầu từ 1 và hai đầu chưa gặp nhau.
+
+Nếu không có cặp, in 0 vòng. Nếu vòng 2 rỗng, mọi chu trình dài 2 và in 1 vòng.
+Ngược lại in cả 2 vòng.
+
+CHỨNG MINH ĐÚNG
+Trong một chu trình, vòng 1 cố định c[0] (và các vị trí đối xứng tương ứng),
+sau đó vòng 2 đổi các cặp còn lệch để mọi c[i] nhận giá trị i; kiểm tra trực
+tiếp theo thứ tự chu trình cho thấy tích hai phép đối xứng là phép quay ngược
+của chu trình ban đầu. Các chu trình rời nhau nên mọi cặp trong cùng một vòng
+đều rời nhau. Một vòng swap luôn là một phép tự nghịch, vì thế chỉ hoán vị gồm
+chu trình dài tối đa 2 mới sắp được trong một vòng. Do đó 0/1/2 vòng mà thuật
+toán chọn không chỉ hợp lệ mà còn nhỏ nhất.
+
+ĐỘ PHỨC TẠP
+O(n) thời gian, O(n) bộ nhớ và in O(n) cặp.

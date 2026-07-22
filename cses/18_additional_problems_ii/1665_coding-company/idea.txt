@@ -1,0 +1,33 @@
+CODING COMPANY - CSES 1665
+
+ĐỀ BÀI (tóm tắt)
+Chia n lập trình viên thành các đội không rỗng. Phạt của một đội là kỹ năng
+lớn nhất trừ nhỏ nhất; đếm số cách chia có tổng phạt <=x modulo 10^9+7.
+Ràng buộc n <= 100, x <= 5000.
+
+THUẬT TOÁN
+Sắp xếp kỹ năng tăng dần. Khi đã xử lý một tiền tố, một đội "mở" đã có thành
+viên nhỏ nhất nhưng chưa chọn thành viên lớn nhất. dp[open][cost] đếm cách với
+số đội mở và tổng phạt tích lũy.
+
+Trước khi xử lý kỹ năng a[i], tăng mọi đầu phải của open đội qua khoảng
+d=a[i]-a[i-1], nên chi phí tăng open*d. Với người hiện tại có bốn lựa chọn:
+
+1. tạo đội một người: open giữ nguyên, 1 cách;
+2. thêm vào một trong open đội và vẫn để đội mở: open cách;
+3. bắt đầu một đội mở mới: open tăng 1, 1 cách;
+4. thêm vào rồi đóng một trong open đội: open giảm 1, open cách.
+
+Hai trường hợp đầu gộp thành hệ số open+1. Cuối cùng chỉ lấy trạng thái không
+còn đội mở và cộng mọi cost<=x.
+
+CHỨNG MINH ĐÚNG
+Trong thứ tự kỹ năng, mỗi đội có duy nhất thời điểm gặp thành viên nhỏ nhất
+(mở) và thành viên lớn nhất (đóng); đội một người mở và đóng ngay. Bốn chuyển
+tiếp liệt kê đúng và không trùng mọi vai trò của người hiện tại. Khi quét qua
+khoảng d, mỗi đội đang mở đóng góp d vào max-min của nó, nên open*d cộng dồn
+đúng tổng phạt. Do đó dp tạo song ánh với các phân hoạch được gắn đúng chi phí;
+các trạng thái open=0, cost<=x chính là đáp án.
+
+ĐỘ PHỨC TẠP
+O(n^2*x) thời gian và O(n*x) bộ nhớ.

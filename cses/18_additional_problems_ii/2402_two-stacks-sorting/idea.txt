@@ -1,0 +1,50 @@
+TWO STACKS SORTING - CSES 2402
+
+ĐỀ BÀI (tóm tắt)
+Đưa lần lượt một hoán vị vào một trong hai stack và lấy các đỉnh stack ra để
+tạo dãy 1..n. In stack của từng phần tử, hoặc IMPOSSIBLE. n <= 2*10^5.
+
+MÔ HÌNH ĐỒ THỊ XUNG ĐỘT
+Luôn lấy số nhỏ nhất đang chờ ra ngay khi nó đã ở một stack; trì hoãn thao tác
+này không bao giờ có lợi. Trong lịch push/pop tham lam ấy, mỗi giá trị v tồn tại
+trong khoảng thời gian [in[v],out[v]]. Hai giá trị bắt buộc khác stack khi và
+chỉ khi hai khoảng giao chéo:
+
+  in[u] < in[v] < out[u] < out[v]
+
+(hoặc ngược lại). Nếu cùng stack, v nằm trên u nhưng u phải ra trước v, vô lý.
+Ngược lại, nếu tô hai màu mọi cặp giao chéo, các phần tử còn nằm trong cùng
+stack luôn giảm dần từ đáy lên đỉnh, nên lịch lấy tham lam tạo đúng 1..n. Bài
+toán là tô hai màu đồ thị giao chéo của các khoảng.
+
+THUẬT TOÁN QUÉT
+Quét khoảng theo đầu trái. Các khoảng cũ còn hoạt động có out>in hiện tại; các
+khoảng xung đột với khoảng mới chính xác là những khoảng có out<out mới. Tất cả
+chúng phải có cùng màu và ngược màu khoảng mới.
+
+Dùng DSU có parity để gộp ràng buộc cùng/khác màu. Với mỗi thành phần và mỗi
+parity, lưu các out đang hoạt động trong một leftist heap; một set toàn cục lưu
+out nhỏ nhất của tối đa hai lớp parity mỗi thành phần.
+
+- Xóa lười mọi out đã kết thúc.
+- Chừng nào minimum toàn cục nhỏ hơn out mới, gộp thành phần đó với đỉnh mới
+  bằng parity 1.
+- Sau khi gộp, lớp đã biết ngược màu đỉnh mới tạm ẩn khỏi set. Nếu lớp cùng màu
+  vẫn có out trong miền xung đột, phát hiện mâu thuẫn.
+- Kết thúc bước thì đưa cả hai lớp trở lại set.
+
+Mỗi lần lặp gộp hai thành phần khác nhau; mỗi khoảng bị xóa heap đúng một lần.
+Cuối cùng lấy parity làm số stack và mô phỏng lại để kiểm tra đáp án.
+
+CHỨNG MINH ĐÚNG
+Lập luận giao chéo ở trên chứng minh cạnh đồ thị đúng bằng quan hệ "phải khác
+stack". Tại lúc thêm một khoảng, set cho biết một đại diện của mỗi lớp màu có
+ít nhất một out nằm trong miền xung đột. Gộp parity 1 áp đặt đúng quan hệ với
+toàn lớp; nếu cả hai lớp của cùng thành phần xuất hiện thì chúng có hai màu
+khác nhau nhưng đều bị yêu cầu ngược màu khoảng mới, nên và chỉ nên báo vô
+nghiệm. Vì vậy sau mỗi bước DSU chứa đúng mọi ràng buộc đã gặp. Nếu không mâu
+thuẫn, parity cuối là một tô hai màu hợp lệ; theo bổ đề trên, hai stack sắp được
+hoán vị. Mô phỏng cuối xác nhận trực tiếp lịch hợp lệ.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian và O(n) bộ nhớ.

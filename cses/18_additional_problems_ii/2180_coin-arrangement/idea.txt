@@ -1,0 +1,29 @@
+COIN ARRANGEMENT - CSES 2180
+
+ĐỀ BÀI (tóm tắt)
+Trên bảng 2 x n có tổng cộng 2n đồng xu. Mỗi bước chuyển một đồng xu sang ô
+kề cạnh. Tìm số bước ít nhất để mỗi ô có đúng một xu. Ràng buộc: n <= 10^5.
+
+THUẬT TOÁN
+Quét các cột từ trái sang phải. top và bottom là số xu dư (âm nghĩa là thiếu)
+đã tích lũy ở hai hàng sau khi xử lý các cột hiện tại.
+
+Tại mỗi cột:
+1. Cộng số xu của ô trừ 1 vào hai số dư.
+2. Nếu hai số dư trái dấu, chuyển dọc min(|top|,|bottom|) xu để triệt tiêu;
+   cộng đúng lượng đó vào đáp án.
+3. Trừ cột cuối, mọi số dư còn lại bắt buộc đi qua biên sang cột kế tiếp;
+   cộng |top|+|bottom| vào đáp án.
+
+CHỨNG MINH ĐÚNG
+Sau một prefix cột, mỗi xu dư/thiếu chưa ghép ở một hàng bắt buộc đi qua biên
+phải của prefix trên chính hàng đó, trừ khi được ghép với nhu cầu trái dấu của
+hàng kia bằng một cạnh dọc. Ghép một cặp trái dấu ngay tại cột hiện tại tốn một
+bước dọc; hoãn việc ghép bắt buộc cả hai phía đi thêm theo chiều ngang và không
+thể rẻ hơn. Vì vậy phép triệt tiêu tham lam tồn tại trong một phương án tối ưu.
+Sau khi triệt tiêu, |top|+|bottom| là số lần qua biên bắt buộc. Cộng chi phí
+bắt buộc ở từng cạnh dọc/ngang tạo được một luồng vận chuyển hợp lệ và đạt mọi
+cận dưới đó, nên tổng thu được là nhỏ nhất.
+
+ĐỘ PHỨC TẠP
+O(n) thời gian và O(1) bộ nhớ ngoài dữ liệu đọc.

@@ -1,0 +1,42 @@
+REMOVING DIGITS II - CSES 2174
+
+ĐỀ BÀI (tóm tắt)
+Mỗi bước trừ khỏi n một chữ số khác 0 đang xuất hiện trong n. Tìm số bước ít
+nhất để về 0. Ràng buộc: n <= 10^18.
+
+THUẬT TOÁN
+Gọi f(x) là đáp án và D(x) là chữ số lớn nhất của x. Ta luôn có thể chọn D(x),
+và đây thực sự là lựa chọn tối ưu. Tuy nhiên không thể mô phỏng từng bước vì
+đáp án có thể rất lớn.
+
+Ta nén mô phỏng theo khối thập phân. Hàm process(k,s,m) xét k chữ số cuối có
+giá trị s, trong khi chữ số lớn nhất ở phần tiền tố cố định là m. Hàm chạy cho
+đến lần trừ đầu tiên làm suffix âm (mượn 1 từ prefix), rồi trả:
+- số bước đã chạy;
+- độ thiếu hụt delta (1..9), tức suffix mới trước khi mượn là -delta.
+
+Tách chữ số đầu a của suffix và phần thấp r. Trong khi a chưa đổi,
+process(k-1,r,max(m,a)) xử lý trọn phần thấp. Sau đó a giảm một và phần thấp
+trở thành 10^(k-1)-delta. Chỉ có 9 khả năng delta, nên tiền xử lý kết quả cho
+mọi (k,m,delta). Mỗi lần xử lý một số bất kỳ chỉ có một nhánh chưa tiền xử lý ở
+mỗi độ sâu; các khối còn lại tra bảng.
+
+Ở số ban đầu, coi chữ số đầu là prefix và xử lý toàn bộ suffix. Mỗi lần như vậy
+giảm chữ số đầu đi một; lặp tối đa 9 lần mỗi hàng thập phân cho đến 0.
+
+CHỨNG MINH ĐÚNG
+Ta chứng minh đồng thời theo x rằng f không giảm và trừ D(x) là tối ưu. Giả sử
+đúng với mọi số nhỏ hơn x. Do f không giảm trên đoạn trước, trong các trạng
+thái x-d, chữ số d lớn nhất cho trạng thái nhỏ nhất và do đó cho f nhỏ nhất.
+Suy ra f(x)=1+f(x-D(x)). Nếu e=D(x-1), phép tăng một đơn vị chỉ có thể làm chữ
+số lớn nhất tăng nhiều nhất một, nên D(x)<=e+1 và
+x-D(x)>=x-1-e. Tính đơn điệu đã biết ở các số nhỏ hơn cho
+f(x)>=f(x-1). Hai mệnh đề cùng được chứng minh quy nạp.
+
+Hàm process chỉ gom đúng các bước greedy liên tiếp: lời gọi phần thấp chạy cho
+đến đúng lần mượn, công thức a giảm một và suffix thành 10^(k-1)-delta chính là
+phép trừ thập phân. Quy nạp theo k chứng minh mọi transition và số bước trong
+bảng đều chính xác. Vì greedy tối ưu, tổng bước nén là đáp án cần tìm.
+
+ĐỘ PHỨC TẠP
+Tiền xử lý O(19*10^3), xử lý O(19*10^2) thời gian; O(19*10^2) bộ nhớ.

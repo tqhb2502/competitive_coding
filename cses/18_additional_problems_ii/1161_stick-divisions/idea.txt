@@ -1,0 +1,21 @@
+STICK DIVISIONS - CSES 1161
+
+ĐỀ BÀI (tóm tắt)
+Cắt một thanh dài x thành n đoạn có độ dài cho trước. Mỗi lần chẻ một thanh
+thành hai tốn chi phí bằng độ dài thanh trước khi chẻ. Tìm chi phí nhỏ nhất.
+
+THUẬT TOÁN
+Đảo ngược quá trình: ghép n đoạn đích thành một thanh. Ghép hai đoạn dài a,b
+tốn a+b, đúng bằng chi phí của lần cắt tương ứng. Luôn lấy hai đoạn ngắn nhất,
+ghép lại và đưa tổng vào min-heap (thuật toán Huffman).
+
+CHỨNG MINH ĐÚNG
+Trong một cây ghép tối ưu, hai lá sâu nhất có thể chọn là anh em. Nếu một trong
+hai lá đó dài hơn một lá ở tầng nông hơn, đổi chỗ chúng không tăng và thực ra
+không thể giảm tính tối ưu; vì vậy hai đoạn ngắn nhất có thể đặt làm hai lá anh
+em sâu nhất. Ghép chúng thành một đoạn có trọng số bằng tổng tạo ra bài toán
+nhỏ hơn cùng dạng. Quy nạp cho thấy liên tiếp ghép hai đoạn nhỏ nhất là tối ưu.
+Đảo cây ghép lại cho đúng chuỗi thao tác cắt với cùng tổng chi phí.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian và O(n) bộ nhớ.

@@ -1,0 +1,2 @@
+Knight Moves Queries
+https://cses.fi/problemset/task/3218

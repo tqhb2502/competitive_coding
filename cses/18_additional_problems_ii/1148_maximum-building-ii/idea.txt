@@ -1,0 +1,39 @@
+MAXIMUM BUILDING II - CSES 1148
+
+ĐỀ BÀI (tóm tắt)
+Cho lưới n*m gồm ô trống và cây. Với mỗi kích thước h*w, đếm số vị trí đặt
+hình chữ nhật toàn ô trống. Ràng buộc n,m <= 1000.
+
+THUẬT TOÁN
+Duyệt hàng dưới của hình chữ nhật. histogram[c] là số ô trống liên tiếp đi lên
+tại cột c. Một đoạn cột độ rộng w có giá trị nhỏ nhất H tạo đúng một hình chữ
+nhật kết thúc ở hàng này cho mọi chiều cao 1..H.
+
+Gán mỗi đoạn duy nhất cho vị trí cực tiểu phải nhất của nó. Với cột i cao H,
+tìm bằng stack:
+
+- A: số cách kéo đầu trái tới sau phần tử nhỏ hơn gần nhất;
+- B: số cách kéo đầu phải tới trước phần tử nhỏ hơn hoặc bằng gần nhất.
+
+Chọn a trong [1,A], b trong [1,B] tạo độ rộng w=a+b-1. Số cặp cho từng w là
+một hàm tam giác:
+
+  w                         với 1 <= w <= min(A,B),
+  min(A,B)                  với min(A,B) < w <= max(A,B),
+  A+B-w                     với max(A,B) < w <= A+B-1.
+
+Cộng ba đoạn tuyến tính này vào bảng exact[H][w] bằng hai mảng hiệu: hệ số của
+w và hằng số. Sau khi xử lý mọi hàng, lấy prefix theo w để khôi phục số đoạn có
+minimum đúng H. Cuối cùng lấy suffix theo H; tổng exact[H][w] với H>=h chính là
+số hình h*w.
+
+CHỨNG MINH ĐÚNG
+Quy tắc "trước nhỏ hơn, sau nhỏ hơn hoặc bằng" gán mỗi đoạn histogram cho đúng
+một cực tiểu, kể cả khi nhiều cột cùng chiều cao. Hai lựa chọn mở rộng trái và
+phải sinh mọi đoạn do cực tiểu đó quản lý đúng một lần; công thức tam giác đếm
+đúng số cặp có từng độ rộng. Đoạn có minimum H hỗ trợ chính xác các chiều cao
+1..H và một hàng dưới cố định, nên suffix theo H đếm mỗi hình chữ nhật trống
+đúng một lần. Duyệt mọi hàng dưới cho toàn bộ đáp án.
+
+ĐỘ PHỨC TẠP
+O(n*m) thời gian và O(n*m) bộ nhớ.

@@ -1,0 +1,25 @@
+BOUNCING BALL STEPS - CSES 3215
+
+ĐỀ BÀI (tóm tắt)
+Quả bóng bắt đầu tại (1,1) của bảng n x m, mỗi bước đi chéo một ô và phản xạ
+khi chạm biên. Với mỗi truy vấn, tìm vị trí sau k bước và số lần đổi hướng.
+
+THUẬT TOÁN
+Xét riêng một tọa độ có độ dài d. Đặt p=d-1 và r=k mod (2p). Khoảng
+cách tới biên trên/trái là r nếu r<=p, ngược lại là 2p-r. Vì thế tọa độ bằng
+1+min(r,2p-r).
+
+Bóng đổi hướng tại các thời điểm dương chia hết cho n-1 hoặc m-1. Dùng nguyên
+lý bù trừ, số lần là
+floor(k/(n-1)) + floor(k/(m-1)) - floor(k/lcm(n-1,m-1)).
+Một lần chạm đồng thời hai biên chỉ được tính một lần.
+
+CHỨNG MINH ĐÚNG
+Khi trải phẳng các lần phản xạ, mỗi tọa độ đi tuần hoàn 0,1,...,p,...,1 với
+chu kỳ 2p, nên công thức tam giác cho đúng vị trí. Thành phần dọc đổi chiều
+đúng tại bội dương của n-1, thành phần ngang tương tự với m-1. Hợp của hai tập
+thời điểm này chính là mọi lần quả bóng đổi hướng; bù trừ loại một lần đếm lặp
+ở các bội của bội chung nhỏ nhất. Do đó cả ba giá trị in ra đều đúng.
+
+ĐỘ PHỨC TẠP
+O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

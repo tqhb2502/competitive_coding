@@ -1,0 +1,30 @@
+COIN GRID - CSES 1709
+
+ĐỀ BÀI (tóm tắt)
+Mỗi ô có đồng xu tạo thành một cạnh giữa đỉnh hàng và đỉnh cột tương ứng.
+Cần chọn ít hàng/cột nhất sao cho mọi đồng xu được xóa, đồng thời in một cách
+chọn tối ưu. Ràng buộc: n <= 100.
+
+THUẬT TOÁN
+Xem bảng là đồ thị hai phía: phía trái gồm n hàng, phía phải gồm n cột; ô
+(i,j) có đồng xu tương ứng với cạnh i-j. Một tập thao tác xóa hết đồng xu chính
+là một vertex cover. Theo định lý Konig, kích thước vertex cover nhỏ nhất bằng
+kích thước matching lớn nhất.
+
+1. Tìm matching cực đại bằng các lượt DFS tìm đường tăng.
+2. Từ mọi hàng chưa ghép, duyệt các đường xen kẽ: từ hàng chỉ đi qua cạnh không
+   thuộc matching, từ cột đi về hàng được ghép với nó.
+3. Gọi Z là các đỉnh đã thăm. Vertex cover tối thiểu là:
+   (các hàng không thuộc Z) hợp (các cột thuộc Z).
+
+CHỨNG MINH ĐÚNG
+Matching sau khi không còn đường tăng là cực đại (bổ đề Berge). Trong phép
+duyệt xen kẽ, không cạnh nào có cả hàng nằm trong Z và cột nằm ngoài Z: nếu
+cạnh ấy không thuộc matching thì ta đã đi qua nó, còn nếu thuộc matching thì
+hàng đó chỉ có thể được thăm từ chính cột được ghép. Vì vậy phần bù của các
+hàng trong Z cùng các cột trong Z phủ mọi cạnh. Mỗi cạnh matching có đúng một
+đầu mút trong tập này, nên kích thước tập bằng kích thước matching. Theo định
+lý Konig, đây là vertex cover nhỏ nhất, do đó các thao tác được in là tối ưu.
+
+ĐỘ PHỨC TẠP
+O(n^3) thời gian với matching DFS và O(n^2) bộ nhớ.

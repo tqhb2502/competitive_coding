@@ -1,0 +1,2 @@
+Bouncing Ball Steps
+https://cses.fi/problemset/task/3215

@@ -1,0 +1,36 @@
+MINIMUM COST PAIRS - CSES 3402
+
+ĐỀ BÀI (tóm tắt)
+Cho n số. Với mỗi k=1..floor(n/2), ghép k cặp rời nhau sao cho tổng |a-b| nhỏ
+nhất. Ràng buộc n <= 2*10^5.
+
+THUẬT TOÁN
+Sắp xếp x. Luôn tồn tại nghiệm tối ưu chỉ ghép hai phần tử kề nhau, nên bài
+toán trở thành chọn k cạnh không chung đỉnh trên đường đi, cạnh i có trọng số
+d[i]=x[i+1]-x[i].
+
+Dùng priority_queue và danh sách liên kết các cạnh. Mỗi lần lấy cạnh sống có
+trọng số nhỏ nhất w, cộng w vào đáp án. Hai cạnh kề l,r bị xóa. Giữ vị trí vừa
+chọn như một cạnh co mới có trọng số
+
+  d[l] + d[r] - w.
+
+Cạnh co biểu diễn thao tác "hối tiếc": bỏ lựa chọn w và thay bằng cả hai cạnh
+l,r. Hai cạnh biên giả có trọng số vô cùng. Lưu phiên bản để bỏ các bản ghi cũ
+trong heap. Tổng tích lũy sau lần chọn thứ k là đáp án của k.
+
+CHỨNG MINH ĐÚNG
+Nếu hai cặp trên trục số chéo hoặc một cặp bỏ qua một điểm chưa ghép phù hợp,
+đổi đầu mút theo thứ tự không tăng chi phí; lặp lại thu được matching chỉ dùng
+cạnh của đường đi.
+
+Với matching trên đường đi, cạnh rẻ nhất hiện tại có hai khả năng trong nghiệm
+tối ưu kế tiếp: giữ nó và giải hai phần còn lại, hoặc không giữ nó. Phép co xóa
+hai cạnh xung đột; trọng số d[l]+d[r]-w chính là phần chi phí tăng thêm khi đảo
+lựa chọn từ w sang l và r. Do đó heap đồng thời chứa mọi bước "chọn mới" và
+"hối tiếc" khả dĩ với đúng chi phí biên. Chọn chi phí biên nhỏ nhất là bước
+tham lam của matching trọng số trên đường đi; quy nạp theo số cặp cho thấy tổng
+sau mỗi bước là tối ưu cho đúng số cặp đó.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian và O(n) bộ nhớ.

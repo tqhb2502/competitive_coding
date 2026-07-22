@@ -1,0 +1,28 @@
+K SUBSET SUMS II - CSES 3109
+
+ĐỀ BÀI (tóm tắt)
+Cho n số nguyên. Liệt kê k tổng nhỏ nhất của các tập con có đúng m phần tử;
+các tập khác nhau có tổng bằng nhau vẫn được tính riêng.
+
+THUẬT TOÁN
+Sắp xếp a. Tập cơ sở lấy các chỉ số 0..m-1. Mọi tổ hợp khác biểu diễn duy nhất
+bằng d_0<=...<=d_{m-1}, trong đó phần tử thứ i dùng chỉ số i+d_i. Đảo thứ tự
+các d dương ta được phân hoạch lambda_1>=...>=lambda_r>0.
+
+Dùng heap trên cây phân hoạch. Từ một trạng thái có r phần dương, phần cuối v
+và phần áp cuối p, có tối đa hai con:
+1. Nếu r<m, nối thêm phần 1; tổng tăng a[m-r]-a[m-r-1].
+2. Tăng v lên 1 nếu không va vào phần trước (r=1 hoặc v<p) và còn trong mảng;
+   tổng tăng a[m-r+v+1]-a[m-r+v].
+In tổng cơ sở rồi liên tục lấy trạng thái nhỏ nhất và đưa các con vào heap.
+
+CHỨNG MINH ĐÚNG
+Mỗi tổ hợp tương ứng duy nhất một phân hoạch trong hình chữ nhật m x (n-m).
+Trong cây, cha của phân hoạch xóa phần cuối nếu nó bằng 1, còn không thì giảm
+phần cuối một đơn vị. Vì vậy mỗi phân hoạch khác rỗng có đúng một cha, và hai
+phép trên sinh đủ, không trùng. Mảng đã sắp nên mọi độ tăng trên cạnh không âm.
+Do đó heap lấy các nút theo tổng không giảm và in chính xác k tổ hợp nhỏ nhất;
+các nút khác nhau có tổng bằng nhau vẫn được giữ riêng.
+
+ĐỘ PHỨC TẠP
+O(n log n + k log k) thời gian, O(n+k) bộ nhớ; tổng dùng số nguyên 64 bit.

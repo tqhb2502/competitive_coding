@@ -1,0 +1,70 @@
+#include <algorithm>
+#include <deque>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int bookCount = 0;
+    int budget = 0;
+    cin >> bookCount >> budget;
+
+    vector<int> price(bookCount);
+    vector<int> pages(bookCount);
+    vector<int> copies(bookCount);
+    for (int& value : price) {
+        cin >> value;
+    }
+    for (int& value : pages) {
+        cin >> value;
+    }
+    for (int& value : copies) {
+        cin >> value;
+    }
+
+    vector<int> previous(budget + 1, 0);
+    vector<int> current(budget + 1, 0);
+
+    for (int book = 0; book < bookCount; ++book) {
+        const int cost = price[book];
+        const int value = pages[book];
+        const int limit = copies[book];
+
+        for (int remainder = 0; remainder < cost && remainder <= budget;
+             ++remainder) {
+            deque<int> candidates;
+            int quotient = 0;
+            for (int money = remainder; money <= budget;
+                 money += cost, ++quotient) {
+                while (!candidates.empty() &&
+                       candidates.front() < quotient - limit) {
+                    candidates.pop_front();
+                }
+
+                const int transformed = previous[money] - quotient * value;
+                while (!candidates.empty()) {
+                    const int lastQuotient = candidates.back();
+                    const int lastMoney = remainder + lastQuotient * cost;
+                    if (previous[lastMoney] - lastQuotient * value >=
+                        transformed) {
+                        break;
+                    }
+                    candidates.pop_back();
+                }
+                candidates.push_back(quotient);
+
+                const int bestQuotient = candidates.front();
+                const int bestMoney = remainder + bestQuotient * cost;
+                current[money] = previous[bestMoney] +
+                                 (quotient - bestQuotient) * value;
+            }
+        }
+        previous.swap(current);
+    }
+
+    cout << previous[budget] << '\n';
+}

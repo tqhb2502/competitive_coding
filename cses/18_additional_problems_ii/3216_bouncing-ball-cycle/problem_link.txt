@@ -1,0 +1,2 @@
+Bouncing Ball Cycle
+https://cses.fi/problemset/task/3216

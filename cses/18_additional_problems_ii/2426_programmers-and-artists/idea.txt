@@ -1,0 +1,29 @@
+PROGRAMMERS AND ARTISTS - CSES 2426
+
+ĐỀ BÀI (tóm tắt)
+Trong n ứng viên, tuyển đúng a lập trình viên và b họa sĩ. Ứng viên i có kỹ
+năng (x_i,y_i) tương ứng với hai vai trò. Tối đa hóa tổng kỹ năng.
+Ràng buộc: n <= 2*10^5, x_i,y_i <= 10^9.
+
+THUẬT TOÁN
+Sắp ứng viên giảm dần theo x_i-y_i. Trong một phương án tối ưu, mọi người được
+chọn làm lập trình viên có thể đặt trước mọi người được chọn làm họa sĩ: nếu
+một họa sĩ p đứng trước một lập trình viên q, đổi vai trò của họ không làm giảm
+tổng vì (x_p-y_p) >= (x_q-y_q).
+
+Vì vậy chỉ cần thử điểm chia i:
+- prefix [0,i) cung cấp đúng a lập trình viên có x lớn nhất;
+- suffix [i,n) cung cấp đúng b họa sĩ có y lớn nhất.
+Duyệt prefix và suffix bằng min-heap kích thước a/b để tính hai mảng giá trị tốt
+nhất, rồi lấy max prefix[i]+suffix[i] trên mọi điểm chia hợp lệ.
+
+CHỨNG MINH ĐÚNG
+Lập luận đổi chỗ cho thấy tồn tại phương án tối ưu có một điểm chia giữa hai
+vai trò trong thứ tự x-y. Với một điểm chia cố định, chọn a giá trị x lớn nhất
+ở prefix và b giá trị y lớn nhất ở suffix rõ ràng là tối ưu và hai tập không
+giao nhau. Thuật toán xét mọi điểm chia, bao gồm điểm của phương án tối ưu nói
+trên, nên kết quả không nhỏ hơn tối ưu; đồng thời mỗi giá trị xét được là một
+phương án hợp lệ nên không thể lớn hơn tối ưu. Do đó kết quả chính xác.
+
+ĐỘ PHỨC TẠP
+O(n log n) thời gian và O(n) bộ nhớ.

@@ -1,0 +1,27 @@
+SCHOOL EXCURSION - CSES 1706
+
+ĐỀ BÀI (tóm tắt)
+n trẻ và m yêu cầu từng cặp phải đi cùng địa điểm. Với mỗi i=1..n, xác định
+có thể chọn đúng i trẻ đi Korkeasaari hay không.
+
+THUẬT TOÁN
+Dùng DSU gộp mọi cặp yêu cầu. Mỗi thành phần liên thông phải được chọn toàn bộ
+hoặc không chọn, nên bài toán còn lại là các tổng tập con của kích thước thành
+phần. Đếm số thành phần của từng kích thước s.
+
+Duy trì bitset possible, bit i cho biết tổng i đạt được. Khởi tạo bit 0. Với c
+bản sao trọng lượng s, phân rã c thành các nhóm 1,2,4,... và phần dư; cho mỗi
+nhóm có trọng lượng w, cập nhật possible |= possible << w. Cuối cùng in các bit
+1..n.
+
+CHỨNG MINH ĐÚNG
+Quan hệ muốn đi cùng có tính bắc cầu, nên đúng các thành phần DSU là những khối
+không thể tách. Chọn địa điểm cho các khối tương đương chọn một tập con trọng
+lượng là kích thước khối. Phân rã nhị phân cho phép biểu diễn mọi số lượng từ
+0 đến c của mỗi kích thước đúng trong các nhóm 0/1; cập nhật dịch bitset là quy
+hoạch động tập con chuẩn. Quy nạp qua các nhóm cho thấy bit i cuối cùng bật khi
+và chỉ khi có phương án đúng i trẻ.
+
+ĐỘ PHỨC TẠP
+DSU O((n+m) alpha(n)). Phần bitset dùng O((n/64) * tổng log(c_s+1)) thời gian
+và O(n) bit bộ nhớ.
