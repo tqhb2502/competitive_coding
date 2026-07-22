@@ -1,37 +1,53 @@
-// Corner Subgrid Count - CSES 2137
-// https://cses.fi/problemset/task/2137
-//
-// Y tuong: voi moi cap hang (i, j), goi k = so cot ma ca hai hang deu la o den.
-// Moi cach chon 2 cot phan biet trong k cot do tao thanh mot corner subgrid dep,
-// nen cong C(k, 2) = k*(k-1)/2 vao dap an. Dung bitset de tinh k = popcount cua
-// (row[i] AND row[j]) trong O(n/64). Tong do phuc tap O(n^3 / 64).
+#include <cstdint>
+#include <cstdio>
 
-#include <bits/stdc++.h>
-using namespace std;
+namespace {
 
-static const int MAXN = 3000;
-static bitset<MAXN> rows[MAXN];
+constexpr int MAX_N = 3000;
+constexpr int WORD_BITS = 64;
+constexpr int WORDS = (MAX_N + WORD_BITS - 1) / WORD_BITS;
+constexpr int STRIDE = ((WORDS + 7) / 8) * 8;
+
+// STRIDE is 48 words, so every row begins at a 64-byte boundary.
+alignas(64) std::uint64_t rows[MAX_N][STRIDE]{};
+
+__attribute__((target("popcnt")))
+std::int64_t count_subgrids(const int n) {
+    std::int64_t answer = 0;
+    for (int first_row = 0; first_row < n; ++first_row) {
+        const std::uint64_t* const first = rows[first_row];
+        for (int second_row = first_row + 1; second_row < n; ++second_row) {
+            const std::uint64_t* const second = rows[second_row];
+            int common = 0;
+#pragma GCC unroll 64
+            for (int word = 0; word < WORDS; ++word) {
+                common +=
+                    __builtin_popcountll(first[word] & second[word]);
+            }
+            answer += static_cast<std::int64_t>(common) * (common - 1) / 2;
+        }
+    }
+    return answer;
+}
+
+}  // namespace
 
 int main() {
     int n;
-    if (scanf("%d", &n) != 1) return 0;
+    if (std::scanf("%d", &n) != 1) {
+        return 0;
+    }
 
-    static char buf[MAXN + 5];
-    for (int i = 0; i < n; i++) {
-        scanf("%s", buf);
-        for (int j = 0; j < n; j++) {
-            if (buf[j] == '1') rows[i].set(j);
+    char input[MAX_N + 1];
+    for (int row = 0; row < n; ++row) {
+        std::scanf("%3000s", input);
+        for (int column = 0; column < n; ++column) {
+            rows[row][column / WORD_BITS] |=
+                std::uint64_t(input[column] == '1')
+                << (column % WORD_BITS);
         }
     }
 
-    long long ans = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            long long k = (rows[i] & rows[j]).count();
-            ans += k * (k - 1) / 2;
-        }
-    }
-
-    printf("%lld\n", ans);
+    std::printf("%lld\n", static_cast<long long>(count_subgrids(n)));
     return 0;
 }

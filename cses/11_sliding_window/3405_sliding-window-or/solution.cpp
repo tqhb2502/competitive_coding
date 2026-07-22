@@ -1,59 +1,138 @@
-// Sliding Window Or - CSES 3405
-// https://cses.fi/problemset/task/3405
-//
-// Sinh mảng a[] bằng công thức x1=x, xi=(a*x[i-1]+b) mod c.
-// Với mỗi cửa sổ độ dài k tính OR các phần tử, rồi in XOR của tất cả các OR đó.
-// OR không "trừ" được nên ta duy trì cnt[bit] = số phần tử trong cửa sổ có bit đó,
-// và giữ giá trị OR (cur) một cách incremental: bật bit khi cnt 0->1, tắt khi cnt 1->0.
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
 
-#include <bits/stdc++.h>
-using namespace std;
+namespace {
 
-static int arr[10000000]; // n <= 10^7
+class Generator {
+public:
+    Generator(const std::uint64_t initial, const std::uint64_t multiplier,
+              const std::uint64_t increment, const std::uint64_t modulus)
+        : current_(initial),
+          multiplier_(multiplier),
+          increment_(increment),
+          modulus_(modulus),
+          reciprocal_(static_cast<std::uint64_t>(
+              (static_cast<__uint128_t>(1) << 64) / modulus
+          )) {}
+
+    std::uint32_t next() {
+        const std::uint32_t result = static_cast<std::uint32_t>(current_);
+        const std::uint64_t product = multiplier_ * current_ + increment_;
+        const std::uint64_t quotient = static_cast<std::uint64_t>(
+            (static_cast<__uint128_t>(product) * reciprocal_) >> 64
+        );
+
+        current_ = product - quotient * modulus_;
+        if (current_ >= modulus_) {
+            current_ -= modulus_;
+        }
+        return result;
+    }
+
+private:
+    std::uint64_t current_;
+    const std::uint64_t multiplier_;
+    const std::uint64_t increment_;
+    const std::uint64_t modulus_;
+    const std::uint64_t reciprocal_;
+};
+
+void build_suffix_or(std::uint32_t* const block, const int length) {
+    std::uint32_t suffix = 0;
+    for (int index = length - 1; index >= 0; --index) {
+        suffix |= block[index];
+        block[index] = suffix;
+    }
+}
+
+}  // namespace
 
 int main() {
-    int n, k;
-    long long x, a, b, c;
-    if (scanf("%d %d", &n, &k) != 2) return 0;
-    scanf("%lld %lld %lld %lld", &x, &a, &b, &c);
+    int n;
+    int k;
+    unsigned long long input_x;
+    unsigned long long input_a;
+    unsigned long long input_b;
+    unsigned long long input_c;
 
-    // Sinh mảng. Giá trị < 2^30 (c <= 10^9, và x <= 10^9).
-    unsigned long long prev = (unsigned long long)x;
-    arr[0] = (int)prev;
-    unsigned long long ua = (unsigned long long)a;
-    unsigned long long ub = (unsigned long long)b;
-    unsigned long long uc = (unsigned long long)c;
-    for (int i = 1; i < n; ++i) {
-        prev = (ua * prev + ub) % uc;
-        arr[i] = (int)prev;
+    if (std::scanf("%d %d", &n, &k) != 2) {
+        return 0;
+    }
+    if (std::scanf("%llu %llu %llu %llu", &input_x, &input_a,
+                   &input_b, &input_c) != 4) {
+        return 0;
     }
 
-    int cnt[32];
-    memset(cnt, 0, sizeof(cnt));
-    unsigned int cur = 0;  // giá trị OR của cửa sổ hiện tại
-    unsigned int ans = 0;  // XOR của tất cả window OR
+    const std::uint32_t x = static_cast<std::uint32_t>(input_x);
+    const std::uint64_t a = static_cast<std::uint64_t>(input_a);
+    const std::uint64_t b = static_cast<std::uint64_t>(input_b);
+    const std::uint64_t c = static_cast<std::uint64_t>(input_c);
 
-    for (int i = 0; i < n; ++i) {
-        // Thêm arr[i] vào cửa sổ
-        int v = arr[i];
-        while (v) {
-            int bit = __builtin_ctz((unsigned)v);
-            if (cnt[bit]++ == 0) cur |= (1u << bit);
-            v &= v - 1;
+    // When c = 1, the sequence is x, 0, 0, ... . Only the first window
+    // contains x, so the xor of all window ors is x for every valid k.
+    if (c == 1) {
+        std::printf("%u\n", static_cast<unsigned int>(x));
+        return 0;
+    }
+
+    Generator generator(x, a, b, c);
+    std::uint32_t answer = 0;
+
+    if (k == 1) {
+        for (int index = 0; index < n; ++index) {
+            answer ^= generator.next();
         }
-        // Xóa arr[i-k] khi nó rời khỏi cửa sổ
-        if (i >= k) {
-            int w = arr[i - k];
-            while (w) {
-                int bit = __builtin_ctz((unsigned)w);
-                if (--cnt[bit] == 0) cur &= ~(1u << bit);
-                w &= w - 1;
+        std::printf("%u\n", static_cast<unsigned int>(answer));
+        return 0;
+    }
+
+    if (k == n) {
+        for (int index = 0; index < n; ++index) {
+            answer |= generator.next();
+        }
+        std::printf("%u\n", static_cast<unsigned int>(answer));
+        return 0;
+    }
+
+    std::uint32_t* const block =
+        new std::uint32_t[static_cast<std::size_t>(k)];
+
+    // The first aligned block forms the first window.
+    for (int offset = 0; offset < k; ++offset) {
+        block[offset] = generator.next();
+        answer |= block[offset];
+    }
+    build_suffix_or(block, k);
+
+    int generated = k;
+    while (generated < n) {
+        const int remaining = n - generated;
+        const int length = remaining < k ? remaining : k;
+        std::uint32_t prefix = 0;
+
+        for (int offset = 0; offset < length; ++offset) {
+            const std::uint32_t value = generator.next();
+            prefix |= value;
+
+            // block[offset + 1] is still the suffix of the preceding block.
+            // At the last position of a full block, the window is exactly the
+            // current block and prefix alone is its OR.
+            if (offset + 1 < k) {
+                answer ^= block[offset + 1] | prefix;
+            } else {
+                answer ^= prefix;
             }
+            block[offset] = value;
         }
-        // Cửa sổ [i-k+1, i] đã đủ k phần tử
-        if (i >= k - 1) ans ^= cur;
+
+        generated += length;
+        if (generated < n) {
+            build_suffix_or(block, k);
+        }
     }
 
-    printf("%u\n", ans);
+    delete[] block;
+    std::printf("%u\n", static_cast<unsigned int>(answer));
     return 0;
 }
