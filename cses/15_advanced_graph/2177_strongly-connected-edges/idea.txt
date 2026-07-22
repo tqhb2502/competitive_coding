@@ -1,0 +1,49 @@
+Strongly Connected Edges — CSES 2177
+https://cses.fi/problemset/task/2177
+
+BÀI TOÁN
+Cho một đồ thị vô hướng đơn (không cạnh bội, không tự khuyên). Hãy định hướng
+(gán hướng cho) tất cả các cạnh sao cho đồ thị có hướng thu được là liên thông
+mạnh (strongly connected). Nếu không thể, in ra "IMPOSSIBLE".
+
+KỸ THUẬT: DFS tree + phát hiện bridge (Tarjan) + định lý Robbins.
+
+Ý TƯỞNG CHÍNH
+1) Định lý Robbins: Một đồ thị vô hướng có thể định hướng thành strongly
+   connected KHI VÀ CHỈ KHI nó liên thông và không có cầu (bridge), tức là
+   2-edge-connected. Do đó điều kiện tồn tại nghiệm = (liên thông) AND
+   (không có bridge nào).
+
+2) Kiểm tra điều kiện: Chạy một lần DFS từ đỉnh 1, tính mảng disc[] (thời điểm
+   thăm) và low[] theo thuật toán Tarjan. Cạnh cây (parent p, con u) là bridge
+   khi và chỉ khi low[u] > disc[p]. Nếu tồn tại bridge, hoặc sau DFS còn đỉnh
+   chưa thăm (đồ thị không liên thông) => in "IMPOSSIBLE".
+
+3) Định hướng khi thỏa điều kiện (dựa trên cây DFS):
+   - Cạnh cây: hướng từ cha xuống con (u -> w khi w là con vừa được phát hiện).
+   - Back edge (cạnh ngược): hướng từ đỉnh sâu hơn lên tổ tiên
+     (u -> w với disc[w] < disc[u]).
+   Mỗi cạnh vô hướng được định hướng ĐÚNG MỘT LẦN: cạnh cây định hướng lúc phát
+   hiện con; back edge định hướng bởi đầu mút sâu hơn khi nó quét thấy tổ tiên
+   đã thăm.
+
+CHỨNG MINH TÍNH ĐÚNG (khi liên thông và không bridge)
+- Từ gốc r đi tới mọi đỉnh: dùng các cạnh cây hướng xuống.
+- Từ mọi đỉnh v về được gốc r: quy nạp theo độ sâu. Vì cạnh cây (cha(v), v)
+  không phải bridge nên low[v] <= disc[cha(v)], nghĩa là có một back edge từ
+  subtree của v đi lên một tổ tiên w có độ sâu <= độ sâu của cha(v). Từ v ta
+  đi xuống trong subtree tới đầu mút của back edge đó rồi theo back edge lên w;
+  w có độ sâu nhỏ hơn v nên theo giả thiết quy nạp w về được r, suy ra v về
+  được r. Vậy đồ thị định hướng là strongly connected.
+
+LƯU Ý THỰC THI
+- DFS phải LẶP (dùng stack tường minh) vì n <= 1e5, m <= 2e5, DFS đệ quy dễ
+  tràn stack. Mỗi frame lưu (đỉnh, id cạnh cha, con trỏ quét kề). Phải hoàn tất
+  toàn bộ subtree của con trước khi tiếp tục quét đỉnh hiện tại (đúng như DFS
+  đệ quy) để bảo đảm phân loại tree/back edge nhất quán.
+- Bỏ qua đúng cạnh đi tới cha theo id cạnh (đồ thị đơn nên cũng có thể theo đỉnh).
+- Special judge: chỉ cần in ra một cách định hướng hợp lệ bất kỳ; thứ tự các
+  dòng không bắt buộc trùng thứ tự cạnh đầu vào (mẫu của đề cũng đảo thứ tự).
+  Ở đây ta in mỗi cạnh theo đúng thứ tự đầu vào, mỗi dòng "u v" là hướng đã gán.
+
+ĐỘ PHỨC TẠP: O(n + m) thời gian, O(n + m) bộ nhớ.

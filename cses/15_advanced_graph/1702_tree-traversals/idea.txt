@@ -1,0 +1,38 @@
+Bài toán: Tree Traversals (CSES 1702)
+
+Đề bài:
+- Cho một cây nhị phân có n đỉnh, nhãn phân biệt từ 1..n.
+- Cho trước preorder (duyệt gốc-trái-phải) và inorder (duyệt trái-gốc-phải).
+- Yêu cầu: in ra postorder (duyệt trái-phải-gốc) của cây.
+- Ràng buộc: 1 <= n <= 1e5, dữ liệu luôn tương ứng với một cây nhị phân hợp lệ.
+
+Kỹ thuật: tái tạo cây (tree reconstruction) từ preorder + inorder, rồi duyệt postorder.
+
+Ý tưởng chính:
+1) Nhận xét cơ bản (divide & conquer):
+   - Phần tử đầu tiên của preorder chính là gốc (root).
+   - Trong inorder, gốc chia dãy thành phần trái = cây con trái, phần phải = cây con phải.
+   - Đệ quy trên hai nửa để dựng lại toàn bộ cây.
+   Tuy nhiên đệ quy trực tiếp có thể sâu tới n (cây suy biến/lệch), gây tràn stack với n = 1e5.
+
+2) Dựng cây bằng STACK lặp (iterative), O(n):
+   - Dùng thuật toán stack kinh điển ghép preorder + inorder:
+     - Đẩy pre[0] vào stack. Giữ con trỏ inIdx = 0 trên inorder.
+     - Duyệt cur = pre[i] với i = 1..n-1:
+       * Nếu đỉnh trên đỉnh stack KHÁC in[inIdx]: cur là con TRÁI của đỉnh trên cùng stack; đẩy cur vào stack.
+       * Ngược lại: liên tục pop khi đỉnh stack == in[inIdx] (đồng thời tăng inIdx), ghi nhớ đỉnh cuối cùng bị pop là last; khi đó cur là con PHẢI của last; đẩy cur vào stack.
+   - Lưu con trái/con phải trong hai mảng lc[], rc[] đánh chỉ số theo nhãn đỉnh (0 = không có con).
+
+3) Duyệt postorder bằng phương pháp hai stack (iterative, tránh đệ quy):
+   - Từ gốc pre[0], dùng thuật toán "reverse preorder biến thể":
+     đẩy gốc; lặp pop node, ghi node ra danh sách out, rồi đẩy con-trái, con-phải (con-phải nằm trên) -> sinh thứ tự root,right,left.
+   - Đảo ngược danh sách out sẽ cho đúng postorder = left,right,root.
+
+Tính đúng đắn:
+- Cách chia preorder/inorder theo gốc là bất biến chuẩn của cây nhị phân với nhãn phân biệt, đảm bảo dựng lại duy nhất cây.
+- Thuật toán stack dựng cây mô phỏng chính xác quá trình đệ quy: khi còn đi xuống trái thì stack lớn dần; khi gặp inorder khớp nghĩa là đã hết nhánh trái và cần quay lên để gắn con phải.
+- Postorder hai stack: root,right,left đảo ngược = left,right,root, đúng định nghĩa postorder.
+
+Độ phức tạp:
+- Thời gian: O(n) (mỗi đỉnh vào/ra stack đúng một lần cho cả bước dựng cây lẫn bước duyệt).
+- Bộ nhớ: O(n).

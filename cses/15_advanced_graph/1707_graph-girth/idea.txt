@@ -1,0 +1,48 @@
+Bài toán: Graph Girth (CSES 1707)
+Tìm girth = độ dài chu trình ngắn nhất của một đồ thị vô hướng, không trọng số.
+Nếu đồ thị không có chu trình nào thì in ra -1.
+
+Ràng buộc: 1 <= n <= 2500, 1 <= m <= 5000, giữa hai đỉnh có tối đa một cạnh
+(đồ thị đơn, không có cạnh song song).
+
+Kỹ thuật: BFS từ mỗi đỉnh (multi-source-free, chạy n lần BFS).
+
+Ý tưởng chính:
+- Với đồ thị vô hướng KHÔNG trọng số, chu trình ngắn nhất có thể tìm bằng cách
+  chạy BFS lần lượt từ mỗi đỉnh làm gốc (source).
+- Trong một lần BFS từ gốc s, ta xây dựng cây BFS với mảng khoảng cách dist[]
+  và mảng cha par[]. Khi duyệt đỉnh u và xét cạnh (u, w):
+    + Nếu w chưa thăm: đặt dist[w] = dist[u] + 1, par[w] = u, đẩy w vào hàng đợi.
+    + Nếu w đã thăm và w KHÔNG phải là cha của u (w != par[u]): cạnh (u, w) là
+      một "non-tree edge". Nó khép kín một đường đi s -> u và s -> w tạo thành
+      một closed walk (đi vòng) có độ dài dist[u] + dist[w] + 1. Cập nhật đáp án
+      girth = min(girth, dist[u] + dist[w] + 1).
+- Đáp án là giá trị nhỏ nhất trên tất cả các lần BFS và tất cả non-tree edge.
+
+Chứng minh tính đúng đắn:
+1) Không bao giờ ước lượng THẤP hơn girth:
+   Xét non-tree edge (u, w) trong cây BFS gốc s. Gọi a là đỉnh chung cuối cùng
+   trên hai đường đi ngắn nhất s->u và s->w (last common ancestor trên cây).
+   Khi đó đường a->u và a->w rời nhau (chỉ chung đỉnh a), cùng với cạnh (u, w)
+   tạo thành một chu trình đơn thực sự có độ dài
+   (dist[u]-dist[a]) + (dist[w]-dist[a]) + 1 <= dist[u] + dist[w] + 1.
+   Vậy mọi giá trị thuật toán báo cáo đều >= độ dài một chu trình đơn thực sự,
+   tức là >= girth. Suy ra đáp án cuối >= girth.
+2) Đạt đúng girth tại một lần BFS nào đó:
+   Lấy chu trình ngắn nhất C độ dài g và một đỉnh s trên C. Vì C ngắn nhất nên
+   với mọi đỉnh x trên C, dist_G(s, x) = khoảng cách dọc theo C (nếu có đường tắt
+   ngắn hơn thì sẽ tạo được chu trình ngắn hơn g, mâu thuẫn). Khi BFS từ s, cạnh
+   "xa gốc nhất" trên C là non-tree edge (u, w) và cho đúng
+   dist[u] + dist[w] + 1 = g (đúng cho cả g lẻ lẫn g chẵn).
+   Vậy đáp án cuối <= g. Kết hợp (1) và (2): đáp án = girth.
+
+Chi tiết cài đặt:
+- Danh sách kề (adjacency list).
+- Mỗi lần BFS reset dist[] về -1 (chưa thăm), par[] về -1.
+- Dùng BFS lặp bằng hàng đợi mảng (iterative), không đệ quy nên không lo tràn stack.
+- Tối ưu: girth của đồ thị đơn nhỏ nhất là 3, nên nếu tìm được 3 có thể dừng sớm.
+
+Độ phức tạp:
+- Mỗi BFS là O(n + m). Chạy n lần => O(n * (n + m)).
+- Với n = 2500, m = 5000: khoảng 2500 * 7500 ~ 1.9 * 10^7 thao tác, thừa sức
+  trong 1.00 s. Bộ nhớ O(n + m).

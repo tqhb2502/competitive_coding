@@ -1,0 +1,37 @@
+Bài toán: Bus Companies (CSES 3158)
+
+Kỹ thuật: Dijkstra trên đồ thị mở rộng với "virtual node" (nút ảo) cho mỗi
+bus company (mô hình hóa hyperedge / nhóm).
+
+Mô tả bài toán:
+- Có n thành phố và m công ty xe buýt. Công ty thứ i có giá vé c_i và hoạt
+  động trong một tập gồm k_i thành phố.
+- Mua một vé của công ty i (tốn c_i) cho phép ta di chuyển giữa hai thành phố
+  bất kỳ trong tập của công ty đó.
+- Cần tìm chi phí rẻ nhất để đi từ Syrjälä (thành phố 1) tới mọi thành phố.
+
+Ý tưởng chính:
+- Nếu nối trực tiếp mọi cặp thành phố trong cùng một công ty thì số cạnh có thể
+  lên tới O(k_i^2), quá lớn. Thay vào đó dùng nút ảo.
+- Với mỗi công ty i, tạo một nút ảo (đánh số n+i). Với mỗi thành phố a thuộc
+  công ty i:
+    + cạnh có hướng a -> (n+i) trọng số c_i  (chi phí lên xe / mua vé),
+    + cạnh có hướng (n+i) -> a trọng số 0     (xuống xe miễn phí).
+- Đi từ thành phố a tới thành phố b bằng công ty i tương đương a -> nút ảo -> b
+  với tổng chi phí c_i, đúng như định nghĩa. Mỗi lần "lên xe" mới trả thêm c_i.
+- Chạy Dijkstra từ nút 1. Đáp số là dist[1..n].
+
+Tính đúng đắn:
+- Bất kỳ đường đi thực tế nào (chuỗi vé) đều tương ứng một đường đi trong đồ thị
+  mở rộng và ngược lại; chi phí bằng nhau. Do trọng số không âm, Dijkstra cho
+  khoảng cách nhỏ nhất chính xác.
+- Đề bảo đảm luôn tới được mọi thành phố nên không cần xử lý trường hợp vô cực.
+
+Độ phức tạp:
+- Số nút V = n + m <= 2*10^5.
+- Số cạnh E = 2 * tổng(k_i) <= 4*10^5.
+- Dijkstra dùng priority_queue: O((V + E) log V), thừa sức trong giới hạn.
+
+Lưu ý cài đặt:
+- Khoảng cách có thể lớn (tới ~2*10^14) nên dùng long long.
+- Dùng fast IO vì lượng số đọc vào lớn.

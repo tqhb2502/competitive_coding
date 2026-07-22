@@ -1,0 +1,47 @@
+Network Renovation (CSES 1704)
+https://cses.fi/problemset/task/1704
+
+BÀI TOÁN
+Cho một cây (tree) gồm n đỉnh và n-1 cạnh. Mỗi cạnh của cây là một cầu (bridge):
+xóa một cạnh bất kỳ sẽ làm mạng bị chia cắt. Hãy thêm số cạnh MỚI ít nhất để đồ thị
+trở thành 2-edge-connected (2 liên thông cạnh), tức là mạng vẫn liên thông kể cả khi
+bất kỳ MỘT cạnh nào bị hỏng. In ra số cạnh cần thêm và danh sách các cạnh đó. Có thể
+có nhiều đáp án đúng (special judge chấp nhận mọi lời giải hợp lệ tối ưu).
+
+KỸ THUẬT: Tree augmentation to 2-edge-connectivity (định lý Eswaran-Tarjan).
+
+Ý TƯỞNG CHÍNH
+1) Số cạnh tối thiểu cần thêm là ceil(L / 2), với L là số lá (leaf, đỉnh bậc 1) của cây.
+   Lý do cận dưới: mỗi lá có duy nhất một cạnh nối với phần còn lại; cạnh này là cầu.
+   Để "phủ" (làm hết cầu) cạnh treo của một lá, lá đó phải là đầu mút của ít nhất một
+   cạnh mới. Mỗi cạnh mới chỉ có 2 đầu mút nên phủ được nhiều nhất 2 lá => cần >= ceil(L/2).
+
+2) Cách dựng đạt cận dưới (đồng thời chứng minh cận trên):
+   - Chọn ROOT là một đỉnh KHÔNG phải lá (bậc >= 2). Vì n >= 3 nên luôn tồn tại.
+   - DFS từ root và ghi lại danh sách các lá theo ĐÚNG thứ tự duyệt (pre-order). Vì đây là
+     cây nên mỗi đỉnh chỉ được đẩy vào stack một lần (chỉ cha mới đẩy con), do đó toàn bộ
+     một subtree được duyệt liên tiếp => tập lá của mỗi subtree là một ĐOẠN LIÊN TIẾP trong
+     danh sách lá.
+   - Gọi cnt = số lá, m = cnt / 2 (chia lấy nguyên). Nối leaves[i] với leaves[i + m] với
+     i = 0 .. m-1. Nếu cnt lẻ, nối thêm leaves[cnt-1] với leaves[0]. Tổng cộng đúng ceil(cnt/2)
+     cạnh.
+
+CHỨNG MINH ĐÚNG (phủ hết mọi cầu)
+Xét một cạnh cây e = (cha, con). Xóa e tách cây thành 2 phần; tập lá nằm trong subtree của
+"con" là một đoạn liên tiếp leaves[a..b] có kích thước s. Vì root không phải lá và root là
+gốc (bậc >= 2 nên có >= 2 con), nên subtree của bất kỳ con nào cũng thiếu ít nhất lá của một
+subtree anh em => 1 <= s <= L-1. Cạnh e được "phủ" (không còn là cầu) khi tồn tại một cạnh mới
+nối một lá trong đoạn [a,b] với một lá ngoài đoạn (cạnh mới đó tạo chu trình đi qua e).
+Với cách ghép leaves[i] - leaves[i+m] (khoảng cách m), có thể chứng minh mọi đoạn liên tiếp
+[a,b] với 1 <= s <= L-1 luôn có ít nhất một cặp "vắt ngang" biên của đoạn:
+   - nếu s <= m: số cặp vắt ngang = s >= 1;
+   - nếu s > m: số cặp vắt ngang = L - s >= 1.
+Trường hợp cnt lẻ, lá cuối cùng chưa được ghép; cạnh phụ (leaves[cnt-1], leaves[0]) xử lý các
+đoạn còn hở (đặc biệt đoạn chỉ chứa lá cuối, hoặc đoạn chứa mọi lá đã ghép). Vậy mọi cầu đều
+được phủ => đồ thị trở thành 2-edge-connected.
+
+ĐỘ PHỨC TẠP
+- Xây đồ thị + DFS: O(n).
+- In kết quả: O(L).
+Tổng: O(n) thời gian, O(n) bộ nhớ. Dùng DFS lặp (iterative stack) để tránh tràn stack với
+n tới 1e5.

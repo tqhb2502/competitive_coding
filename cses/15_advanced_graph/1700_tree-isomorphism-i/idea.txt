@@ -1,0 +1,39 @@
+Bài toán: Tree Isomorphism I (CSES 1700)
+
+Đề bài
+- Có t test. Mỗi test cho hai cây có gốc, cùng n đỉnh (đánh số 1..n), gốc luôn là đỉnh 1.
+- Mỗi cây mô tả bởi n-1 cạnh. Cần trả lời hai cây có "isomorphic" (đẳng cấu) khi
+  xét là cây có gốc hay không, in "YES" hoặc "NO".
+- Ràng buộc: 1 <= t <= 1000, 2 <= n <= 1e5, tổng n trên mọi test <= 1e5.
+
+Kỹ thuật: AHU algorithm (canonical hashing / gán nhãn chính tắc cho subtree có gốc).
+
+Ý tưởng chính
+- Vì hai cây đều có gốc cố định là đỉnh 1, đây là bài toán rooted tree isomorphism.
+- Với mỗi đỉnh u, hình dạng (shape) của subtree gốc tại u được xác định duy nhất
+  bởi MULTISET các "shape" của các cây con của u (không quan tâm thứ tự con).
+- Ta gán cho mỗi lớp hình dạng subtree một số nguyên (id) chính tắc. Hai subtree
+  đẳng cấu <=> có cùng id.
+- Cách gán: xử lý các đỉnh theo thứ tự từ lá lên gốc (post-order / duyệt ngược
+  thứ tự BFS). Tại u, lấy danh sách id của các con, SẮP XẾP lại, dùng làm khoá
+  tra trong một map<vector<int>, int> dùng CHUNG cho cả hai cây. Nếu khoá đã có
+  thì lấy lại id cũ, nếu chưa có thì cấp một id mới.
+- Hai cây đẳng cấu (khi có gốc) <=> id của gốc đỉnh 1 ở hai cây bằng nhau.
+
+Vì map được chia sẻ giữa hai cây trong cùng một test, các subtree có cùng hình
+dạng ở hai cây khác nhau chắc chắn nhận cùng một id, nên phép so sánh id gốc là
+điều kiện cần và đủ cho đẳng cấu.
+
+Tính đúng đắn
+- Chính tắc hoá theo multiset con là bất biến duy nhất của một rooted tree: hai
+  rooted tree đẳng cấu <=> cây con của gốc tương ứng đẳng cấu theo một hoán vị,
+  tức là multiset id của con bằng nhau. Bằng quy nạp theo chiều cao, id chính tắc
+  bằng nhau <=> hai subtree đẳng cấu. Do đó so sánh id gốc là đúng.
+- Việc sắp xếp danh sách id con giúp khoá không phụ thuộc thứ tự con -> đúng với
+  "multiset".
+
+Độ phức tạp
+- Xây cây và BFS: O(n). Với mỗi đỉnh sắp xếp danh sách con: tổng O(n log n).
+- Tra map với khoá vector: tổng chi phí ~ O(n log n) (kèm chi phí so sánh vector).
+- Tổng trên mọi test: O((sum n) log(sum n)) <= khoảng 1e5 log(1e5). Rất nhẹ.
+- Dùng BFS/duyệt lặp (iterative), không đệ quy nên không tràn stack với n=1e5.

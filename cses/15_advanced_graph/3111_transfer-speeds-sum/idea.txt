@@ -1,0 +1,41 @@
+Bài toán: Transfer Speeds Sum (CSES 3111)
+
+TÓM TẮT ĐỀ:
+Cho một cây (tree) có n máy tính và n-1 kết nối, mỗi kết nối (a, b) có tốc độ
+truyền x. Tốc độ truyền giữa hai máy u và v được định nghĩa là GIÁ TRỊ NHỎ NHẤT
+của các cạnh nằm trên đường đi (duy nhất) giữa u và v trong cây. Yêu cầu: tính
+tổng tốc độ truyền trên tất cả các cặp máy (u, v) không thứ tự.
+
+KỸ THUẬT: DSU (Disjoint Set Union / Union-Find) kết hợp sắp xếp cạnh giảm dần,
+theo tinh thần Kruskal reconstruction / bottleneck path.
+
+Ý TƯỞNG CHÍNH:
+- Với một cặp (u, v), đáp số của cặp đó chính là cạnh có trọng số NHỎ NHẤT trên
+  đường đi giữa chúng (bottleneck edge).
+- Ta xử lý các cạnh theo thứ tự trọng số GIẢM DẦN. Duy trì DSU nơi mỗi thành phần
+  là một tập các đỉnh đã được nối với nhau bằng các cạnh có trọng số LỚN HƠN cạnh
+  đang xét.
+- Khi thêm cạnh e trọng số x nối hai thành phần A và B (kích thước s1 và s2):
+  vì đây là cây nên đường đi giữa bất kỳ u thuộc A và v thuộc B là DUY NHẤT và
+  phải đi qua cạnh e. Mọi cạnh bên trong A và bên trong B đều có trọng số > x
+  (do đã được thêm trước, theo thứ tự giảm dần), nên cạnh nhỏ nhất trên đường đi
+  u-v đúng bằng x.
+- Do đó cạnh e đóng góp x * s1 * s2 vào tổng đáp số. Cộng dồn rồi hợp nhất A, B.
+
+TÍNH ĐÚNG ĐẮN:
+- Mỗi cặp (u, v) được đếm ĐÚNG MỘT LẦN: tại thời điểm hai đỉnh lần đầu tiên nằm
+  chung một thành phần, tức là khi thêm cạnh bottleneck (nhỏ nhất trên đường đi
+  của chúng). Trước đó chúng ở hai thành phần khác nhau; s1 * s2 đếm chính xác
+  các cặp chéo giữa A và B.
+- Vì là cây, không có cạnh dư (chu trình), mọi cạnh đều thực sự hợp nhất hai thành
+  phần khác nhau, nên tổng s1 * s2 trên tất cả các cạnh = n(n-1)/2 = số cặp.
+
+ĐỘ PHỨC TẠP:
+- Sắp xếp n-1 cạnh: O(n log n).
+- DSU với path compression + union by size: gần như O(n * alpha(n)).
+- Tổng: O(n log n), bộ nhớ O(n). Thừa sức với n <= 2*10^5.
+
+LƯU Ý TRÀN SỐ:
+- Số cặp tối đa ~ n(n-1)/2 ~ 2*10^10, nhân trọng số tối đa 10^6 => cỡ 2*10^16,
+  vẫn nằm trong long long (~9.2*10^18). Dùng long long cho đáp số và cho tích
+  s1 * s2 * x.

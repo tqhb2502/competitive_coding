@@ -1,0 +1,48 @@
+Tree Isomorphism II - CSES 1701
+https://cses.fi/problemset/task/1701
+
+TECHNIQUE: Tree centering + AHU (Aho-Hopcroft-Ullman) canonical hashing cho
+cây không gốc (unrooted tree isomorphism).
+
+BÀI TOÁN:
+Cho t bộ test. Mỗi test có hai cây, mỗi cây n đỉnh (1..n). Hỏi hai cây có đẳng
+cấu (isomorphic) hay không, tức là có thể đánh số lại đỉnh của cây này để trùng
+khớp hoàn toàn với cây kia. In "YES"/"NO".
+
+Ý TƯỞNG CHÍNH:
+1) Bài toán đẳng cấu cho cây CÓ GỐC giải được bằng thuật toán AHU: gán cho mỗi
+   subtree một "canonical label" (nhãn chuẩn hoá). Nhãn của một đỉnh được xác
+   định bằng cách lấy danh sách nhãn của các con, SẮP XẾP tăng dần, rồi ánh xạ
+   danh sách đã sắp xếp này thành một số nguyên duy nhất (dùng map dùng chung
+   toàn cục). Hai subtree đẳng cấu <=> nhãn gốc bằng nhau. Sắp xếp giúp thứ tự
+   con không quan trọng, đúng bản chất đẳng cấu.
+
+2) Với cây KHÔNG GỐC, ta không biết chọn gốc nào. Mẹo: mọi cây có 1 hoặc 2
+   "center" (trọng tâm theo đường kính). Center là các đỉnh còn lại sau khi bóc
+   lá liên tục theo từng lớp (leaf peeling / topological trimming) cho đến khi
+   còn <= 2 đỉnh. Hai cây đẳng cấu thì phải có cùng số lượng center và cấu trúc
+   center trùng nhau.
+
+3) So khớp: nếu số center của hai cây khác nhau -> NO. Ngược lại, root cây thứ
+   nhất tại center của nó, lấy hash h1. Với cây thứ hai, thử root tại từng center
+   (tối đa 2), nếu có một cách cho ra hash rooted bằng h1 thì YES, ngược lại NO.
+
+TÍNH ĐÚNG ĐẮN:
+- AHU cho ra canonical form: hai rooted tree đẳng cấu KHI VÀ CHỈ KHI nhãn gốc
+  bằng nhau (do nhãn được xây quy nạp từ dưới lên, sắp xếp nhãn con nên bất biến
+  qua hoán vị con).
+- Center của cây là bất biến qua phép đẳng cấu; một cây đẳng cấu sẽ ánh xạ center
+  sang center. Do đó chỉ cần thử root tại center. Trường hợp 2 center, phép đẳng
+  cấu có thể tráo hai center nên phải thử cả hai center của cây thứ hai.
+- Vì các nhãn được cấp trong CÙNG một map dùng chung cho cả hai cây (và mọi
+  test), việc so sánh số nguyên nhãn gốc là hợp lệ và nhất quán.
+
+CÀI ĐẶT:
+- findCenters: bóc lá theo lớp bằng mảng bậc (degree), O(n).
+- rootedLabel: BFS từ gốc lấy thứ tự + parent, rồi duyệt NGƯỢC thứ tự BFS (đây là
+  một post-order hợp lệ) để tính nhãn từ lá lên gốc; mỗi đỉnh gom nhãn con, sort,
+  tra map -> id. Tất cả đều lặp (iterative), không đệ quy, tránh tràn stack.
+
+ĐỘ PHỨC TẠP:
+- Mỗi test O(n log n) do sort các danh sách con (tổng độ dài = số cạnh) và tra map.
+- Tổng n <= 1e5 nên toàn bộ chạy rất nhanh, O(N log N) với N = tổng n.
