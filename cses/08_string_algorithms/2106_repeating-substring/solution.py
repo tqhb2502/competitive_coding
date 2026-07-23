@@ -1,11 +1,3 @@
-# Repeating Substring
-# https://cses.fi/problemset/task/2106
-#
-# Tìm substring dài nhất xuất hiện ít nhất hai lần trong xâu S.
-# Dùng suffix array (prefix doubling O(n log n)) + LCP array (Kasai).
-# Đáp án = giá trị LCP lớn nhất giữa hai suffix kề nhau trong suffix array;
-# nếu bằng 0 thì không có substring lặp lại -> in ra -1.
-
 import sys
 from itertools import accumulate
 
@@ -19,6 +11,7 @@ def solve() -> None:
     s = data[0]                      # làm việc trực tiếp trên bytes cho nhanh
     n = len(s)
     if n <= 1:
+        # Xâu rỗng hoặc một ký tự không thể có substring lặp lại
         sys.stdout.write("-1\n")
         return
 
@@ -27,8 +20,9 @@ def solve() -> None:
     cmap = {c: i for i, c in enumerate(order)}
     rank = [cmap[c] for c in s]
 
-    # --- Suffix array bằng prefix doubling ---
-    # Khóa kết hợp: key[i] = rank[i]*base + (rank[i+k]+1), base = n+1 > mọi giá trị phụ.
+    # --- Xây dựng suffix array bằng prefix doubling ---
+    # Mỗi bước gấp đôi độ dài tiền tố so sánh; khóa kết hợp gộp cặp (rank[i], rank[i+k])
+    # thành một số nguyên: key[i] = rank[i]*base + (rank[i+k]+1) với base = n+1 > mọi giá trị phụ.
     base = n + 1
     sa = list(range(n))
     k = 1
@@ -37,6 +31,7 @@ def solve() -> None:
         keys = [a * base + b + 1 for a, b in zip(rank, rank_shift)]
         sa = sorted(range(n), key=keys.__getitem__)
 
+        # Gán lại rank mới: tăng 1 mỗi khi khóa đổi so với hậu tố liền trước trong sa
         sk = [keys[i] for i in sa]
         diff = [0] + [1 if sk[i] != sk[i - 1] else 0 for i in range(1, n)]
         rnk_sorted = list(accumulate(diff))       # rank mới theo thứ tự trong sa
@@ -51,13 +46,14 @@ def solve() -> None:
         k <<= 1
 
     # --- LCP array bằng thuật toán Kasai, tìm LCP kề nhau lớn nhất ---
+    # Biến h giảm tối đa 1 mỗi bước nên tổng chi phí amortized O(n).
     lcp_max = 0
     lcp_pos = 0
     h = 0
     for i in range(n):
         r = rank[i]
         if r > 0:
-            j = sa[r - 1]
+            j = sa[r - 1]             # hậu tố kề trước i trong thứ tự từ điển
             while i + h < n and j + h < n and s[i + h] == s[j + h]:
                 h += 1
             if h > lcp_max:
@@ -68,6 +64,7 @@ def solve() -> None:
         else:
             h = 0
 
+    # max LCP = 0 nghĩa là không có substring nào lặp lại
     if lcp_max == 0:
         sys.stdout.write("-1\n")
     else:

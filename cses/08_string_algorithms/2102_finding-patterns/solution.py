@@ -1,9 +1,3 @@
-# Finding Patterns - https://cses.fi/problemset/task/2102
-# Xây dựng suffix automaton (SAM) của text, sau đó với mỗi pattern chỉ cần đi
-# theo các transition từ trạng thái khởi đầu: nếu đi hết pattern thì in "YES",
-# nếu tắc (không còn transition) thì in "NO". SAM nhận diện đúng tập hợp mọi
-# substring của text, nên đây là thuật toán deterministic (không dùng hashing).
-
 import sys
 
 
@@ -18,35 +12,41 @@ def main():
     n = len(s)
     max_states = 2 * n + 5
 
+    # Suffix Automaton lưu song song bằng 3 mảng để tránh chi phí object.
     sa_len = [0] * max_states      # độ dài chuỗi dài nhất của mỗi trạng thái
     sa_link = [-1] * max_states    # suffix link
     sa_next = [None] * max_states  # dict transition cho mỗi trạng thái
 
+    # state 0 là trạng thái khởi đầu.
     sa_next[0] = {}
     sa_len[0] = 0
     sa_link[0] = -1
     size = 1
     last = 0
 
-    for c in s:  # c là giá trị byte (int) của ký tự
+    # Xây SAM online: thêm lần lượt từng ký tự c (giá trị byte) của text.
+    for c in s:
+        # Tạo trạng thái mới cur với len tăng 1.
         cur = size
         sa_len[cur] = sa_len[last] + 1
         sa_link[cur] = -1
         sa_next[cur] = {}
         size += 1
 
+        # Đi ngược suffix link, nối cạnh về cur ở những nơi còn thiếu.
         p = last
         while p != -1 and c not in sa_next[p]:
             sa_next[p][c] = cur
             p = sa_link[p]
 
         if p == -1:
-            sa_link[cur] = 0
+            sa_link[cur] = 0  # đi hết chuỗi suffix link -> link về state 0
         else:
             q = sa_next[p][c]
             if sa_len[p] + 1 == sa_len[q]:
-                sa_link[cur] = q
+                sa_link[cur] = q  # q liền kề -> nối trực tiếp
             else:
+                # Clone q để tách lớp endpos rồi chuyển hướng các cạnh về clone.
                 clone = size
                 sa_len[clone] = sa_len[p] + 1
                 sa_next[clone] = dict(sa_next[q])
@@ -59,6 +59,7 @@ def main():
                 sa_link[cur] = clone
         last = cur
 
+    # Với mỗi pattern, chạy trên automaton từ state 0: đọc hết được -> "YES".
     trans = sa_next
     out = []
     ap = out.append

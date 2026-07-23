@@ -1,2 +1,0 @@
-Inverse Suffix Array
-https://cses.fi/problemset/task/3225

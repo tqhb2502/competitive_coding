@@ -5,11 +5,14 @@
 #include <string>
 #include <vector>
 
+// Fenwick tree (BIT) làm việc trên vành số dư theo một modulo cho trước.
+// Hỗ trợ cộng một điểm và lấy tổng đoạn trong O(log n).
 class FenwickTree {
 public:
     FenwickTree(const int size, const long long modulus)
         : tree_(static_cast<std::size_t>(size + 1), 0), modulus_(modulus) {}
 
+    // Cộng delta vào vị trí index (chuẩn hoá delta về [0, modulus)).
     void add(int index, long long delta) {
         delta %= modulus_;
         if (delta < 0) {
@@ -24,6 +27,7 @@ public:
         }
     }
 
+    // Tổng đoạn [left, right] = tổng tiền tố tới right trừ tổng tiền tố tới left-1.
     long long range_sum(const int left, const int right) const {
         long long result = prefix_sum(right) - prefix_sum(left - 1);
         if (result < 0) {
@@ -57,6 +61,8 @@ int main() {
     std::string text;
     std::cin >> length >> operation_count >> text;
 
+    // Double hashing: hai modulo cố định và hai cơ số NGẪU NHIÊN chọn lúc chạy
+    // để chống các test anti-hash của CSES.
     constexpr long long MOD1 = 1'000'000'007LL;
     constexpr long long MOD2 = 998'244'353LL;
     const std::uint64_t seed = static_cast<std::uint64_t>(
@@ -70,6 +76,7 @@ int main() {
         256, MOD2 - 2
     )(generator);
 
+    // Tiền tính các luỹ thừa của cơ số tới n cho cả hai modulo.
     std::vector<long long> power1(static_cast<std::size_t>(length + 1), 1);
     std::vector<long long> power2(static_cast<std::size_t>(length + 1), 1);
     for (int exponent = 1; exponent <= length; ++exponent) {
@@ -79,12 +86,16 @@ int main() {
             power2[static_cast<std::size_t>(exponent - 1)] * base2 % MOD2;
     }
 
+    // Với mỗi modulo giữ một cây "forward" và một cây "backward".
+    //   forward lưu val[i] * p^(i-1)  -> hash đọc xuôi
+    //   backward lưu val[i] * p^(n-i) -> hash đọc ngược
     FenwickTree forward1(length, MOD1);
     FenwickTree backward1(length, MOD1);
     FenwickTree forward2(length, MOD2);
     FenwickTree backward2(length, MOD2);
     std::vector<int> value(static_cast<std::size_t>(length + 1), 0);
 
+    // Nạp giá trị ban đầu của từng ký tự vào cả bốn cây.
     for (int position = 1; position <= length; ++position) {
         value[static_cast<std::size_t>(position)] =
             text[static_cast<std::size_t>(position - 1)] - 'a' + 1;
@@ -111,6 +122,7 @@ int main() {
         int type;
         std::cin >> type;
         if (type == 1) {
+            // Thao tác loại 1: đổi ký tự tại vị trí position.
             int position;
             char character;
             std::cin >> position >> character;
@@ -120,6 +132,7 @@ int main() {
             if (difference == 0) {
                 continue;
             }
+            // Chỉ cần cộng delta vào cả bốn cây (nhân với luỹ thừa tương ứng).
             value[static_cast<std::size_t>(position)] = new_value;
             forward1.add(
                 position,
@@ -142,6 +155,8 @@ int main() {
                     power2[static_cast<std::size_t>(length - position)]
             );
         } else {
+            // Thao tác loại 2: so sánh hash xuôi và hash ngược của đoạn [left, right]
+            // bằng phép nhân chéo để tránh nghịch đảo modular.
             int left, right;
             std::cin >> left >> right;
             const long long forward_hash1 =

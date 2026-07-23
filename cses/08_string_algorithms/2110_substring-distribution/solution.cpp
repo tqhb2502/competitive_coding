@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 
+// Một state của suffix automaton (SAM):
+// - length: độ dài xâu con dài nhất mà state biểu diễn
+// - link: suffix link
+// - next: cạnh chuyển theo từng ký tự a-z
 struct State {
     int length = 0;
     int link = -1;
@@ -20,6 +24,7 @@ int main() {
     std::string text;
     std::cin >> text;
 
+    // Xây dựng SAM online: bắt đầu với state khởi tạo 0
     std::vector<State> automaton;
     automaton.reserve(2 * text.size());
     automaton.emplace_back();
@@ -27,25 +32,32 @@ int main() {
 
     for (const char character : text) {
         const int letter = character - 'a';
+
+        // Tạo state mới cho tiền tố dài hơn 1 ký tự
         const int current = static_cast<int>(automaton.size());
         automaton.emplace_back();
         automaton[current].length = automaton[last].length + 1;
 
+        // Đi theo suffix link, thêm cạnh chuyển tới state mới
         int state = last;
         while (state != -1 && automaton[state].next[letter] == -1) {
             automaton[state].next[letter] = current;
             state = automaton[state].link;
         }
         if (state == -1) {
+            // Không có cạnh trùng: suffix link trỏ về state khởi tạo
             automaton[current].link = 0;
         } else {
             const int child = automaton[state].next[letter];
             if (automaton[state].length + 1 == automaton[child].length) {
+                // Cạnh liên tục: dùng thẳng child làm suffix link
                 automaton[current].link = child;
             } else {
+                // Tách state (clone) để giữ tính tối thiểu của automaton
                 const int clone = static_cast<int>(automaton.size());
                 automaton.push_back(automaton[child]);
                 automaton[clone].length = automaton[state].length + 1;
+                // Chuyển các cạnh trỏ tới child sang clone
                 while (state != -1 &&
                        automaton[state].next[letter] == child) {
                     automaton[state].next[letter] = clone;
@@ -58,6 +70,7 @@ int main() {
         last = current;
     }
 
+    // Mảng hiệu: mỗi state v cộng 1 cho khoảng độ dài [len[link]+1, len[v]]
     std::vector<int> difference(text.size() + 2, 0);
     for (std::size_t state = 1; state < automaton.size(); ++state) {
         const int left =
@@ -67,6 +80,7 @@ int main() {
         --difference[static_cast<std::size_t>(right + 1)];
     }
 
+    // Prefix sum: giá trị tại L là số xâu con phân biệt có độ dài L
     int count = 0;
     for (std::size_t length = 1; length <= text.size(); ++length) {
         count += difference[length];

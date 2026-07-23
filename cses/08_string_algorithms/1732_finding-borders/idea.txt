@@ -1,23 +1,27 @@
-Bài toán: Finding Borders (CSES 1732)
+Finding Borders - CSES 1732
+https://cses.fi/problemset/task/1732
 
-Định nghĩa: một "border" của xâu s là một prefix đồng thời cũng là suffix của s,
-nhưng không phải là toàn bộ xâu. Cần in ra độ dài của tất cả các border theo thứ
-tự tăng dần.
+## Đề bài
+Cho một xâu s. Một "border" của s là một prefix đồng thời cũng là suffix của s
+nhưng không phải là toàn bộ xâu. Hãy in ra độ dài của tất cả các border của s
+theo thứ tự tăng dần.
 
-Ý tưởng chính: dùng prefix function (hàm thất bại của KMP).
+## Ý tưởng
+Sử dụng prefix function (hàm thất bại của KMP).
 - Gọi pi[i] là độ dài của prefix thực sự dài nhất của s[0..i] mà cũng đồng thời
-  là suffix của s[0..i]. Ta tính pi bằng thuật toán KMP chuẩn trong O(n).
-- Một tính chất quan trọng của prefix function: pi[n-1] chính là độ dài border
-  DÀI NHẤT của toàn bộ xâu. Border dài nhất tiếp theo (ngắn hơn) có độ dài
-  pi[pi[n-1]-1], và cứ tiếp tục lần theo chuỗi pi[b-1] cho tới khi b = 0.
-- Lý do đúng: tập hợp tất cả các border của một prefix p tạo thành một chuỗi lồng
-  nhau; border dài nhất của p là pi của vị trí cuối của p, và mọi border khác của
-  p đều là border của cái border dài nhất đó. Vì vậy đi theo chuỗi
-  b -> pi[b-1] -> ... ta liệt kê được đầy đủ và duy nhất mọi độ dài border, theo
-  thứ tự GIẢM dần. Ta chỉ cần đảo ngược lại để có thứ tự tăng dần.
+  là suffix của s[0..i]. Tính mảng pi bằng thuật toán KMP chuẩn trong O(n).
+- Tính chất quan trọng: pi[n-1] chính là độ dài border DÀI NHẤT của toàn bộ xâu.
+  Border dài nhất tiếp theo (ngắn hơn) có độ dài pi[pi[n-1]-1], và ta cứ tiếp tục
+  lần theo chuỗi b -> pi[b-1] -> ... cho tới khi b = 0.
+- Lý do đúng: tập hợp tất cả các border của một prefix tạo thành một chuỗi lồng
+  nhau; border dài nhất của prefix là pi tại vị trí cuối, và mọi border khác đều
+  là border của cái border dài nhất đó. Vì vậy đi theo chuỗi pi ta liệt kê được
+  đầy đủ và duy nhất mọi độ dài border theo thứ tự GIẢM dần. Chỉ cần đảo ngược
+  lại để có thứ tự tăng dần.
 
-Độ phức tạp:
-- Thời gian: O(n) để tính prefix function (amortized), O(số border) để lần chuỗi.
+## Độ phức tạp
+- Thời gian: O(n) để tính prefix function (amortized), cộng O(số border) để lần
+  theo chuỗi pi.
 - Bộ nhớ: O(n) cho mảng pi.
 
 LƯU Ý TLE: với n lên tới 1e6, vòng lặp tính prefix function chạy thuần Python có

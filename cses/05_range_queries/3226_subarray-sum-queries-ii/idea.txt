@@ -42,5 +42,3 @@ LƯU Ý TLE: với n, q tới 2*10^5 và hằng số lớn của Python, khoản
 (vài triệu lần, mỗi lần hàng chục thao tác Python) rất có thể vượt giới hạn thời
 gian trên CSES (giới hạn đặt theo C++). Thuật toán ĐÚNG; nếu cần vượt, hãy chạy
 bằng PyPy hoặc viết lại bằng C++.
-</content>
-</invoke>

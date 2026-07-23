@@ -1,54 +1,44 @@
-Ý tưởng: Point in Polygon (CSES 2192)
+Point in Polygon - CSES 2192
+https://cses.fi/problemset/task/2192
 
-Bài toán
---------
-Cho một đa giác đơn (simple polygon) gồm n đỉnh theo thứ tự, và m điểm truy vấn.
-Với mỗi điểm, cho biết nó nằm INSIDE (bên trong), OUTSIDE (bên ngoài) hay
-BOUNDARY (nằm trên biên) của đa giác.
+## Đề bài
+Cho một đa giác đơn (simple polygon) gồm n đỉnh liệt kê theo thứ tự, cùng với m
+điểm truy vấn. Với mỗi điểm, hãy cho biết nó nằm INSIDE (bên trong), OUTSIDE
+(bên ngoài) hay BOUNDARY (nằm trên biên) của đa giác.
+Ràng buộc: 3 <= n, m <= 1000; toạ độ nguyên nằm trong đoạn [-1e9, 1e9].
 
-Ràng buộc: 3 <= n, m <= 1000; toạ độ nguyên trong [-1e9, 1e9].
-
-Ý tưởng chính
--------------
-Với mỗi điểm truy vấn, duyệt qua từng cạnh của đa giác và làm hai việc:
+## Ý tưởng
+Với mỗi điểm truy vấn, duyệt qua từng cạnh của đa giác và thực hiện hai việc:
 
 1) Kiểm tra BOUNDARY (điểm nằm trên cạnh).
-   Xét cạnh (x1,y1)-(x2,y2). Nếu điểm P=(px,py) nằm trên cạnh này thì:
-     - Ba điểm thẳng hàng: cross = (x2-x1)*(py-y1) - (y2-y1)*(px-x1) == 0
+   Xét cạnh (x1,y1)-(x2,y2). Điểm P=(px,py) nằm trên cạnh này khi:
+     - Ba điểm thẳng hàng: cross = (x2-x1)*(py-y1) - (y2-y1)*(px-x1) == 0.
      - Và P nằm trong bounding box của cạnh (min <= .. <= max theo cả x lẫn y).
-   Nếu thoả cả hai -> kết luận BOUNDARY ngay.
+   Nếu thoả cả hai thì kết luận ngay là BOUNDARY. Kiểm tra biên được ưu tiên:
+   hễ điểm nằm trên bất kỳ cạnh nào thì trả về BOUNDARY trước khi xét trong/ngoài.
 
 2) Ray casting (even-odd rule) để phân biệt INSIDE / OUTSIDE.
-   Bắn một tia từ P về hướng +x (sang phải) và đếm số lần tia cắt các cạnh.
-   Số lần cắt lẻ -> INSIDE; chẵn -> OUTSIDE.
-   Để xử lý đúng trường hợp tia đi qua đúng một đỉnh, dùng "half-open trick":
-   cạnh chỉ được tính là cắt nếu (y1 > py) != (y2 > py), tức đúng một đầu mút
-   nằm thực sự phía trên đường ngang y = py. Cách này coi mỗi cạnh như nửa khoảng
-   theo y nên mỗi đỉnh chỉ được đếm một lần, tránh đếm trùng/đếm thiếu.
+   Bắn một tia từ P về hướng +x (sang phải) và đếm số lần tia cắt các cạnh. Số
+   lần cắt lẻ nghĩa là INSIDE, chẵn nghĩa là OUTSIDE. Đây là kết quả kinh điển
+   của tôpô mặt phẳng cho đa giác đơn.
+   Để xử lý đúng khi tia đi qua đúng một đỉnh, dùng half-open trick: cạnh chỉ
+   được tính là cắt nếu (y1 > py) != (y2 > py), tức đúng một đầu mút nằm thực sự
+   phía trên đường ngang y = py. Cách này coi mỗi cạnh như nửa khoảng theo y nên
+   mỗi đỉnh chỉ được đếm một lần, tránh đếm trùng hoặc đếm thiếu tại các đỉnh và
+   các cạnh ngang.
 
    Hoành độ giao điểm của cạnh với đường y = py là:
        xint = x1 + (x2-x1)*(py-y1)/(y2-y1)
-   Ta chỉ cần biết px < xint hay không (giao điểm có nằm bên phải P không).
-   Thay vì chia số thực, nhân chéo và xét dấu dy = y2 - y1:
+   Ta chỉ cần biết px < xint hay không (giao điểm có nằm bên phải P không). Thay
+   vì chia số thực, ta nhân chéo và xét dấu dy = y2 - y1:
        lhs = (px-x1)*(y2-y1),  rhs = (x2-x1)*(py-y1)
        nếu dy > 0: cắt khi lhs < rhs
        nếu dy < 0: cắt khi lhs > rhs
-   Nhờ vậy toàn bộ phép tính là số nguyên chính xác, không có sai số floating point.
+   Nhờ vậy toàn bộ phép tính đều là số nguyên chính xác, không có sai số
+   floating point. Với toạ độ tới 1e9, các tích có thể lên ~4e18: Python dùng
+   big integer nên không tràn, C++ dùng long long vẫn nằm trong giới hạn an toàn.
 
-Vì sao đúng
------------
-- Ray casting theo even-odd rule là kết quả kinh điển của tôpô mặt phẳng: một tia
-  bất kỳ từ điểm ra vô cực cắt biên của đa giác đơn số lần lẻ khi điểm ở trong,
-  chẵn khi ở ngoài. Half-open trick đảm bảo đếm chính xác tại các đỉnh và các cạnh
-  ngang.
-- Toàn bộ quyết định (thẳng hàng, số lần cắt) đều dùng integer cross product và
-  nhân chéo, nên không bao giờ sai do làm tròn. Với toạ độ đến 1e9, các tích có
-  thể tới ~4e18 nhưng Python dùng big integer nên không tràn số.
-- Kiểm tra BOUNDARY được ưu tiên: nếu điểm nằm trên bất kỳ cạnh nào thì trả về
-  BOUNDARY trước khi kết luận trong/ngoài.
-
-Độ phức tạp
------------
-- Thời gian: O(n) cho mỗi truy vấn -> O(n*m) tổng cộng. Với n, m <= 1000 là tối đa
-  1e6 phép tính, chạy thoải mái trong giới hạn thời gian.
-- Bộ nhớ: O(n) lưu toạ độ đa giác.
+## Độ phức tạp
+- Thời gian: O(n) cho mỗi truy vấn, tổng cộng O(n*m). Với n, m <= 1000 là tối đa
+  khoảng 1e6 phép tính, chạy thoải mái trong giới hạn thời gian.
+- Bộ nhớ: O(n) để lưu toạ độ đa giác.

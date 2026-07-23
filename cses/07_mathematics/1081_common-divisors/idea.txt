@@ -35,5 +35,3 @@ Cách cài đặt hiệu quả:
 LƯU Ý TLE: Vòng sieve điều hòa ~1.4*10^7 thao tác được thực thi ở tốc độ C thông qua
 sum(cnt[d::d]) nên rủi ro TLE thấp trên CPython của CSES; tuy nhiên nếu vẫn vượt thời
 gian có thể chuyển sang PyPy hoặc chỉ duyệt d tới M thay vì 10^6.
-</content>
-</invoke>

@@ -1,10 +1,3 @@
-# Area of Rectangles - CSES 1741
-# https://cses.fi/problemset/task/1741
-#
-# Union area of n axis-aligned rectangles via sweep line (x) + segment tree
-# over compressed y coordinates that maintains the total covered length.
-# All arithmetic is exact integer (coordinates up to 1e6, answer fits in int).
-
 import sys
 
 
@@ -26,31 +19,29 @@ def main():
         ys_set.add(y1)
         ys_set.add(y2)
 
-    # Coordinate compression of y.
+    # Coordinate compression trục y.
     ys = sorted(ys_set)
     yidx = {v: i for i, v in enumerate(ys)}
-    M = len(ys) - 1  # number of elementary y-intervals (>=1 since y1<y2 always)
+    M = len(ys) - 1  # số elementary y-interval (>=1 vì luôn có y1<y2)
 
-    # Segment tree size (power of two >= M).
+    # Kích thước segment tree (luỹ thừa 2 >= M).
     sz = 1
     while sz < M:
         sz <<= 1
 
-    # span[node] = physical y-length covered by the node's elementary intervals.
+    # span[node] = tổng chiều dài vật lý theo y của các elementary interval trong node.
     span = [0] * (2 * sz)
     for i in range(M):
         span[sz + i] = ys[i + 1] - ys[i]
     for i in range(sz - 1, 0, -1):
         span[i] = span[2 * i] + span[2 * i + 1]
 
-    # cnt[node] = how many active rectangles fully cover this node's range
-    #            (lazy count, never pushed down).
-    # cover[node] = measure of the covered part inside this node's range,
-    #            considering cnt at this node and below (NOT ancestors).
+    # cnt[node]   = số hình chữ nhật active phủ trọn đoạn node (lazy, không push-down).
+    # cover[node] = độ dài phần bị phủ trong đoạn node (tính theo cnt tại node và hậu duệ).
     cnt = [0] * (2 * sz)
     cover = [0] * (2 * sz)
 
-    # Build vertical events: at x1 add +1 on [y1,y2), at x2 add -1 on [y1,y2).
+    # Dựng các sự kiện dọc: tại x1 cộng +1 trên [y1,y2), tại x2 cộng -1 trên [y1,y2).
     events = []
     ap = events.append
     for i in range(n):
@@ -66,17 +57,17 @@ def main():
     j = 0
     while j < ne:
         x = events[j][0]
-        # Strip [prev_x, x] is covered by the current union length cover[1].
+        # Dải [prev_x, x] được phủ với chiều cao = độ dài union hiện tại cover[1].
         area += (x - prev_x) * cover[1]
-        # Apply every event that shares this x.
+        # Áp dụng mọi sự kiện có cùng hoành độ x.
         while j < ne and events[j][0] == x:
             _, val, l, r = events[j]
             j += 1
-            # Range update on elementary-interval indices [l, r) by +val/-val,
-            # maintaining cover with the local recurrence
-            #   cover = span            if cnt > 0
-            #   cover = 0               if leaf and cnt == 0
-            #   cover = child0 + child1 otherwise
+            # Range update +val/-val trên các elementary interval [l, r), duy trì cover
+            # bằng công thức cục bộ:
+            #   cover = span            nếu cnt > 0
+            #   cover = 0               nếu là lá và cnt == 0
+            #   cover = con0 + con1     trong các trường hợp còn lại
             l += sz
             r += sz
             ll = l
@@ -104,7 +95,7 @@ def main():
                         cover[r] = cover[2 * r] + cover[2 * r + 1]
                 l >>= 1
                 r >>= 1
-            # Recompute cover for all ancestors of the two boundaries up to root.
+            # Tính lại cover cho toàn bộ tổ tiên của hai biên lên tới gốc.
             k = ll >> 1
             while k >= 1:
                 if cnt[k] > 0:

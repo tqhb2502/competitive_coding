@@ -12,6 +12,7 @@ struct Point {
     i64 y;
 };
 
+// In một số __int128 (kiểu này không được cout hỗ trợ trực tiếp).
 void print_integer(i128 value) {
     if (value == 0) {
         std::cout << '0';
@@ -34,6 +35,7 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
+    // Đọc số đỉnh và toàn bộ tọa độ theo thứ tự vòng quanh đa giác.
     int vertex_count = 0;
     std::cin >> vertex_count;
     std::vector<Point> polygon(static_cast<std::size_t>(vertex_count));
@@ -41,6 +43,8 @@ int main() {
         std::cin >> point.x >> point.y;
     }
 
+    // Công thức shoelace: cộng dồn cross product của các cạnh liên tiếp.
+    // Dùng __int128 để tránh tràn số vì tổng có thể cỡ ~1e21.
     i128 doubled_area = 0;
     for (int index = 0; index < vertex_count; ++index) {
         const Point& current = polygon[static_cast<std::size_t>(index)];
@@ -48,6 +52,8 @@ int main() {
         doubled_area += static_cast<i128>(current.x) * next.y -
                         static_cast<i128>(next.x) * current.y;
     }
+
+    // Lấy trị tuyệt đối để ra 2a đúng bất kể chiều duyệt (clockwise hay ngược lại).
     if (doubled_area < 0) {
         doubled_area = -doubled_area;
     }

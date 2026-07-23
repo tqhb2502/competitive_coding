@@ -1,15 +1,3 @@
-# Intersection Points - CSES task 1740
-# https://cses.fi/problemset/task/1740
-#
-# Các đoạn thẳng chỉ là ngang (horizontal) hoặc dọc (vertical).
-# Không có hai đoạn song song cắt nhau, và không có endpoint nào là
-# giao điểm. Vì vậy mỗi giao điểm là giao của đúng một đoạn ngang với
-# một đoạn dọc, cắt nhau tại điểm trong (strict interior) của cả hai.
-#
-# Sweep line theo x từ trái sang phải + Binary Indexed Tree (BIT) đếm
-# số đoạn ngang đang "hoạt động" có tọa độ y nằm trong [y1, y2] của
-# đoạn dọc hiện tại. Tất cả dùng số nguyên (exact integer arithmetic).
-
 import sys
 from bisect import bisect_left, bisect_right
 
@@ -23,8 +11,9 @@ def main():
 
     horizontals = []  # (x_left, x_right, y)
     verticals = []    # (x, y_low, y_high)
-    ys = []           # tất cả y của đoạn ngang (để nén tọa độ)
+    ys = []           # tất cả y của đoạn ngang, dùng để nén tọa độ
 
+    # Phân loại từng đoạn thành ngang (y1 == y2) hoặc dọc (x1 == x2).
     for _ in range(n):
         x1 = int(data[pos]); y1 = int(data[pos + 1])
         x2 = int(data[pos + 2]); y2 = int(data[pos + 3])
@@ -37,20 +26,22 @@ def main():
             # đoạn dọc: x1 == x2, theo ràng buộc y1 <= y2
             verticals.append((x1, y1, y2))
 
-    # Nén tọa độ y của các đoạn ngang.
+    # Nén tọa độ y của các đoạn ngang thành rank.
     ys = sorted(set(ys))
     m = len(ys)
 
-    # Tạo events. type: add=0 < query=1 < remove=2 (thứ tự khi cùng x).
-    # Nhờ đảm bảo không có endpoint là giao điểm nên thứ tự này an toàn.
+    # Tạo các sự kiện sweep line; type: add=0 < query=1 < remove=2 (thứ tự khi trùng x).
+    # Nhờ bảo đảm không endpoint nào là giao điểm nên thứ tự này an toàn.
     events = []
     ap = events.append
 
+    # Mỗi đoạn ngang -> sự kiện add tại xl và remove tại xr (rank 1-based cho BIT).
     for xl, xr, y in horizontals:
-        r = bisect_left(ys, y) + 1  # rank 1-indexed trong BIT (1-based)
+        r = bisect_left(ys, y) + 1
         ap((xl, 0, r, 0))
         ap((xr, 2, r, 0))
 
+    # Mỗi đoạn dọc -> sự kiện query lấy khoảng rank [lo, hi] ứng với [y_low, y_high].
     for x, ylo, yhi in verticals:
         lo = bisect_left(ys, ylo)   # số phần tử < ylo
         hi = bisect_right(ys, yhi)  # số phần tử <= yhi
@@ -60,12 +51,15 @@ def main():
 
     events.sort()
 
+    # BIT (Fenwick tree) trên trục y, kích thước m+1 (1-based).
     sz = m + 1
     tree = [0] * sz
     ans = 0
 
+    # Quét theo x: add/remove cập nhật BIT (+1/-1), query cộng số đoạn ngang trong khoảng.
     for _x, typ, p, q in events:
         if typ == 1:
+            # range sum = prefix(q) - prefix(p)
             s = 0
             i = q
             while i > 0:
@@ -77,11 +71,13 @@ def main():
                 i -= i & (-i)
             ans += s
         elif typ == 0:
+            # point update +1: đoạn ngang bắt đầu hoạt động
             i = p
             while i < sz:
                 tree[i] += 1
                 i += i & (-i)
         else:  # typ == 2
+            # point update -1: đoạn ngang kết thúc hoạt động
             i = p
             while i < sz:
                 tree[i] -= 1

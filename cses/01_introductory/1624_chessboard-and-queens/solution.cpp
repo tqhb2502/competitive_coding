@@ -9,7 +9,7 @@ int main() {
     cin.tie(nullptr);
 
     // Đọc bàn cờ 8x8: mỗi ô là '.' (tự do) hoặc '*' (bị cấm).
-    array<string, 8> board{};
+    array<string, 8> board{}; // 8 hàng, mỗi hàng là một string - ban đầu là rỗng.
     for (string& row : board) {
         cin >> row;
     }

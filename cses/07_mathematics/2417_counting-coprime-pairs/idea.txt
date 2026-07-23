@@ -46,5 +46,3 @@ d có mu[d] != 0 và dùng slicing sum (sum(freq[d::d])) chạy ở tốc độ 
 worst-case (n = 1e5, giá trị tới 1e6) trên CPython 3.9 mất khoảng 1.0-1.3s (gồm cả
 thời gian khởi động Python), tức là sát ngưỡng 1s của CPython. Nên nộp bằng PyPy3
 để an toàn; với PyPy3 thời gian chạy thấp hơn nhiều và không lo TLE.
-</content>
-</invoke>

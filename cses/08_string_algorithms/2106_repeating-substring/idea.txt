@@ -1,38 +1,38 @@
-Bài toán: Tìm substring dài nhất xuất hiện ít nhất hai lần trong xâu S (độ dài n <= 1e5,
-gồm các chữ cái thường). Nếu không có, in ra -1. Nếu có nhiều đáp án, in ra bất kỳ.
+Repeating Substring - CSES 2106
+https://cses.fi/problemset/task/2106
 
-Ý tưởng chính (deterministic, tránh hashing vì CSES có anti-hash tests):
-- Xây dựng suffix array (SA) của S. SA là dãy các vị trí bắt đầu của tất cả hậu tố (suffix),
-  được sắp xếp theo thứ tự từ điển.
-- Xây dựng LCP array (Longest Common Prefix) bằng thuật toán Kasai. LCP[r] là độ dài tiền tố
-  chung dài nhất của hai hậu tố liên tiếp sa[r-1] và sa[r] trong suffix array.
+## Đề bài
+Cho xâu S độ dài n (n <= 1e5), chỉ gồm các chữ cái thường. Hãy tìm chuỗi con (substring)
+dài nhất xuất hiện ít nhất hai lần trong S. Nếu không tồn tại, in ra -1; nếu có nhiều đáp án
+cùng độ dài thì in ra một đáp án bất kỳ.
+
+## Ý tưởng
+Dùng cách tiếp cận tất định (deterministic), tránh hashing vì CSES có các test chống hash.
+- Xây dựng suffix array (SA) của S: dãy vị trí bắt đầu của mọi hậu tố, sắp theo thứ tự từ điển.
+- Xây dựng LCP array bằng thuật toán Kasai: LCP[r] là độ dài tiền tố chung dài nhất của hai
+  hậu tố kề nhau sa[r-1] và sa[r] trong SA.
 - Nhận xét then chốt: mỗi substring xuất hiện ít nhất hai lần chính là tiền tố chung của hai
-  hậu tố nào đó. Substring lặp lại dài nhất có độ dài bằng giá trị LCP lớn nhất. Hơn nữa, giá
-  trị LCP lớn nhất luôn đạt được tại một cặp hậu tố KỀ NHAU trong SA (vì nếu hai hậu tố có
-  tiền tố chung độ dài L thì mọi hậu tố nằm giữa chúng trong thứ tự từ điển cũng có tiền tố
-  chung độ dài ít nhất L). Vì vậy chỉ cần lấy max của LCP array.
-- Nếu max LCP = 0 thì không có substring lặp lại -> in -1. Ngược lại in ra chính substring đó:
+  hậu tố nào đó. Do đó substring lặp lại dài nhất có độ dài bằng giá trị LCP lớn nhất, và giá
+  trị lớn nhất này luôn đạt tại một cặp hậu tố KỀ NHAU trong SA (nếu hai hậu tố có tiền tố
+  chung độ dài L thì mọi hậu tố nằm giữa chúng theo thứ tự từ điển cũng có tiền tố chung độ
+  dài ít nhất L).
+- Nếu max LCP = 0 thì không có substring lặp lại -> in -1. Ngược lại in ra chính đoạn đó:
   s[i : i+L] với i là vị trí hậu tố hiện tại và L = max LCP.
 
-Xây dựng suffix array (prefix doubling / rank doubling):
-- Ban đầu xếp hạng các hậu tố theo ký tự đầu (coordinate compression về 0..d-1).
-- Mỗi bước doubling k = 1,2,4,...: sắp xếp các hậu tố theo cặp (rank[i], rank[i+k]) => sau
-  bước đó rank thể hiện thứ tự theo 2k ký tự đầu. Dùng khóa kết hợp key[i] = rank[i]*base +
-  (rank[i+k]+1) với base = n+1 để gộp cặp thành một số nguyên, rồi sort. Sau mỗi bước gán lại
-  rank mới. Dừng khi tất cả rank đều phân biệt.
+Xây dựng suffix array bằng prefix doubling (rank doubling):
+- Ban đầu xếp hạng hậu tố theo ký tự đầu (nén tọa độ về 0..d-1).
+- Mỗi bước doubling k = 1, 2, 4, ...: sắp xếp hậu tố theo cặp (rank[i], rank[i+k]); sau bước đó
+  rank phản ánh thứ tự theo 2k ký tự đầu. Dùng khóa kết hợp key[i] = rank[i]*base + (rank[i+k]+1)
+  với base = n+1 để gộp cặp thành một số nguyên rồi sort, sau đó gán lại rank mới.
+- Dừng khi mọi rank đều phân biệt.
 
-Tính đúng đắn:
-- Prefix doubling cho SA đúng theo định nghĩa sắp xếp từ điển của hậu tố.
-- Kasai tính đúng LCP giữa các hậu tố kề nhau (biến h giảm tối đa 1 mỗi bước nên tổng chi phí
+## Độ phức tạp
+- Suffix array (prefix doubling): O(n log^2 n) thời gian trong trường hợp xấu (O(log n) bước,
+  mỗi bước một lần sort O(n log n)); bộ nhớ O(n).
+- Kasai LCP: O(n) thời gian, O(n) bộ nhớ (biến h giảm tối đa 1 mỗi bước nên tổng chi phí
   amortized O(n)).
-- Max LCP trên cặp kề nhau = độ dài substring lặp lại dài nhất (chứng minh ở trên).
-
-Độ phức tạp:
-- Suffix array: O(n log n) với O(log n) bước doubling, mỗi bước một lần sort O(n log n).
-  Thực tế là O(n log^2 n) trong trường hợp xấu. Bộ nhớ O(n).
-- Kasai LCP: O(n) thời gian, O(n) bộ nhớ.
 
 LƯU Ý TLE: CSES đặt giới hạn thời gian hướng tới C++ (thường ~1s). Với n = 1e5, việc xây dựng
 suffix array bằng Python thuần (nhiều vòng lặp mức Python + O(log n) lần sort) có thể chậm và
-có nguy cơ TLE trên PyPy/CPython của CSES. Thuật toán vẫn ĐÚNG; nếu cần nhanh hơn phải dùng
+có nguy cơ TLE trên CPython/PyPy của CSES. Thuật toán vẫn ĐÚNG; nếu cần nhanh hơn phải dùng
 SA-IS O(n) hoặc cài đặt bằng ngôn ngữ biên dịch.

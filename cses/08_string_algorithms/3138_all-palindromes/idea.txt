@@ -1,19 +1,21 @@
-Bài: All Palindromes (CSES 3138)
+All Palindromes - CSES 3138
+https://cses.fi/problemset/task/3138
 
-Đề bài:
+## Đề bài
 - Cho một xâu s gồm các kí tự 'a'..'z', độ dài n (n <= 2*10^5).
-- Với mỗi vị trí i (1-indexed) in ra độ dài của palindrome DÀI NHẤT KẾT THÚC tại vị trí i.
+- Với mỗi vị trí i (1-indexed), in ra độ dài của palindrome DÀI NHẤT KẾT THÚC tại vị trí i.
 
 Ví dụ: s = "ababbababaa" -> "1 1 3 3 2 4 6 8 5 5 2".
 
-Thuật toán: Eertree (Palindromic Tree)
+## Ý tưởng
+Dùng Eertree (Palindromic Tree).
 - Eertree là cấu trúc lưu trữ TẤT CẢ các palindrome-substring PHÂN BIỆT của xâu, mỗi
   palindrome là một nút. Cây có 2 gốc: imaginary root (độ dài = -1) và empty root
   (độ dài = 0). Mỗi nút có:
     + length: độ dài palindrome.
     + link (suffix link): trỏ tới palindrome-suffix thật sự dài nhất của nó.
     + transition trans[node, c]: nút ứng với palindrome c + P + c (thêm kí tự c hai đầu).
-- Ta thêm từng kí tự của s từ trái sang phải. Biến `last` luôn là nút ứng với
+- Thêm từng kí tự của s từ trái sang phải. Biến `last` luôn là nút ứng với
   palindrome-suffix DÀI NHẤT của tiền tố hiện tại.
 - Khi thêm kí tự thứ i:
     + Đi theo suffix link từ `last` để tìm `cur` là suffix-palindrome dài nhất mà có
@@ -28,13 +30,14 @@ Tính đúng:
 - Theo lý thuyết eertree, mỗi bước thêm 1 kí tự tạo ra NHIỀU NHẤT 1 palindrome mới, và
   `last` sau bước đó đúng bằng palindrome-suffix dài nhất. Đó là định nghĩa trực tiếp của
   đáp án, nên kết quả chính xác.
-- Ta dùng xâu 1-indexed với một sentinel a[0] = -1 (khác mọi mã kí tự 0..25) để bảo đảm
+- Dùng xâu 1-indexed với một sentinel a[0] = -1 (khác mọi mã kí tự 0..25) để bảo đảm
   chỉ số i - length[cur] - 1 luôn >= 0, tránh truy cập âm; imaginary root (len -1) luôn
   khớp nên vòng lặp tìm `cur` và suffix link luôn dừng lại.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) amortized (tổng số bước đi theo suffix link trên toàn bộ quá trình là
-  O(n)). Bộ nhớ: O(n) nút, mỗi nút vài trường + transition.
+  O(n)).
+- Bộ nhớ: O(n) nút, mỗi nút vài trường + transition.
 
 LƯU Ý TLE: Eertree thuần Python cho n = 2*10^5 với giới hạn 1.00s của CSES có thể chậm
 (dùng dict cho transition, mỗi vòng lặp có overhead). Thuật toán O(n) là tối ưu về mặt

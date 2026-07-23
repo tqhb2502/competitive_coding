@@ -1,11 +1,3 @@
-# Counting Patterns - CSES 2103
-# https://cses.fi/problemset/task/2103
-#
-# Suffix automaton (SAM) của chuỗi s. Kích thước endpos của mỗi state = số lần
-# xuất hiện của các substring thuộc state đó. Với mỗi pattern, đi theo các ký tự
-# trong SAM: nếu đi hết thì đáp án = cnt[state]; nếu tắc thì đáp án = 0.
-# Thuật toán tất định (không hashing) nên chống anti-hash test của CSES.
-
 import sys
 
 
@@ -31,13 +23,16 @@ def main():
     next_ap = sa_next.append
     cnt_ap = cnt.append
 
+    # Thêm từng ký tự của s vào SAM.
     for ch in s:
         c = ch - 97  # 'a' -> 0
+        # Tạo state gốc "cur" cho prefix mới; cnt = 1 vì kết thúc tại vị trí thật.
         cur = len(sa_len)
         len_ap(sa_len[last] + 1)
         link_ap(-1)
         next_ap({})
         cnt_ap(1)
+        # Đi ngược theo suffix link, nối chuyển tới cur cho các state chưa có chuyển.
         p = last
         while p != -1 and c not in sa_next[p]:
             sa_next[p][c] = cur
@@ -49,6 +44,7 @@ def main():
             if sa_len[p] + 1 == sa_len[q]:
                 sa_link[cur] = q
             else:
+                # Tách state: tạo clone của q với len = sa_len[p] + 1.
                 clone = len(sa_len)
                 len_ap(sa_len[p] + 1)
                 link_ap(sa_link[q])

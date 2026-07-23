@@ -1,12 +1,3 @@
-# Line Segments Trace I
-# https://cses.fi/problemset/task/3427
-#
-# Each segment joins (0, y1) - (m, y2) with integer slope, so treat it as a full
-# line f(x) = s*x + b, where b = y1 and s = (y2 - y1) // m (exact division).
-# We need the max of these lines at x = 0..m => the upper envelope via a monotone
-# Convex Hull Trick, using exact integer arithmetic (cross product) and a moving
-# pointer for the queries.
-
 import sys
 
 
@@ -16,27 +7,28 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
-    # slope -> largest intercept
+    # Quy mỗi đoạn về đường thẳng f(x) = s*x + b, với s là slope nguyên và
+    # b = giá trị tại x = 0. Cùng một slope chỉ giữ intercept lớn nhất.
     best = {}
     for _ in range(n):
         y1 = int(data[idx]); y2 = int(data[idx + 1]); idx += 2
-        s = (y2 - y1) // m          # integer slope, exact division
-        b = y1                      # value at x = 0
+        s = (y2 - y1) // m          # slope nguyên, phép chia là chính xác
+        b = y1                      # giá trị tại x = 0
         cur = best.get(s)
         if cur is None or b > cur:
             best[s] = b
 
-    # sort by increasing slope
+    # Sắp xếp các đường theo slope tăng dần.
     lines = sorted(best.items())    # [(slope, intercept), ...]
 
-    # build the upper hull for MAX
-    hm = []   # slopes
-    hc = []   # intercepts
+    # Xây upper hull cho phép lấy MAX (Convex Hull Trick đơn điệu).
+    hm = []   # danh sách slope
+    hc = []   # danh sách intercept
     for s, c in lines:
         while len(hm) >= 2:
             m1 = hm[-2]; c1 = hc[-2]
             m2 = hm[-1]; c2 = hc[-1]
-            # pop l2 if intersection(l2,l3) <= intersection(l1,l2):
+            # Loại l2 nếu giao(l2, l3) <= giao(l1, l2) (cross-multiplication nguyên):
             # (c2 - c)*(m2 - m1) <= (c1 - c2)*(s - m2)
             if (c2 - c) * (m2 - m1) <= (c1 - c2) * (s - m2):
                 hm.pop(); hc.pop()
@@ -44,7 +36,7 @@ def main():
                 break
         hm.append(s); hc.append(c)
 
-    # answer queries x = 0..m with a forward-moving pointer
+    # Trả lời truy vấn x = 0..m bằng con trỏ tiến dần (chỉ số tối ưu không giảm).
     L = len(hm)
     out = []
     ptr = 0

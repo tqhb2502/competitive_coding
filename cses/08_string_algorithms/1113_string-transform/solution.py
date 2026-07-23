@@ -1,14 +1,9 @@
-# String Transform (CSES 1113) - inverse Burrows-Wheeler transform (BWT)
-# https://cses.fi/problemset/task/1113
-#
-# Bài toán: cho chuỗi đã biến đổi L (cột cuối của ma trận các rotation đã sắp xếp
-# của s + '#'), khôi phục chuỗi gốc s. Đây chính là inverse BWT với sentinel '#'.
 import sys
 
 
 def main():
     data = sys.stdin.buffer.read()
-    L = data.strip()              # transformed string = last column, as bytes
+    L = data.strip()              # L = cột cuối (last column), xử lý ở dạng bytes
     m = len(L)
     if m == 0:
         return
@@ -27,7 +22,7 @@ def main():
         C[c] = total
         total += counts[c]
 
-    # LF mapping: LF[i] = C[L[i]] + (rank của L[i] trong các ký tự bằng nó trước i).
+    # LF mapping: LF[i] = C[L[i]] + rank của L[i] trong các ký tự bằng nó trước i.
     cnt = C[:]                    # con trỏ ghi hiện tại cho mỗi ký tự
     lf = [0] * m
     for i, c in enumerate(L):
@@ -35,8 +30,8 @@ def main():
         lf[i] = v
         cnt[c] = v + 1
 
-    # Đi theo LF bắt đầu từ hàng 0 (hàng bắt đầu bằng '#').
-    # Các ký tự L[cur] được ghi ngược từ cuối -> tạo ra T = '#' + s.
+    # Đi theo LF bắt đầu từ hàng 0 (hàng bắt đầu bằng '#'), ghi ngược từ cuối về
+    # đầu để dựng lại T = '#' + s.
     out = bytearray(m)
     cur = 0
     idx = m - 1

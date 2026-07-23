@@ -1,33 +1,3 @@
-# Robot Path - CSES 1742
-# https://cses.fi/problemset/task/1742
-#
-# The robot starts at (0,0) and traces an axis-aligned polyline. It halts the
-# instant it returns to a previously visited location (any point already on the
-# drawn path). We must print the total distance travelled.
-#
-# Key fact: the FIRST self-intersection in traversal order of the WHOLE path is
-# exactly where the robot stops (segments drawn after the stop only produce
-# events with a larger reach-distance, so they never affect the minimum). So we
-# enumerate every self-intersection of the full path, compute for each the
-# "reach-distance" = prefixLen[j] + t, where j is the later (higher index)
-# segment of the pair and t is the distance along j from its start to the hit
-# point, and take the global minimum. If none, the answer is the total length.
-#
-# Two segments (axis-aligned) intersect in only two ways:
-#   * perpendicular crossing (one H, one V)  -> Phase B: sweep line over x. The
-#     active set holds horizontal segments (added at x=xlo, removed at x=xhi);
-#     each vertical, at its x, queries active horizontals whose row y lies in the
-#     vertical's [ylo,yhi]. A Fenwick tree over compressed y-rows lets us find
-#     those rows in O((n+k) log n). Corner touches between consecutive segments
-#     give t == 0 and are skipped (a corner is not a "return").
-#   * collinear overlap (both on the same line) -> Phase C: group by line, walk
-#     the segments in index order keeping the merged union of covered intervals,
-#     and for each segment find the nearest covered point ahead of its start. A
-#     reversal (U then D) yields t == 0 (an immediate return), a same-direction
-#     continuation yields no event.
-# All arithmetic is exact integer arithmetic (coordinates are integers), so
-# there are no precision issues.
-
 import sys
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
@@ -41,14 +11,15 @@ def main():
     pos = 0
     n = int(data[pos]); pos += 1
 
-    seg_kind = []   # True = vertical, False = horizontal
-    seg_x = []      # vertical: column x
-    seg_y = []      # horizontal: row y
-    seg_lo = []     # low end along the varying axis
-    seg_hi = []     # high end along the varying axis
-    seg_s = []      # start coordinate along the varying axis
-    seg_e = []      # end coordinate along the varying axis
-    seg_ps = []     # prefix length travelled before this segment
+    # Dựng dãy đoạn của polyline theo thứ tự đi.
+    seg_kind = []   # True = dọc (vertical), False = ngang (horizontal)
+    seg_x = []      # đoạn dọc: cột x
+    seg_y = []      # đoạn ngang: hàng y
+    seg_lo = []     # đầu thấp theo trục biến thiên
+    seg_hi = []     # đầu cao theo trục biến thiên
+    seg_s = []      # toạ độ bắt đầu theo trục biến thiên
+    seg_e = []      # toạ độ kết thúc theo trục biến thiên
+    seg_ps = []     # quãng đường prefix đã đi trước đoạn này
 
     cx = cy = 0
     prefix = 0
@@ -80,7 +51,8 @@ def main():
     INF = float('inf')
     best = INF
 
-    # ---------- Phase B: perpendicular crossings (sweep line over x) ----------
+    # ---------- Pha B: giao vuông góc (sweep line theo trục x) ----------
+    # Nén các hàng y của đoạn ngang để đặt lên Fenwick tree.
     hy_vals = sorted({seg_y[i] for i in range(n) if not seg_kind[i]})
     if hy_vals:
         M = len(hy_vals)
@@ -102,7 +74,7 @@ def main():
         LOG = M.bit_length()
 
         def fen_findrank(k):
-            # smallest index whose prefix sum >= k (occupancy is 0/1 per row)
+            # Chỉ số nhỏ nhất có prefix sum >= k (mỗi hàng chỉ mang 0/1) - binary lifting.
             posi = 0
             rem = k
             pw = 1 << LOG
@@ -116,7 +88,7 @@ def main():
 
         buckets = [None] * M
 
-        # events sorted by (x, type): add(0) before query(1) before remove(2)
+        # Sự kiện sắp theo (x, loại): thêm(0) trước truy vấn(1) trước xoá(2).
         events = []
         ap = events.append
         for i in range(n):
@@ -129,6 +101,7 @@ def main():
 
         for ex, typ, i in events:
             if typ == 0:
+                # Thêm đoạn ngang vào tập active (đánh dấu hàng y của nó).
                 c = ycomp[seg_y[i]]
                 b = buckets[c]
                 if b is None:
@@ -137,6 +110,7 @@ def main():
                 else:
                     b.append(i)
             elif typ == 2:
+                # Xoá đoạn ngang khỏi tập active.
                 c = ycomp[seg_y[i]]
                 b = buckets[c]
                 b.remove(i)
@@ -144,6 +118,7 @@ def main():
                     buckets[c] = None
                     fen_update(c + 1, -1)
             else:
+                # Đoạn dọc: liệt kê các hàng active nằm trong [ylo, yhi] - đó là giao điểm.
                 vlo = seg_lo[i]; vhi = seg_hi[i]
                 clo = bisect_left(hy_vals, vlo)
                 chi = bisect_right(hy_vals, vhi) - 1
@@ -157,11 +132,12 @@ def main():
                 for r in range(1, cnt + 1):
                     p = fen_findrank(base + r)
                     for hidx in buckets[p - 1]:
+                        # Đoạn "đến sau" (chỉ số lớn hơn) là đoạn robot dùng để quay lại.
                         if hidx > i:
                             t = vx - seg_s[hidx]
                             if t < 0:
                                 t = -t
-                            if t > 0:
+                            if t > 0:   # t == 0 là góc cua, bỏ qua
                                 r2 = seg_ps[hidx] + t
                                 if r2 < best:
                                     best = r2
@@ -169,12 +145,12 @@ def main():
                             t = seg_y[hidx] - vsy
                             if t < 0:
                                 t = -t
-                            if t > 0:
+                            if t > 0:   # t == 0 là góc cua, bỏ qua
                                 r2 = vps + t
                                 if r2 < best:
                                     best = r2
 
-    # ---------- Phase C: collinear overlaps (segments on the same line) -------
+    # ---------- Pha C: chồng lấn collinear (các đoạn cùng một đường) -------
     vlines = defaultdict(list)
     hlines = defaultdict(list)
     for i in range(n):
@@ -185,13 +161,13 @@ def main():
 
     def process_line(idxs):
         nonlocal best
-        cov = []      # sorted disjoint [a, b]
-        starts = []   # parallel list of the a-values
+        cov = []      # các khoảng rời nhau [a, b] đã sắp
+        starts = []   # danh sách song song các giá trị a
         for i in idxs:
             s = seg_s[i]; e = seg_e[i]
             lo = seg_lo[i]; hi = seg_hi[i]; ps = seg_ps[i]
             cand = None
-            if e > s:                          # ascending, region (s, e]
+            if e > s:                          # đi tăng, vùng cần xét (s, e]
                 p = bisect_right(starts, s) - 1
                 if p >= 0 and cov[p][1] > s:
                     cand = 0
@@ -199,7 +175,7 @@ def main():
                     q = bisect_right(starts, s)
                     if q < len(cov) and cov[q][0] <= e:
                         cand = cov[q][0] - s
-            else:                              # descending, region [e, s)
+            else:                              # đi giảm, vùng cần xét [e, s)
                 p = bisect_left(starts, s) - 1
                 if p >= 0:
                     b = cov[p][1]
@@ -211,7 +187,7 @@ def main():
                 r = ps + cand
                 if r < best:
                     best = r
-            # merge [lo, hi] into the covered union
+            # Gộp [lo, hi] vào hợp các khoảng đã phủ.
             L = bisect_left(starts, lo)
             if L > 0 and cov[L - 1][1] >= lo:
                 L -= 1
@@ -231,6 +207,7 @@ def main():
     for idxs in hlines.values():
         process_line(idxs)
 
+    # Đáp án là reach-distance nhỏ nhất, hoặc tổng độ dài nếu không có giao nào.
     ans = best if best != INF else total
     sys.stdout.write(str(int(ans)) + "\n")
 

@@ -13,6 +13,7 @@ struct Point {
     i64 y;
 };
 
+// In một số __int128 (kiểu này không có sẵn toán tử << cho ostream).
 void print_integer(i128 value) {
     if (value == 0) {
         std::cout << '0';
@@ -35,6 +36,7 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
+    // Đọc n đỉnh nguyên của đa giác đơn.
     int vertex_count = 0;
     std::cin >> vertex_count;
     std::vector<Point> polygon(static_cast<std::size_t>(vertex_count));
@@ -42,6 +44,9 @@ int main() {
         std::cin >> point.x >> point.y;
     }
 
+    // Duyệt từng cạnh (đỉnh k tới đỉnh k+1, cạnh cuối vòng về đỉnh 0):
+    //   - Cộng dồn shoelace để có diện tích gấp đôi 2A (dùng i128 tránh tràn số).
+    //   - Cộng gcd(|dx|, |dy|) để đếm số điểm nguyên trên biên b.
     i128 doubled_area = 0;
     i128 boundary_points = 0;
     for (int index = 0; index < vertex_count; ++index) {
@@ -51,10 +56,12 @@ int main() {
                         static_cast<i128>(next.x) * current.y;
         boundary_points += std::gcd(next.x - current.x, next.y - current.y);
     }
+    // Lấy trị tuyệt đối để không phụ thuộc chiều duyệt đa giác.
     if (doubled_area < 0) {
         doubled_area = -doubled_area;
     }
 
+    // Định lý Pick: i = A - b/2 + 1 = (2A - b + 2) / 2 (tử số luôn chẵn).
     const i128 interior_points = (doubled_area - boundary_points + 2) / 2;
     print_integer(interior_points);
     std::cout << ' ';

@@ -1,2 +1,0 @@
-Line Segments Trace I
-https://cses.fi/problemset/task/3427

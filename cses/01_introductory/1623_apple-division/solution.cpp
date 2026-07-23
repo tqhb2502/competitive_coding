@@ -10,7 +10,9 @@ using namespace std;
 // Bắt đầu với {0}, mỗi lần thêm 1 phần tử thì nhân đôi số tổng
 // (mỗi tổng cũ tách thành: không lấy / có lấy phần tử này).
 vector<long long> subset_sums(const vector<long long>& values) {
+    // Tạo ra vector có sẵn 1 phần tử là 0.
     vector<long long> sums{0};
+    // 1ULL là số 1 kiểu unsigned long long và << là phép dịch trái để tính 2^n.
     sums.reserve(1ULL << values.size());
     for (long long value : values) {
         const size_t current_size = sums.size();
@@ -52,6 +54,9 @@ int main() {
         const long long key = total - 2 * left_sum;
 
         // Tìm vị trí đầu tiên có 2*right_sum >= key (tức b gần key/2 nhất).
+        // lower_bound(begin, end, value, comparator):
+        // returns an iterator pointing to the first element that is
+        // greater than or equal to a given value in a sorted range.
         const auto position = lower_bound(
             right_sums.begin(), right_sums.end(), key,
             [](long long right_sum, long long target) {
@@ -59,6 +64,7 @@ int main() {
             });
 
         // Chỉ cần thử 2 ứng viên liền kề quanh key/2 để lấy hiệu nhỏ nhất.
+        // The llabs function: the absolute value of a long long integer _Number.
         if (position != right_sums.end()) {
             best = min(best, llabs(key - 2 * *position));
         }

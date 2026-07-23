@@ -1,60 +1,64 @@
-Line Segments Trace II - https://cses.fi/problemset/task/3428
+Line Segments Trace II - CSES 3428
+https://cses.fi/problemset/task/3428
 
-1. Bài toán
-Cho n đoạn thẳng, mỗi đoạn có endpoint nguyên (x1,y1)-(x2,y2) với 0 <= x1 < x2 <= m,
-và slope (hệ số góc) là số nguyên. Với mỗi hoành độ nguyên x = 0,1,...,m, hãy tìm giá
-trị y (tung độ) lớn nhất của bất kỳ đoạn thẳng nào "phủ" x (tức x1 <= x <= x2). Nếu
-không có đoạn thẳng nào phủ x thì in ra -1.
+## Đề bài
+Cho n đoạn thẳng, mỗi đoạn có hai đầu mút nguyên (x1, y1) và (x2, y2) với
+0 <= x1 < x2 <= m, và hệ số góc (slope) của đoạn là số nguyên. Với mỗi hoành độ
+nguyên x = 0, 1, ..., m, hãy tìm tung độ y lớn nhất trong tất cả các đoạn thẳng
+"phủ" x (tức là x1 <= x <= x2). Nếu không có đoạn thẳng nào phủ x thì in ra -1.
 
-2. Biến đổi về hàm tuyến tính
-Mỗi đoạn thẳng là một hàm tuyến tính y = a*x + b, chỉ xác định trên khoảng [x1, x2]:
-  - a = (y2 - y1) / (x2 - x1) là slope. Đề bài bảo đảm slope là SỐ NGUYÊN, nên phép
-    chia này chia hết, ta tính bằng integer division cho kết quả chính xác.
+## Ý tưởng
+Mỗi đoạn thẳng là một hàm tuyến tính y = a*x + b, nhưng chỉ xác định trên khoảng
+[x1, x2]:
+  - a = (y2 - y1) / (x2 - x1) là slope. Đề bài bảo đảm slope nguyên nên phép chia
+    này chia hết, tính bằng integer division cho kết quả chính xác.
   - b = y1 - a*x1 là intercept.
-Vì a nguyên và x nguyên, giá trị y = a*x + b tại mỗi điểm nguyên luôn là SỐ NGUYÊN.
-Do đó toàn bộ tính toán dùng số nguyên (Python big int) - không dùng float, tránh sai
-số (rất quan trọng với bài hình học của CSES).
+Vì a nguyên và x nguyên nên y = a*x + b tại mọi điểm nguyên đều là số nguyên. Do
+đó toàn bộ tính toán dùng số nguyên (Python big int, hoặc __int128 trong C++) để
+tránh sai số dấu phẩy động - rất quan trọng với bài hình học của CSES.
 
-Bài toán trở thành: tính UPPER ENVELOPE (giá trị lớn nhất của tập các đường) của các
-"line segment" (đường tuyến tính bị giới hạn trên một khoảng), đánh giá tại mỗi điểm
-nguyên 0..m.
+Bài toán quy về: tính upper envelope (giá trị lớn nhất của tập các đường) của các
+"line segment" (đường tuyến tính bị giới hạn trên một khoảng), đánh giá tại mọi
+điểm nguyên 0..m.
 
-3. Thuật toán: Segment tree + Convex Hull Trick
-- Xây dựng một segment tree trên trục x với các lá ứng với x = 0..m.
-- Với mỗi đoạn thẳng, phân rã khoảng [x1, x2] thành O(log m) "canonical nodes" của
-  segment tree (mỗi node đại diện cho một đoạn liên tiếp các x nằm gọn trong [x1,x2]).
-  Thêm (a, b) của đoạn thẳng vào danh sách của từng canonical node đó. Như vậy mỗi
-  đường lưu tại một node thì phủ TOÀN BỘ phạm vi x của node đó.
-- Ta sắp xếp các đoạn thẳng theo slope tăng dần TRƯỚC khi phân rã, nên danh sách line
-  ở mỗi node tự động được sắp theo slope tăng -> không cần sort lại từng node.
-- Với mỗi node có danh sách line: dùng Convex Hull Trick (monotonic stack) để xây
-  upper envelope. Vì tất cả line trong node đều phủ toàn bộ phạm vi node, upper
-  envelope chỉ là max của các đường. Các điểm giao (crossover) của envelope tăng dần
-  theo x. Điều kiện loại bỏ đường ở đỉnh stack (khi thêm đường mới có slope lớn hơn)
-  được kiểm tra bằng cross-multiplication số nguyên, tránh chia số thực:
-      loại top nếu (bm - bl)*(am - a) >= (b - bm)*(al - am)
-  với (al,bl) là đường dưới top, (am,bm) là top, (a,b) là đường mới. Đường cùng slope
-  thì chỉ giữ đường có intercept lớn hơn.
-- Đánh giá envelope trên khoảng [nlo, nhi] của node bằng TWO-POINTER: vì x tăng dần và
-  crossover tăng dần, con trỏ chỉ tiến về phía trước. Với mỗi x lấy max cập nhật vào
-  ans[x].
-- Khởi tạo ans[x] = -1. Mọi giá trị tính được đều >= 0 (vì y1,y2 trong [0,1e9] và hàm
-  tuyến tính nên giá trị nằm giữa hai đầu mút), nên bất kỳ x nào được phủ sẽ ghi đè -1,
-  còn x không phủ vẫn là -1. Đúng yêu cầu đề bài.
+Thuật toán: Segment tree + Convex Hull Trick.
+  - Xây một segment tree trên trục x với các lá ứng với x = 0..m.
+  - Với mỗi đoạn thẳng, phân rã khoảng [x1, x2] thành O(log m) "canonical node" của
+    segment tree (mỗi node đại diện cho một dải x liên tiếp nằm gọn trong [x1, x2]).
+    Thêm (a, b) của đoạn vào danh sách của từng canonical node đó. Nhờ vậy một đường
+    lưu tại một node sẽ phủ toàn bộ phạm vi x của node đó.
+  - Sắp xếp các đoạn theo slope tăng dần TRƯỚC khi phân rã, nên danh sách line ở mỗi
+    node tự động được sắp theo slope tăng - không cần sort lại từng node.
+  - Với mỗi node có danh sách line: dùng Convex Hull Trick (monotonic stack) để xây
+    upper envelope. Vì mọi line trong node đều phủ toàn bộ phạm vi node, envelope
+    chính là max của các đường; các điểm giao (crossover) tăng dần theo x. Điều kiện
+    loại bỏ đường ở đỉnh stack (khi thêm đường mới slope lớn hơn) được kiểm tra bằng
+    cross-multiplication số nguyên, tránh chia số thực:
+        loại top nếu (bm - bl)*(am - a) >= (b - bm)*(al - am)
+    với (al, bl) là đường dưới top, (am, bm) là top, (a, b) là đường mới. Hai đường
+    cùng slope thì chỉ giữ đường có intercept lớn hơn.
+  - Đánh giá envelope trên phạm vi [nlo, nhi] của node bằng two-pointer: vì x tăng
+    dần và crossover tăng dần nên con trỏ chỉ tiến về phía trước. Mỗi x lấy max cập
+    nhật vào ans[x].
+  - Khởi tạo ans[x] = -1. Mọi giá trị tính được đều không âm (y1, y2 trong [0, 1e9]
+    và hàm tuyến tính nên giá trị nằm giữa hai đầu mút), nên x nào được phủ sẽ ghi đè
+    -1, còn x không phủ vẫn giữ -1 - đúng yêu cầu đề bài.
 
-4. Tính đúng
-- Phân rã canonical nodes bảo đảm mỗi điểm nguyên x thuộc [x1,x2] của một đoạn thẳng
-  sẽ được đại diện bởi đúng một node trên đường từ gốc xuống lá; do đó max trên tất cả
-  các node chứa x chính là max thực sự của mọi đoạn phủ x.
-- Convex Hull Trick xây dựng đúng upper envelope vì tất cả line trong một node cùng
-  miền xác định (toàn bộ phạm vi node); điều kiện loại bỏ dùng số nguyên là chính xác.
-- Two-pointer đúng vì hàm upper envelope lồi (convex), điểm tối ưu dịch chuyển đơn điệu
-  khi x tăng.
+Tính đúng:
+  - Phân rã canonical node bảo đảm mỗi điểm nguyên x thuộc [x1, x2] của một đoạn sẽ
+    được đại diện bởi đúng một node trên đường từ gốc xuống lá; do đó max trên tất cả
+    các node chứa x chính là max thực sự của mọi đoạn phủ x.
+  - Convex Hull Trick xây đúng upper envelope vì mọi line trong một node cùng miền
+    xác định; điều kiện loại bỏ dùng số nguyên nên chính xác tuyệt đối.
+  - Two-pointer đúng vì upper envelope lồi (convex), điểm tối ưu dịch chuyển đơn điệu
+    khi x tăng.
 
-5. Độ phức tạp
-- Tổng số line trên các node = O(n log m); tổng độ dài phạm vi các node có line = O(m log m).
+## Độ phức tạp
+- Tổng số line trên các node = O(n log m); tổng độ dài phạm vi các node có line
+  = O(m log m).
 - Thời gian: O((n + m) log m + n log n) (sort theo slope). Bộ nhớ: O(n log m + m).
 
-LƯU Ý TLE: Với n, m <= 1e5, thuật toán là O((n+m) log m) nhưng chạy bằng pure CPython
-có thể chậm (khoảng vài giây) do số vòng lặp Python lớn (~1e7). Trên PyPy3 sẽ chạy tốt;
-trên CPython có thể vượt giới hạn thời gian 1s của CSES. Code vẫn ĐÚNG về mặt kết quả.
+LƯU Ý TLE: Với n, m <= 1e5, thuật toán là O((n + m) log m) nhưng chạy bằng pure
+CPython có thể chậm (khoảng vài giây) do số vòng lặp Python lớn (~1e7). Trên PyPy3
+sẽ chạy tốt; trên CPython có thể vượt giới hạn thời gian 1s của CSES. Code vẫn ĐÚNG
+về mặt kết quả.

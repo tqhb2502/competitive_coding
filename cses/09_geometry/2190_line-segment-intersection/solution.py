@@ -1,11 +1,8 @@
-# Line Segment Intersection - https://cses.fi/problemset/task/2190
-# Xác định hai đoạn thẳng có giao nhau hay không (có chung ít nhất một điểm).
-# Dùng cross product (orientation) với số nguyên chính xác tuyệt đối.
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần để tăng tốc vào/ra.
     data = list(map(int, sys.stdin.buffer.read().split()))
     t = data[0]
     i = 1
@@ -20,16 +17,16 @@ def main():
         i += 8
 
         # Vector chỉ phương của mỗi đoạn (tính trước để tái sử dụng).
-        ax = x4 - x3; ay = y4 - y3   # p3 -> p4
-        bx = x2 - x1; by = y2 - y1   # p1 -> p2
+        ax = x4 - x3; ay = y4 - y3   # hướng p3 -> p4
+        bx = x2 - x1; by = y2 - y1   # hướng p1 -> p2
 
-        # cross((p2-p1) x (q-p1)) — orientation of q relative to a directed line.
+        # Bốn orientation bằng cross product (dấu cho biết vị trí quay của điểm).
         # d1, d2: vị trí của p1, p2 so với đường thẳng p3p4.
         # d3, d4: vị trí của p3, p4 so với đường thẳng p1p2.
-        d1 = ax * (y1 - y3) - ay * (x1 - x3)  # p1 vs line p3p4
-        d2 = ax * (y2 - y3) - ay * (x2 - x3)  # p2 vs line p3p4
-        d3 = bx * (y3 - y1) - by * (x3 - x1)  # p3 vs line p1p2
-        d4 = bx * (y4 - y1) - by * (x4 - x1)  # p4 vs line p1p2
+        d1 = ax * (y1 - y3) - ay * (x1 - x3)  # p1 so với đường thẳng p3p4
+        d2 = ax * (y2 - y3) - ay * (x2 - x3)  # p2 so với đường thẳng p3p4
+        d3 = bx * (y3 - y1) - by * (x3 - x1)  # p3 so với đường thẳng p1p2
+        d4 = bx * (y4 - y1) - by * (x4 - x1)  # p4 so với đường thẳng p1p2
 
         # Trường hợp giao nhau "thật sự" (proper): p1, p2 nằm khác phía đối với
         # đường thẳng p3p4 VÀ p3, p4 nằm khác phía đối với đường thẳng p1p2.

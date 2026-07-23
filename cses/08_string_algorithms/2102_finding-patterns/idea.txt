@@ -1,33 +1,38 @@
-Bài toán: cho một chuỗi text độ dài n (n ≤ 1e5) và k pattern (k ≤ 5e5, tổng
-độ dài các pattern ≤ 5e5). Với mỗi pattern, in ra "YES" nếu nó xuất hiện như
-một substring của text, ngược lại in "NO".
+Finding Patterns - CSES 2102
+https://cses.fi/problemset/task/2102
 
-Ý tưởng chính — Suffix Automaton (SAM):
-- Ta xây dựng suffix automaton của text. SAM là một DFA nhỏ gọn (tối đa 2n-1
-  trạng thái) mà tập hợp tất cả các đường đi bắt đầu từ trạng thái khởi đầu
-  (state 0) tương ứng CHÍNH XÁC với tập tất cả các substring khác nhau của text.
-- Do đó, một pattern P là substring của text KHI VÀ CHỈ KHI ta có thể đọc lần
-  lượt từng ký tự của P bằng các transition của SAM, xuất phát từ state 0. Nếu
-  tại một bước nào đó không có transition cho ký tự hiện tại -> P không phải
-  substring -> "NO". Nếu đọc hết P -> "YES".
+## Đề bài
+Cho một chuỗi text độ dài n (n ≤ 1e5) và k pattern (k ≤ 5e5, tổng độ dài các
+pattern ≤ 5e5). Với mỗi pattern, in ra "YES" nếu pattern xuất hiện như một
+substring của text, ngược lại in "NO".
+
+## Ý tưởng
+Dùng Suffix Automaton (SAM) của text:
+- Xây dựng suffix automaton của text. SAM là một DFA nhỏ gọn (tối đa 2n-1 trạng
+  thái) mà tập tất cả các đường đi bắt đầu từ trạng thái khởi đầu (state 0)
+  tương ứng CHÍNH XÁC với tập tất cả các substring khác nhau của text.
+- Do đó, một pattern P là substring của text KHI VÀ CHỈ KHI ta đọc lần lượt được
+  từng ký tự của P bằng các transition của SAM, xuất phát từ state 0. Nếu tại một
+  bước nào đó không có transition cho ký tự hiện tại thì P không phải substring
+  -> "NO"; nếu đọc hết P -> "YES".
 
 Vì sao đúng:
-- Tính chất nền tảng của suffix automaton: mỗi trạng thái đại diện cho một lớp
-  các substring có cùng tập vị trí kết thúc (endpos). Đường đi từ state khởi đầu
-  theo các nhãn transition sinh ra đúng mọi substring của text và chỉ những
-  substring đó. Vì vậy việc "chạy" pattern trên automaton kiểm tra được sự tồn
-  tại một cách chắc chắn, không cần hashing (tránh được anti-hash test của CSES).
+- Mỗi trạng thái của SAM đại diện cho một lớp các substring có cùng tập vị trí
+  kết thúc (endpos). Đường đi từ state khởi đầu theo các nhãn transition sinh ra
+  đúng mọi substring của text và chỉ những substring đó. Vì vậy việc "chạy"
+  pattern trên automaton kiểm tra sự tồn tại một cách chắc chắn, không cần
+  hashing (tránh được anti-hash test của CSES).
 
 Xây dựng SAM (thuật toán online cổ điển):
 - Thêm từng ký tự của text. Mỗi lần thêm tạo trạng thái mới cur với len tăng 1,
-  đi ngược theo suffix link để nối transition; xử lý clone khi len(p)+1 != len(q).
-- Transition lưu bằng dict theo giá trị byte của ký tự.
+  đi ngược theo suffix link để nối transition; xử lý clone khi
+  len(p)+1 != len(q).
 
-Độ phức tạp:
-- Xây SAM: O(n) trạng thái/transition (amortized), với bảng chữ cái cố định
-  (chỉ a..z). Số trạng thái ≤ 2n.
-- Kiểm tra tất cả pattern: O(tổng độ dài pattern) = O(5e5) bước tra dict.
-- Bộ nhớ: O(n) trạng thái, mỗi trạng thái một dict transition -> tổng O(n).
+## Độ phức tạp
+- Xây SAM: O(n) trạng thái/transition (amortized), bảng chữ cái cố định (a..z),
+  số trạng thái ≤ 2n.
+- Kiểm tra tất cả pattern: O(tổng độ dài pattern) = O(5e5).
+- Bộ nhớ: O(n) trạng thái.
 
 LƯU Ý TLE: giới hạn thời gian của CSES nhắm tới C++. Trong CPython thuần, việc
 tạo ~2e5 dict cho SAM cộng với ~5e5 bước tra dict khi khớp pattern có thể chạm

@@ -1,29 +1,39 @@
-Bài toán: Đếm số lần chuỗi mẫu (pattern) p độ dài m xuất hiện trong chuỗi văn bản (text) t độ dài n.
+String Matching - CSES 1753
+https://cses.fi/problemset/task/1753
 
-Thuật toán: KMP (Knuth-Morris-Pratt).
+## Đề bài
+Cho chuỗi văn bản (text) t độ dài n và chuỗi mẫu (pattern) p độ dài m.
+Hãy đếm số lần chuỗi mẫu p xuất hiện trong chuỗi văn bản t, kể cả các lần
+xuất hiện chồng lấn (overlapping).
 
-Ý tưởng chính:
-- Ta dùng thuật toán KMP vì nó chạy tuyến tính O(n + m) và mang tính tất định (deterministic),
-  không bị các test chống hashing (anti-hash) của CSES đánh bại như phương pháp polynomial hashing.
+## Ý tưởng
+Dùng thuật toán KMP (Knuth-Morris-Pratt). KMP chạy tuyến tính O(n + m) và
+mang tính tất định (deterministic), nên không bị các test chống hashing
+(anti-hash) của CSES đánh bại như phương pháp polynomial hashing.
+
 - Bước 1 — tính failure function (mảng prefix function) của pattern p:
-  pi[i] = độ dài lớn nhất của biên (border) — tức tiền tố vừa là hậu tố — của đoạn p[0..i],
-  không tính chính đoạn đó. Được tính trong O(m).
-- Bước 2 — quét text t: duy trì biến k là độ dài phần pattern đang khớp hiện tại. Với mỗi ký tự t[i],
-  nếu không khớp thì lùi k về pi[k-1] (dùng failure function) cho tới khi khớp hoặc k = 0.
-  Nếu khớp thì tăng k. Khi k == m nghĩa là tìm thấy một lần xuất hiện đầy đủ của pattern
-  → tăng bộ đếm answer, rồi lùi k = pi[k-1] để tiếp tục tìm các lần xuất hiện chồng lấn (overlapping).
+  pi[i] = độ dài lớn nhất của biên (border) — tức tiền tố đồng thời là hậu tố —
+  của đoạn p[0..i], không tính chính đoạn đó. Tính được trong O(m).
+- Bước 2 — quét text t: duy trì biến k là độ dài phần pattern đang khớp hiện
+  tại. Với mỗi ký tự t[i], nếu không khớp thì lùi k về pi[k-1] (dùng failure
+  function) cho tới khi khớp hoặc k = 0; nếu khớp thì tăng k. Khi k == m nghĩa
+  là tìm thấy một lần xuất hiện đầy đủ của pattern → tăng bộ đếm answer, rồi
+  lùi k = pi[k-1] để tiếp tục tìm các lần xuất hiện chồng lấn.
 
 Vì sao đúng:
-- failure function bảo đảm khi gặp mismatch, ta không cần quét lại các ký tự đã so khớp trong text;
-  thay vào đó lùi con trỏ pattern về biên dài nhất còn có khả năng khớp tiếp. Điều này bảo toàn
-  bất biến "k luôn bằng chiều dài phần cuối của text đang xét mà cũng là tiền tố của pattern".
-- Việc lùi k = pi[k-1] sau khi tìm thấy một lần khớp cho phép đếm cả các lần xuất hiện chồng lấn
-  (ví dụ pattern "aa" trong "aaa" xuất hiện 2 lần).
+- Failure function bảo đảm khi gặp mismatch, ta không cần quét lại các ký tự đã
+  so khớp trong text; thay vào đó lùi con trỏ pattern về biên dài nhất còn có
+  khả năng khớp tiếp. Điều này bảo toàn bất biến "k luôn bằng chiều dài phần
+  cuối của text đang xét mà cũng là tiền tố của pattern".
+- Việc lùi k = pi[k-1] sau khi tìm thấy một lần khớp cho phép đếm cả các lần
+  xuất hiện chồng lấn (ví dụ pattern "aa" trong "aaa" xuất hiện 2 lần).
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n + m) — mỗi con trỏ chỉ tiến/lùi tổng cộng tuyến tính.
-- Không gian: O(m) cho mảng failure function (đọc text theo bytes, không cần lưu thêm).
+- Không gian: O(m) cho mảng failure function (đọc text theo bytes, không cần
+  lưu thêm).
 
-LƯU Ý TLE: n, m có thể tới 10^6. KMP tuyến tính nên về mặt thuật toán là tối ưu, nhưng vòng lặp
-Python thuần trên 10^6 ký tự vẫn có thể chậm và có nguy cơ TLE trên CSES (giới hạn thời gian nhắm cho C++).
-Ta đã tối ưu bằng cách làm việc trực tiếp trên bytes và tối giản thân vòng lặp; nếu vẫn TLE thì nên nộp bằng PyPy.
+LƯU Ý TLE: n, m có thể tới 10^6. KMP tuyến tính nên về mặt thuật toán là tối ưu,
+nhưng vòng lặp Python thuần trên 10^6 ký tự vẫn có thể chậm và có nguy cơ TLE
+trên CSES (giới hạn thời gian nhắm cho C++). Ta đã tối ưu bằng cách làm việc
+trực tiếp trên bytes và tối giản thân vòng lặp; nếu vẫn TLE thì nên nộp bằng PyPy.

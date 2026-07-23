@@ -1,12 +1,14 @@
-# Line Segments Trace I
+Line Segments Trace I - CSES 3427
+https://cses.fi/problemset/task/3427
 
-## Bài toán
+## Đề bài
 Có n đoạn thẳng, mỗi đoạn nối điểm (0, y1) với (m, y2); toạ độ nguyên và hệ
-số góc (slope) của mỗi đoạn là số nguyên. Với mỗi x = 0, 1, ..., m, in ra
-giá trị y lớn nhất trong tất cả các đoạn tại hoành độ x đó (upper envelope).
+số góc (slope) của mỗi đoạn là số nguyên. Với mỗi x = 0, 1, ..., m, hãy in ra
+giá trị y lớn nhất trong tất cả các đoạn tại hoành độ x đó (chính là bao trên
+- upper envelope).
 
 ## Ý tưởng
-Vì mọi đoạn đều trải dài trên toàn bộ đoạn [0, m], ta coi mỗi đoạn như một
+Vì mọi đoạn đều trải dài trên toàn bộ khoảng [0, m], ta coi mỗi đoạn như một
 đường thẳng đầy đủ:
     f_i(x) = s_i * x + b_i
 với b_i = y1 (giá trị tại x = 0) và s_i = (y2 - y1) / m là slope. Đề bài bảo
@@ -19,26 +21,26 @@ Dùng Convex Hull Trick (CHT) đơn điệu:
   toàn trên mọi x).
 - Sắp xếp các đường theo slope tăng dần rồi xây upper hull bằng một stack. Khi
   thêm đường mới l3, nếu đường đang ở đỉnh l2 (nằm giữa l1 phía dưới và l3) trở
-  nên vô dụng thì pop nó ra. Điều kiện pop dùng cross-multiplication trên số
-  nguyên để tránh phép chia và tránh sai số float:
+  nên vô dụng thì loại (pop) nó ra. Điều kiện pop dùng cross-multiplication trên
+  số nguyên để tránh phép chia và tránh sai số float:
       (c2 - c3) * (m2 - m1) <= (c1 - c2) * (m3 - m2)
   nghĩa là giao điểm của cặp (l2, l3) nằm bên trái hoặc trùng giao điểm của
-  cặp (l1, l2), khi đó l2 không bao giờ là max duy nhất.
+  cặp (l1, l2), khi đó l2 không bao giờ là giá trị lớn nhất duy nhất.
 - Do các truy vấn x = 0, 1, ..., m tăng dần, chỉ số của đường tối ưu trên bao
   trên là không giảm, nên duyệt bằng một con trỏ ptr tiến dần: khi
   f(hull[ptr+1], x) >= f(hull[ptr], x) thì tăng ptr. Giá trị f = s*x + b được
-  tính bằng số nguyên nên chính xác.
+  tính bằng số nguyên nên luôn chính xác.
 
 ## Tính đúng đắn
-- Mọi phép so sánh và cross product đều là số nguyên (Python big int, không
-  tràn số), nên không có sai số dấu phẩy động.
+- Mọi phép so sánh và cross product đều là số nguyên (Python big int, C++ dùng
+  __int128 để không tràn số), nên không có sai số dấu phẩy động.
 - Với x nguyên, y = b + s*x luôn là số nguyên, khớp với yêu cầu in số nguyên.
   Tại x = m: y = y1 + s*m = y1 + (y2 - y1) = y2 (đúng đầu mút phải).
 - Upper envelope của các đường thẳng cho đúng giá trị lớn nhất tại mọi x; và vì
-  mọi đoạn phủ kín [0, m] nên kết quả trùng với max trên các đoạn tại các x
-  trong khoảng đó.
+  mọi đoạn đều phủ kín [0, m] nên kết quả trùng với giá trị lớn nhất trên các
+  đoạn tại mọi x trong khoảng đó.
 
 ## Độ phức tạp
-- Thời gian: O(n log n) cho sắp xếp + O(n) xây hull + O(n + m) cho truy vấn.
+- Thời gian: O(n log n) cho bước sắp xếp + O(n) xây hull + O(n + m) cho truy vấn.
 - Bộ nhớ: O(n).
-Với n, m <= 1e5, thuật toán chạy rất nhanh trong pure Python stdlib.
+Với n, m <= 1e5, thuật toán chạy rất nhanh ngay cả với pure Python stdlib.

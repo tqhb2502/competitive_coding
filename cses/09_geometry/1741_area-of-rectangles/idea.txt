@@ -1,10 +1,15 @@
-Bài toán: Cho n hình chữ nhật song song với trục toạ độ, tính DIỆN TÍCH HỢP
-(union) của chúng.
+Diện tích hợp các hình chữ nhật - CSES 1741
+https://cses.fi/problemset/task/1741
 
-Ý tưởng hình học (sweep line theo trục x + segment tree theo trục y)
-------------------------------------------------------------------
-Đây là bài toán kinh điển "measure of union of rectangles" (thuật toán Klee).
-Ta dùng một đường quét (sweep line) thẳng đứng chạy từ trái sang phải theo x.
+## Đề bài
+Cho n hình chữ nhật song song với các trục toạ độ (mỗi hình cho bởi góc dưới
+trái và góc trên phải). Hãy tính DIỆN TÍCH HỢP (union) của toàn bộ n hình, tức
+là tổng diện tích phần mặt phẳng bị ít nhất một hình chữ nhật phủ (phần chồng
+lấn chỉ được tính một lần).
+
+## Ý tưởng
+Đây là bài toán kinh điển "measure of union of rectangles" (thuật toán Klee),
+giải bằng đường quét (sweep line) theo trục x kết hợp segment tree theo trục y.
 
 1) Với mỗi hình chữ nhật (x1, y1, x2, y2) ta tạo hai sự kiện dọc:
    - tại x = x1: thêm cạnh trái, cộng +1 trên đoạn y [y1, y2);
@@ -12,47 +17,46 @@ Ta dùng một đường quét (sweep line) thẳng đứng chạy từ trái sa
 
 2) Sắp xếp mọi sự kiện theo x tăng dần. Giữa hai vị trí x liên tiếp prev_x và x,
    phần mặt phẳng bị phủ có bề rộng (x - prev_x) và bề cao đúng bằng TỔNG ĐỘ DÀI
-   theo y đang được phủ bởi các hình chữ nhật đang "mở" (active). Do đó
-   diện tích cộng thêm = (x - prev_x) * (tổng độ dài y đang phủ).
-   Ta cộng phần diện tích này TRƯỚC khi áp dụng các sự kiện tại x hiện tại
-   (vì độ phủ trên dải [prev_x, x] chính là trạng thái sau khi đã xử lý mọi
-   sự kiện có hoành độ nhỏ hơn x).
+   theo y đang được phủ bởi các hình chữ nhật đang "mở" (active). Do đó diện tích
+   cộng thêm = (x - prev_x) * (tổng độ dài y đang phủ). Ta cộng phần diện tích
+   này TRƯỚC khi áp dụng các sự kiện tại x hiện tại (vì độ phủ trên dải
+   [prev_x, x] chính là trạng thái sau khi đã xử lý mọi sự kiện có hoành độ nhỏ
+   hơn x).
 
 3) Để lấy nhanh "tổng độ dài y đang phủ" ta dùng segment tree trên các toạ độ y
    đã được coordinate-compress. Các y phân biệt (tối đa 2n giá trị) chia trục y
    thành các elementary interval [ys[i], ys[i+1]). Segment tree quản lý:
-      - cnt[node]  = số hình chữ nhật active phủ TRỌN VẸN toàn bộ đoạn của node
-                     (đây là lazy count, KHÔNG push-down xuống con);
-      - cover[node]= độ dài phần bị phủ nằm trong đoạn của node, tính theo cnt tại
-                     node và các hậu duệ (KHÔNG tính tổ tiên).
+      - cnt[node]   = số hình chữ nhật active phủ TRỌN VẸN toàn bộ đoạn của node
+                      (đây là lazy count, KHÔNG push-down xuống con);
+      - cover[node] = độ dài phần bị phủ nằm trong đoạn của node, tính theo cnt
+                      tại node và các hậu duệ (KHÔNG tính tổ tiên).
    Công thức truy hồi cục bộ cho cover:
-      cover = span             nếu cnt > 0            (cả đoạn bị phủ trọn)
-      cover = 0                nếu là lá và cnt == 0
-      cover = cover_trái + cover_phải   trong các trường hợp còn lại
+      cover = span                    nếu cnt > 0        (cả đoạn bị phủ trọn)
+      cover = 0                       nếu là lá và cnt == 0
+      cover = cover_trái + cover_phải trong các trường hợp còn lại
    Trong đó span[node] là tổng chiều dài vật lý theo y của node. Đáp số độ dài
    phủ toàn cục luôn là cover[root] (node 1).
 
 Mỗi sự kiện là một range update +1/-1 trên đoạn [y1, y2) rồi cập nhật lại cover
 dọc theo hai biên (boundary) lên tới gốc; độ phức tạp mỗi lần là O(log n).
 
-Vì sao đúng (tính exact-integer)
---------------------------------
-Toạ độ là số nguyên (tới 1e6), mọi phép tính đều là số nguyên: hiệu (x - prev_x),
-hiệu (ys[i+1] - ys[i]) và tích của chúng. Python dùng big int nên không tràn số
-(đáp số tối đa cỡ (2e6)^2 = 4e12, vẫn là số nguyên chính xác). KHÔNG dùng float
-nên không có sai số. Cách gán cnt/cover đảm bảo mỗi elementary interval được đếm
-đúng số lần "được phủ trọn" ở đúng một mức của cây, nên cover[root] luôn bằng
-tổng độ dài đang phủ. Cặp sự kiện +1 tại x1 và -1 tại x2 luôn cân bằng, nên trạng
-thái cnt luôn hợp lệ (không âm) khi quét qua từng dải.
+Vì sao đúng (tính chính xác số nguyên): toạ độ là số nguyên (tới 1e6), mọi phép
+tính đều trên số nguyên: hiệu (x - prev_x), hiệu (ys[i+1] - ys[i]) và tích của
+chúng. Python dùng big int nên không tràn số (đáp số tối đa cỡ (2e6)^2 = 4e12,
+vẫn là số nguyên chính xác), KHÔNG dùng float nên không có sai số. Cách gán
+cnt/cover đảm bảo mỗi elementary interval được đếm đúng số lần "được phủ trọn" ở
+đúng một mức của cây, nên cover[root] luôn bằng tổng độ dài đang phủ. Cặp sự
+kiện +1 tại x1 và -1 tại x2 luôn cân bằng, nên trạng thái cnt luôn hợp lệ (không
+âm) khi quét qua từng dải.
 
-Độ phức tạp
------------
-- Thời gian: O(n log n) cho việc sắp xếp 2n sự kiện và 2n lần range update,
-  mỗi update O(log n).
+## Độ phức tạp
+- Thời gian: O(n log n) cho việc sắp xếp 2n sự kiện và 2n lần range update, mỗi
+  update O(log n).
 - Bộ nhớ: O(n) cho các mảng span, cnt, cover của segment tree (kích thước 2*sz
   với sz là luỹ thừa 2 gần nhất >= số elementary interval).
 
 LƯU Ý TLE: thuật toán O(n log n) là tối ưu về mặt lý thuyết, nhưng với n = 1e5
-trên CPython thuần, thời gian chạy worst-case đo được ~4.1s (giới hạn CSES thường
-là 1.0s) do hằng số lớn của segment tree viết bằng Python. Rất có thể TLE trên
-CSES; lời giải vẫn ĐÚNG hoàn toàn. (Không dùng numpy/thư viện ngoài theo quy định.)
+trên CPython thuần, thời gian chạy worst-case đo được ~4.1s (giới hạn CSES
+thường là 1.0s) do hằng số lớn của segment tree viết bằng Python. Rất có thể
+TLE trên CSES; lời giải vẫn ĐÚNG hoàn toàn. (Không dùng numpy/thư viện ngoài
+theo quy định.)

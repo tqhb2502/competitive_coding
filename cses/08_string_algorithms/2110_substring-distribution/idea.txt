@@ -1,42 +1,45 @@
-Bài toán: Cho xâu s độ dài n (chỉ gồm chữ thường a-z, n <= 1e5). Với mỗi độ
-dài L từ 1 đến n, đếm số lượng xâu con (substring) PHÂN BIỆT có độ dài đúng
-bằng L. In n số cách nhau bởi dấu cách.
+Substring Distribution - CSES 2110
+https://cses.fi/problemset/task/2110
 
-Ý tưởng chính - Suffix automaton (SAM):
-- Suffix automaton là automat tối thiểu nhận biết mọi hậu tố (và do đó mọi
-  xâu con) của s. Số state <= 2n, số cạnh chuyển <= 3n, xây dựng online O(n)
-  (amortized) trên bảng chữ cái hằng số.
+## Đề bài
+Cho xâu s độ dài n (chỉ gồm chữ thường a-z, n <= 1e5). Với mỗi độ dài L từ 1
+đến n, hãy đếm số lượng xâu con (substring) PHÂN BIỆT có độ dài đúng bằng L.
+In ra n số, cách nhau bởi dấu cách.
+
+Ví dụ "abab" cho kết quả 2 2 2 1 (độ dài 1: a, b; độ dài 2: ab, ba; độ dài 3:
+aba, bab; độ dài 4: abab).
+
+## Ý tưởng
+Dùng suffix automaton (SAM) - automat tối thiểu nhận biết mọi hậu tố (và do đó
+mọi xâu con) của s. Số state <= 2n, số cạnh chuyển <= 3n, xây dựng online với
+độ phức tạp O(n) khấu hao trên bảng chữ cái hằng số.
+
 - Mỗi state (trừ state khởi tạo 0) tương ứng với một lớp tương đương endpos.
   Các xâu con thuộc một state có độ dài liên tiếp tạo thành khoảng
-  [len[link[v]] + 1, len[v]]. Điều quan trọng: mỗi xâu con PHÂN BIỆT của s
-  được biểu diễn bởi đúng một state, và độ dài của nó nằm gọn trong khoảng
-  trên; hai state khác nhau cho ra các xâu khác nhau.
-- Vì vậy số xâu con phân biệt có độ dài L = tổng số state v mà
+  [len[link[v]] + 1, len[v]]. Điểm mấu chốt: mỗi xâu con PHÂN BIỆT của s được
+  biểu diễn bởi đúng một state, độ dài của nó nằm gọn trong khoảng trên, và
+  hai state khác nhau cho ra các xâu khác nhau.
+- Vì vậy số xâu con phân biệt có độ dài L bằng tổng số state v thỏa mãn
   len[link[v]] + 1 <= L <= len[v].
 
-Cách tính (difference array):
+Cách tính bằng mảng hiệu (difference array):
 - Với mỗi state v (v >= 1): cộng 1 cho toàn bộ khoảng độ dài
-  [len[link[v]] + 1, len[v]]. Thực hiện bằng mảng hiệu (difference array):
-  diff[len[link[v]]+1] += 1; diff[len[v]+1] -= 1.
-- Sau đó lấy prefix sum: giá trị tích lũy tại L chính là số xâu con phân
-  biệt có độ dài L.
-- (Kiểm tra tổng: tổng (len[v] - len[link[v]]) trên mỗi state = tổng số xâu
-  con phân biệt, đúng công thức quen thuộc của SAM.)
+  [len[link[v]] + 1, len[v]] thông qua mảng hiệu:
+  diff[len[link[v]] + 1] += 1; diff[len[v] + 1] -= 1.
+- Lấy prefix sum: giá trị tích lũy tại L chính là số xâu con phân biệt độ dài L.
+- (Kiểm tra tổng: tổng (len[v] - len[link[v]]) trên mọi state chính là tổng số
+  xâu con phân biệt, đúng công thức quen thuộc của SAM.)
 
-Ví dụ "abab": kết quả 2 2 2 1 (độ dài 1: a,b; độ dài 2: ab,ba; độ dài 3:
-aba,bab; độ dài 4: abab).
+Tính đúng đắn: SAM là kết quả chuẩn đã được chứng minh - các xâu con phân biệt
+ánh xạ 1-1 với các cặp (state, độ dài) hợp lệ, nên cộng 1 trên khoảng độ dài
+của từng state rồi lấy prefix sum cho ra đúng số lượng theo từng độ dài.
 
-Tính đúng đắn: SAM là kết quả chuẩn đã được chứng minh - các xâu con phân
-biệt ánh xạ 1-1 với các cặp (state, độ dài) hợp lệ, nên việc cộng 1 trên
-khoảng độ dài của từng state rồi prefix sum cho ra đúng số lượng theo độ dài.
+## Độ phức tạp
+- Thời gian: O(n) xây dựng SAM + O(n) mảng hiệu = O(n) (với hằng số từ dict lưu
+  cạnh chuyển ở bản Python).
+- Bộ nhớ: O(n) cho các mảng len/link và các cạnh chuyển (tổng số cạnh O(n)).
 
-Độ phức tạp:
-- Thời gian: O(n) xây dựng SAM + O(n) mảng hiệu = O(n) (với hằng số từ dict
-  lưu cạnh chuyển).
-- Bộ nhớ: O(n) cho các mảng len/link và các dict cạnh chuyển (tổng số cạnh
-  O(n)).
-
-LƯU Ý TLE: n <= 1e5 nên số state <= 2e5. Trong CPython, mỗi bước thêm ký tự
-có vòng while đi theo suffix link cộng thao tác trên dict, hằng số khá lớn;
-giới hạn 1.00 s của CSES nhắm vào C++. Với n = 1e5 thì thường vẫn kịp, nhưng
-nếu bị TLE có thể cần PyPy hoặc tối ưu (thay dict bằng mảng, giảm overhead).
+LƯU Ý TLE: n <= 1e5 nên số state <= 2e5. Trong CPython, mỗi bước thêm ký tự có
+vòng while đi theo suffix link cộng thao tác trên dict, hằng số khá lớn; giới
+hạn 1.00 s của CSES nhắm vào C++. Với n = 1e5 thì thường vẫn kịp, nhưng nếu bị
+TLE có thể cần PyPy hoặc tối ưu (thay dict bằng mảng, giảm overhead).

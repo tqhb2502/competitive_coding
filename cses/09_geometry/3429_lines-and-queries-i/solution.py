@@ -1,11 +1,3 @@
-# Lines and Queries I - CSES 3429
-# https://cses.fi/problemset/task/3429
-#
-# Add lines y = a*x + b, and for a query position x report the maximum
-# value over all added lines. Since 0 <= x <= 100000, we use a Li Chao
-# Tree (max version) over the integer domain [0, N]. All comparisons use
-# exact integer arithmetic (Python big ints), so there is no float error.
-
 import sys
 
 
@@ -14,19 +6,19 @@ def main():
     pos = 0
     n = int(data[pos]); pos += 1
 
-    N = 100000                 # x in [0, N]
+    N = 100000                 # miền của x là [0, N]
     size = 4 * (N + 1)
-    NEG = -(1 << 62)           # sentinel: below any real line value (~1e14)
+    NEG = -(1 << 62)           # số rất âm, luôn thua mọi đường thật (~1e14)
 
-    A = [0] * size             # slope stored at each node
-    B = [NEG] * size           # intercept stored at each node (empty = NEG)
+    A = [0] * size             # hệ số góc (slope) lưu tại mỗi node
+    B = [NEG] * size           # hệ số tự do (intercept); node rỗng = NEG
 
     out = []
 
     for _ in range(n):
         t = data[pos]; pos += 1
         if t == b'1':
-            # add line y = nm*x + nb  (Li Chao insert, single downward path)
+            # "1 a b": chèn đường y = nm*x + nb (Li Chao insert, đi một nhánh xuống lá)
             nm = int(data[pos]); nb = int(data[pos + 1]); pos += 2
             node = 1
             l = 0
@@ -34,27 +26,26 @@ def main():
             while True:
                 m = (l + r) >> 1
                 cm = A[node]; cb = B[node]
-                # keep the line that is larger at the midpoint m in this node,
-                # push the loser down. Only ONE evaluation pair is needed here.
+                # Giữ lại đường lớn hơn tại trung điểm m ở node, đẩy đường thua xuống.
                 if nm * m + nb > cm * m + cb:
-                    A[node] = nm; B[node] = nb   # new line wins at m
+                    A[node] = nm; B[node] = nb   # đường mới thắng tại m
                     ws = nm                       # winner slope
-                    nm, nb = cm, cb               # loser becomes the pushed line
+                    nm, nb = cm, cb               # đường cũ trở thành đường thua bị đẩy
                 else:
-                    ws = cm                       # old line (still in node) wins
-                    # (nm, nb) is already the loser to push down
+                    ws = cm                       # đường cũ (vẫn ở node) thắng
+                    # (nm, nb) đã là đường thua cần đẩy xuống
                 if l == r:
                     break
-                # The loser can only beat the winner on ONE side of m; the side
-                # is decided by slope: smaller slope -> larger for x < m (left).
+                # Đường thua chỉ vượt đường thắng ở đúng một phía của m; phía đó
+                # quyết định bởi slope: slope nhỏ hơn -> trội ở nửa trái (x < m).
                 if nm < ws:
-                    node += node          # go left child
+                    node += node          # đi con trái
                     r = m
                 else:
-                    node += node + 1      # go right child
+                    node += node + 1      # đi con phải
                     l = m + 1
         else:
-            # query max at x
+            # "2 x": truy vấn max f(x) dọc đường đi từ gốc xuống lá x
             x = int(data[pos]); pos += 1
             node = 1
             l = 0

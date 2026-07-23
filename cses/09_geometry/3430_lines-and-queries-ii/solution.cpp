@@ -3,6 +3,7 @@
 #include <utility>
 #include <vector>
 
+// Một đường thẳng y = slope*x + intercept.
 struct Line {
     long long slope = 0;
     long long intercept = 0;
@@ -12,6 +13,7 @@ struct Line {
     }
 };
 
+// Li Chao tree đặt trên TRỤC VỊ TRÍ [0, maximum_x]; mỗi nút giữ tối đa một đường.
 class SegmentLiChaoTree {
 public:
     explicit SegmentLiChaoTree(const int maximum_x)
@@ -19,25 +21,30 @@ public:
           lines_(static_cast<std::size_t>(4 * (maximum_x + 1))),
           occupied_(static_cast<std::size_t>(4 * (maximum_x + 1)), false) {}
 
+    // Thêm đường active trên đoạn vị trí [query_left, query_right].
     void insert(const Line line, const int query_left, const int query_right) {
         insert_segment(
             line, query_left, query_right, 1, 0, maximum_x_
         );
     }
 
+    // Truy vấn max của mọi đường active tại vị trí x.
     std::pair<bool, long long> query(const int x) const {
         return query(x, 1, 0, maximum_x_);
     }
 
 private:
+    // Li Chao insert: chèn đường vào subtree gốc node phủ đoạn [left, right].
     void insert_line(Line incoming, const int node, const int left,
                      const int right) {
+        // Nút trống: đặt luôn đường vào đây.
         if (!occupied_[static_cast<std::size_t>(node)]) {
             occupied_[static_cast<std::size_t>(node)] = true;
             lines_[static_cast<std::size_t>(node)] = incoming;
             return;
         }
 
+        // So sánh tại điểm giữa: giữ đường tốt hơn ở nút, chuẩn bị đẩy đường thua.
         const int middle = (left + right) / 2;
         const bool better_left =
             incoming.value(left) > lines_[static_cast<std::size_t>(node)].value(left);
@@ -49,6 +56,7 @@ private:
         if (left == right) {
             return;
         }
+        // Đẩy đường thua xuống nửa mà nó còn có thể vượt (quyết định ở đầu mút trái).
         if (better_left != better_middle) {
             insert_line(incoming, 2 * node, left, middle);
         } else {
@@ -56,12 +64,14 @@ private:
         }
     }
 
+    // Phân rã [query_left, query_right] thành các nút chuẩn rồi Li Chao insert từng nút.
     void insert_segment(const Line line, const int query_left,
                         const int query_right, const int node,
                         const int left, const int right) {
         if (query_right < left || right < query_left) {
             return;
         }
+        // Nút nằm gọn trong [l, r]: đây là nút chuẩn, chèn cả đường vào subtree của nó.
         if (query_left <= left && right <= query_right) {
             insert_line(line, node, left, right);
             return;
@@ -75,6 +85,7 @@ private:
         );
     }
 
+    // Đi từ gốc xuống lá x, lấy max giá trị các đường lưu trên đường đi root -> leaf.
     std::pair<bool, long long> query(const int x, const int node,
                                      const int left, const int right) const {
         bool found = occupied_[static_cast<std::size_t>(node)];
@@ -115,11 +126,13 @@ int main() {
         int type;
         std::cin >> type;
         if (type == 1) {
+            // Loại 1: thêm đường y = a*x + b active trên [l, r].
             Line line;
             int left, right;
             std::cin >> line.slope >> line.intercept >> left >> right;
             tree.insert(line, left, right);
         } else {
+            // Loại 2: in max tại x, hoặc "NO" nếu không có đường active.
             int x;
             std::cin >> x;
             const auto answer = tree.query(x);

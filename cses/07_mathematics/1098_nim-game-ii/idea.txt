@@ -37,5 +37,3 @@ Kiểm tra nhanh với ví dụ:
 
 Ghi chú cài đặt: đọc toàn bộ input một lần và xuất kết quả một lần để đủ
 nhanh khi t và n lớn.
-</content>
-</invoke>

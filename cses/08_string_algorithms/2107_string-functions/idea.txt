@@ -1,43 +1,35 @@
-Bài toán: String Functions (CSES 2107)
+String Functions - CSES 2107
+https://cses.fi/problemset/task/2107
 
-Cho một xâu s độ dài n (chỉ gồm các ký tự 'a'..'z'). Ta cần in ra hai dòng:
-- Dòng 1: giá trị của z-function tại từng vị trí.
-- Dòng 2: giá trị của π-function (prefix function) tại từng vị trí.
+## Đề bài
+Cho một xâu s độ dài n chỉ gồm các ký tự thường 'a'..'z'. Hãy in ra hai dòng:
+- Dòng 1: giá trị Z-function tại từng vị trí (quy ước z tại vị trí đầu tiên bằng 0).
+- Dòng 2: giá trị prefix function π tại từng vị trí.
+Trong đó z(i) là độ dài lớn nhất của xâu con bắt đầu tại vị trí i mà cũng là một
+prefix của s; π(i) là độ dài lớn nhất của một prefix thực sự của s[0..i] mà đồng
+thời là suffix của đoạn đó.
 
-1) Định nghĩa và phân tích
-- z(i): độ dài lớn nhất của một xâu con bắt đầu tại vị trí i và đồng thời là
-  một prefix của s; quy ước z(1)=0. Đây chính xác là Z-function chuẩn (0-indexed),
-  trong đó ta đặt z[0]=0 (khớp với quy ước z(1)=0 của đề, dùng chỉ số từ 1).
-- π(i): độ dài lớn nhất của một xâu con kết thúc tại vị trí i, là một prefix của
-  s, và có độ dài không vượt quá i-1. Đây chính xác là prefix function của KMP:
-  π[i] = độ dài prefix thực sự dài nhất của s[0..i] mà cũng là suffix của nó.
+## Ý tưởng
+Đây đúng là hai hàm chuỗi kinh điển, đều tính được trong thời gian tuyến tính và
+đều tất định (không dùng hashing) nên an toàn trước các test chống hash của CSES.
 
-Kiểm chứng với ví dụ s = "abaabca":
-- Z = [0, 0, 1, 2, 0, 0, 1]
-- π = [0, 0, 1, 1, 2, 0, 1]
-Khớp hoàn toàn với output mẫu.
+1) Z-function (O(n)): duy trì cửa sổ [l, r) là đoạn khớp prefix vươn xa nhất về
+   bên phải đã biết. Với mỗi i, nếu i < r thì khởi tạo z[i] = min(r - i, z[i - l])
+   để tận dụng thông tin đã tính, sau đó mở rộng bằng so sánh trực tiếp
+   s[z[i]] == s[i + z[i]]. Cập nhật [l, r) mỗi khi i + z[i] vượt qua r.
 
-2) Thuật toán Z-function (O(n))
-Duy trì cửa sổ [l, r) là đoạn khớp prefix xa nhất về bên phải đã biết.
-Với mỗi i, nếu i < r thì khởi tạo z[i] = min(r-i, z[i-l]) để tận dụng thông tin
-đã tính; sau đó mở rộng bằng so sánh trực tiếp s[z[i]] == s[i+z[i]]. Cập nhật
-[l, r) khi i+z[i] vượt qua r. Tổng số phép so sánh là O(n) theo phân tích khấu hao.
+2) Prefix function (KMP, O(n)): với mỗi i đặt j = π[i - 1]; trong khi j > 0 và
+   s[i] != s[j] thì lùi j = π[j - 1] (quay lui theo các border). Nếu s[i] == s[j]
+   thì tăng j lên 1, rồi gán π[i] = j.
 
-3) Thuật toán prefix function (O(n))
-Với mỗi i, đặt j = π[i-1]. Trong khi j>0 và s[i] != s[j], lùi j = π[j-1]
-(quay lui theo các border). Nếu s[i] == s[j] thì j tăng 1. Gán π[i] = j.
-Cũng là O(n) theo phân tích khấu hao vì j chỉ tăng tối đa n lần tổng cộng.
+Kiểm chứng với s = "abaabca": Z = [0, 0, 1, 2, 0, 0, 1] và π = [0, 0, 1, 1, 2, 0, 1],
+khớp hoàn toàn với output mẫu.
 
-4) Tính đúng đắn
-Cả hai đều là các thuật toán tất định kinh điển (không dùng hashing) nên tránh
-được các test chống hash của CSES. Định nghĩa của đề trùng khít với định nghĩa
-chuẩn của Z-function và prefix function như đã kiểm chứng ở trên.
-
-5) Độ phức tạp
-- Thời gian: O(n) cho mỗi hàm, tổng O(n).
+## Độ phức tạp
+- Thời gian: O(n) cho mỗi hàm nhờ phân tích khấu hao, tổng O(n).
 - Bộ nhớ: O(n) cho hai mảng kết quả.
 
-LƯU Ý TLE: n có thể tới 10^6. Hai vòng lặp O(n) với chi phí Python cho mỗi
-bước là đáng kể; trên CPython thuần, giải pháp này có nguy cơ TLE so với giới
-hạn thời gian dành cho C++ của CSES. Thuật toán vẫn hoàn toàn đúng; đã tối ưu
-bằng cách xử lý trên bytes, cache biến cục bộ và gộp output thành một lần ghi.
+LƯU Ý TLE: n có thể tới 10^6. Hai vòng lặp O(n) với chi phí mỗi bước của Python là
+đáng kể; trên CPython thuần giải pháp có nguy cơ TLE so với giới hạn thời gian dành
+cho C++ của CSES. Thuật toán vẫn hoàn toàn đúng; đã tối ưu bằng cách xử lý trên
+bytes, cache biến cục bộ và gộp output thành một lần ghi.

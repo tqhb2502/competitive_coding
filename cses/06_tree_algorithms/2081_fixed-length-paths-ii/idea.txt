@@ -51,5 +51,3 @@ LƯU Ý TLE: Đây là centroid decomposition thuần Python với O(n log^2 n).
 n = 2·10^5, các vòng lặp DFS/two-pointer ở mức bytecode Python có thể vượt giới
 hạn thời gian của CSES (vốn đặt theo C++). Thuật toán ĐÚNG; nếu TLE thì cần cài
 lại bằng C++ hoặc dùng PyPy. Không dùng thư viện bên thứ ba (chỉ stdlib).
-</content>
-</invoke>

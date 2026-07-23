@@ -1,19 +1,12 @@
-# All Manhattan Distances - https://cses.fi/problemset/task/3411
-#
-# Tổng khoảng cách Manhattan trên mọi cặp điểm:
-#   sum |x_i - x_j| + sum |y_i - y_j|  (tách độc lập theo từng chiều).
-# Với mỗi chiều: sort rồi dùng prefix sum. Sau khi sort tăng dần, đóng góp của
-# a[k] là a[k]*k - (tổng a[0..k-1]). Cộng dồn qua mọi k => tổng theo cặp.
-# Toàn bộ dùng số nguyên (big int của Python) => chính xác tuyệt đối, không tràn.
-
 import sys
 
 
 def sum_pairwise_abs(values):
-    # Tổng |a_i - a_j| trên mọi cặp, dùng sort + prefix sum. Exact integer.
+    # Bài toán một chiều: tổng |a_i - a_j| trên mọi cặp bằng sort + prefix sum.
+    # Sắp xếp tăng dần rồi cộng dồn đóng góp a[k]*k - (tổng a[0..k-1]) qua mọi k.
     values.sort()
     total = 0
-    prefix = 0
+    prefix = 0  # Tổng tiền tố a[0..k-1].
     for k, v in enumerate(values):
         total += v * k - prefix
         prefix += v
@@ -33,6 +26,8 @@ def main():
         xs[i] = int(data[idx])
         ys[i] = int(data[idx + 1])
         idx += 2
+    # Tách độc lập theo chiều x và chiều y rồi cộng lại; big int của Python cho
+    # kết quả chính xác tuyệt đối, không tràn số.
     answer = sum_pairwise_abs(xs) + sum_pairwise_abs(ys)
     sys.stdout.write(str(answer) + "\n")
 

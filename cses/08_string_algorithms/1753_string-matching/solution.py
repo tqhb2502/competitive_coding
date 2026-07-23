@@ -1,16 +1,14 @@
-# String Matching - https://cses.fi/problemset/task/1753
-# Đếm số lần pattern xuất hiện trong text bằng thuật toán KMP (deterministic, O(n + m)).
-
 import sys
 
 
 def main():
+    # Đọc trực tiếp theo bytes để tăng tốc trên input tới 10^6 ký tự.
     data = sys.stdin.buffer.read().split()
     if len(data) < 2:
         sys.stdout.write("0\n")
         return
-    t = data[0]  # text (bytes)
-    p = data[1]  # pattern (bytes)
+    t = data[0]  # chuỗi văn bản text (dạng bytes)
+    p = data[1]  # chuỗi mẫu pattern (dạng bytes)
 
     n = len(t)
     m = len(p)
@@ -29,7 +27,7 @@ def main():
             k += 1
         pi[i] = k
 
-    # Bước 2: quét text, đếm số lần khớp đầy đủ (kể cả chồng lấp).
+    # Bước 2: quét text, đếm số lần khớp đầy đủ (kể cả chồng lấn).
     ans = 0
     k = 0
     for i in range(n):

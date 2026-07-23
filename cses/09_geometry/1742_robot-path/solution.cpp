@@ -10,6 +10,7 @@
 
 using Coordinate = std::int64_t;
 
+// Một đoạn song song trục toạ độ; vertical() cho biết đoạn dọc (V) hay ngang (H).
 struct Segment {
     Coordinate start_x;
     Coordinate start_y;
@@ -21,9 +22,9 @@ struct Segment {
     }
 };
 
-// A segment [low, high] is stored in O(log n) canonical nodes.  A point query
-// visits its root-to-leaf path, so every returned key belongs to a segment that
-// covers the queried coordinate.
+// Cấu trúc "đâm xuyên" (stabbing) dựng trên segment tree: mỗi đoạn [low, high]
+// được lưu tại O(log n) nút chuẩn tắc. Một truy vấn điểm chỉ đi theo đường từ lá
+// lên gốc, nên mọi key trả về đều thuộc một đoạn có phủ toạ độ được hỏi.
 class SegmentStabber {
 public:
     explicit SegmentStabber(int coordinate_count) : size_(1) {
@@ -33,6 +34,7 @@ public:
         keys_.resize(static_cast<std::size_t>(2 * size_));
     }
 
+    // Thêm key cho đoạn phủ khoảng chỉ số [low, high].
     void add(int low, int high, Coordinate key) {
         int left = low + size_;
         int right = high + size_ + 1;
@@ -50,6 +52,8 @@ public:
         }
     }
 
+    // Tìm key gần start nhất nằm trong khoảng [start, finish] theo hướng đi -
+    // chính là điểm chạm vuông góc có t nhỏ nhất trên đoạn hiện tại.
     [[nodiscard]] std::optional<Coordinate> nearest(
         int point, Coordinate start, Coordinate finish) const {
         std::optional<Coordinate> result;
@@ -57,11 +61,13 @@ public:
         for (int node = point + size_; node >= 1; node /= 2) {
             const auto& keys = keys_[static_cast<std::size_t>(node)];
             if (finish > start) {
+                // Đi theo chiều tăng: lấy key nhỏ nhất strictly > start (loại t == 0).
                 const auto it = keys.upper_bound(start);
                 if (it != keys.end() && *it <= finish && (!result.has_value() || *it < *result)) {
                     result = *it;
                 }
             } else {
+                // Đi theo chiều giảm: lấy key lớn nhất strictly < start.
                 auto it = keys.lower_bound(start);
                 if (it != keys.begin()) {
                     --it;
@@ -81,6 +87,9 @@ private:
 
 using IntervalMap = std::map<Coordinate, Coordinate>;
 
+// Chồng lấn collinear: trên cùng một đường, tìm điểm đã bị phủ gần nhất nằm phía
+// trước start theo hướng đi. Trả về t (khoảng cách tới điểm đó), 0 nếu quay lại
+// tức thì (đảo chiều), hoặc rỗng nếu không có sự kiện.
 [[nodiscard]] std::optional<Coordinate> nearest_collinear(
     const IntervalMap& intervals, Coordinate start, Coordinate finish) {
     if (finish > start) {
@@ -109,6 +118,7 @@ using IntervalMap = std::map<Coordinate, Coordinate>;
     return std::nullopt;
 }
 
+// Gộp khoảng [low, high] vào hợp các khoảng đã bị phủ (merge intervals).
 void add_interval(IntervalMap& intervals, Coordinate low, Coordinate high) {
     auto current = intervals.lower_bound(low);
     if (current != intervals.begin()) {
@@ -126,6 +136,7 @@ void add_interval(IntervalMap& intervals, Coordinate low, Coordinate high) {
     intervals.emplace(low, high);
 }
 
+// Chỉ số của value sau khi nén toạ độ (coordinate compression).
 int compressed_index(const std::vector<Coordinate>& coordinates, Coordinate value) {
     return static_cast<int>(
         std::lower_bound(coordinates.begin(), coordinates.end(), value) - coordinates.begin());
@@ -138,6 +149,7 @@ int main() {
     int command_count = 0;
     std::cin >> command_count;
 
+    // Đọc n lệnh, dựng dãy đoạn của polyline và thu thập toạ độ để nén.
     std::vector<Segment> segments;
     segments.reserve(static_cast<std::size_t>(command_count));
     std::vector<Coordinate> xs{0};
@@ -171,18 +183,20 @@ int main() {
         current_y = next_y;
     }
 
+    // Nén toạ độ x và y.
     std::sort(xs.begin(), xs.end());
     xs.erase(std::unique(xs.begin(), xs.end()), xs.end());
     std::sort(ys.begin(), ys.end());
     ys.erase(std::unique(ys.begin(), ys.end()), ys.end());
 
-    // Horizontal segments are indexed by their x-range and store their y;
-    // vertical segments are indexed by their y-range and store their x.
+    // Đoạn ngang được đánh chỉ số theo khoảng x và lưu hàng y; đoạn dọc đánh chỉ
+    // số theo khoảng y và lưu cột x. Các *_lines giữ hợp khoảng cho chồng lấn.
     SegmentStabber horizontal_segments(static_cast<int>(xs.size()));
     SegmentStabber vertical_segments(static_cast<int>(ys.size()));
     std::vector<IntervalMap> horizontal_lines(ys.size());
     std::vector<IntervalMap> vertical_lines(xs.size());
 
+    // Duyệt các đoạn THEO THỨ TỰ ĐI, dừng ngay tại lần tự cắt đầu tiên.
     Coordinate travelled = 0;
     for (const Segment& segment : segments) {
         const bool is_vertical = segment.vertical();
@@ -191,6 +205,7 @@ int main() {
         std::optional<Coordinate> best_distance;
 
         if (is_vertical) {
+            // Giao vuông góc với các đoạn ngang đã vẽ, rồi chồng lấn cùng cột x.
             const int x_index = compressed_index(xs, segment.start_x);
             const auto crossing = horizontal_segments.nearest(x_index, start, finish);
             if (crossing.has_value()) {
@@ -203,6 +218,7 @@ int main() {
                 best_distance = overlap;
             }
         } else {
+            // Giao vuông góc với các đoạn dọc đã vẽ, rồi chồng lấn cùng hàng y.
             const int y_index = compressed_index(ys, segment.start_y);
             const auto crossing = vertical_segments.nearest(y_index, start, finish);
             if (crossing.has_value()) {
@@ -216,11 +232,13 @@ int main() {
             }
         }
 
+        // Tìm được điểm quay lại trên đoạn này: đáp án là quãng đã đi cộng t.
         if (best_distance.has_value()) {
             std::cout << travelled + *best_distance << '\n';
             return 0;
         }
 
+        // Chưa tự cắt: ghi đoạn vào các cấu trúc rồi cộng dồn quãng đường.
         const Coordinate low = std::min(start, finish);
         const Coordinate high = std::max(start, finish);
         if (is_vertical) {
@@ -235,6 +253,7 @@ int main() {
         travelled += high - low;
     }
 
+    // Không có điểm tự cắt: đáp án là tổng độ dài mọi đoạn.
     std::cout << travelled << '\n';
     return 0;
 }

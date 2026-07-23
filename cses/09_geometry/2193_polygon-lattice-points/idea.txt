@@ -1,53 +1,42 @@
-Bài toán: Polygon Lattice Points (CSES 2193)
+Polygon Lattice Points - CSES 2193
+https://cses.fi/problemset/task/2193
 
-ĐỀ BÀI
-Cho một đa giác đơn (simple polygon) với n đỉnh có tọa độ nguyên. Cần đếm số điểm
-nguyên (lattice points) nằm BÊN TRONG đa giác và số điểm nguyên nằm TRÊN BIÊN của
-đa giác. In ra hai số: số điểm trong (interior) và số điểm trên biên (boundary).
+## Đề bài
+Cho một đa giác đơn (simple polygon) có n đỉnh với tọa độ nguyên. Hãy đếm:
+- Số điểm nguyên (lattice points) nằm HOÀN TOÀN bên trong đa giác.
+- Số điểm nguyên nằm TRÊN BIÊN của đa giác.
+In ra hai số: số điểm bên trong (interior) rồi số điểm trên biên (boundary),
+cách nhau một dấu cách.
 
-Ý TƯỞNG CHÍNH: PICK'S THEOREM
-Định lý Pick cho một đa giác đơn có các đỉnh là điểm nguyên phát biểu:
-    A = i + b/2 - 1
-trong đó:
-    A = diện tích đa giác,
-    i = số điểm nguyên nằm hoàn toàn bên trong,
-    b = số điểm nguyên nằm trên biên.
-Suy ra số điểm bên trong:
-    i = A - b/2 + 1.
+## Ý tưởng
+Dùng ĐỊNH LÝ PICK cho đa giác đơn có đỉnh nguyên:
+    A = i + b/2 - 1   =>   i = A - b/2 + 1
+với A là diện tích, i là số điểm bên trong, b là số điểm trên biên.
 
-TÍNH b (số điểm nguyên trên biên)
-Trên một cạnh nối hai đỉnh nguyên (x1, y1) và (x2, y2), số điểm nguyên nằm trên
-đoạn thẳng đó (không tính một đầu mút để tránh đếm trùng đỉnh) đúng bằng
-    gcd(|x2 - x1|, |y2 - y1|).
-Cộng giá trị này cho tất cả n cạnh (mỗi đỉnh được tính đúng một lần vì mỗi cạnh
-đóng góp phần điểm trên đoạn của mình) ta được tổng số điểm biên b. Đây là số
-nguyên chính xác, tính bằng math.gcd.
+Tính b (số điểm nguyên trên biên):
+- Trên cạnh nối hai đỉnh nguyên (x1, y1) và (x2, y2), số điểm nguyên trên đoạn
+  (không tính đầu mút để tránh đếm trùng đỉnh) đúng bằng gcd(|dx|, |dy|).
+- Cộng gcd cho tất cả n cạnh ta được b. Mỗi đỉnh được tính đúng một lần vì mỗi
+  cạnh đóng góp phần điểm thuộc đoạn của mình.
 
-TÍNH A (diện tích) BẰNG SHOELACE VỚI SỐ NGUYÊN CHÍNH XÁC
-Dùng công thức shoelace tính DIỆN TÍCH GẤP ĐÔI (doubled area):
-    2A = | sum_{k} (x_k * y_{k+1} - x_{k+1} * y_k) |
-Toàn bộ phép tính là số nguyên; Python dùng big integer nên không lo tràn số dù
-tọa độ lên tới 1e9 và n tới 1e5 (giá trị trung gian có thể tới ~1e23). Không dùng
-float để tránh sai số (CSES geometry rất nhạy về độ chính xác).
+Tính A bằng công thức shoelace với số nguyên chính xác:
+- Tính diện tích gấp đôi: 2A = | sum_k (x_k * y_{k+1} - x_{k+1} * y_k) |.
+- Lấy trị tuyệt đối nên không phụ thuộc chiều duyệt (thuận hay nghịch kim đồng hồ).
+- Toàn bộ phép tính giữ nguyên số nguyên để tránh sai số float (C++ dùng __int128,
+  Python dùng big integer) vì giá trị trung gian có thể rất lớn với tọa độ tới 1e9.
 
-GHÉP LẠI
-Đặt twoA = |2A| là số nguyên. Ta có:
+Ghép lại: đặt twoA = |2A|, ta có
     i = A - b/2 + 1 = (2A - b + 2) / 2.
 Định lý Pick bảo đảm (2A - b) luôn chẵn nên phép chia này chia hết hoàn toàn; dùng
-phép chia nguyên // để giữ kết quả là số nguyên chính xác.
-Đáp án in ra: i (điểm bên trong) rồi b (điểm trên biên), cách nhau một dấu cách.
+phép chia nguyên để giữ kết quả chính xác. Đáp án in ra là i rồi b.
 
-VÌ SAO ĐÚNG
-- Pick's theorem là kết quả kinh điển, đúng cho MỌI đa giác đơn có đỉnh nguyên
-  (kể cả không lồi), và đề bài bảo đảm đa giác là simple (không tự cắt).
-- gcd(|dx|, |dy|) là số điểm nguyên trên đoạn (số khoảng chia đều), là công thức
-  chuẩn cho lattice points trên đoạn thẳng nguyên.
-- Shoelace cho diện tích chính xác; lấy trị tuyệt đối để không phụ thuộc chiều
-  duyệt (cùng chiều hay ngược chiều kim đồng hồ).
+Vì sao đúng:
+- Định lý Pick đúng cho MỌI đa giác đơn có đỉnh nguyên (kể cả không lồi), và đề bài
+  bảo đảm đa giác là simple (không tự cắt).
+- gcd(|dx|, |dy|) là số điểm nguyên trên đoạn thẳng nguyên (công thức chuẩn).
+- Shoelace cho diện tích chính xác; trị tuyệt đối khử phụ thuộc chiều duyệt.
 
-ĐỘ PHỨC TẠP
-- Thời gian: O(n) cho cả shoelace lẫn tổng gcd (mỗi gcd là O(log(max coord))).
-- Bộ nhớ: O(n) để lưu các đỉnh (có thể giảm về O(1) nếu xử lý luồng, nhưng O(n)
-  đã thừa sức với n <= 1e5).
-
-Không có rủi ro TLE: thuật toán tuyến tính, chỉ đọc/ghi I/O nhanh.
+## Độ phức tạp
+- Thời gian: O(n) cho cả shoelace lẫn tổng gcd (mỗi gcd tốn O(log(max coord))).
+- Bộ nhớ: O(n) để lưu các đỉnh; thừa sức với n <= 1e5.
+- Không có rủi ro TLE: thuật toán tuyến tính, chỉ đọc/ghi I/O nhanh.

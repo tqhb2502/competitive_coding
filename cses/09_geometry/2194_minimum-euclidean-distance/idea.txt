@@ -1,46 +1,47 @@
-Bài toán: Minimum Euclidean Distance (CSES 2194)
+Minimum Euclidean Distance - CSES 2194
+https://cses.fi/problemset/task/2194
 
-Đề bài:
+## Đề bài
 - Cho n điểm (2 <= n <= 2*10^5), tọa độ nguyên -10^9 <= x, y <= 10^9, các điểm
   phân biệt đôi một.
 - In ra d^2, với d là khoảng cách Euclid nhỏ nhất giữa hai điểm phân biệt.
   Lưu ý: in ra BÌNH PHƯƠNG khoảng cách (một số nguyên), không phải d.
 
-Ý tưởng hình học (closest pair):
-- Đây là bài toán "cặp điểm gần nhất". Vì cần in bình phương khoảng cách nên
-  toàn bộ phép tính dùng SỐ HỌC NGUYÊN CHÍNH XÁC: d2 = dx*dx + dy*dy, với
-  dx = x1 - x2, dy = y1 - y2. Tọa độ <= 10^9 nên d2 <= ~8*10^18, vẫn nằm gọn
-  trong số nguyên lớn (big int) của Python -> không bao giờ tràn số, không dùng
-  float nên kết quả tuyệt đối chính xác.
+## Ý tưởng
+- Đây là bài toán "cặp điểm gần nhất" (closest pair). Vì cần in bình phương
+  khoảng cách nên toàn bộ phép tính dùng SỐ HỌC NGUYÊN CHÍNH XÁC:
+  d2 = dx*dx + dy*dy, với dx = x1 - x2, dy = y1 - y2. Tọa độ <= 10^9 nên
+  d2 <= ~8*10^18, vẫn nằm gọn trong số nguyên lớn (big int) của Python
+  -> không bao giờ tràn số, không dùng float nên kết quả tuyệt đối chính xác.
 
-Thuật toán: randomized incremental + spatial hash grid (kỳ vọng O(n)):
-1. Xáo trộn ngẫu nhiên (random.shuffle) thứ tự các điểm. Bước này giúp phá vỡ
-   mọi trường hợp xấu (adversarial), đảm bảo kỳ vọng tốt bất kể input.
-2. Khởi tạo best = bình phương khoảng cách của hai điểm đầu tiên.
-3. Đặt kích thước ô lưới s = isqrt(best) (căn bậc hai NGUYÊN, s >= 1 vì các điểm
-   phân biệt nên best >= 1). Băm mỗi điểm vào ô (x // s, y // s). Grid là dict
-   LỒNG NHAU: cột cx -> (cy -> danh sách điểm). Dùng khóa số nguyên (nhanh hơn
-   khóa tuple) và bỏ qua nhanh các cột rỗng. Floor division của Python xử lý
-   đúng cả tọa độ âm.
-4. Thêm từng điểm p còn lại:
-   - Tính ô (cx, cy) của p. Duyệt 3x3 ô xung quanh, so sánh d2 với từng điểm đã
-     chèn. Nếu tìm được d2 < best -> cập nhật best.
-   - Nếu best giảm: tính lại s = isqrt(best) và rebuild lại toàn bộ grid với
-     kích thước ô mới.
-   - Nếu không giảm: chèn p vào ô của nó.
+- Thuật toán: randomized incremental + spatial hash grid (kỳ vọng O(n)):
+  1. Xáo trộn ngẫu nhiên (random.shuffle) thứ tự các điểm. Bước này giúp phá vỡ
+     mọi trường hợp xấu (adversarial), đảm bảo kỳ vọng tốt bất kể input.
+  2. Khởi tạo best = bình phương khoảng cách của hai điểm đầu tiên.
+  3. Đặt kích thước ô lưới s = isqrt(best) (căn bậc hai NGUYÊN, s >= 1 vì các
+     điểm phân biệt nên best >= 1). Băm mỗi điểm vào ô (x // s, y // s). Grid là
+     dict LỒNG NHAU: cột cx -> (cy -> danh sách điểm). Dùng khóa số nguyên
+     (nhanh hơn khóa tuple) và bỏ qua nhanh các cột rỗng. Floor division của
+     Python xử lý đúng cả tọa độ âm.
+  4. Thêm từng điểm p còn lại:
+     - Tính ô (cx, cy) của p. Duyệt 3x3 ô xung quanh, so sánh d2 với từng điểm
+       đã chèn. Nếu tìm được d2 < best -> cập nhật best.
+     - Nếu best giảm: tính lại s = isqrt(best) và rebuild lại toàn bộ grid với
+       kích thước ô mới.
+     - Nếu không giảm: chèn p vào ô của nó.
 
-Vì sao chỉ cần kiểm tra 3x3 ô (tính đúng đắn):
-- Tại mỗi bước, grid dùng kích thước ô s = isqrt(best) nên s <= sqrt(best).
-- Nếu tồn tại điểm q đã chèn sao cho dist(p, q) < best (có thể cải thiện), thì
-  |dx| < sqrt(best) < s + 1, mà dx là số nguyên nên |dx| <= s. Với bước s và
-  |dx| <= s, chỉ số ô theo x của p và q sai khác nhau nhiều nhất 1 (floor
-  division); tương tự cho y. Vậy q chắc chắn nằm trong lưới 3x3 quanh ô của p
-  -> không bao giờ bỏ sót cặp gần hơn. Do s là SỐ NGUYÊN nên phép tính ô hoàn
-  toàn chính xác, không có sai số float.
-- Các điểm đã chèn đôi một cách nhau >= sqrt(best) >= s, nên mỗi ô s x s chứa
-  tối đa O(1) điểm => mỗi lần chèn chỉ tốn O(1) phép so sánh (kỳ vọng).
+- Vì sao chỉ cần kiểm tra 3x3 ô (tính đúng đắn):
+  - Tại mỗi bước, grid dùng kích thước ô s = isqrt(best) nên s <= sqrt(best).
+  - Nếu tồn tại điểm q đã chèn sao cho dist(p, q) < best (có thể cải thiện), thì
+    |dx| < sqrt(best) < s + 1, mà dx là số nguyên nên |dx| <= s. Với bước s và
+    |dx| <= s, chỉ số ô theo x của p và q sai khác nhau nhiều nhất 1 (floor
+    division); tương tự cho y. Vậy q chắc chắn nằm trong lưới 3x3 quanh ô của p
+    -> không bao giờ bỏ sót cặp gần hơn. Do s là SỐ NGUYÊN nên phép tính ô hoàn
+    toàn chính xác, không có sai số float.
+  - Các điểm đã chèn đôi một cách nhau >= sqrt(best) >= s, nên mỗi ô s x s chứa
+    tối đa O(1) điểm => mỗi lần chèn chỉ tốn O(1) phép so sánh (kỳ vọng).
 
-Độ phức tạp:
+## Độ phức tạp
 - Kỳ vọng O(n): số lần "cải thiện" (rebuild) kỳ vọng là O(log n), mỗi rebuild
   O(i); tổng chi phí rebuild kỳ vọng O(n) (backwards analysis). Mỗi lần chèn
   kỳ vọng O(1). Bộ nhớ O(n) cho grid và danh sách điểm.

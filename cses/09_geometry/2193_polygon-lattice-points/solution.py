@@ -1,11 +1,3 @@
-# Polygon Lattice Points - CSES 2193
-# https://cses.fi/problemset/task/2193
-#
-# Pick's theorem: A = i + b/2 - 1  =>  i = A - b/2 + 1
-#   b = sum over edges of gcd(|dx|, |dy|)  (boundary lattice points)
-#   2A = |sum (x_k*y_{k+1} - x_{k+1}*y_k)|  (shoelace, doubled area)
-# All arithmetic is exact integer arithmetic (Python big ints), no floats.
-
 import sys
 from math import gcd
 
@@ -15,15 +7,17 @@ def main():
     idx = 0
     n = int(data[idx]); idx += 1
 
+    # Đọc n đỉnh nguyên của đa giác đơn.
     xs = [0] * n
     ys = [0] * n
     for k in range(n):
         xs[k] = int(data[idx]); idx += 1
         ys[k] = int(data[idx]); idx += 1
 
-    two_area = 0          # doubled signed area (shoelace)
-    boundary = 0          # b: lattice points on the boundary
+    two_area = 0          # 2A: diện tích gấp đôi (shoelace), số nguyên chính xác
+    boundary = 0          # b: số điểm nguyên trên biên
 
+    # Duyệt từng cạnh (đỉnh k tới đỉnh k+1, cạnh cuối vòng về đỉnh 0).
     for k in range(n):
         x1 = xs[k]
         y1 = ys[k]
@@ -31,8 +25,10 @@ def main():
         x2 = xs[j]
         y2 = ys[j]
 
+        # Cộng dồn shoelace cho diện tích gấp đôi.
         two_area += x1 * y2 - x2 * y1
 
+        # Số điểm nguyên trên cạnh (bỏ đầu mút) = gcd(|dx|, |dy|).
         dx = x2 - x1
         dy = y2 - y1
         if dx < 0:
@@ -41,10 +37,11 @@ def main():
             dy = -dy
         boundary += gcd(dx, dy)
 
+    # Lấy trị tuyệt đối để không phụ thuộc chiều duyệt đa giác.
     if two_area < 0:
         two_area = -two_area
 
-    # i = A - b/2 + 1 = (2A - b + 2) / 2 ; (2A - b) is always even (Pick).
+    # Định lý Pick: i = A - b/2 + 1 = (2A - b + 2) // 2 (tử số luôn chẵn).
     interior = (two_area - boundary + 2) // 2
 
     sys.stdout.write("%d %d\n" % (interior, boundary))

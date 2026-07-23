@@ -1,36 +1,36 @@
-Bài toán: Đếm số lượng chuỗi con (subsequence) PHÂN BIỆT khác rỗng của một
-chuỗi, kết quả lấy modulo 10^9 + 7.
+Distinct Subsequences - CSES 1149
+https://cses.fi/problemset/task/1149
 
-Ý tưởng chính (Dynamic Programming đếm distinct subsequences):
+## Đề bài
+Cho một chuỗi s độ dài n (chỉ gồm các chữ cái thường). Hãy đếm số lượng chuỗi
+con (subsequence) PHÂN BIỆT và KHÁC RỖNG của s. Kết quả lấy modulo 10^9 + 7.
+Ràng buộc: n <= 5 * 10^5.
+
+## Ý tưởng
+Dùng Dynamic Programming đếm distinct subsequences.
 - Gọi dp[i] là số subsequence phân biệt (bao gồm cả chuỗi rỗng) của tiền tố
-  s[0..i-1] (i ký tự đầu tiên).
-- dp[0] = 1 (chỉ có chuỗi rỗng).
+  gồm i ký tự đầu tiên s[0..i-1]. Khởi tạo dp[0] = 1 (chỉ có chuỗi rỗng).
 - Khi thêm ký tự c = s[i-1] vào cuối:
-    dp[i] = 2 * dp[i-1] - dp[j-1]
+      dp[i] = 2 * dp[i-1] - dp[j-1]
   trong đó:
-    * 2 * dp[i-1]: mỗi subsequence cũ có thể GIỮ NGUYÊN hoặc GẮN THÊM c vào
-      cuối, tạo ra gấp đôi số chuỗi.
-    * Nếu ký tự c đã từng xuất hiện trước đó, gọi j là vị trí (1-indexed) lần
-      xuất hiện GẦN NHẤT trước i. Khi đó ta bị đếm trùng đúng bằng dp[j-1]
-      chuỗi (các chuỗi được tạo bằng cách gắn c tại lần xuất hiện trước), nên
-      phải trừ đi dp[j-1]. Nếu c chưa từng xuất hiện thì không trừ gì.
-
+    * 2 * dp[i-1]: mỗi subsequence cũ đều có thể GIỮ NGUYÊN hoặc GẮN THÊM c
+      vào cuối, làm số chuỗi tăng gấp đôi.
+    * Nếu c đã từng xuất hiện trước đó, gọi j là vị trí (1-indexed) lần xuất
+      hiện GẦN NHẤT trước i thì ta bị đếm trùng đúng dp[j-1] chuỗi (các chuỗi
+      tạo ra khi gắn c tại lần xuất hiện trước), nên phải trừ đi dp[j-1]. Nếu
+      c chưa từng xuất hiện thì không trừ gì.
 - Cài đặt: giữ mảng last[c] lưu giá trị dp NGAY TRƯỚC khi xử lý lần xuất hiện
-  gần nhất của c (chính là dp[j-1]). Mỗi bước cập nhật:
-      new = 2*dp % MOD
-      if c đã gặp: new = (new - last[c]) % MOD
-      last[c] = dp        # dp hiện tại = dp[i-1] = dp[j-1] cho lần sau
+  gần nhất của c (chính là dp[j-1]). Mỗi bước:
+      new = 2 * dp % MOD
+      nếu c đã gặp: new = (new - last[c]) % MOD
+      last[c] = dp        # dp hiện tại chính là dp[j-1] cho lần sau
       dp = new
+- Vì sao đúng: việc trừ dp[j-1] loại bỏ chính xác các chuỗi bị đếm lặp do ký
+  tự c lặp lại, đảm bảo mỗi chuỗi phân biệt chỉ được đếm một lần. dp cuối cùng
+  dp[n] đã tính CẢ chuỗi rỗng, nên đáp án = dp[n] - 1, rồi lấy modulo cho
+  không âm.
+- Đọc input nhanh bằng buffer, ghi output một lần.
 
-Vì sao đúng: công thức trên là công thức kinh điển đếm distinct subsequences.
-Việc trừ dp[j-1] loại bỏ chính xác các chuỗi bị trùng lặp do ký tự c lặp lại,
-đảm bảo mỗi chuỗi phân biệt chỉ được đếm một lần (theo lần xuất hiện đầu tiên
-của mỗi ký tự trong chuỗi con). dp cuối cùng dp[n] tính CẢ chuỗi rỗng, nên
-đáp án = dp[n] - 1 (loại chuỗi rỗng), rồi lấy modulo cho không âm.
-
-Độ phức tạp: thời gian O(n) với n là độ dài chuỗi (mỗi ký tự xử lý O(1) nhờ
-mảng last kích thước 26). Bộ nhớ O(1) ngoài chuỗi đầu vào (chỉ cần biến dp và
-mảng 26 phần tử). Với n <= 5*10^5, thuật toán O(n) chạy tốt.
-
-Đọc input nhanh bằng sys.stdin.buffer, làm việc trực tiếp trên bytes để tăng
-tốc, ghi output một lần bằng sys.stdout.write.
+## Độ phức tạp
+- Thời gian: O(n), mỗi ký tự xử lý O(1) nhờ mảng last kích thước 26.
+- Bộ nhớ: O(1) ngoài chuỗi đầu vào (một biến dp và mảng 26 phần tử).

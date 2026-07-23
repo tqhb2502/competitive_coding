@@ -1,2 +1,0 @@
-All Palindromes
-https://cses.fi/problemset/task/3138

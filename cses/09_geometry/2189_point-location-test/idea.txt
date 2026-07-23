@@ -1,32 +1,31 @@
-Ý tưởng: Point Location Test
+Point Location Test - CSES 2189
+https://cses.fi/problemset/task/2189
 
-Bài toán: cho ba điểm p1, p2, p3 với tọa độ nguyên. Khi đứng ở p1 nhìn về
-phía p2, cần xác định p3 nằm bên TRÁI (LEFT), bên PHẢI (RIGHT) hay NẰM TRÊN
-đường thẳng đi qua p1, p2 (TOUCH).
+## Đề bài
+Cho ba điểm p1, p2, p3 với tọa độ nguyên. Khi đứng ở p1 nhìn về phía p2, hãy
+xác định điểm p3 nằm bên TRÁI (in ra "LEFT"), bên PHẢI (in ra "RIGHT") hay nằm
+ngay trên đường thẳng đi qua p1 và p2 (in ra "TOUCH"). Có t truy vấn độc lập.
 
-Kỹ thuật dùng: cross product (tích có hướng) để xác định orientation.
+## Ý tưởng
+Dùng cross product (tích có hướng) để xác định orientation của bộ ba điểm.
 Đặt vector a = p2 - p1 = (x2 - x1, y2 - y1)
-        vector b = p3 - p1 = (x3 - x1, y3 - y1)
+     vector b = p3 - p1 = (x3 - x1, y3 - y1)
 Tính cross = a.x * b.y - a.y * b.x
            = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)
 
-Ý nghĩa: cross chính là z-component của tích có hướng (p2 - p1) x (p3 - p1).
-- Nếu cross > 0: p3 nằm bên trái khi đi từ p1 tới p2  -> "LEFT"
-- Nếu cross < 0: p3 nằm bên phải                        -> "RIGHT"
-- Nếu cross = 0: ba điểm thẳng hàng, p3 nằm trên đường thẳng -> "TOUCH"
+Giá trị cross chính là z-component của tích có hướng (p2 - p1) x (p3 - p1),
+tức dấu của nó cho biết chiều quay của bộ ba điểm p1 -> p2 -> p3:
+- Nếu cross > 0: p3 nằm bên trái khi đi từ p1 tới p2 (quay ngược chiều kim
+  đồng hồ) -> "LEFT".
+- Nếu cross < 0: p3 nằm bên phải (quay theo chiều kim đồng hồ) -> "RIGHT".
+- Nếu cross = 0: hai vector cùng phương nên ba điểm thẳng hàng -> "TOUCH".
 
-Vì sao đúng: dấu của cross product cho biết chiều quay (counter-clockwise khi
-dương, clockwise khi âm) của bộ ba điểm p1 -> p2 -> p3. Đây chính là định
-nghĩa vị trí trái/phải so với hướng nhìn từ p1 sang p2. Khi cross bằng 0 thì
-hai vector cùng phương nên ba điểm thẳng hàng.
+Lưu ý về số học chính xác: tọa độ tới 1e9 nên mỗi hiệu có thể tới 2e9 và tích
+tới 4e18, tổng có thể vượt phạm vi 64-bit một chút. Bản C++ dùng __int128 còn
+Python dùng big int tự động, nhờ vậy tránh hoàn toàn tràn số và sai số làm tròn
+của số thực.
 
-EXACT INTEGER ARITHMETIC: tọa độ nguyên tới 1e9, nên mỗi hiệu có thể tới 2e9
-và tích tới 4e18, tổng tới ~8e18 (vượt 2^63 một chút). Python dùng big int
-tự động nên không tràn số và không cần float, tránh hoàn toàn sai số làm tròn.
-
-Độ phức tạp:
-- Thời gian: O(t) cho t test case, mỗi test chỉ vài phép nhân/trừ nguyên.
-- Bộ nhớ: O(t) do đọc toàn bộ input một lần; xuất kết quả một lần bằng
-  sys.stdout.write để tăng tốc I/O.
-
-Với t <= 1e5 phép tính rất nhẹ, chạy thoải mái trong giới hạn thời gian.
+## Độ phức tạp
+- Thời gian: O(t) cho t truy vấn, mỗi truy vấn chỉ vài phép nhân và trừ nguyên.
+- Bộ nhớ: O(t) do đọc toàn bộ input một lần và gom kết quả xuất một lần để
+  tăng tốc I/O.

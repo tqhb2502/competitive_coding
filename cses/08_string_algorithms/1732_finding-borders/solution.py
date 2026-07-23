@@ -1,11 +1,3 @@
-# Finding Borders - CSES 1732
-# https://cses.fi/problemset/task/1732
-#
-# A border is a prefix that is also a suffix (but not the whole string).
-# Use the KMP prefix function (pi). The longest border of the whole string
-# is pi[n-1]; following the chain b -> pi[b-1] -> ... enumerates every border
-# length in decreasing order. Reverse for increasing order.
-
 import sys
 
 
@@ -14,26 +6,29 @@ def main():
     if not data:
         sys.stdout.write("\n")
         return
-    s = data[0]                    # bytes; s[i] is an int in Python 3
+    s = data[0]                    # dạng bytes; s[i] là số nguyên trong Python 3
     n = len(s)
 
-    # prefix function (KMP failure function), O(n) amortized
+    # Prefix function (hàm thất bại của KMP), O(n) amortized:
+    # pi[i] là độ dài prefix thực sự dài nhất của s[0..i] cũng là suffix của nó.
     pi = [0] * n
     k = 0
     for i in range(1, n):
         c = s[i]
+        # Lùi theo chuỗi pi cho tới khi ký tự khớp hoặc về 0.
         while k > 0 and s[k] != c:
             k = pi[k - 1]
         if s[k] == c:
             k += 1
         pi[i] = k
 
-    # collect all border lengths by following the pi-chain from the end
+    # Lần theo chuỗi pi từ cuối xâu để thu mọi độ dài border (giảm dần).
     res = []
     b = pi[n - 1]
     while b > 0:
         res.append(b)
         b = pi[b - 1]
+    # Đảo ngược để in theo thứ tự tăng dần.
     res.reverse()
 
     sys.stdout.write(" ".join(map(str, res)) + "\n")

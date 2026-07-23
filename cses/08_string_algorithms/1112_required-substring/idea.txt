@@ -1,25 +1,28 @@
-Bài: Required Substring (CSES 1112)
+Required Substring - CSES 1112
+https://cses.fi/problemset/task/1112
 
-Đề bài:
-Đếm số lượng xâu độ dài n trên bảng chữ cái A-Z (26 ký tự) sao cho xâu đó
-chứa một pattern cho trước (độ dài m) như một substring. In kết quả mod 1e9+7.
+## Đề bài
+Đếm số lượng xâu có độ dài n trên bảng chữ cái A-Z (26 ký tự) sao cho xâu
+chứa một pattern cho trước (độ dài m) như một xâu con liên tiếp (substring).
+In kết quả theo modulo 1e9+7.
 Ràng buộc: 1 <= n <= 1000, 1 <= m <= 100.
 
-Ý tưởng chính: KMP automaton + DP (đếm phần bù).
-- Đếm trực tiếp số xâu CHỨA pattern rất khó vì một pattern có thể xuất hiện
-  nhiều lần và bị trùng lặp. Vì vậy ta đếm số xâu KHÔNG chứa pattern, rồi lấy
-  tổng tất cả 26^n trừ đi.
-- Xây KMP trên pattern: tính prefix function (failure function) pi, sau đó
-  dùng nó để dựng một automaton (deterministic finite automaton). Trạng thái j
-  (0 <= j <= m) là độ dài của tiền tố dài nhất của pattern đồng thời là hậu tố
-  của chuỗi đã đọc. aut[j][c] = trạng thái kế tiếp khi đang ở j và đọc ký tự c.
-  Nếu aut[j][c] == m thì pattern vừa xuất hiện -> xâu này bị loại.
+## Ý tưởng
+Dùng KMP automaton kết hợp DP, đếm theo phần bù.
+- Đếm trực tiếp số xâu CHỨA pattern rất khó vì pattern có thể xuất hiện nhiều
+  lần và bị trùng lặp. Vì vậy ta đếm số xâu KHÔNG chứa pattern, rồi lấy tổng
+  tất cả 26^n trừ đi.
+- Xây KMP trên pattern: tính prefix function (failure function) pi, rồi dùng
+  nó dựng một automaton (DFA). Trạng thái j (0 <= j <= m) là độ dài tiền tố
+  dài nhất của pattern đồng thời là hậu tố của chuỗi đã đọc. aut[j][c] là
+  trạng thái kế tiếp khi đang ở j và đọc ký tự c. Nếu aut[j][c] == m thì
+  pattern vừa xuất hiện, xâu này bị loại.
 - DP: dp[j] = số xâu (với độ dài đang xét) chưa BAO GIỜ chạm trạng thái m và
-  hiện đang ở trạng thái j (0 <= j < m). Khởi tạo dp[0] = 1 (xâu rỗng).
-  Mỗi bước thêm 1 ký tự: với mỗi trạng thái j, thử cả 26 ký tự, chuyển sang
-  aut[j][c]; chỉ giữ lại các chuyển tiếp có trạng thái < m (bỏ những cái đạt m
-  vì khi đó xâu đã chứa pattern). Sau n bước, tổng dp[0..m-1] là số xâu KHÔNG
-  chứa pattern.
+  hiện đang ở trạng thái j (0 <= j < m). Khởi tạo dp[0] = 1 (xâu rỗng). Mỗi
+  bước thêm 1 ký tự: với mỗi trạng thái j, thử cả 26 ký tự, chuyển sang
+  aut[j][c]; chỉ giữ lại các chuyển tiếp có trạng thái < m (bỏ những cái đạt
+  m vì khi đó xâu đã chứa pattern). Sau n bước, tổng dp[0..m-1] là số xâu
+  KHÔNG chứa pattern.
 - Kết quả = (26^n - so_xau_khong_chua) mod 1e9+7.
 
 Tối ưu: với mỗi trạng thái j, ta nén (gom) các ký tự dẫn tới cùng một trạng
@@ -28,9 +31,9 @@ thái kế tiếp thành cặp (next_state, so_luong), giúp vòng lặp DP nhan
 Tính đúng đắn:
 - KMP automaton là một DFA nhận diện "đã từng xuất hiện pattern". Đường đi độ
   dài n không bao giờ đến trạng thái m tương ứng 1-1 với xâu độ dài n không
-  chứa pattern. Do đó phép đếm là chính xác.
-- Trường hợp m > n: không thể chứa pattern, DP sẽ cho tổng = 26^n, kết quả = 0.
+  chứa pattern, nên phép đếm là chính xác.
+- Trường hợp m > n: không thể chứa pattern, DP cho tổng = 26^n, kết quả = 0.
 
-Độ phức tạp:
-- Thời gian: O(n * m * 26) = 1000 * 100 * 26 ~ 2.6 triệu phép -> rất nhanh.
+## Độ phức tạp
+- Thời gian: O(n * m * 26) = 1000 * 100 * 26 ~ 2.6 triệu phép, rất nhanh.
 - Bộ nhớ: O(m * 26) cho automaton, O(m) cho DP.

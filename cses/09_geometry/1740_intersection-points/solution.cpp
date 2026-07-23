@@ -3,6 +3,8 @@
 #include <tuple>
 #include <vector>
 
+// Sự kiện của sweep line: tại hoành độ x, loại type (add=0 < query=1 < remove=2).
+// Với add/remove: left = rank của y trong BIT. Với query: [left, right) là khoảng rank.
 struct Event {
     int x;
     int type;
@@ -10,6 +12,7 @@ struct Event {
     int right;
 };
 
+// BIT (Fenwick tree) trên trục y: point update, prefix sum để đếm range động.
 class FenwickTree {
 public:
     explicit FenwickTree(int size)
@@ -54,11 +57,12 @@ int main() {
 
     std::vector<Horizontal> horizontals;
     std::vector<Vertical> verticals;
-    std::vector<int> horizontal_ys;
+    std::vector<int> horizontal_ys;  // các y của đoạn ngang, dùng để nén tọa độ
     horizontals.reserve(static_cast<std::size_t>(n));
     verticals.reserve(static_cast<std::size_t>(n));
     horizontal_ys.reserve(static_cast<std::size_t>(n));
 
+    // Phân loại từng đoạn thành ngang (y1 == y2) hoặc dọc (x1 == x2).
     for (int i = 0; i < n; ++i) {
         int x1, y1, x2, y2;
         std::cin >> x1 >> y1 >> x2 >> y2;
@@ -70,6 +74,7 @@ int main() {
         }
     }
 
+    // Nén tọa độ y của các đoạn ngang thành rank 1..m.
     std::sort(horizontal_ys.begin(), horizontal_ys.end());
     horizontal_ys.erase(
         std::unique(horizontal_ys.begin(), horizontal_ys.end()),
@@ -78,6 +83,7 @@ int main() {
     std::vector<Event> events;
     events.reserve(2 * horizontals.size() + verticals.size());
 
+    // Mỗi đoạn ngang -> sự kiện add tại xl và remove tại xr (rank 1-based).
     for (const Horizontal& segment : horizontals) {
         const int rank = static_cast<int>(std::lower_bound(
             horizontal_ys.begin(), horizontal_ys.end(), segment.y) -
@@ -86,6 +92,7 @@ int main() {
         events.push_back({segment.right_x, 2, rank, 0});
     }
 
+    // Mỗi đoạn dọc -> sự kiện query lấy khoảng rank [left, right) ứng với [low_y, high_y].
     for (const Vertical& segment : verticals) {
         const int left = static_cast<int>(std::lower_bound(
             horizontal_ys.begin(), horizontal_ys.end(), segment.low_y) -
@@ -98,10 +105,12 @@ int main() {
         }
     }
 
+    // Sắp xếp theo x tăng dần, trùng x thì theo type add < query < remove.
     std::sort(events.begin(), events.end(), [](const Event& a, const Event& b) {
         return std::tie(a.x, a.type) < std::tie(b.x, b.type);
     });
 
+    // Quét: add/remove cập nhật BIT, query cộng số đoạn ngang đang hoạt động trong khoảng.
     FenwickTree active(static_cast<int>(horizontal_ys.size()));
     long long answer = 0;
     for (const Event& event : events) {

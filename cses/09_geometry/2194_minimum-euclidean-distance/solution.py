@@ -1,25 +1,3 @@
-# Minimum Euclidean Distance - CSES 2194
-# https://cses.fi/problemset/task/2194
-#
-# Bài toán closest pair: in ra d^2 (bình phương khoảng cách Euclid nhỏ nhất)
-# giữa hai điểm phân biệt bất kỳ.
-#
-# Thuật toán: randomized incremental với spatial hash grid (kỳ vọng O(n)).
-# - Xáo trộn ngẫu nhiên thứ tự các điểm để phá vỡ các trường hợp xấu.
-# - Duy trì "best" = bình phương khoảng cách nhỏ nhất hiện tại.
-# - Kích thước ô lưới s = isqrt(best) là SỐ NGUYÊN, mỗi điểm được băm vào ô
-#   (x // s, y // s). Grid là dict lồng nhau: cột cx -> (cy -> danh sách điểm)
-#   để tra cứu bằng khóa số nguyên (nhanh hơn khóa tuple) và bỏ qua nhanh các
-#   cột rỗng.
-# - Khi thêm điểm mới p, chỉ cần duyệt 3x3 ô quanh ô của p. Nếu tìm được
-#   khoảng cách nhỏ hơn -> cập nhật best, tính lại s, rebuild grid.
-# - Mỗi phép so sánh dùng SỐ HỌC NGUYÊN CHÍNH XÁC (dx*dx + dy*dy) nên kết quả
-#   tuyệt đối chính xác; grid chỉ là chỉ mục không gian để tỉa bớt.
-#
-# Tính đúng: vì s <= sqrt(best) và s là số nguyên, bất kỳ điểm q có
-# dist(p,q) < best đều có |dx| < sqrt(best) < s+1 => |dx| <= s => chỉ số ô sai
-# khác nhau nhiều nhất 1 => q nằm trong 3x3 ô => không bao giờ bỏ sót.
-
 import sys
 from math import isqrt
 import random
@@ -39,15 +17,19 @@ def main():
         sys.stdout.write("0\n")
         return
 
+    # Bước 1: xáo trộn ngẫu nhiên để phá mọi trường hợp xấu (kỳ vọng O(n)).
     random.shuffle(pts)
 
+    # Bước 2: best = bình phương khoảng cách của hai điểm đầu tiên.
     ax, ay = pts[0]
     bx, by = pts[1]
     best = (ax - bx) ** 2 + (ay - by) ** 2
-    s = isqrt(best) or 1  # s >= 1 (các điểm phân biệt nên best >= 1)
+    # Bước 3: kích thước ô lưới s = isqrt(best) (số nguyên, s >= 1 vì best >= 1).
+    s = isqrt(best) or 1
 
     def build(upto):
         # Dựng lại grid từ các điểm pts[0..upto] với kích thước ô s hiện tại.
+        # Grid là dict lồng nhau: cột cx -> (cy -> danh sách điểm).
         g = {}
         for t in range(upto + 1):
             px, py = pts[t]
@@ -62,11 +44,13 @@ def main():
     grid = build(1)
     gget = grid.get
 
+    # Bước 4: chèn từng điểm còn lại theo kiểu incremental.
     for i in range(2, n):
         x, y = pts[i]
         cx = x // s
         cy = y // s
         improved = False
+        # Chỉ cần duyệt 3x3 ô quanh ô của điểm (xem chứng minh trong idea.txt).
         for gx in (cx - 1, cx, cx + 1):
             col = gget(gx)
             if col:
@@ -74,6 +58,7 @@ def main():
                 for gy in (cy - 1, cy, cy + 1):
                     bucket = cg(gy)
                     if bucket:
+                        # So sánh bằng số học nguyên chính xác dx*dx + dy*dy.
                         for qx, qy in bucket:
                             ddx = x - qx
                             ddy = y - qy
@@ -82,10 +67,12 @@ def main():
                                 best = d2
                                 improved = True
         if improved:
+            # best giảm: tính lại kích thước ô và rebuild toàn bộ grid.
             s = isqrt(best) or 1
             grid = build(i)
             gget = grid.get
         else:
+            # Không cải thiện: chỉ chèn điểm vào ô của nó.
             col = gget(cx)
             if col is None:
                 grid[cx] = {cy: [(x, y)]}

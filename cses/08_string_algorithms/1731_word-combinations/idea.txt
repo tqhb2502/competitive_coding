@@ -1,11 +1,15 @@
-Word Combinations — CSES 1731
+Word Combinations - CSES 1731
+https://cses.fi/problemset/task/1731
 
-Bài toán: Cho chuỗi s độ dài n và một từ điển gồm k từ. Đếm số cách ghép s bằng
-cách nối liên tiếp các từ trong từ điển, lấy kết quả modulo 10^9+7.
+## Đề bài
+Cho chuỗi s độ dài n và một từ điển gồm k từ. Đếm số cách ghép được chuỗi s bằng
+cách nối liên tiếp các từ trong từ điển (mỗi từ có thể dùng nhiều lần), lấy kết
+quả theo modulo 10^9+7.
 
-Thuật toán: Trie + Quy hoạch động (DP).
-- Xây dựng một Trie chứa toàn bộ các từ trong từ điển (bỏ qua các từ dài hơn n
-  vì chúng không bao giờ khớp được).
+## Ý tưởng
+Dùng Trie kết hợp Quy hoạch động (DP).
+- Xây một Trie chứa toàn bộ các từ trong từ điển (bỏ qua các từ dài hơn n vì chúng
+  không bao giờ khớp được với đoạn con nào của s).
 - Gọi dp[i] là số cách tạo thành tiền tố s[0..i-1] (độ dài i). Khởi tạo dp[0] = 1.
 - Với mỗi vị trí bắt đầu i mà dp[i] > 0, ta đi trên Trie lần lượt theo các ký tự
   s[i], s[i+1], ... Mỗi khi tới một nút được đánh dấu là kết thúc một từ (tức
@@ -19,12 +23,12 @@ trong một lượt quét, không cần cắt và so sánh lại các chuỗi co
 tách của s tương ứng duy nhất với vị trí cắt cuối cùng, phép cộng dồn dp không đếm
 trùng và không bỏ sót.
 
-Chi tiết cài đặt: lưu Trie bằng một dict chung với khóa (node << 7) | char để tiết
-kiệm bộ nhớ (thay vì tạo hàng triệu dict con). Mảng is_word đánh dấu nút kết thúc
-từ. Trong DP, các giá trị di = dp[i] % MOD đều nhỏ hơn MOD nên có thể cộng dồn vào
-dp[j] mà chỉ cần lấy modulo khi đọc (giảm số phép modulo).
+Chi tiết cài đặt (Python): lưu Trie bằng một dict chung với khóa (node << 7) | char
+để tiết kiệm bộ nhớ (thay vì tạo hàng triệu dict con). Mảng is_word đánh dấu nút kết
+thúc từ. Trong DP, các giá trị di = dp[i] % MOD đều nhỏ hơn MOD nên có thể cộng dồn
+vào dp[j] mà chỉ cần lấy modulo khi đọc (giảm số phép modulo).
 
-Độ phức tạp:
+## Độ phức tạp
 - Xây Trie: O(tổng độ dài các từ) ≤ O(10^6) thời gian và bộ nhớ.
 - DP: mỗi vị trí bắt đầu i đi trên Trie tối đa n bước, nên O(n^2) = 25*10^6 bước
   khi n = 5000.

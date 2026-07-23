@@ -15,10 +15,12 @@ int main() {
 
     const int length = static_cast<int>(text.size());
     if (length == 1) {
+        // Xâu một ký tự không thể có substring lặp lại
         std::cout << -1 << '\n';
         return 0;
     }
 
+    // suffix_array: hoán vị các vị trí hậu tố; rank: xếp hạng ban đầu theo ký tự đầu
     std::vector<int> suffix_array(length);
     std::iota(suffix_array.begin(), suffix_array.end(), 0);
     std::vector<int> rank(length);
@@ -26,8 +28,10 @@ int main() {
         rank[index] = text[index] - 'a';
     }
 
+    // Xây dựng suffix array bằng prefix doubling: mỗi bước gấp đôi độ dài tiền tố so sánh
     std::vector<int> next_rank(length);
     for (int step = 1;; step *= 2) {
+        // So sánh hai hậu tố theo cặp (rank[i], rank[i+step]) tương ứng 2*step ký tự đầu
         const auto less_suffix = [&](const int left, const int right) {
             if (rank[left] != rank[right]) {
                 return rank[left] < rank[right];
@@ -38,6 +42,7 @@ int main() {
         };
         std::sort(suffix_array.begin(), suffix_array.end(), less_suffix);
 
+        // Gán lại rank mới: tăng 1 mỗi khi cặp khóa đổi so với hậu tố liền trước trong SA
         next_rank[suffix_array[0]] = 0;
         for (int index = 1; index < length; ++index) {
             const int previous = suffix_array[index - 1];
@@ -49,11 +54,14 @@ int main() {
         }
         rank.swap(next_rank);
 
+        // Mọi rank đã phân biệt -> suffix array hoàn chỉnh
         if (rank[suffix_array.back()] == length - 1) {
             break;
         }
     }
 
+    // LCP theo thuật toán Kasai: duyệt theo vị trí, biến common giảm tối đa 1 mỗi bước.
+    // Với mỗi hậu tố tính LCP với hậu tố kề trước trong SA và giữ giá trị lớn nhất.
     int best_length = 0;
     int best_position = 0;
     int common = 0;
@@ -77,6 +85,7 @@ int main() {
         }
     }
 
+    // max LCP = 0 nghĩa là không có substring nào lặp lại
     if (best_length == 0) {
         std::cout << -1 << '\n';
     } else {

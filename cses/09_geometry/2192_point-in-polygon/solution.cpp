@@ -7,11 +7,14 @@ struct Point {
     long long y;
 };
 
+// Tích có hướng (cross product) của vector a->b với vector a->p.
+// Bằng 0 nghĩa là ba điểm thẳng hàng.
 long long cross(const Point& a, const Point& b, const Point& p) {
     return (b.x - a.x) * (p.y - a.y) -
            (b.y - a.y) * (p.x - a.x);
 }
 
+// P nằm trên đoạn a-b khi thẳng hàng (cross == 0) và nằm trong bounding box.
 bool lies_on_segment(const Point& a, const Point& b, const Point& p) {
     return cross(a, b, p) == 0 &&
            std::min(a.x, b.x) <= p.x && p.x <= std::max(a.x, b.x) &&
@@ -37,14 +40,19 @@ int main() {
         bool boundary = false;
         Point a = polygon.back();
 
+        // Duyệt từng cạnh a->b của đa giác.
         for (const Point& b : polygon) {
+            // Ưu tiên kiểm tra BOUNDARY: điểm nằm trên cạnh thì dừng ngay.
             if (lies_on_segment(a, b, p)) {
                 boundary = true;
                 break;
             }
 
-            // A half-open y interval counts a shared vertex exactly once.
+            // Ray casting theo hướng +x. Half-open trick: khoảng nửa mở theo y
+            // giúp mỗi đỉnh chung chỉ được đếm đúng một lần.
             if ((a.y > p.y) != (b.y > p.y)) {
+                // Nhân chéo thay cho phép chia để giữ số học nguyên chính xác;
+                // xét dấu dy để so px với hoành độ giao điểm.
                 const long long dy = b.y - a.y;
                 const long long left = (p.x - a.x) * dy;
                 const long long right = (b.x - a.x) * (p.y - a.y);
@@ -56,6 +64,7 @@ int main() {
             a = b;
         }
 
+        // Số lần cắt lẻ -> INSIDE, chẵn -> OUTSIDE.
         if (boundary) {
             std::cout << "BOUNDARY\n";
         } else if (inside) {

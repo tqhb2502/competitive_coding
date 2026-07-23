@@ -1,2 +1,0 @@
-All Manhattan Distances
-https://cses.fi/problemset/task/3411

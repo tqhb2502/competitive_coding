@@ -1,2 +1,0 @@
-Lines and Queries I
-https://cses.fi/problemset/task/3429

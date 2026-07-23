@@ -1,44 +1,38 @@
-Bài toán: Minimal Rotation (CSES 1110)
+Minimal Rotation - CSES 1110
+https://cses.fi/problemset/task/1110
 
-Đề bài
-------
+## Đề bài
 Cho một xâu s độ dài n (chỉ gồm chữ thường a-z). Một "rotation" (phép quay)
-được tạo bằng cách chuyển lần lượt các ký tự từ đầu xâu ra cuối xâu. Cần tìm
+được tạo bằng cách lần lượt chuyển các ký tự từ đầu xâu ra cuối xâu. Hãy tìm
 rotation có thứ tự từ điển (lexicographically) nhỏ nhất.
 
-Ý tưởng chính: Booth's algorithm
---------------------------------
-Ta cần tìm vị trí bắt đầu k (0 <= k < n) sao cho xâu quay
+## Ý tưởng
+Cần tìm vị trí bắt đầu k (0 <= k < n) sao cho xâu quay
   s[k], s[k+1], ..., s[k+n-1]  (chỉ số lấy modulo n)
 là nhỏ nhất theo thứ tự từ điển.
 
-Booth's algorithm tìm chỉ số k này trong thời gian O(n) một cách
-DETERMINISTIC (không dùng hashing nên không sợ anti-hash tests của CSES).
+Dùng Booth's algorithm: tìm chỉ số k này trong thời gian O(n) một cách
+DETERMINISTIC (không dùng hashing nên không sợ anti-hash tests của CSES). Về
+bản chất đây là một biến thể của thuật toán so khớp KMP/failure-function chạy
+trên xâu nhân đôi để so sánh đồng thời mọi rotation; mỗi lần gặp một ký tự nhỏ
+hơn tại một vị trí lệch, nó dời điểm bắt đầu k tới rotation nhỏ hơn đó. Đây là
+thuật toán kinh điển đã được chứng minh đúng (Booth, 1980).
 
-Cách làm:
-1. Nhân đôi xâu: S = s + s. Nhờ vậy mọi rotation của s đều là một xâu con
-   độ dài n bắt đầu tại vị trí 0..n-1 của S, tránh phải tính chỉ số modulo.
-2. Duy trì một mảng failure function f (tương tự KMP) trên S và biến k là
-   vị trí bắt đầu của rotation nhỏ nhất tìm được cho tới hiện tại.
-3. Duyệt j từ 1 tới 2n-1. Với mỗi j so sánh ký tự S[j] với ký tự tương ứng
+Các bước:
+1. Nhân đôi xâu: S = s + s. Nhờ vậy mọi rotation của s đều là một xâu con độ
+   dài n bắt đầu tại vị trí 0..n-1 của S, tránh phải tính chỉ số modulo.
+2. Duy trì một mảng failure function f (tương tự KMP) trên S và biến k là vị
+   trí bắt đầu của rotation nhỏ nhất tìm được cho tới hiện tại.
+3. Duyệt j từ 1 tới 2n-1. Với mỗi j, so sánh ký tự S[j] với ký tự tương ứng
    trong "ứng viên" hiện tại bắt đầu từ k, dùng f để nhảy lùi khi không khớp.
-   Khi phát hiện S[j] nhỏ hơn ký tự đang so sánh, ta cập nhật k sang vị trí
-   bắt đầu mới tốt hơn.
+   Khi phát hiện S[j] nhỏ hơn ký tự đang so sánh, cập nhật k sang vị trí bắt
+   đầu mới tốt hơn.
 
-Kết quả: rotation nhỏ nhất là S[k : k+n].
+Nhờ tính chất failure function, tổng số bước so sánh được khấu hao (amortized)
+về O(n); duyệt hết ta thu được đúng chỉ số của rotation nhỏ nhất, và kết quả là
+đoạn S[k : k+n].
 
-Vì sao đúng
------------
-Booth's algorithm về bản chất chạy một biến thể của thuật toán so khớp
-KMP/failure-function trên xâu nhân đôi để so sánh đồng thời tất cả các
-rotation. Mỗi lần bắt gặp một ký tự nhỏ hơn tại một vị trí lệch, nó dời điểm
-bắt đầu k tới rotation nhỏ hơn đó. Nhờ tính chất failure function, tổng số
-bước so sánh được khấu hao (amortized) về O(n), và khi duyệt hết ta thu được
-đúng chỉ số của rotation nhỏ nhất về thứ tự từ điển. Đây là thuật toán kinh
-điển đã được chứng minh đúng (Booth, 1980).
-
-Độ phức tạp
------------
+## Độ phức tạp
 - Thời gian: O(n) (duyệt xâu nhân đôi độ dài 2n, failure function khấu hao O(1)
   mỗi bước).
 - Bộ nhớ: O(n) cho xâu nhân đôi và mảng f.
