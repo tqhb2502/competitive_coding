@@ -1,6 +1,8 @@
 Factory Machines - CSES 1620
 https://cses.fi/problemset/task/1620
 
+Tags: binary-search, monotone-predicate, search-on-answer
+
 ## Đề bài
 - Có n máy; máy thứ i cần k_i giây để làm ra 1 sản phẩm.
 - Tất cả các máy chạy song song. Hãy tìm thời gian nhỏ nhất để làm ra tổng cộng
@@ -22,39 +24,19 @@ Chặt nhị phân trên đáp án (binary search on the answer).
 2. Chặt nhị phân tìm T nhỏ nhất với f(T) >= t: nếu f(mid) >= t thì hi = mid,
    ngược lại lo = mid + 1; kết thúc khi lo == hi.
 
-3. (Bản Python) Thu hẹp cận để giảm số vòng lặp:
-   - Đặt S = tổng(1/k_i). Với số thực chính xác tuyệt đối: T*S - n < f(T) <= T*S,
-     suy ra đáp án nằm trong [t/S, (t+n)/S], cửa sổ rộng ~n/S nên chỉ cần khoảng
-     30 vòng (thay vì ~60 vòng nếu dùng cận thô lo=1, hi=min(k)*t).
-   - CẢNH BÁO sai số dấu phẩy động: S tính bằng double có sai số tương đối nhỏ,
-     nhưng khi nhân với độ lớn đáp án (có thể tới ~10^18) sai số tuyệt đối có thể
-     lên hàng nghìn đơn vị, khiến cận dưới t/S vượt quá đáp án thật (đã kiểm chứng:
-     n=2*10^5, k_i=10^9, t=10^9 -> đáp án đúng 5*10^12 nhưng lo bị tính lệch lên).
-   - Khắc phục (không phụ thuộc sai số): dùng cận thực chỉ như gợi ý nhanh, nới
-     rộng tương đối 1e-6:
-        lo = int(t/S * (1 - 1e-6)) - 5        (kẹp về >= 1)
-        hi = int((t+n)/S * (1 + 1e-6)) + 5     (kẹp về <= cap = min(k)*t)
-     rồi KIỂM TRA lại bằng số nguyên chính xác để bảo đảm đáp án A nằm trong [lo, hi]:
-        * nếu f(hi) < t thì nới hi = cap (cap luôn hợp lệ vì riêng máy nhanh nhất
-          làm xong t sản phẩm trong min(k)*t giây).
-        * nếu f(lo-1) >= t thì lo đã vượt đáp án, đặt lại lo = 1.
-        * dự phòng: nếu lo > hi thì đặt lo = 1.
+3. Chọn cận nguyên an toàn:
+   - `low = 0`.
+   - `high = min(k_i) * t`, vì riêng máy nhanh nhất cũng hoàn thành t sản phẩm
+     trong thời gian này.
+   Hai cận đều nằm trong `long long`.
 
-4. (Bản Python) Tăng tốc chỉ với thư viện chuẩn (không dùng thư viện ngoài):
-   - Tính f(mid) bằng sum(map(mid.__floordiv__, k)) để chạy toàn bộ vòng chia lấy
-     nguyên ở tầng C, nhanh hơn hẳn vòng for thuần Python và generator.
-   - Đọc dữ liệu bằng sys.stdin.buffer.read().split() và ghi bằng sys.stdout.write.
-
-Bản C++ dùng đúng chặt nhị phân này nhưng với cận thô lo = 0, hi = min(k)*t (không
-cần mẹo cận thực vì đã đủ nhanh) và dừng sớm khi tổng sản phẩm đã đạt t.
+4. Khi tính f(mid), cộng lần lượt `mid / k_i` nhưng dừng ngay khi tổng đã đạt t.
+   Việc dừng sớm vừa giảm hằng số vừa tránh cộng dồn vượt quá mức cần thiết.
 
 ## Độ phức tạp
-- Thời gian: O(n * log(khoảng tìm)) ~ khoảng 30 * n phép chia lấy nguyên, n <= 2*10^5.
+- Thời gian của code C++: O(n * log(min(k_i) * t)); cận trên không quá 10^18
+  nên có tối đa khoảng 60 vòng chặt nhị phân, và mỗi vòng dừng sớm ngay khi đã
+  đếm đủ t sản phẩm.
 - Bộ nhớ: O(n) để lưu danh sách k.
 
-LƯU Ý TLE: Với n = 2*10^5 và khoảng 30 vòng chặt nhị phân, riêng phần tính tổng
-sum(map(mid.__floordiv__, k)) đo khoảng 0.8 giây (tốt nhất) và có thể lên 1.1 - 1.3
-giây khi máy tải nặng, cộng thêm đọc dữ liệu và tính S. Đây là mức sát giới hạn 1.00
-giây của CSES cho CPython3, nên vẫn có RỦI RO TLE trong trường hợp xấu nhất. Nếu bị
-TLE, hãy nộp bằng PyPy3 hoặc viết lại bằng C++ (chặt nhị phân giống hệt chạy dưới 0.1
-giây). Tuyệt đối KHÔNG dùng thư viện ngoài để lách TLE vì môi trường chấm không cho phép.
+Code C++ chỉ dùng số nguyên và fast I/O; không có sai số dấu phẩy động.

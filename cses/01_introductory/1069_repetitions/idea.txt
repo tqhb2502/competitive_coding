@@ -18,15 +18,12 @@ Tính đúng đắn:
 - Vì ta lấy max qua tất cả các vị trí nên best chính là độ dài đoạn lặp dài nhất.
 
 Ghi chú cài đặt:
-- Đọc dữ liệu bằng sys.stdin.buffer để nhanh với n đến 10^6.
-- Chuỗi có thể có ký tự xuống dòng ở cuối, cần strip / split.
+- Code C++ đọc chuỗi bằng `std::cin`, rồi duyệt trực tiếp bằng chỉ số; fast I/O
+  được bật cho trường hợp n đạt 10^6.
 
 ## Độ phức tạp
 - Thời gian: O(n) - duyệt chuỗi một lần.
 - Bộ nhớ: O(n) để lưu chuỗi đầu vào (hoặc O(1) ngoài chuỗi).
 
-LƯU Ý TLE: Với n = 10^6, vòng lặp trên từng ký tự trong Python có thể chậm
-nhưng vẫn an toàn trong giới hạn thời gian CSES vì chỉ O(n). Để tối ưu hơn, có
-thể dùng kỹ thuật itertools.groupby để đếm các đoạn liên tiếp bằng code C bên
-trong, tránh vòng lặp Python thuần túy. Nếu port sang C++ thì vòng lặp for đơn
-giản chạy rất nhanh, không lo TLE.
+Với n = 10^6, vòng lặp tuyến tính trên `std::string` nằm trong giới hạn thời
+gian; không cần cấu trúc dữ liệu phụ.

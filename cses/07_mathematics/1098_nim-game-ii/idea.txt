@@ -33,7 +33,4 @@ Kiểm tra nhanh với ví dụ:
 ## Độ phức tạp
 - Thời gian: O(tổng n) để đọc và XOR toàn bộ các số, rất nhanh với giới
   hạn tổng n <= 2*10^5.
-- Bộ nhớ: O(1) ngoài phần lưu input.
-
-Ghi chú cài đặt: đọc toàn bộ input một lần và xuất kết quả một lần để đủ
-nhanh khi t và n lớn.
+- Bộ nhớ phụ: O(1), vì các kích thước đống được xử lý ngay khi đọc.

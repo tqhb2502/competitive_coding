@@ -40,7 +40,5 @@ nghĩa. Do đó hai lượt quét cho kết quả chính xác cho mọi đoạn.
 - Thời gian: O(n log n) do hai lần sắp xếp; hai lượt quét là O(n).
 - Bộ nhớ: O(n) để lưu các đoạn và mảng kết quả.
 
-LƯU Ý TLE: với n <= 2*10^5 lời giải Python này (dùng sys.stdin.buffer đọc nhanh,
-sort trên tuple thay vì lambda, join khi in) thường đủ nhanh trên CSES, nhưng do
-time limit hướng tới C++ nên vẫn có rủi ro TLE nhẹ. Bản C++ tương đương tránh
-được nhờ I/O nhanh và std::sort trên struct, chạy nhanh hơn nhiều lần so với Python.
+Code C++ dùng `std::sort` trên struct `Range`, hai lượt quét tuyến tính và fast
+I/O; O(n log n) phù hợp với n <= 2*10^5.

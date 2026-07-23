@@ -1,6 +1,8 @@
 Polynomial Queries - CSES 1736
 https://cses.fi/problemset/task/1736
 
+Tags: difference-array, prefix-sum, range-query, range-update
+
 ## Đề bài
 Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
 - Loại 1 (a b): cộng thêm một cấp số cộng lên đoạn [a, b], tức là cộng giá trị 1 vào
@@ -36,13 +38,9 @@ Các phép toán:
 
 Về tính đúng đắn: công thức PS(x) suy trực tiếp từ d[i] = tổng_{j<=i} f[j]*(i-j+1) bằng
 cách đổi thứ tự tổng và khai triển (x-j+1)(x-j+2)/2 theo các lũy thừa của j. Vì mọi d[i]
-đều nguyên nên biểu thức trong ngoặc luôn chẵn, phép chia //2 là chính xác (kể cả khi
+đều nguyên nên biểu thức trong ngoặc luôn chẵn, phép chia 2 là chính xác (kể cả khi
 âm).
 
 ## Độ phức tạp
-Thời gian: O((n + q) log n). Bộ nhớ: O(n) cho ba BIT và mảng prefix.
-
-LƯU Ý TLE: đây là bài range-update cộng range-sum với n, q lên tới 2*10^5 và hằng số của
-Python lớn; dù thuật toán O((n+q) log n) là tối ưu và đã inline các vòng lặp BIT, bản
-CPython thuần vẫn có nguy cơ TLE trên test nặng nhất (giới hạn CSES đặt cho C++). Chạy
-bằng PyPy sẽ an toàn hơn nhiều.
+Thời gian: O((n + q) log n). Bộ nhớ: O(n) cho ba BIT và mảng prefix. Các moment
+đa thức và phép nhân trung gian dùng `__int128` để tránh tràn số.

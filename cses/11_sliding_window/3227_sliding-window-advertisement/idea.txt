@@ -1,6 +1,8 @@
 Sliding Window Advertisement - CSES 3227
 https://cses.fi/problemset/task/3227
 
+Tags: monotonic-stack, nearest-element
+
 ## Đề bài
 Cho n tấm ván có chiều cao x_i. Với mỗi cửa sổ gồm k tấm ván liên tiếp, hãy tìm
 diện tích lớn nhất của một hình chữ nhật quảng cáo lọt trọn vào các tấm ván trong

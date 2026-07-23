@@ -37,9 +37,4 @@ Tính đúng:
 ## Độ phức tạp
 - Thời gian: O(n) amortized (tổng số bước đi theo suffix link trên toàn bộ quá trình là
   O(n)).
-- Bộ nhớ: O(n) nút, mỗi nút vài trường + transition.
-
-LƯU Ý TLE: Eertree thuần Python cho n = 2*10^5 với giới hạn 1.00s của CSES có thể chậm
-(dùng dict cho transition, mỗi vòng lặp có overhead). Thuật toán O(n) là tối ưu về mặt
-lý thuyết; nếu TLE trên CPython có thể cần PyPy hoặc tối ưu hóa hằng số, nhưng KHÔNG dùng
-numpy/thư viện ngoài theo ràng buộc của judge.
+- Bộ nhớ: O(26n) = O(n), vì mỗi nút chứa một `array<int,26>` transition.

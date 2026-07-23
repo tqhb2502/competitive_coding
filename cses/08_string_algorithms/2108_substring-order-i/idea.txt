@@ -40,8 +40,4 @@ nhánh mà không cần liệt kê từng xâu, nên tìm được xâu thứ k 
   gần tuyến tính O(n * alphabet) với alphabet = 26.
 - Tính paths: O(số trạng thái + số transition).
 - Truy vết: O(độ dài đáp án * alphabet), độ dài đáp án tối đa n.
-- Bộ nhớ: O(n) cho các mảng và các dict transition.
-
-LƯU Ý TLE: với n = 1e5, xây suffix automaton bằng Python thuần (dùng dict cho
-transition) có thể chạm giới hạn thời gian trên CSES (limit hướng tới C++).
-Thuật toán là chính xác và tuyến tính; rủi ro chỉ nằm ở hằng số của Python.
+- Bộ nhớ: O(26n) = O(n) cho các mảng và bảng transition cố định.

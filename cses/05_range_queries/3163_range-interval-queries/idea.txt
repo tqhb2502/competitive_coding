@@ -1,6 +1,8 @@
 Range Interval Queries - CSES 3163
 https://cses.fi/problemset/task/3163
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Cho một mảng x gồm n số nguyên và q truy vấn. Mỗi truy vấn cho bốn số a, b, c, d;
 hãy đếm số chỉ số i thỏa đồng thời a ≤ i ≤ b và c ≤ x_i ≤ d. Nói cách khác, đây là
@@ -17,9 +19,9 @@ hai chiều [a, b] × [c, d]:
     answer = f(b, d) - f(b, c-1) - f(a-1, d) + f(a-1, c-1)
 
 Nén tọa độ: nén các giá trị x_i về rank 1..m (m là số giá trị phân biệt), dùng
-sorted_vals = sorted(set(x)). Rank của x_i là bisect_left(sorted_vals, x_i) + 1.
-Với một ngưỡng giá trị t bất kỳ, số giá trị ≤ t chính là bisect_right(sorted_vals, t),
-và đây cũng là chỉ số prefix cần hỏi trên BIT.
+mảng giá trị đã sắp xếp và loại trùng. Rank của x_i được tìm bằng
+`std::lower_bound` rồi cộng 1. Với một ngưỡng t bất kỳ, số giá trị ≤ t được tìm
+bằng `std::upper_bound`, và đây cũng là chỉ số prefix cần hỏi trên BIT.
 
 Quét theo chỉ số (sweep line): duyệt i từ 1 đến n. Tại bước i, thêm phần tử x_i vào
 BIT tại rank của nó (point update +1). Mỗi số hạng f(i, v) trở thành một sự kiện
@@ -35,7 +37,3 @@ có phần tử nào; ngưỡng nhỏ hơn mọi giá trị cho rank = 0) đều
 
 ## Độ phức tạp
 Thời gian O((n + q) log n), bộ nhớ O(n + q).
-
-LƯU Ý TLE: với n, q ≈ 2·10^5, tổng số sự kiện lên tới ~8·10^5, mỗi thao tác BIT tốn
-O(log n). Trên CPython thuần hằng số lớn nên có nguy cơ TLE; thuật toán vẫn đúng và
-là cách offline tối ưu về mặt độ phức tạp cho bài này.

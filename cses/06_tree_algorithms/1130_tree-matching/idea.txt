@@ -33,7 +33,7 @@ hoặc u đã bị dùng bởi một con. Công thức chuyển trạng thái du
 chọn con để ghép và lấy tối ưu, nên cho ra maximum matching chính xác trên cây.
 
 Cài đặt tránh đệ quy: cây có tới 2*10^5 đỉnh nên KHÔNG dùng DFS đệ quy (tránh tràn
-stack / RecursionError). Dùng BFS/DFS lặp bằng stack để lấy thứ tự duyệt và mảng
+call stack). Dùng BFS/DFS lặp bằng stack để lấy thứ tự duyệt và mảng
 parent, sau đó xử lý DP theo thứ tự ĐẢO NGƯỢC của thứ tự duyệt (bảo đảm mọi con
 được tính trước cha, tức post-order).
 

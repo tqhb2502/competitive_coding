@@ -1,6 +1,8 @@
 Cyclic Array - CSES 1191
 https://cses.fi/problemset/task/1191
 
+Tags: sliding-window, two-pointers
+
 ## Đề bài
 Cho một mảng vòng gồm n số nguyên dương. Hãy chia mảng thành ít đoạn liên tiếp
 nhất sao cho tổng mỗi đoạn không vượt quá k. Bảo đảm mọi phần tử đều dương và

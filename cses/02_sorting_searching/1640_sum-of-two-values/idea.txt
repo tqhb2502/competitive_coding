@@ -9,7 +9,7 @@ tại cặp nào thì in ra "IMPOSSIBLE".
 ## Ý tưởng
 Dùng hash map và duyệt mảng đúng một lượt từ trái sang phải:
 - Với mỗi phần tử a[i], phần bổ sung cần tìm là need = x - a[i].
-- Ta duy trì một dictionary (hash map) ánh xạ: giá trị đã gặp -> vị trí (1-based)
+- Ta duy trì một `unordered_map` ánh xạ: giá trị đã gặp -> vị trí (1-based)
   của một phần tử mang giá trị đó, trong số các phần tử đứng TRƯỚC i.
 - Khi xét a[i], nếu need đã có trong map thì ta tìm được cặp: in ra map[need]
   (vị trí phần tử trước) và i+1 (vị trí hiện tại), rồi kết thúc.
@@ -30,4 +30,4 @@ hai chỉ số gốc. Độ phức tạp O(n log n) do sorting, chậm hơn các
 
 ## Độ phức tạp
 - Thời gian: O(n) trung bình cho các thao tác trên hash map (n ≤ 2·10^5).
-- Bộ nhớ: O(n) cho dictionary.
+- Bộ nhớ: O(n) cho `unordered_map`.

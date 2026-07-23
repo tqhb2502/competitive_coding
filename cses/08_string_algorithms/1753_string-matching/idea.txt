@@ -30,10 +30,4 @@ Vì sao đúng:
 
 ## Độ phức tạp
 - Thời gian: O(n + m) — mỗi con trỏ chỉ tiến/lùi tổng cộng tuyến tính.
-- Không gian: O(m) cho mảng failure function (đọc text theo bytes, không cần
-  lưu thêm).
-
-LƯU Ý TLE: n, m có thể tới 10^6. KMP tuyến tính nên về mặt thuật toán là tối ưu,
-nhưng vòng lặp Python thuần trên 10^6 ký tự vẫn có thể chậm và có nguy cơ TLE
-trên CSES (giới hạn thời gian nhắm cho C++). Ta đã tối ưu bằng cách làm việc
-trực tiếp trên bytes và tối giản thân vòng lặp; nếu vẫn TLE thì nên nộp bằng PyPy.
+- Không gian phụ: O(m) cho mảng failure function.

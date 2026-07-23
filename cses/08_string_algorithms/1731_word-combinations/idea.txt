@@ -23,19 +23,13 @@ trong một lượt quét, không cần cắt và so sánh lại các chuỗi co
 tách của s tương ứng duy nhất với vị trí cắt cuối cùng, phép cộng dồn dp không đếm
 trùng và không bỏ sót.
 
-Chi tiết cài đặt (Python): lưu Trie bằng một dict chung với khóa (node << 7) | char
-để tiết kiệm bộ nhớ (thay vì tạo hàng triệu dict con). Mảng is_word đánh dấu nút kết
-thúc từ. Trong DP, các giá trị di = dp[i] % MOD đều nhỏ hơn MOD nên có thể cộng dồn
-vào dp[j] mà chỉ cần lấy modulo khi đọc (giảm số phép modulo).
+Chi tiết cài đặt: mỗi nút Trie chứa `array<int,26>` các cạnh con và cờ `is_word`;
+chỉ số 0 vừa là nút gốc, vừa là giá trị biểu diễn "không có cạnh". Khi cập nhật
+DP, mỗi phép cộng được đưa ngay về modulo 10^9+7.
 
 ## Độ phức tạp
 - Xây Trie: O(tổng độ dài các từ) ≤ O(10^6) thời gian và bộ nhớ.
 - DP: mỗi vị trí bắt đầu i đi trên Trie tối đa n bước, nên O(n^2) = 25*10^6 bước
   khi n = 5000.
-- Bộ nhớ: O(số nút Trie) ≤ O(10^6).
-
-LƯU Ý TLE: với n = 5000, phần DP là O(n^2) khoảng 25*10^6 phép tra cứu dict trong
-Python thuần. Ở test xấu nhất (ví dụ chuỗi toàn ký tự 'a' cùng từ điển là mọi tiền
-tố "a", "aa", ...), số bước đạt cực đại và giải pháp CPython thuần có thể vượt giới
-hạn thời gian 1s của CSES. Thuật toán là đúng và tối ưu về mặt tiệm cận; không dùng
-numpy hay thư viện bên thứ ba (CSES chỉ có stdlib).
+- Bộ nhớ: O(26 * số nút Trie + n); vì bảng chữ cái có kích thước cố định, có thể
+  viết gọn là O(số nút Trie + n).

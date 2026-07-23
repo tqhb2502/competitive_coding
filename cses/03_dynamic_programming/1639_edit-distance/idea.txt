@@ -7,7 +7,7 @@ Levenshtein): số phép biến đổi ít nhất để đưa s thành t, mỗi 
 xóa hoặc thay thế một ký tự.
 
 ## Ý tưởng
-Cách 1 — Quy hoạch động kinh điển (dùng cho bản C++):
+Dùng quy hoạch động Levenshtein kinh điển:
 - Trạng thái: dp[i][j] = số phép biến đổi ít nhất để biến i ký tự đầu của s
   thành j ký tự đầu của t.
 - Base case: dp[0][j] = j (chèn thêm j ký tự), dp[i][0] = i (xóa i ký tự).
@@ -23,29 +23,11 @@ Cách 1 — Quy hoạch động kinh điển (dùng cho bản C++):
   bốn khả năng (khớp, thay thế, xóa, chèn); công thức min đã xét đủ và các bài
   con nhỏ hơn có tính chất tối ưu con (optimal substructure). Bài này không có
   modulo.
-- Cài đặt cuộn 2 hàng nên chỉ cần một mảng dp rộng m cột.
-
-Cách 2 — Thuật toán bit-parallel của Myers/Hyyrö (dùng cho bản Python):
-- Nhận xét: giữa hai ô kề nhau trong cùng một cột, hiệu dp[i][j] - dp[i-1][j]
-  chỉ nhận giá trị trong {-1, 0, +1}. Biểu diễn các delta dọc bằng hai bitmask
-  VP (bit i được set nếu delta = +1) và VN (delta = -1), mỗi mask rộng m bit
-  (dùng số nguyên lớn của Python).
-- Với mỗi ký tự của text (dài n), cập nhật VP, VN cùng các delta ngang HP, HN
-  bằng vài phép bitwise và một phép cộng (tạo carry để lan truyền). Điểm số
-  score = dp[m][j] cập nhật qua bit cao nhất (vị trí m-1) của HP/HN.
-- Khác bản "approximate matching" của Myers: ở edit distance toàn cục, hàng 0
-  có giá trị 0,1,2,... nên khi dịch trái HP ta phải nhồi bit 1 vào vị trí thấp
-  nhất ((Ph<<1)|1), thể hiện dp[0][j]-dp[0][j-1] = +1. Cột 0 khởi tạo bằng
-  score = m và VP = all-ones (dp[i][0]-dp[i-1][0] = +1).
-- Ký tự chỉ gồm A-Z nên bảng Peq (bitmask vị trí xuất hiện của mỗi ký tự trong
-  pattern) chỉ có tối đa 26 khóa. Chọn chuỗi ngắn hơn làm pattern P (rộng m
-  bit) để số nguyên lớn nhỏ lại; chuỗi dài hơn làm text T.
-- Đáp án cuối cùng là score sau khi duyệt hết text.
+- Code chọn chuỗi ngắn hơn làm chiều cột để giảm bộ nhớ, rồi cuộn DP bằng đúng
+  một mảng `dp`. Khi xử lý một hàng, `diagonal` giữ ô chéo cũ, `dp[j]` trước khi
+  ghi đè là ô phía trên, còn `dp[j-1]` đã là ô bên trái của hàng hiện tại.
 
 ## Độ phức tạp
-- Cách 1 (DP thẳng): O(n*m) thời gian, O(m) bộ nhớ nhờ cuộn 2 hàng.
-  LƯU Ý TLE: với n, m <= 5000 có tới 25 triệu ô, DP thuần Python rất dễ TLE,
-  nên bản Python dùng Cách 2.
-- Cách 2 (Myers): O(n*m/w) về word-operation, với Python là O(n) vòng lặp, mỗi
-  vòng làm hằng số phép trên số nguyên rộng m bit (~m/64 word); thực tế
-  n = m = 5000 chạy khoảng 0.02s. Bộ nhớ O(m) cho vài số nguyên lớn và bảng Peq.
+- Thời gian O(n*m).
+- Bộ nhớ phụ cho DP là O(min(n,m)) nhờ đặt chuỗi ngắn hơn ở chiều cột.
+  Tính cả hai xâu đầu vào, tổng bộ nhớ là O(n+m).

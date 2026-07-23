@@ -1,6 +1,8 @@
 Visible Buildings Queries - CSES 3304
 https://cses.fi/problemset/task/3304
 
+Tags: monotonic-stack, nearest-element
+
 ## Đề bài
 - Có n tòa nhà xếp thành hàng, chiều cao h[1..n]. Ta nhìn từ bên trái sang phải.
 - Với mỗi truy vấn [a, b]: chỉ xét đoạn từ tòa a đến tòa b. Một tòa được coi là
@@ -18,8 +20,8 @@ https://cses.fi/problemset/task/3304
   sang trái, pop khi chiều cao đỉnh stack <= h[i]).
 - Dùng binary lifting trên con trỏ nge: up[k][i] = vị trí sau khi thực hiện 2^k
   bước nhảy nge từ i. Xây dựng bằng up[k][i] = up[k-1][ up[k-1][i] ], với INF là
-  trạng thái hấp thụ (up[k][INF] = INF). Số tầng LOG ~ ceil(log2(n)); n <= 1e5
-  nên LOG = 17 là đủ.
+  trạng thái hấp thụ (up[k][INF] = INF). Số tầng được tính động để bao phủ mọi
+  số bước nhảy có thể có.
 - Trả lời truy vấn [a, b]: đặt node = a, ans = 1 (tòa a luôn visible). Duyệt k từ
   LOG-1 xuống 0; nếu up[k][node] <= b thì nhảy (node = up[k][node]) và cộng 2^k
   vào ans. Vì các vị trí trên chuỗi tăng dần đơn điệu, nếu bước nhảy 2^k còn nằm
@@ -29,9 +31,4 @@ https://cses.fi/problemset/task/3304
 ## Độ phức tạp
 - Tiền xử lý: O(n log n) thời gian và bộ nhớ cho bảng binary lifting.
 - Mỗi truy vấn: O(log n). Tổng: O((n + q) log n).
-- Bộ nhớ: O(n log n) số nguyên (n <= 1e5, LOG = 17 nên nằm gọn trong giới hạn).
-
-LƯU Ý TLE: Với q lên tới 2e5 và LOG ~ 17, vòng lặp truy vấn khoảng 3.4e6 vòng
-thuần Python; trên CPython của CSES có thể chạm hoặc vượt giới hạn thời gian.
-Thuật toán đã tối ưu (khó giảm thêm log n); nếu TLE nên nộp bằng C++ hoặc PyPy.
-Tuyệt đối KHÔNG dùng numpy hay thư viện ngoài stdlib.
+- Bộ nhớ: O(n log n) số nguyên.

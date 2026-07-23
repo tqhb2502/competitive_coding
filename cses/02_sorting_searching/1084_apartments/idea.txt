@@ -1,6 +1,8 @@
 Apartments - CSES 1084
 https://cses.fi/problemset/task/1084
 
+Tags: counting, sorted-array, two-pointers
+
 ## Đề bài
 - Có n ứng viên và m căn hộ. Mỗi ứng viên có kích thước mong muốn a_i và sẽ
   chấp nhận bất kỳ căn hộ nào có kích thước nằm trong đoạn [a_i - k, a_i + k].

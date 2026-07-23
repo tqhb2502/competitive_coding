@@ -32,7 +32,7 @@ là đáp án toàn cục.
 
 ## Độ phức tạp
 - Thời gian: O(n) vì chỉ duyệt mảng một lần.
-- Bộ nhớ: O(1) ngoài phần lưu dữ liệu đầu vào (chỉ dùng vài biến).
+- Bộ nhớ: O(1); code C++ xử lý từng phần tử ngay khi đọc.
 
 Kết quả có thể lên tới cỡ 2*10^5 * 10^9 = 2*10^14, vượt phạm vi 32-bit nên C++
-cần dùng kiểu long long; Python dùng số nguyên vô hạn nên không tràn số.
+cần dùng kiểu `long long`.

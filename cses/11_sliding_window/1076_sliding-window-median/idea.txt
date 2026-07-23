@@ -1,6 +1,8 @@
 Sliding Window Median - CSES 1076
 https://cses.fi/problemset/task/1076
 
+Tags: sliding-window
+
 ## Đề bài
 Cho mảng gồm n số. Với mỗi cửa sổ liên tiếp gồm k phần tử (quét từ trái sang phải)
 hãy in ra median (trung vị) của cửa sổ đó. Khi k chẵn (có hai phần tử ở giữa) thì

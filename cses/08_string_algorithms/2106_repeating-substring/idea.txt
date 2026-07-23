@@ -22,8 +22,9 @@ Dùng cách tiếp cận tất định (deterministic), tránh hashing vì CSES 
 Xây dựng suffix array bằng prefix doubling (rank doubling):
 - Ban đầu xếp hạng hậu tố theo ký tự đầu (nén tọa độ về 0..d-1).
 - Mỗi bước doubling k = 1, 2, 4, ...: sắp xếp hậu tố theo cặp (rank[i], rank[i+k]); sau bước đó
-  rank phản ánh thứ tự theo 2k ký tự đầu. Dùng khóa kết hợp key[i] = rank[i]*base + (rank[i+k]+1)
-  với base = n+1 để gộp cặp thành một số nguyên rồi sort, sau đó gán lại rank mới.
+  rank phản ánh thứ tự theo 2k ký tự đầu. Code gọi `std::sort` với comparator so
+  sánh trực tiếp hai thành phần của cặp (thành phần thứ hai là -1 nếu vượt cuối xâu),
+  rồi gán lại rank mới.
 - Dừng khi mọi rank đều phân biệt.
 
 ## Độ phức tạp
@@ -31,8 +32,3 @@ Xây dựng suffix array bằng prefix doubling (rank doubling):
   mỗi bước một lần sort O(n log n)); bộ nhớ O(n).
 - Kasai LCP: O(n) thời gian, O(n) bộ nhớ (biến h giảm tối đa 1 mỗi bước nên tổng chi phí
   amortized O(n)).
-
-LƯU Ý TLE: CSES đặt giới hạn thời gian hướng tới C++ (thường ~1s). Với n = 1e5, việc xây dựng
-suffix array bằng Python thuần (nhiều vòng lặp mức Python + O(log n) lần sort) có thể chậm và
-có nguy cơ TLE trên CPython/PyPy của CSES. Thuật toán vẫn ĐÚNG; nếu cần nhanh hơn phải dùng
-SA-IS O(n) hoặc cài đặt bằng ngôn ngữ biên dịch.

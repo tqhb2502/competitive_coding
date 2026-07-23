@@ -26,28 +26,14 @@ tập cho nhau. Kết quả lấy modulo 1000000007. Ràng buộc: 1 ≤ n ≤ 5
       dp[j] = dp[j] + dp[j-k]   với j chạy GIẢM dần.
   Duyệt j giảm dần bảo đảm mỗi số chỉ được dùng một lần trong một subset.
 - Vì mọi giá trị đều nhỏ hơn MOD, thay cho phép chia lấy dư đắt đỏ, ta chỉ cần cộng
-  rồi trừ MOD một lần khi kết quả ≥ MOD (nhanh hơn toán tử % trong CPython).
-
-- Cắt tỉa cửa sổ (bản Python): với s_k = 1 + 2 + ... + k, s_full = tổng toàn bộ item
-  1..n-1, gap = s_full - target, tại bước k chỉ cần cập nhật dp[j] với j trong cửa
-  sổ [lo, hi]:
-    hi = min(target, s_k)   -> không vượt quá tổng lớn nhất đạt được bằng item 1..k.
-    lo = max(k, s_k - gap)  -> nếu j < s_k - gap thì dù bỏ hết item còn lại cũng không
-                               giảm về đúng target; ngoài ra j < k không có nguồn
-                               dp[j-k] để cộng.
-  Mọi chỉ số nguồn dp[j-k] cần dùng đều nằm trong cửa sổ bước trước nên cắt tỉa không
-  làm sai kết quả. Với n = 500, số phép cộng giảm từ ~31 triệu xuống ~12,1 triệu.
+  rồi trừ MOD một lần khi kết quả ≥ MOD.
+- Để không duyệt các tổng chưa thể đạt được, code giữ `reachable_sum = 1+...+k`
+  và chỉ cập nhật j từ `min(target, reachable_sum)` giảm tới k.
 
 - Đáp án: sau khi xử lý hết k, đáp án là dp[target] (đã ở dạng mod 1e9+7). Trường hợp
   total lẻ trả về 0. Ví dụ: n = 7 -> đáp án 4.
 
 ## Độ phức tạp
-- Thời gian gốc: O(n * target) = O(n * n^2/4) ~ O(n^3/4). Với n = 500, target ~ 62625,
-  tổng số phép cộng cỡ 31 triệu; sau cắt tỉa còn ~12,1 triệu.
+- Thời gian: O(n * target) = O(n^3) trong cận xấu nhất; cận trên theo
+  `reachable_sum` làm giảm số phép cập nhật thực tế.
 - Bộ nhớ: O(target) cho mảng dp một chiều.
-
-LƯU Ý TLE: Đây là giải pháp thuần Python standard library (không numpy, không thư viện
-ngoài). Dù đã cắt tỉa còn ~12,1 triệu phép cộng, vòng lặp DP ở mức Python thuần vẫn chạy
-khoảng vài giây với n = 500 nên nhiều khả năng TLE trên CSES (giới hạn ~1s, hướng tới
-C++). Để chắc chắn qua, nên nộp bằng C++ hoặc PyPy3; thuật toán và định dạng vào/ra giữ
-nguyên như trên.

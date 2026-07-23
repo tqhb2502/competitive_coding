@@ -1,6 +1,8 @@
 Sorting Methods - CSES 1162
 https://cses.fi/problemset/task/1162
 
+Tags: binary-search
+
 ## Đề bài
 Cho một hoán vị của các số 1..n. Với bốn loại thao tác khác nhau, hãy tính số
 bước ít nhất để sắp xếp hoán vị thành dãy tăng dần:

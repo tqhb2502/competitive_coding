@@ -27,17 +27,8 @@ Tính đúng đắn: segment tree phân rã mọi đoạn thành O(log n) đoạ
 ứng các node; min của các min từng đoạn chính là min toàn đoạn. Point update
 chỉ ảnh hưởng các node trên đường từ lá tới gốc nên O(log n) node là đủ.
 
-Đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split() cho nhanh, ghi
-kết quả một lần bằng sys.stdout.buffer.write để đảm bảo xuống dòng LF.
-
 ## Độ phức tạp
   - Xây dựng: O(n).
   - Mỗi update và mỗi query: O(log n).
   - Tổng thời gian: O((n + q) log n).
   - Bộ nhớ: O(size) ~ O(n) cho mảng tree.
-
-LƯU Ý TLE: giới hạn thời gian CSES là 1.00s và nhắm cho C++. Với n, q tới
-2*10^5 và hằng số của Python cho segment tree, bản CPython thuần có thể chạm
-hoặc vượt giới hạn thời gian (TLE) trên test nặng nhất; PyPy nếu có sẽ an toàn.
-Thuật toán vẫn CHÍNH XÁC; đã tối ưu bằng cách bind biến ra local và vòng lặp
-gọn để giảm hằng số.

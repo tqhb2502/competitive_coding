@@ -35,5 +35,5 @@ Trường hợp đặc biệt n = 1:
 
 ## Độ phức tạp
 - Số đỉnh 2^(n-1), số cạnh 2^n. Với n = 15 có 16384 đỉnh và 32768 cạnh.
-- Hierholzer chạy O(số cạnh) = O(2^n) thời gian, bộ nhớ O(2^n). Rất nhỏ, không
-  có nguy cơ TLE kể cả với Python thuần.
+- Hierholzer chạy O(số cạnh) = O(2^n) thời gian, bộ nhớ O(2^n); với n <= 15
+  thì các giới hạn này rất nhỏ.

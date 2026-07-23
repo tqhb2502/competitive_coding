@@ -1,6 +1,8 @@
 Filled Subgrid Count II - CSES 3414
 https://cses.fi/problemset/task/3414
 
+Tags: monotonic-stack
+
 ## Đề bài
 Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Với mỗi chữ cái, đếm số
 lưới con hình chữ nhật mà mọi ô đều chứa đúng chữ cái đó. Ràng buộc n <= 3000,

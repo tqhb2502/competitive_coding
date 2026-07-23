@@ -30,15 +30,9 @@ từ chu trình. Đi ngược theo mảng parent đúng n bước từ x sẽ ch
 một đỉnh y nằm trong chu trình âm. Sau đó đi theo chuỗi parent từ y cho tới khi
 quay lại y để thu được các đỉnh của chu trình; do parent biểu diễn hướng ngược
 (cạnh đi từ parent -> con) nên phải đảo (reverse) danh sách để có thứ tự đi
-xuôi. Vì phép cộng dùng số nguyên (Python không tràn số, C++ dùng long long)
-nên không lo overflow dù trọng số lớn.
+xuôi. Mảng khoảng cách dùng `long long`, đủ chứa các giá trị phát sinh trong
+giới hạn đề bài.
 
 ## Độ phức tạp
 Thời gian: O(n * m), xấu nhất 2500 * 5000 = 1.25 * 10^7 phép relax.
 Bộ nhớ: O(n + m) cho mảng cạnh, mảng dist và mảng parent.
-
-LƯU Ý TLE: Với Python thuần, vòng relax O(n*m) ~ 1.25*10^7 lần trong trường hợp
-xấu nhất (chuỗi dài buộc chạy đủ n vòng) có thể chạm hoặc vượt giới hạn thời
-gian 1.00s của CSES. Thuật toán vẫn ĐÚNG; đã tối ưu bằng cách lặp trực tiếp
-trên list các tuple và dừng sớm khi hội tụ, nhưng không thể vector hóa vì chỉ
-được dùng stdlib (không numpy).

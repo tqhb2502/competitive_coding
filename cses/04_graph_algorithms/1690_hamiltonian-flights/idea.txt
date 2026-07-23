@@ -9,38 +9,40 @@ Cho đồ thị có hướng gồm n thành phố và m chuyến bay (n <= 20). 
 ## Ý tưởng
 Mô hình hóa đồ thị:
 - Các thành phố là các đỉnh (đánh số lại từ 0 đến n-1). Mỗi chuyến bay a -> b là
-  một cạnh có hướng. Vì n <= 20, ta dùng bitmask để biểu diễn tập các đỉnh đã thăm.
-- Với mỗi đỉnh j ta lưu inadj[j] = bitmask các đỉnh i có cạnh i -> j (danh sách
-  các đỉnh vào của j). Nhờ đó phép chuyển trạng thái chạy nhanh bằng thao tác bit.
+  một cạnh có hướng. Lưu edge_count[a][b] là số chuyến bay a -> b để đếm đúng
+  cả trường hợp có nhiều cạnh song song.
+- Điểm đầu 0 và điểm cuối n-1 là cố định. Vì vậy bitmask chỉ cần biểu diễn tập
+  n-2 thành phố trung gian 1..n-2, giúp giảm bộ nhớ đi bốn lần so với mask đủ n
+  bit.
 
 Thuật toán quy hoạch động trên bitmask:
-- Định nghĩa dp[mask][j] = số cách xuất phát từ đỉnh 0, đã thăm đúng tập đỉnh
-  `mask`, và hiện đang đứng ở đỉnh j (j phải thuộc mask, và mask phải chứa đỉnh 0).
-- Cơ sở: dp[{0}][0] = 1 (mới chỉ thăm đỉnh 0 và đang đứng ở đỉnh 0).
-- Chuyển trạng thái (kiểu "pull"): với mask chứa bit 0 và đỉnh kết thúc j (j != 0),
-  đặt prev_mask = mask sau khi bỏ đi bit j. Khi đó
-      dp[mask][j] = tổng dp[prev_mask][i] với mọi i thuộc (prev_mask AND inadj[j]).
-  Nghĩa là ta đến j từ một đỉnh liền trước i, với i nằm trong prev_mask và có cạnh
-  i -> j.
-- Đáp án: dp[(1<<n)-1][n-1] (đã thăm hết mọi đỉnh và kết thúc tại đỉnh n-1).
+- Gọi r = n-2. Định nghĩa dp[mask][last] là số cách xuất phát từ thành phố 0,
+  đã thăm đúng tập thành phố trung gian `mask`, và đang đứng ở thành phố trung
+  gian `last+1`. Bit `last` bắt buộc thuộc mask.
+- Với previous_mask = mask bỏ bit last:
+  + Nếu previous_mask rỗng, `last+1` là thành phố trung gian đầu tiên:
+        dp[mask][last] = edge_count[0][last+1].
+  + Ngược lại:
+        dp[mask][last]
+          = tổng dp[previous_mask][previous]
+                  * edge_count[previous+1][last+1]
+    trên mọi bit `previous` thuộc previous_mask.
+- Sau khi đã thăm full_mask = (1<<r)-1, đi cạnh cuối tới thành phố n-1:
+      answer = tổng dp[full_mask][last] * edge_count[last+1][n-1].
+- Trường hợp n = 2 không có đỉnh trung gian, đáp án là
+  edge_count[0][1].
 
 Vì sao đúng:
-- Mỗi đường đi Hamilton kết thúc tại j tương ứng duy nhất với một đường đi Hamilton
-  ngắn hơn (bỏ đỉnh cuối j) kết thúc tại đỉnh liền trước i, cộng thêm cạnh i -> j.
-  Do đó công thức lấy tổng theo mọi i hợp lệ đếm đúng, không trùng, không sót.
-- Duyệt mask theo thứ tự tăng dần bảo đảm prev_mask = mask ^ (1<<j) < mask luôn
-  được tính trước, nên quy hoạch động không bị phụ thuộc vòng. Mọi mask hợp lệ đều
-  chứa bit 0 nên prev_mask cũng luôn chứa bit 0 và luôn tồn tại.
-- Việc lấy modulo được thực hiện một lần cho mỗi ô dp (tổng tối đa 19 giá trị đều
-  nhỏ hơn MOD nên không tràn khi cộng dồn).
+- Mỗi đường đi tương ứng duy nhất với thứ tự của các thành phố trung gian và
+  lựa chọn một cạnh cụ thể giữa mỗi cặp liên tiếp. Bỏ thành phố trung gian cuối
+  cho đúng một trạng thái previous_mask; nhân với edge_count đếm đủ mọi lựa
+  chọn cạnh song song, nên transition không trùng và không sót.
+- Duyệt mask tăng dần bảo đảm previous_mask < mask đã được tính trước. Thành
+  phố đích chỉ được nối sau khi full_mask hoàn tất nên không thể bị ghé thăm
+  sớm; thành phố nguồn không nằm trong mask nên cũng không thể được thăm lại.
 
 ## Độ phức tạp
-- Thời gian: O(2^n * n^2) trong trường hợp xấu nhất (đồ thị dày). Với n = 20 nghĩa
-  là khoảng n(n-1) * 2^(n-2) ~ 10^8 thao tác bit ở vòng lặp trong.
-- Bộ nhớ: O(2^n * n). Ta chỉ cần cấp phát hàng dp cho các mask lẻ (chứa bit 0),
-  tức khoảng 2^(n-1) hàng, mỗi hàng gồm n số nguyên.
-
-LƯU Ý TLE: Với n = 20 và đồ thị gần đầy đủ, số thao tác cỡ 10^8 chạy trong Python
-thuần rất có thể vượt giới hạn thời gian của CSES (dù thuật toán và độ phức tạp là
-tối ưu cho bài này). Bản C++ cùng thuật toán chạy trong thời gian cho phép; lời
-giải Python này đúng về mặt logic nhưng có nguy cơ TLE cao trên test nặng nhất.
+- Thời gian: O(2^(n-2) * (n-2)^2 + n^2 + m).
+- Bộ nhớ: O(2^(n-2) * (n-2) + n^2).
+- Mọi giá trị DP và đáp án được lấy modulo 10^9+7; tích và tổng trung gian dùng
+  `long long`.

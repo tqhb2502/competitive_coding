@@ -1,6 +1,8 @@
 Monster Game I - CSES 2084
 https://cses.fi/problemset/task/2084
 
+Tags: binary-search, monotone-predicate
+
 ## Đề bài
 - Có n con quái, độ mạnh s_1 <= s_2 <= ... <= s_n. Khi giết một con quái ta tốn
   thời gian = (độ mạnh của nó) * (hệ số kỹ năng hiện tại). Sau khi giết con quái

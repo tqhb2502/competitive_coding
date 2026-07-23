@@ -19,8 +19,6 @@ Yêu cầu: đếm tổng số phòng trong tòa nhà.
   viền, khi mở rộng sang 4 ô lân cận cur-1, cur+1, cur-W, cur+W (với W = m+2)
   ta không cần kiểm tra biên. Mỗi ô sàn khi được thăm sẽ được đặt lại thành 0
   (tường), qua đó đóng luôn vai trò mảng visited.
-- Đọc dữ liệu nhanh; chuyển mỗi dòng ('.'/'#') sang 1/0 bằng bytes.translate
-  (chạy ở tốc độ C) ở bản Python.
 - Tính đúng đắn: mỗi lần khởi động flood fill từ một ô sàn mới ứng với đúng một
   phòng mới; viền tường không chứa ô sàn nên không tạo phòng giả.
 
@@ -28,8 +26,3 @@ Yêu cầu: đếm tổng số phòng trong tòa nhà.
 - Thời gian: O(n*m). Mỗi ô được đưa vào và lấy ra khỏi stack tối đa một lần,
   mỗi lần xét 4 lân cận.
 - Bộ nhớ: O(n*m) cho mảng lưới đã đệm và stack.
-
-LƯU Ý TLE: Với trường hợp xấu nhất (toàn bộ 1000x1000 = 10^6 ô đều là sàn),
-Python thuần phải xử lý ~4*10^6 thao tác trong vòng lặp flood fill nên có thể
-chậm, có nguy cơ TLE nhẹ trên CSES. Thuật toán vẫn ĐÚNG; đã tối ưu bằng
-padding, bytes.translate và biến cục bộ (local variable) để giảm rủi ro.

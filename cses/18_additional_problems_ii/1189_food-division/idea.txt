@@ -1,6 +1,8 @@
 Food Division - CSES 1189
 https://cses.fi/problemset/task/1189
 
+Tags: prefix-sum
+
 ## Đề bài
 Có n đứa trẻ ngồi thành một vòng tròn. Mỗi đứa đang có một lượng thức ăn và
 mong muốn một lượng thức ăn nhất định (tổng lượng hiện tại bằng tổng lượng mong

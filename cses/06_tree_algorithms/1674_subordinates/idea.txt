@@ -15,7 +15,7 @@ mỗi nhân viên, hãy đếm số cấp dưới của họ.
 - Các bước:
   1. Đọc mảng parent và dựng danh sách con children[] cho từng node.
   2. Duyệt cây bằng iterative DFS (dùng explicit stack, tránh đệ quy vì n lên tới
-     2e5 sẽ gây RecursionError / stack overflow) từ gốc 1 để lấy một thứ tự order
+     2e5 có thể làm tràn call stack) từ gốc 1 để lấy một thứ tự order
      mà trong đó mỗi node luôn xuất hiện SAU cha của nó.
   3. Duyệt order theo chiều NGƯỢC lại: khi xử lý node u (khác gốc), cộng
      count[u] + 1 vào count[parent[u]]. Vì mỗi con được xử lý trước cha nên khi

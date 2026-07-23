@@ -14,12 +14,14 @@ theo tinh thần Kruskal reconstruction / bottleneck path.
 - Với một cặp (u, v), đáp số của cặp đó chính là cạnh có trọng số NHỎ NHẤT trên
   đường đi giữa chúng (bottleneck edge).
 - Ta xử lý các cạnh theo thứ tự trọng số GIẢM DẦN. Duy trì DSU nơi mỗi thành phần
-  là một tập các đỉnh đã được nối với nhau bằng các cạnh có trọng số LỚN HƠN cạnh
-  đang xét.
+  là một tập các đỉnh đã được nối với nhau bằng các cạnh có trọng số LỚN HƠN HOẶC
+  BẰNG cạnh đang xét. Dấu bằng xuất hiện khi một cạnh cùng trọng số đã được xử lý
+  trước đó; thứ tự tương đối giữa các cạnh bằng nhau không ảnh hưởng kết quả.
 - Khi thêm cạnh e trọng số x nối hai thành phần A và B (kích thước s1 và s2): vì đây
   là cây nên đường đi giữa bất kỳ u thuộc A và v thuộc B là DUY NHẤT và phải đi qua
-  cạnh e. Mọi cạnh bên trong A và bên trong B đều có trọng số > x (do đã được thêm
-  trước, theo thứ tự giảm dần), nên cạnh nhỏ nhất trên đường đi u-v đúng bằng x.
+  cạnh e. Mọi cạnh bên trong A và bên trong B đều có trọng số >= x (do đã được
+  thêm trước theo thứ tự không tăng), nên cạnh nhỏ nhất trên đường đi u-v đúng
+  bằng x.
 - Do đó cạnh e đóng góp x * s1 * s2 vào tổng đáp số. Cộng dồn rồi hợp nhất A, B.
 
 Tính đúng đắn:

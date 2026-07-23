@@ -1,6 +1,8 @@
 Graph Coloring - CSES 3308
 https://cses.fi/problemset/task/3308
 
+Tags: bitmask, submask, submask-enumeration
+
 ## Đề bài
 Cho một đồ thị đơn vô hướng có n đỉnh (n <= 16) và m cạnh. Hãy tô màu các đỉnh
 bằng số màu ít nhất sao cho không có cạnh nào nối hai đỉnh cùng màu. In ra số màu

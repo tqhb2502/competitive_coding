@@ -34,24 +34,17 @@ Cơ sở:
 - Gọi diff = dp[0][n-1] = (điểm người 1) - (điểm người 2).
 - Gọi total = tổng tất cả phần tử = (điểm người 1) + (điểm người 2).
 - Suy ra điểm người 1 = (total + diff) / 2. Vì total và diff luôn cùng tính chẵn lẻ
-  nên phép chia này luôn ra số nguyên (dùng chia lấy nguyên //).
+  nên tử số chia hết cho 2; code dùng phép chia số nguyên `/`.
 - Trường hợp n = 1: người 1 buộc phải lấy phần tử duy nhất => đáp án = a[0].
 
 Cài đặt tối ưu bộ nhớ O(n):
 - Lặp theo độ dài đoạn L tăng dần và chỉ dùng một mảng 1 chiều dp. Trước bước L,
   dp[i] đang giữ kết quả của đoạn dài L-1 bắt đầu tại i. Công thức cập nhật:
       dp_mới[i] = max(a[i] - dp_cũ[i+1], a[i+L-1] - dp_cũ[i]).
-- Riêng Python: dùng zip trên các slice của a và dp cùng list comprehension so sánh
-  bằng biểu thức điều kiện (h if h >= t else t) thay cho max() để giảm hằng số.
+  Duyệt i tăng dần là an toàn: `dp[i+1]` vẫn là giá trị của độ dài L-1, còn
+  `dp[i]` được đọc trước khi ghi đè.
 
 ## Độ phức tạp
 - Thời gian: O(n^2) — có O(n^2) trạng thái, mỗi trạng thái O(1). Với n = 5000
   là khoảng 12.5 triệu phép tính.
 - Bộ nhớ: O(n).
-
-LƯU Ý TLE: Với n = 5000, vòng lặp O(n^2) (~12.5 triệu bước) chạy bằng CPython
-thuần mất khoảng 10 giây trên máy thử, vượt xa giới hạn ~1 giây của CSES nên gần
-như chắc chắn TLE trên test lớn. Đây là giới hạn cố hữu của Python thuần cho bài
-này; không có cách nào chỉ dùng thư viện chuẩn để đưa xuống dưới 1 giây một cách
-trung thực. Lời giải được giữ ĐÚNG và tối ưu hằng số tối đa trong phạm vi thư viện
-chuẩn. Để chắc chắn AC nên nộp bằng C++ hoặc chạy bằng PyPy.

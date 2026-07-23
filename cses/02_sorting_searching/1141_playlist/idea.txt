@@ -1,6 +1,8 @@
 Playlist - CSES 1141
 https://cses.fi/problemset/task/1141
 
+Tags: sliding-window, two-pointers
+
 ## Đề bài
 Cho một mảng gồm n bài hát, mỗi bài có một id kᵢ. Cần tìm độ dài lớn nhất của
 một dãy con liên tiếp (subarray) mà trong đó tất cả các id đều đôi một khác nhau.
@@ -25,8 +27,8 @@ Vì sao đúng:
 ## Độ phức tạp
 - Thời gian: O(n) trung bình (mỗi phần tử được xét một lần, thao tác hash map là
   O(1) trung bình).
-- Bộ nhớ: O(n) cho mảng và từ điển last.
+- Bộ nhớ: O(n) cho `unordered_map` lưu vị trí cuối; code xử lý bài hát ngay khi
+  đọc nên không lưu cả mảng.
 
-LƯU Ý TLE: Với n = 2·10⁵ thuật toán O(n) hoàn toàn an toàn ngay cả trong Python
-thuần khi dùng fast I/O (sys.stdin.buffer). Bản C++ dùng unordered_map để giảm
-overhead của hash map.
+Code C++ đặt trước dung lượng cho `unordered_map` và bật fast I/O; thuật toán
+O(n) an toàn với n = 2·10^5.

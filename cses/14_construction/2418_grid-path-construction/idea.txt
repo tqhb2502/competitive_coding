@@ -54,5 +54,10 @@ Với một miền chữ nhật và cặp đầu mút s,t:
   Chuyển dãy ô liên tiếp thành hướng: hàng giảm=U, tăng=D, cột giảm=L, tăng=R.
 
 ## Độ phức tạp
-Mỗi test: bóc/tách tuyến tính theo kích thước, brute chỉ ở lõi <=20 ô. Thực nghiệm
-~1 ms cho 50x50; 100 test 50x50 khoảng 0.1 s. Thoải mái trong giới hạn.
+Với miền H x W, một lần `feasibleRegion` trong code hiện tại duyệt lại các ô
+cho từng lát cắt, tốn O(H*W*(H+W)); đây không phải một phép kiểm tra tuyến tính.
+`build` còn thử nhiều lát cắt và vị trí nối cho tới khi tìm được cách tách, nên
+không có cận tuyến tính đơn giản cho toàn bộ construction từ cài đặt này. Phần
+brute force chỉ chạy khi miền có nhiều nhất 20 ô, còn mọi kích thước đầu vào đều
+bị chặn bởi 50 x 50. Thực nghiệm của implementation hiện tại khoảng 1 ms cho một
+test 50 x 50 và khoảng 0.1 s cho 100 test lớn.

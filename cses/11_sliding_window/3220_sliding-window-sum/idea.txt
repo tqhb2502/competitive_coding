@@ -1,6 +1,8 @@
 Sliding Window Sum - CSES 3220
 https://cses.fi/problemset/task/3220
 
+Tags: sliding-window
+
 ## Đề bài
 - Cho n và k. Mảng được sinh bằng công thức tuyến tính (linear congruential generator):
   x_1 = x; x_i = (a * x_{i-1} + b) mod c, với i = 2..n.

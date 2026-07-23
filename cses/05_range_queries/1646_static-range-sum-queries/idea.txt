@@ -1,6 +1,8 @@
 Static Range Sum Queries - CSES 1646
 https://cses.fi/problemset/task/1646
 
+Tags: prefix-sum, range-query, static-array
+
 ## Đề bài
 Cho một mảng gồm n số nguyên và q truy vấn. Mỗi truy vấn cho hai chỉ số a, b
 (đánh số từ 1) và hỏi tổng các phần tử trong đoạn [a, b]. Mảng không hề bị cập
@@ -10,8 +12,7 @@ nhật, nên đây là bài toán truy vấn tĩnh.
 Dùng mảng tổng tiền tố (prefix sum).
 - Xây dựng mảng prefix có kích thước n+1 với prefix[0] = 0 và
   prefix[i] = x[1] + x[2] + ... + x[i], tức là tổng của i phần tử đầu tiên.
-  Ta tính bằng cách cộng dồn (running sum); trong Python có thể dùng
-  itertools.accumulate để chạy nhanh ở mức C.
+  Ta tính trực tiếp bằng một vòng lặp cộng dồn.
 - Với mỗi truy vấn (a, b), tổng đoạn [a, b] = prefix[b] - prefix[a-1].
 - Tính đúng vì prefix[b] = x[1] + ... + x[b] và prefix[a-1] = x[1] + ... + x[a-1],
   nên hiệu của chúng chính là x[a] + x[a+1] + ... + x[b].
@@ -20,6 +21,5 @@ Dùng mảng tổng tiền tố (prefix sum).
 ## Độ phức tạp
 - Thời gian: O(n) để dựng prefix sum và O(1) cho mỗi truy vấn, tổng cộng O(n + q).
 - Bộ nhớ: O(n) cho mảng prefix sum.
-- Với n, q <= 2*10^5 và giá trị tối đa 10^9, tổng có thể rất lớn: C++ dùng
-  long long còn Python dùng số nguyên lớn tùy ý nên không bị tràn số. Kết hợp
-  đọc/ghi I/O nhanh, thuật toán này chạy thoải mái trong giới hạn.
+- Với n, q <= 2*10^5 và giá trị tối đa 10^9, tổng có thể rất lớn nên mảng
+  prefix dùng `long long`.

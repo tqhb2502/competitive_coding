@@ -30,17 +30,9 @@ https://cses.fi/problemset/task/1672
   lấy INF vượt xa giá trị này. Nhờ vậy mọi tổng đi qua một cạnh không tồn tại (INF)
   vẫn >= INF, không bao giờ tạo ra "đường tắt" giả. Truy vấn nào còn giá trị >= INF
   nghĩa là không có đường -> in -1.
-- Chi tiết tăng tốc trong pure Python: đọc toàn bộ input một lần bằng
-  sys.stdin.buffer.read().split(); viết vòng lặp trong cùng của Floyd-Warshall bằng
-  list comprehension kết hợp zip (chạy ở mức C) và dùng walrus operator để chỉ tính
-  dik + dkj một lần; bỏ qua hàng i khi dist[i][k] = INF vì không thể cải thiện gì;
-  ghi kết quả một lần bằng sys.stdout.write.
+- Trong vòng lặp Floyd-Warshall, bỏ qua hàng i khi dist[i][k] = INF vì khi đó
+  không thể tạo đường đi i -> k -> j hữu hạn.
 
 ## Độ phức tạp
 - Thời gian: O(n^3) cho Floyd-Warshall + O(q) cho các truy vấn.
 - Bộ nhớ: O(n^2) cho ma trận khoảng cách.
-
-LƯU Ý TLE: Với n = 500, Floyd-Warshall cần ~1.25 * 10^8 phép cập nhật; trong pure
-CPython (dù đã tối ưu bằng list comprehension + zip) thì trường hợp xấu nhất (đồ thị
-gần đầy đủ) vẫn có thể vượt giới hạn thời gian của CSES. Lời giải này ưu tiên tính
-ĐÚNG; nếu cần chắc chắn AC nên viết bằng C++ hoặc dùng ngôn ngữ nhanh hơn.

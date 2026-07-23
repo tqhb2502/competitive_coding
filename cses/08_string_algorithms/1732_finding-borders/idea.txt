@@ -23,7 +23,3 @@ Sử dụng prefix function (hàm thất bại của KMP).
 - Thời gian: O(n) để tính prefix function (amortized), cộng O(số border) để lần
   theo chuỗi pi.
 - Bộ nhớ: O(n) cho mảng pi.
-
-LƯU Ý TLE: với n lên tới 1e6, vòng lặp tính prefix function chạy thuần Python có
-thể chậm (khoảng 1e6 phép lặp với thao tác amortized hằng số). Thuật toán là O(n)
-và đúng đắn; nếu CPython bị TLE có thể cần PyPy, nhưng logic không đổi.

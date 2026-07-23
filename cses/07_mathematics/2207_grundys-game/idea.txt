@@ -30,18 +30,17 @@ Kiểm tra vài giá trị đầu (khớp OEIS A002188):
     g(1)=0, g(2)=0, g(3)=1, g(4)=0, g(5)=2, g(6)=1, g(7)=0, g(8)=2, ...
     Ví dụ n=6 -> g=1 -> first; n=7 -> g=0 -> second; n=8 -> g=2 -> first.
 
-Điểm mấu chốt (tính đúng đắn cho n tới 10^6): các P-position (những n có g(n)=0)
-của Grundy's Game là MỘT TẬP HỮU HẠN. Đây là kết quả đã được kiểm chứng bằng máy
-tính từ lâu (xem Winning Ways / OEIS A002188): P-position CUỐI CÙNG là n = 1222,
-và người ta đã kiểm tra không còn số 0 nào nữa vượt xa 10^6. Danh sách đầy đủ 41
-P-position:
+Điểm mấu chốt cho miền n <= 10^6 của bài: bảng P-position đã biết và được tiền
+tính cho miền này có phần tử cuối là 1222 (xem Winning Ways / OEIS A002188).
+Đây là dữ kiện chuyên biệt mà cài đặt dựa vào, không phải kết luận suy ra chỉ
+từ việc chạy truy hồi tới 1300. Danh sách 41 P-position trong miền bài:
   1, 2, 4, 7, 10, 20, 23, 26, 50, 53, 270, 273, 276, 282, 285, 288, 316, 334,
   337, 340, 346, 359, 362, 365, 386, 389, 392, 566, 630, 633, 636, 639, 673,
   676, 682, 685, 923, 926, 929, 932, 1222.
 
-Vì vậy giải pháp không cần tính g(n) cho tận n = 10^6 (điều đó là O(n^2) và bất
-khả thi). Ta chỉ cần tính g(k) cho k tới một ngưỡng B an toàn (B = 1300 > 1222)
-bằng đúng công thức truy hồi, thu được tập P-position. Với mỗi truy vấn n:
+Vì vậy code không cần tính g(n) cho tận n = 10^6 (điều đó là O(n^2) và bất khả
+thi). Nó tính lại g(k) tới B = 1300 bằng đúng công thức truy hồi để tái tạo phần
+P-position cần tra, rồi dùng dữ kiện tiền tính trên cho các giá trị lớn hơn:
     - nếu n <= B: trả lời "second" nếu g(n)==0, ngược lại "first";
     - nếu n > B : chắc chắn g(n) khác 0 (không còn P-position nào), trả lời
       "first".
@@ -52,4 +51,4 @@ chiếu khớp hoàn toàn với danh sách trên.
 - Tiền xử lý: tính g(k) cho k <= B bằng vòng lặp mex, tổng thao tác cỡ
   B^2/4 xấp xỉ 4.2 x 10^5, gần như tức thời. Bộ nhớ O(B).
 - Trả lời t truy vấn: O(t) với tra cứu O(1) mỗi truy vấn.
-- Tổng: O(B^2 + t) thời gian, O(B + t) bộ nhớ. Rất nhanh, không có nguy cơ TLE.
+- Tổng: O(B^2 + t) thời gian, O(B) bộ nhớ.

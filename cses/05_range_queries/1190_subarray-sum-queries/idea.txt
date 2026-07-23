@@ -35,8 +35,3 @@ query: mỗi update chỉ sửa đúng 1 lá rồi đi ngược lên gốc cập
   - Xây dựng: O(n).
   - Mỗi update: O(log n) do đi từ lá lên gốc.
   - Tổng: O((n + m) log n) thời gian, O(n) bộ nhớ.
-
-LƯU Ý TLE: n, m tối đa 2*10^5 kèm hệ số log; giới hạn 1.00s của CSES nhắm cho C++. Bản
-pure Python (CPython) có thể chạm hoặc vượt giới hạn thời gian ở test xấu nhất; đã tối
-ưu bằng cách bind biến ra local và inline phép merge trong vòng lặp update. Nếu vẫn TLE
-thì cần PyPy hoặc hằng số nhỏ hơn, nhưng thuật toán đã tối ưu về mặt độ phức tạp.

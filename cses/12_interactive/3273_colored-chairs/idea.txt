@@ -1,6 +1,8 @@
 Colored Chairs - CSES 3273
 https://cses.fi/problemset/task/3273
 
+Tags: binary-search
+
 ## Đề bài
 Có n chiếc ghế xếp thành một vòng tròn (ghế n kề ghế 1), với n LẺ và 3 <= n <= 2*10^5.
 Mỗi ghế được tô màu đỏ (R) hoặc xanh (B). Cần tìm HAI ghế KỀ NHAU có CÙNG màu.

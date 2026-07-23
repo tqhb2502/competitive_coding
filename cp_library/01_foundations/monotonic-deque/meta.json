@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "monotonic-deque",
+  "title": "Monotonic Deque",
+  "category": "01_foundations",
+  "summary": "Duy trì chỉ số ứng viên theo thứ tự đơn điệu để lấy min hoặc max của mọi cửa sổ trong thời gian tuyến tính.",
+  "aliases": [
+    "monotonic queue"
+  ],
+  "tags": [
+    "deque",
+    "monotonic",
+    "sliding-window",
+    "window-extrema"
+  ],
+  "status": "stress-tested",
+  "source": "algorithm.hpp",
+  "complexities": {
+    "time": "O(n) amortized",
+    "memory": "O(k) phụ trợ và O(n-k+1) output"
+  },
+  "tests": [
+    "test.cpp"
+  ],
+  "practice": [
+    {
+      "title": "CSES Sliding Window Minimum",
+      "path": "cses/11_sliding_window/3221_sliding-window-minimum"
+    }
+  ]
+}

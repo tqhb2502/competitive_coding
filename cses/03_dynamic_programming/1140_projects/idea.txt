@@ -1,6 +1,8 @@
 Projects - CSES 1140
 https://cses.fi/problemset/task/1140
 
+Tags: binary-search
+
 ## Đề bài
 Cho n dự án, mỗi dự án có ngày bắt đầu a, ngày kết thúc b và tiền
 thưởng p. Nếu nhận một dự án thì bạn bận toàn bộ các ngày từ a đến b
@@ -22,9 +24,9 @@ chồng lấn sao cho tổng tiền thưởng là lớn nhất.
   1) Không nhận dự án i: kế thừa dp[i-1].
   2) Nhận dự án i: cần tìm dự án tương thích cuối cùng, tức dự án có
      ngày kết thúc nhỏ hơn a. Vì đã sắp theo b tăng dần nên số dự án có
-     b < a chính là j = bisect_left(ends, a); khi đó lấy dp[j] + p.
+     b < a chính là j = `lower_bound(ends[0..i), a)`; khi đó lấy dp[j] + p.
   Vậy dp[i] = max(dp[i-1], dp[j] + p).
-  (bisect_left trả về vị trí đầu tiên mà ends >= a, nên đếm đúng số dự
+  (`lower_bound` trả về vị trí đầu tiên mà ends >= a, nên đếm đúng số dự
   án có b < a, thỏa điều kiện a_sau >= b + 1.)
 - Đáp án: dp[n].
 

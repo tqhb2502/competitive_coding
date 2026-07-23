@@ -1,6 +1,8 @@
 Two Array Average - CSES 3361
 https://cses.fi/problemset/task/3361
 
+Tags: prefix-sum
+
 ## Đề bài
 Cho hai mảng độ dài n. Chọn một tiền tố không rỗng của mỗi mảng sao cho trung
 bình cộng của tất cả phần tử được chọn là lớn nhất. In ra hai độ dài tiền tố.

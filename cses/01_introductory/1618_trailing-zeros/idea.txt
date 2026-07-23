@@ -26,4 +26,4 @@ trong biểu diễn thập phân của n!.
 - Thời gian: O(log_5 n) vòng lặp (khoảng 13 bước với n = 1e9).
 - Bộ nhớ: O(1).
 
-LƯU Ý TLE: cực kỳ nhanh, không có rủi ro TLE trong Python.
+Vòng lặp chỉ có O(log_5 n) bước nên không có rủi ro TLE.

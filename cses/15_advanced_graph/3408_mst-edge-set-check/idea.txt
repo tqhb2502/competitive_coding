@@ -59,6 +59,8 @@ chu trình trong một lớp thì không MST nào chứa được cả tập.
 
 ## Độ phức tạp
 - Tiền xử lý: sắp xếp O(m log m) + DSU gần như O(m α(n)).
-- Mỗi truy vấn: sort các cạnh theo trọng số + DSU tạm. Tổng số cạnh trong tất
-  cả truy vấn <= m, nên tổng O(m log m).
+- Gọi K là tổng số lần cạnh xuất hiện trong toàn bộ truy vấn. Truy vấn có k_i
+  cạnh tốn O(k_i log k_i) để sắp xếp và O(k_i α(n)) cho DSU tạm; cộng lại bị
+  chặn bởi O(K log K).
+- Tổng thời gian O(m log m + K log K).
 - Bộ nhớ O(n + m).

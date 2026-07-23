@@ -36,9 +36,3 @@ Tính đúng đắn:
 ## Độ phức tạp
 - Thời gian: O(n) cho cả xây dựng cây, tính size/depth và rerooting.
 - Bộ nhớ: O(n).
-
-LƯU Ý TLE: Với n = 2e5 thuật toán là O(n) nên về lý thuyết rất nhanh; tuy nhiên
-Python thuần vẫn có thể chậm do overhead. Code đã tối ưu: đọc input bằng
-sys.stdin.buffer, dùng adjacency list dạng mảng, duyệt iterative, và ghi output
-một lần. Thường vượt qua được trong giới hạn 1s trên CSES; nếu TLE có thể cần
-PyPy hoặc tối ưu thêm.

@@ -1,6 +1,8 @@
 Nested Ranges Count - CSES 2169
 https://cses.fi/problemset/task/2169
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Cho n đoạn [a, b]. Với mỗi đoạn, hãy đếm:
   (1) số đoạn khác mà nó CHỨA (đoạn [a, b] chứa [c, d] nếu a <= c và d <= b),
@@ -42,20 +44,6 @@ Kiểm tra với ví dụ mẫu: contains = "2 0 0 0", contained = "0 1 0 1" - k
 Thời gian: O(n log n) cho sort và các thao tác BIT (mỗi truy vấn/cập nhật O(log n)).
 Bộ nhớ: O(n).
 
-LƯU Ý TLE (rủi ro CAO, gần như chắc chắn TLE trên CSES với Python thuần):
-Giới hạn thời gian của bài là 1.00 s. Với n = 2*10^5, hai lần quét BIT bằng vòng
-while phải thực hiện khoảng 3*10^7 thao tác cấp thấp; đo thực tế bằng CPython trên
-bộ dữ liệu ngẫu nhiên n = 2*10^5 cho thấy chương trình (đã tối ưu hằng số) chạy
-khoảng 3-4 giây, tức vẫn vượt xa mốc 1 giây. Đây là hạn chế cố hữu của CPython,
-KHÔNG thể khắc phục triệt để chỉ bằng tối ưu hằng số.
-
-Các tối ưu hằng số đã áp dụng (giúp giảm phần nào nhưng vẫn không đủ để đạt 1 s):
-  - Ghép khóa sắp xếp thành một số nguyên (-a*BIG + b hoặc a*BIG - b) rồi dùng
-    key = list.__getitem__ thay cho lambda trả về tuple -> sort nhanh hơn.
-  - Dùng x &= x - 1 để xóa bit thấp nhất khi truy vấn prefix (nhanh hơn x -= x&-x).
-
-Không dùng numpy/PyPy được vì judge của CSES chỉ có CPython3 thuần (không cài numpy,
-không có PyPy). Do vậy cách CHẮC CHẮN tránh TLE là nộp bản C++ tương đương (cùng
-thuật toán: nén tọa độ + Fenwick tree, đọc bằng scanf/getchar): nhờ hằng số nhỏ và
-biên dịch native, bản C++ chạy vượt xa giới hạn thời gian. File solution.py ở đây là
-lời giải đúng về mặt thuật toán và dùng để kiểm chứng tính đúng đắn.
+Code C++ thực hiện hai lần sort và hai lượt Fenwick. Mỗi lượt có n truy vấn cùng
+n cập nhật O(log n), nên tổng O(n log n) nằm trong giới hạn 1 giây tốt hơn các
+cách duyệt cặp O(n^2).

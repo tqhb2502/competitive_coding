@@ -26,6 +26,7 @@ không rơi vào bẫy của định lý Euler tổng quát (cần cộng thêm 
 đây gcd(a, p) = 1 luôn đúng khi a > 0 (do a < p và p nguyên tố).
 
 ## Độ phức tạp
-- Mỗi truy vấn: hai lần modular exponentiation, O(log c + log e) phép nhân số 64-bit.
-- Tổng: O(n log(max)) với n <= 10^5, rất nhanh, không có nguy cơ TLE.
-- Bộ nhớ: O(n) cho danh sách kết quả xuất ra.
+- Mỗi truy vấn: hai lần modular exponentiation, O(log c + log(p-1)) phép nhân
+  số 64-bit.
+- Tổng: O(n * (log c + log p)) với n <= 10^5.
+- Bộ nhớ phụ: O(1).

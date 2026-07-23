@@ -12,13 +12,9 @@ a^b mod (10^9 + 7). Đề bài quy ước 0^0 = 1.
   để tránh số quá lớn.
 - Do tính chất (x * y) mod m = ((x mod m) * (y mod m)) mod m nên việc lấy mod ở
   từng bước không làm sai kết quả cuối cùng.
-- Trong Python, hàm dựng sẵn pow(a, b, mod) đã cài đặt sẵn binary exponentiation,
-  chạy trong O(log b) cho mỗi truy vấn và rất tối ưu (viết bằng C).
-- Trường hợp đặc biệt: đề quy ước 0^0 = 1, và pow(0, 0, MOD) trong Python trả về 1
-  nên khớp với yêu cầu.
-- Tối ưu I/O: đọc toàn bộ input một lần và ghi kết quả một lần để tránh chậm do I/O
-  khi n lớn.
+- Hàm `mod_power` khởi tạo kết quả bằng 1 và vòng lặp không chạy khi b = 0,
+  nên trường hợp 0^0 cũng tự động cho kết quả 1 đúng theo quy ước của đề.
 
 ## Độ phức tạp
 - Thời gian: O(n log b) với n là số truy vấn (n <= 2*10^5, b <= 10^9 nên log b <= 30).
-- Bộ nhớ: O(n) cho việc đọc input và lưu output.
+- Bộ nhớ phụ: O(1).

@@ -23,8 +23,6 @@ https://cses.fi/problemset/task/1074
 - Thời gian: O(n log n) do bước sắp xếp; phần tính tổng là O(n).
 - Bộ nhớ: O(n) để lưu mảng.
 - Với n <= 2*10^5 và p_i <= 10^9, tổng chi phí có thể lớn (cỡ 2*10^14) nên phải dùng
-  kiểu số nguyên lớn: C++ dùng long long, còn Python xử lý big integer tự nhiên.
+  `long long`.
 
-LƯU Ý TLE: Với n <= 2*10^5 thuật toán O(n log n) rất nhẹ. Python đọc bằng sys.stdin.buffer
-và dùng sorted() cùng vòng lặp cộng gần như chắc chắn AC; rủi ro TLE gần như bằng 0. Bản C++
-dùng sort cộng tính tổng long long cũng chỉ chạy trong vài chục ms.
+Với n <= 2*10^5, một lần `sort` và một lượt cộng là đủ nhẹ.

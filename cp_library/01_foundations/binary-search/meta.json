@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "binary-search",
+  "title": "Binary Search trên miền số nguyên",
+  "category": "01_foundations",
+  "summary": "Tìm ranh giới false/true của một predicate đơn điệu trên miền số nguyên mà không gây tràn số khi tính midpoint.",
+  "aliases": [
+    "binary search on answer",
+    "first true last false"
+  ],
+  "tags": [
+    "binary-search",
+    "monotone-predicate",
+    "search-on-answer"
+  ],
+  "status": "stress-tested",
+  "source": "algorithm.hpp",
+  "complexities": {
+    "predicate-calls": "O(log(true_sentinel - false_sentinel))",
+    "memory": "O(1)"
+  },
+  "tests": [
+    "test.cpp"
+  ],
+  "practice": [
+    {
+      "title": "CSES Factory Machines",
+      "path": "cses/02_sorting_searching/1620_factory-machines"
+    },
+    {
+      "title": "CSES Array Division",
+      "path": "cses/02_sorting_searching/1085_array-division"
+    }
+  ]
+}

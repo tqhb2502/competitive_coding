@@ -14,7 +14,7 @@ truy vấn thuộc hai loại:
   các chỉ số [tin[s], tout[s]], với tout[s] = tin[s] + size[s] - 1 (size[s] là số
   node trong subtree của s). Lí do: khi DFS đi vào một node rồi duyệt hết mọi con
   trước khi quay ra, tất cả node của subtree được thăm liên tiếp nhau.
-- Vì n lên tới 2e5 nên KHÔNG dùng đệ quy (tránh RecursionError / stack overflow).
+- Vì n lên tới 2e5 nên KHÔNG dùng đệ quy để tránh tràn call stack.
   Ta tính parent, tin, tout bằng DFS lặp (iterative) với một explicit stack.
 - Sau khi làm phẳng, bài toán trở thành point update (đổi giá trị một phần tử) và
   range sum query (tổng một đoạn) trên mảng — đây là công việc kinh điển của một
@@ -29,4 +29,4 @@ truy vấn thuộc hai loại:
 - Mỗi truy vấn (update hoặc sum) tốn O(log n) trên BIT.
 - Tổng thời gian: O((n + q) log n). Bộ nhớ: O(n).
 - Với n, q <= 2e5 và giá trị tối đa 1e9, tổng có thể tới ~2e14 nên dùng số nguyên
-  64-bit (C++ long long) / số nguyên Python (không lo tràn số).
+  64-bit (`long long`).

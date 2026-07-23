@@ -32,11 +32,11 @@ Với mỗi điểm truy vấn, duyệt qua từng cạnh của đa giác và th
    Ta chỉ cần biết px < xint hay không (giao điểm có nằm bên phải P không). Thay
    vì chia số thực, ta nhân chéo và xét dấu dy = y2 - y1:
        lhs = (px-x1)*(y2-y1),  rhs = (x2-x1)*(py-y1)
-       nếu dy > 0: cắt khi lhs < rhs
-       nếu dy < 0: cắt khi lhs > rhs
+   nếu dy > 0: cắt khi lhs < rhs
+   nếu dy < 0: cắt khi lhs > rhs
    Nhờ vậy toàn bộ phép tính đều là số nguyên chính xác, không có sai số
-   floating point. Với toạ độ tới 1e9, các tích có thể lên ~4e18: Python dùng
-   big integer nên không tràn, C++ dùng long long vẫn nằm trong giới hạn an toàn.
+   floating point. Với toạ độ tới 1e9, mỗi tích có trị tuyệt đối không quá
+   4e18 và code dùng `long long`.
 
 ## Độ phức tạp
 - Thời gian: O(n) cho mỗi truy vấn, tổng cộng O(n*m). Với n, m <= 1000 là tối đa

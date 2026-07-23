@@ -17,9 +17,8 @@ Ràng buộc: 1 <= n <= 1e12.
   số d lớn nhất giữ nguyên q là r = floor(n/q).
 - Trong khối [l, r] (bắt đầu l = d), phần đóng góp là:
       q * (l + (l+1) + ... + r) = q * (l + r) * (r - l + 1) / 2,
-  với tổng cấp số cộng tính theo công thức chuẩn. Bản C++ chia cho 2 bằng modular
-  inverse của 2 (INVERSE_TWO), còn bản Python dùng số nguyên tùy ý nên chia trực
-  tiếp cho 2 mà vẫn chính xác tuyệt đối, không cần modular inverse.
+  với tổng cấp số cộng tính theo modulo bằng nghịch đảo của 2
+  (INVERSE_TWO = 2^(MOD-2) mod MOD).
 - Tính đúng đắn: công thức S = sum_d d*floor(n/d) là biến đổi tổng chuẩn (đổi thứ
   tự lấy tổng theo cặp ước d và bội i) nên luôn đúng; divisor-block chỉ gom các d
   cùng thương q lại nên kết quả không đổi so với cộng từng d một.
@@ -27,6 +26,3 @@ Ràng buộc: 1 <= n <= 1e12.
 ## Độ phức tạp
 - Thời gian: O(sqrt(n)) khối, mỗi khối O(1) => khoảng 2e6 phép tính cho n = 1e12.
 - Bộ nhớ: O(1).
-
-LƯU Ý TLE: không có rủi ro TLE, chỉ khoảng 2 triệu vòng lặp nên chạy nhanh kể cả
-trong Python.

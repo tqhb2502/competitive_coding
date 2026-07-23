@@ -8,7 +8,7 @@ substring của text, ngược lại in "NO".
 
 ## Ý tưởng
 Dùng Suffix Automaton (SAM) của text:
-- Xây dựng suffix automaton của text. SAM là một DFA nhỏ gọn (tối đa 2n-1 trạng
+- Xây dựng suffix automaton của text. SAM là một DFA nhỏ gọn (tối đa 2n trạng
   thái) mà tập tất cả các đường đi bắt đầu từ trạng thái khởi đầu (state 0)
   tương ứng CHÍNH XÁC với tập tất cả các substring khác nhau của text.
 - Do đó, một pattern P là substring của text KHI VÀ CHỈ KHI ta đọc lần lượt được
@@ -27,15 +27,11 @@ Xây dựng SAM (thuật toán online cổ điển):
 - Thêm từng ký tự của text. Mỗi lần thêm tạo trạng thái mới cur với len tăng 1,
   đi ngược theo suffix link để nối transition; xử lý clone khi
   len(p)+1 != len(q).
+- Vì bảng chữ cái chỉ gồm `a..z`, mỗi trạng thái lưu transition bằng
+  `array<int,26>`; giá trị -1 biểu diễn cạnh không tồn tại.
 
 ## Độ phức tạp
 - Xây SAM: O(n) trạng thái/transition (amortized), bảng chữ cái cố định (a..z),
   số trạng thái ≤ 2n.
 - Kiểm tra tất cả pattern: O(tổng độ dài pattern) = O(5e5).
-- Bộ nhớ: O(n) trạng thái.
-
-LƯU Ý TLE: giới hạn thời gian của CSES nhắm tới C++. Trong CPython thuần, việc
-tạo ~2e5 dict cho SAM cộng với ~5e5 bước tra dict khi khớp pattern có thể chạm
-ngưỡng thời gian (~1s). Thuật toán vẫn ĐÚNG và tối ưu về mặt lý thuyết
-(deterministic, không hashing); rủi ro TLE đến từ hằng số của Python chứ không
-phải độ phức tạp.
+- Bộ nhớ: O(26n) = O(n) trạng thái và bảng transition cố định.

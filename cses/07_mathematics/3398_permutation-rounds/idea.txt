@@ -38,4 +38,3 @@ Tính đúng đắn:
 - Tách cycle: O(n).
 - Factorize tổng cộng: O(n log n) trong trường hợp xấu nhất (thực tế nhỏ hơn).
 - Bộ nhớ: O(n) cho các mảng spf, visited, p.
-- Với n <= 2*10^5, chạy nhanh trong pure Python stdlib, không có rủi ro TLE.

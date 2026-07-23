@@ -43,5 +43,4 @@ Kiểm tra ví dụ:
 - Bộ nhớ: O(1) ngoài bộ đệm đọc/ghi.
 
 LƯU Ý TLE:
-Với t <= 1e5, cần I/O nhanh. Đọc toàn bộ đầu vào bằng sys.stdin.buffer,
-gom kết quả rồi ghi một lần bằng "\n".join để tránh chậm I/O.
+Với t <= 1e5, code C++ bật fast I/O và in trực tiếp một kết quả cho mỗi truy vấn.

@@ -1,6 +1,8 @@
 Dice Combinations - CSES 1633
 https://cses.fi/problemset/task/1633
 
+Tags: sliding-window
+
 ## Đề bài
 Đếm số cách tạo ra tổng đúng bằng n bằng cách tung một con xúc xắc nhiều lần,
 mỗi lần cho ra giá trị từ 1 đến 6. Thứ tự các lần tung được coi là khác nhau
@@ -24,7 +26,3 @@ Kết quả lấy modulo 10^9 + 7.
 ## Độ phức tạp
 - Thời gian: O(n), với n <= 10^6 (nhờ cửa sổ trượt, mỗi bước O(1)).
 - Bộ nhớ: O(n) cho mảng dp.
-
-LƯU Ý TLE: n có thể tới 10^6 nên nếu mỗi bước cộng lại đủ 6 số hạng (6*n phép cộng)
-sẽ chậm trong pure Python. Ta tối ưu bằng sliding window để mỗi bước chỉ còn O(1)
-thao tác, tổng O(n); đọc I/O bằng sys.stdin. Nếu vẫn TLE trên CSES, có thể nộp bằng PyPy.

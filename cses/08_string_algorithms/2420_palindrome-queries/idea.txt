@@ -30,18 +30,15 @@ Vì sao đúng: nếu đoạn thật sự là palindrome thì đẳng thức has
 kiện cần). Chiều ngược lại chỉ đúng theo xác suất: hai xâu khác nhau có cùng hash
 với xác suất rất nhỏ. Để chống các test anti-hash của CSES, ta dùng DOUBLE HASHING
 với hai modulo khác nhau (1e9+7 và 998244353) và hai cơ số NGẪU NHIÊN chọn lúc
-chạy. Đối thủ không biết cơ số ngẫu nhiên nên không dựng được va chạm; xác suất
-sai tổng thể xấp xỉ m / (M1*M2), cực nhỏ.
+chạy. Đối thủ không biết cơ số ngẫu nhiên nên khó dựng va chạm có chủ đích.
+Lời giải vẫn mang xác suất: cận va chạm của polynomial hash còn phụ thuộc vào
+độ dài đa thức và số truy vấn, không chỉ vào tích hai modulo, nhưng double
+hashing với hai cơ số độc lập khiến xác suất sai trong giới hạn bài rất nhỏ.
 
-Tối ưu cài đặt: bốn cây (2 modulo x {forward, backward}) dùng CHUNG một chuỗi chỉ
-số Fenwick, nên gộp vào một vòng while duy nhất cho mỗi truy vấn/cập nhật, và chỉ
-lấy modulo ở cuối, giảm mạnh chi phí trên Python.
+Cài đặt dùng bốn đối tượng Fenwick độc lập: forward/backward cho từng modulo.
+Mỗi cập nhật gọi `add` trên cả bốn cây; mỗi truy vấn lấy bốn tổng đoạn rồi so
+sánh hai cặp hash đã chuẩn hóa bằng phép nhân chéo.
 
 ## Độ phức tạp
-Xây dựng ban đầu bằng thuật toán build Fenwick O(n). Mỗi thao tác O(log n).
-Thời gian: O((n + m) log n). Bộ nhớ: O(n).
-
-LƯU Ý TLE: với n, m tới 2x10^5 và double hashing, giải pháp Python thuần vẫn có
-nguy cơ TLE trên giới hạn thời gian dành cho C++ của CSES, dù hằng số đã được tối
-ưu (gộp 4 cây trong một vòng lặp, hoãn modulo). Thuật toán là đúng và tối ưu về
-mặt độ phức tạp.
+Khởi tạo bằng n lần cập nhật điểm trên bốn cây, tốn O(n log n). Mỗi thao tác
+tốn O(log n). Tổng thời gian O((n + m) log n), bộ nhớ O(n).

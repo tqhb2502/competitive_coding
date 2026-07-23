@@ -37,4 +37,4 @@ Vì sao đúng:
   <= sqrt(maxv), xấp xỉ O(maxv * log log maxv). Với maxv = 10^6 chỉ khoảng vài
   triệu phép, chấp nhận được.
 - Phân tích mỗi x mất O(log x). Tổng: O(n * log(maxv)).
-- Bộ nhớ: O(maxv) cho mảng spf (~ vài chục MB cho maxv = 10^6).
+- Bộ nhớ: O(maxv) cho mảng `int` spf (khoảng 4 MB khi maxv = 10^6).

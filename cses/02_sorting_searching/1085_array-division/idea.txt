@@ -1,6 +1,8 @@
 Array Division - CSES 1085
 https://cses.fi/problemset/task/1085
 
+Tags: binary-search, monotone-predicate, search-on-answer
+
 ## Đề bài
 - Cho một mảng gồm n số nguyên dương. Cần chia mảng thành đúng k đoạn liên tiếp
   (subarray) sao cho tổng lớn nhất trong các đoạn là NHỎ NHẤT có thể.
@@ -23,6 +25,10 @@ https://cses.fi/problemset/task/1085
   + Đếm tổng số đoạn cần dùng; nếu số đoạn <= k thì X khả thi.
   + Cách chia greedy này là tối ưu: nhồi tối đa vào mỗi đoạn giúp số đoạn cần dùng
     ít nhất, nên nếu greedy còn vượt k thì không cách chia nào khác đạt được.
+  + Đề yêu cầu đúng k đoạn, còn phép kiểm tra dùng <= k. Hai điều này tương
+    đương vì k <= n: nếu đang có ít hơn k đoạn, ta có thể tách thêm tại ranh
+    giới giữa các phần tử cho tới đủ k; việc tách không làm tổng đoạn lớn nhất
+    tăng lên.
   + Vì lo = max(x_i), mọi phần tử đơn lẻ đều <= X trong toàn bộ vùng tìm kiếm, nên
     luôn nhồi được phần tử vào một đoạn (không có trường hợp phần tử lớn hơn X).
 
@@ -35,8 +41,5 @@ https://cses.fi/problemset/task/1085
   sum <= n * 10^9 = 2*10^14, tức khoảng 48 bước.
 - Tổng thời gian: O(n log(sum)) ~ 2*10^5 * 48 ~ 10^7 phép toán. Bộ nhớ O(n).
 
-LƯU Ý TLE: Với n = 2*10^5 và ~48 vòng lặp, pure Python thực hiện ~10^7 thao tác
-trong vòng lặp Python thuần nên có thể sát giới hạn thời gian. Để an toàn ta đọc
-input bằng sys.stdin.buffer và giữ vòng feasible tối giản (biến cục bộ). Nếu vẫn
-TLE, bản C++ dùng cùng thuật toán binary search + greedy O(n log(sum)) với I/O
-nhanh (cin có sync tắt) sẽ chạy thừa thời gian.
+Code C++ dừng sớm trong `feasible` ngay khi số đoạn vượt k và bật fast I/O;
+khoảng 48 lượt quét mảng nằm trong giới hạn.

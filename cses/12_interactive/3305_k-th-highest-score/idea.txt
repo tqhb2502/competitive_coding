@@ -1,6 +1,8 @@
 K-th Highest Score - CSES 3305
 https://cses.fi/problemset/task/3305
 
+Tags: binary-search
+
 ## Đề bài
 Bài toán tương tác (interactive). Ban đầu đọc một dòng gồm hai số nguyên n và k.
 Có 2n coder: n người Phần Lan (Finland) và n người Thụy Điển (Sweden), mọi điểm số

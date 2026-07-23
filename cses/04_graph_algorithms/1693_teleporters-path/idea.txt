@@ -47,9 +47,3 @@ liên thông.
     đỉnh được kiểm tra bậc một lần.
   - Bộ nhớ: O(n + m) cho adjacency list, mảng bậc, mảng con trỏ, stack và path.
 Với n <= 10^5 và m <= 2*10^5, độ phức tạp tuyến tính là an toàn.
-
-LƯU Ý TLE: Thuật toán là O(n + m) tuyến tính nên rủi ro TLE thấp; tuy nhiên
-CPython chậm hơn C++ nhiều lần, vì vậy cần đọc toàn bộ input bằng
-sys.stdin.buffer.read().split() và ghi output một lần bằng sys.stdout.write để
-tránh chậm do I/O. Vẫn có khả năng chạm giới hạn thời gian trên test cực đại,
-nhưng đây là cách tiếp cận đúng và tối ưu nhất cho pure Python.

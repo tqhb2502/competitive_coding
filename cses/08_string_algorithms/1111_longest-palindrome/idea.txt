@@ -28,8 +28,3 @@ Dùng thuật toán Manacher để tìm palindrome dài nhất trong thời gian
 ## Độ phức tạp
 - Thời gian: O(n).
 - Bộ nhớ: O(n) cho mảng biến đổi và mảng bán kính P.
-
-LƯU Ý TLE: n có thể tới 10^6 nên vòng lặp Manacher chạy trên ~2*10^6 vị trí bằng
-Python thuần có thể chậm và có nguy cơ TLE trên CSES (giới hạn đặt cho C++). Thuật
-toán vẫn ĐÚNG và tối ưu O(n); đã dùng bytearray, gán slice và biến cục bộ để giảm
-tối đa hằng số. Nên chạy bằng PyPy nếu có.

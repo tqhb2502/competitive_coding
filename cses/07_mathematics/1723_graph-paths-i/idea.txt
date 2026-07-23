@@ -10,8 +10,8 @@ Ràng buộc: 1 <= n <= 100, 1 <= m <= n(n-1), 1 <= k <= 1e9.
 ## Ý tưởng
 Dùng matrix exponentiation (lũy thừa ma trận kề).
 - Gọi A là ma trận kề kích thước n x n, với A[i][j] = số cạnh có hướng đi từ i
-  sang j (đồ thị đơn nên A[i][j] thuộc {0,1}, nhưng vẫn cộng dồn để an toàn với
-  đa cạnh).
+  sang j. Vì có thể có nhiều cạnh cùng hướng giữa hai đỉnh, code cộng dồn tất cả
+  các cạnh đó theo modulo.
 - Tính chất cơ bản: phần tử (A^k)[i][j] chính bằng số đường đi độ dài đúng k cạnh
   đi từ i đến j. Chứng minh bằng quy nạp: (A^{t+1})[i][j] = sum_r (A^t)[i][r] *
   A[r][j], tức mọi walk độ dài t+1 tách thành một walk độ dài t tới đỉnh trung
@@ -19,30 +19,15 @@ Dùng matrix exponentiation (lũy thừa ma trận kề).
 - Vì vậy đáp án bằng (A^k)[0][n-1] (chỉ số 0-based: đỉnh 1 ứng với index 0, đỉnh
   n ứng với index n-1).
 
-Tính A^k bằng binary exponentiation (lũy thừa nhị phân của ma trận):
-  result = I (ma trận đơn vị); base = A;
-  while k: if k&1: result = result*base; base = base*base; k >>= 1.
-
-Tối ưu cho Python bằng kỹ thuật "bignum packing" (đóng gói mỗi hàng thành một số
-nguyên lớn):
-- Mỗi phần tử luôn nằm trong khoảng [0, mod). Mã hóa một hàng của ma trận B thành
-  một số nguyên Python duy nhất: đặt B[k][j] vào "ô" (slot) thứ j, mỗi ô rộng
-  SHIFT bit (Benc[k] = sum_j B[k][j] << (j*SHIFT)).
-- Khi đó hàng i của tích C = A*B tính được bằng acc = sum_k A[i][k] * Benc[k]. Vì
-  acc = sum_j (sum_k A[i][k]*B[k][j]) << (j*SHIFT), mỗi ô j của acc đúng bằng
-  C[i][j] chưa lấy modulo. Lấy ra từng ô bằng (acc >> (j*SHIFT)) & MASK rồi % mod.
-- Điều kiện không tràn/lẫn giữa các ô: mỗi tổng ô phải nhỏ hơn 2^SHIFT. Giá trị
-  lớn nhất của một ô = n * (mod-1)^2 <= 100 * (1e9+6)^2 ~ 1.0e20 < 2^67 =
-  1.476e20. Do đó chọn SHIFT = 67 là an toàn (không có carry giữa các ô).
-- Nhờ đó vòng lặp trong cùng (theo j) được thay bằng phép nhân/cộng số nguyên lớn
-  do C xử lý, nhanh hơn nhiều so với ba vòng for lồng nhau thuần Python.
+Chỉ cần hàng 0 của A^k, nên không cần duy trì cả ma trận kết quả. Khởi tạo vector
+hàng `paths = e_0` (`paths[0] = 1`, các phần tử khác bằng 0) và `base = A`.
+Trong binary exponentiation:
+  - nếu bit hiện tại của k bằng 1, cập nhật `paths = paths * base` trong O(n^2);
+  - bình phương `base = base * base` trong O(n^3);
+  - mọi phép cộng/nhân đều lấy modulo.
+Kết thúc, `paths[n-1]` chính là phần tử (A^k)[0][n-1].
 
 ## Độ phức tạp
-- Thời gian: O(n^3 log k). Có O(log k) phép nhân ma trận (khoảng 60 phép với k
-  tới 1e9), mỗi phép nhân ma trận n x n mất O(n^3), tổng ~ 100^3 * 60 = 6e7. Với
-  bignum packing phần lớn công việc dồn vào các phép toán số lớn được C tối ưu.
+- Thời gian: O(n^3 log k + n^2 popcount(k)); phần chi phối là các lần bình
+  phương ma trận, có không quá 30 lần khi k <= 10^9.
 - Bộ nhớ: O(n^2).
-
-LƯU Ý TLE: n = 100 với ~60 phép nhân ma trận là biên; Python thuần có thể chậm.
-Kỹ thuật bignum packing ở trên là cách nhanh nhất thường dùng để vượt qua trong
-Python; nếu vẫn TLE trên CPython thì cần PyPy. Lời giải này vẫn đảm bảo ĐÚNG.

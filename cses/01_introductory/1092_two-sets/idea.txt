@@ -34,7 +34,5 @@ mỗi tập); nếu không chia được thì in "NO".
 - Bộ nhớ: O(n) để lưu hai tập.
 Với n <= 10^6 hoàn toàn nằm trong giới hạn.
 
-LƯU Ý TLE: Với n = 10^6, việc tạo và nối (join) một triệu chuỗi số trong Python có thể
-chậm và tốn bộ nhớ; đã dùng sys.stdin/sys.stdout và ' '.join(map(str, ...)) để tối ưu
-I/O. Nếu vẫn bị TLE trên CSES, bản C++ sẽ nhanh hơn nhờ xuất trực tiếp số nguyên (không
-tạo chuỗi trung gian) và I/O buffer mạnh hơn.
+Code C++ lưu hai tập trong hai `vector<int>` rồi xuất trực tiếp bằng fast I/O.
+Thời gian xuất là O(n), tương ứng với chính kích thước kết quả.

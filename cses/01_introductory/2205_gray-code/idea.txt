@@ -25,10 +25,10 @@ Tại sao đúng:
   đúng một lần.
 
 Ghi chú về I/O:
-- Gom toàn bộ output vào một buffer rồi nối bằng "\n" và ghi một lần
-  (fast I/O) để tránh chậm do gọi in nhiều lần với n = 16 (65536 dòng).
+- Code C++ tạo một xâu độ dài n cho từng giá trị Gray rồi in ngay; không cần
+  giữ toàn bộ 2^n xâu trong bộ nhớ.
 
 ## Độ phức tạp
 - Thời gian: O(2^n * n) để tạo và in tất cả các xâu (mỗi xâu độ dài n).
   Với n = 16 thì 2^n = 65536 dòng, hoàn toàn trong giới hạn.
-- Bộ nhớ: O(2^n * n) do gom tất cả kết quả vào một buffer rồi in một lần.
+- Bộ nhớ: O(n) cho xâu đang được dựng.

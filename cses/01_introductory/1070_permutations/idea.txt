@@ -26,9 +26,7 @@ https://cses.fi/problemset/task/1070
 
 ## Độ phức tạp
 - Thời gian: O(n) để sinh và in dãy số.
-- Bộ nhớ: O(n) để lưu kết quả trước khi in.
+- Bộ nhớ: O(1) ngoài dữ liệu xuất; code C++ sinh và in trực tiếp từng số.
 
-LƯU Ý TLE: Với n tới 10^6, việc tạo list chuỗi và join trong Python vẫn an toàn
-nếu dùng I/O nhanh (sys.stdin, sys.stdout.write, ' '.join). Nếu vẫn chậm, bản
-C++ sẽ nhanh hơn nhiều nhờ in trực tiếp bằng bộ đệm ký tự; nhưng ở đây giới hạn
-n = 10^6 và độ phức tạp O(n) nên khả năng TLE thấp.
+LƯU Ý TLE: Code C++ dùng fast I/O và in trực tiếp; với n = 10^6 và độ phức tạp
+O(n), lượng công việc chủ yếu chính là kích thước output.

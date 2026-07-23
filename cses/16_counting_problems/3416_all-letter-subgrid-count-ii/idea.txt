@@ -1,6 +1,8 @@
 All Letter Subgrid Count II - CSES 3416
 https://cses.fi/problemset/task/3416
 
+Tags: counting, sliding-window, two-pointers
+
 ## Đề bài
 Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Đếm số lưới con hình chữ nhật
 chứa đủ cả k chữ cái. Ràng buộc n <= 500, k <= 26.

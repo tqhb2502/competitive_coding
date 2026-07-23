@@ -1,6 +1,8 @@
 Meet in the Middle - CSES 1628
 https://cses.fi/problemset/task/1628
 
+Tags: binary-search
+
 ## Đề bài
 Cho mảng gồm n số (n ≤ 40, mỗi phần tử và x tới 10^9). Hãy đếm số cách chọn
 một tập con có tổng đúng bằng x.

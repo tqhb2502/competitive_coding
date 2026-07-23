@@ -44,5 +44,5 @@ Ví dụ kiểm tra: t = [2, 8, 3] -> S = 13, M = 8, 2*M = 16 > 13 -> đáp án 
 - Thời gian: O(n), chỉ đọc dữ liệu và tính tổng, max.
 - Bộ nhớ: O(1) ngoài phần input (có thể xử lý theo luồng, không cần lưu toàn mảng).
 
-LƯU Ý TLE: Không có rủi ro TLE. Thuật toán O(n) với fast I/O rất nhẹ, hoàn toàn an
-toàn kể cả trong Python trên CSES.
+Không có rủi ro TLE: code C++ chỉ đọc mỗi giá trị một lần để cập nhật tổng và
+giá trị lớn nhất.

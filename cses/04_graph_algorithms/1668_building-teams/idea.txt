@@ -20,11 +20,8 @@ https://cses.fi/problemset/task/1668
   lẻ, không thể chia đội -> in "IMPOSSIBLE".
 - Nếu tô màu thành công toàn bộ, in màu của từng đỉnh theo thứ tự 1..n trên một dòng,
   cách nhau bởi dấu cách. Cách tô này chính là một lời giải hợp lệ.
-- Dùng BFS lặp (iterative) nên không bị tràn đệ quy (RecursionError) khi n lớn tới 1e5.
+- Dùng BFS lặp (iterative) nên không bị tràn call stack khi n lớn tới 1e5.
 
 ## Độ phức tạp
 - Thời gian: O(n + m), mỗi đỉnh và mỗi cạnh chỉ được duyệt số lần hằng số.
 - Bộ nhớ: O(n + m) cho danh sách kề và mảng màu.
-
-LƯU Ý TLE: Với n <= 1e5 và m <= 2e5, thuật toán O(n + m) cùng I/O nhanh
-(sys.stdin.buffer) chạy an toàn trong giới hạn thời gian của CSES ngay cả với CPython thuần.

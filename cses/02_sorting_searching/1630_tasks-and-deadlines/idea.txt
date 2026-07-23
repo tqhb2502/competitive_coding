@@ -13,7 +13,8 @@ https://cses.fi/problemset/task/1630
 - Thuật toán greedy (Shortest Processing Time first): sắp xếp các công việc theo thời gian a tăng dần rồi thực hiện thì sum(f_i) đạt cực tiểu.
 - Lý do: nếu thực hiện theo thứ tự a_(1) <= a_(2) <= ... <= a_(n) thì sum(f) = n*a_(1) + (n-1)*a_(2) + ... + 1*a_(n). Công việc làm sớm được nhân với hệ số lớn hơn (dạng bất đẳng thức hoán vị - rearrangement inequality), nên phần tử a nhỏ phải làm trước để tổng nhỏ nhất. Có thể chứng minh bằng exchange argument: đổi chỗ hai công việc kề nhau đang sai thứ tự sẽ không làm tăng sum(f_i).
 - Cài đặt: đọc n cặp (a, d); sắp xếp theo a tăng dần; duyệt và giữ biến t (thời điểm hiện tại), với mỗi công việc t += a rồi cộng dồn (d - t) vào đáp án; in tổng.
-- Đáp án có thể lớn (cỡ n * max(d) ~ 2e5 * 1e6 = 2e11) nên C++ phải dùng số nguyên 64-bit; Python tự xử lý số lớn nên không lo tràn số.
+- Đáp án có thể lớn (cỡ n * max(d) ~ 2e5 * 1e6 = 2e11) nên code C++ dùng
+  `long long` cho thời gian và tổng phần thưởng.
 
 ## Độ phức tạp
 - Thời gian: O(n log n) do sắp xếp; phần duyệt là O(n).

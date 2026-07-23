@@ -27,15 +27,10 @@ biết trước, ta duyệt cây một lần bằng DFS, dùng cấu trúc Disjo
 tới nó mà đầu kia đã hoàn tất (black), LCA = ancestor[find(đầu kia)].
 
 Có thể thay Tarjan bằng binary lifting (O((n+m) log n)) hoặc Euler tour + sparse
-table (O(1) mỗi truy vấn), nhưng Tarjan có hằng số nhỏ, phù hợp với Python. Mọi
+table (O(1) mỗi truy vấn). Bản C++ dùng Tarjan offline với DSU. Mọi
 phép duyệt cây (BFS dựng parent/children/order, DFS Tarjan, cộng tổng subtree)
-đều ITERATIVE nên không bị RecursionError hay tràn stack với n ~ 2*10^5.
+đều ITERATIVE nên không bị tràn call stack với n ~ 2*10^5.
 
 ## Độ phức tạp
 - Thời gian: O((n + m) * α(n)) ~ gần tuyến tính.
 - Bộ nhớ: O(n + m) cho adjacency, children, DSU và danh sách truy vấn.
-
-LƯU Ý TLE: với n, m tối đa 2*10^5 và giới hạn 1.0 s hướng tới C++, CPython thuần
-có thể chạm ngưỡng thời gian ở test xấu nhất. Thuật toán đã ở mức gần tuyến tính
-và tối ưu hằng số (đọc I/O theo khối, DSU nén đường đi, duyệt lặp), nên rủi ro
-TLE ở mức thấp; nếu vẫn TLE trên CPython thì PyPy sẽ dư sức qua.

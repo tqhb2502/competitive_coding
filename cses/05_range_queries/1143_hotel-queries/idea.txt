@@ -29,7 +29,3 @@ Nếu không có khách sạn nào đủ phòng thì in 0.
 - Thời gian: mỗi truy vấn tìm và cập nhật đều là O(log n), tổng cộng
   O((n + m) log n).
 - Bộ nhớ: O(n) cho mảng segment tree (khoảng 2 * size phần tử).
-
-LƯU Ý TLE: với n, m tới 2*10^5 và hằng số của Python khá lớn, lời giải
-O((n+m) log n) này có thể chạm giới hạn thời gian trên CSES với CPython thuần;
-đã tối ưu bằng đọc/ghi I/O nhanh và bind biến cục bộ, nhưng rủi ro TLE là có.

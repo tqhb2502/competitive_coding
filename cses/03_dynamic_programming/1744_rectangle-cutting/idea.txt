@@ -42,17 +42,13 @@ Tính đúng đắn:
 
 Tận dụng đối xứng:
   Vì dp[i][j] = dp[j][i], chỉ cần tính nửa tam giác trên (i < j) rồi soi gương
-  dp[j][i] = dp[i][j], giảm một nửa công việc. Nhờ đối xứng, CẢ HAI hướng cắt
-  đều viết được dưới dạng "row[k] + row[len-k]" trên một hàng, nên trong CPython
-  có thể gộp min bằng min(map(add, lát_trái, lát_phải)) để phần cộng và so sánh
-  chạy trong C, nhanh hơn vòng lặp Python thuần.
+  dp[j][i] = dp[i][j]. Khi tính i < j:
+  - các vị trí cắt cạnh j dùng `dp[i][k] + dp[i][j-k]`;
+  - nhờ đối xứng, các vị trí cắt cạnh i dùng
+    `dp[j][k] + dp[j][i-k]`.
+  Hai phía của một vị trí cắt có thể hoán đổi, nên code chỉ cần duyệt
+  k tới một nửa độ dài tương ứng.
 
 ## Độ phức tạp
 Với N = max(a, b) ≤ 500: thời gian O(N^3) (mỗi ô có O(N) chuyển tiếp), bộ nhớ
 O(N^2). Tận dụng đối xứng nên hằng số nhỏ đi khoảng một nửa.
-
-LƯU Ý TLE: O(N^3) ≈ 1.25e8 phép tính; với a, b ~ 500 phần tính toán mất khoảng
-2.1 - 2.2 giây trên CPython (đã đo), vượt giới hạn 1 giây của CSES nên gần như
-chắc chắn TLE ở test tối đa. Lời giải này đúng và tối ưu về thuật toán nhưng để
-qua được giới hạn thời gian nên nộp bằng C++ hoặc PyPy (không dùng numpy hay bất
-kỳ thư viện ngoài nào để lách TLE).

@@ -45,7 +45,3 @@ Cài đặt:
 ## Độ phức tạp
   - Thời gian: O(n) cho tiền xử lý factorial và quét prefix.
   - Bộ nhớ: O(n) cho mảng factorial (n <= 1e6).
-
-LƯU Ý TLE: Với n = 1e6, tiền xử lý hai mảng factorial trong pure CPython có thể
-hơi nặng (~vài chục triệu phép nhân modulo) nhưng vẫn nằm trong giới hạn thời
-gian của CSES; đây là cách chuẩn và không dùng thư viện ngoài.

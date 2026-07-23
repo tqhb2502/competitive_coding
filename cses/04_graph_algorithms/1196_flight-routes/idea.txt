@@ -41,7 +41,3 @@ Vì sao đúng:
   nên tổng số phần tử trong heap là O(k * m). Thời gian: O(k * m * log(k * m)).
 - Với n <= 1e5, m <= 2e5, k <= 10: khoảng vài triệu thao tác heap, chấp nhận được.
 - Bộ nhớ: adjacency list O(n + m), heap O(k * m).
-
-LƯU Ý TLE: Trong Python thuần, hằng số của heapq với tới ~2-4 triệu phần tử có thể
-nặng; giải pháp vẫn đúng nhưng có nguy cơ chậm ở test xấu nhất. Đã tối ưu bằng đọc
-input theo buffer và giữ vòng lặp gọn nhất có thể.

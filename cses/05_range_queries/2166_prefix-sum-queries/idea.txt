@@ -41,9 +41,4 @@ phải, nên bst cuối cùng chính là maximum prefix sum của đoạn.
 
 ## Độ phức tạp
 Build O(n); mỗi update và mỗi query O(log n). Tổng thời gian O((n + q) log n).
-Bộ nhớ O(n) (hai mảng kích thước 2*size).
-
-LƯU Ý TLE: n, q <= 2*10^5 với hệ số log ~18 nên có khoảng vài triệu thao tác
-vòng lặp Python thuần; giới hạn CSES nhắm cho C++, nên bản Python thuần có nguy
-cơ TLE ở test xấu nhất. Thuật toán vẫn ĐÚNG; đã bind biến nóng thành local và
-inline phép merge để giảm hằng số. (Tuyệt đối không dùng numpy/thư viện ngoài.)
+Bộ nhớ O(n) cho vector gồm khoảng `2*size` node.

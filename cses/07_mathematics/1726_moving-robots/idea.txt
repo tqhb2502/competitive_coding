@@ -26,8 +26,8 @@ https://cses.fi/problemset/task/1726
   ô s cố định, biến cố "robot xuất phát tại i không ở s" là độc lập giữa các i (các robot
   di chuyển độc lập), nên xác suất tất cả đều không ở s là tích các (1 - p_k(i -> s)).
 
-- Xuất kết quả: in đáp số với "%.6f" (làm tròn tới 6 chữ số thập phân). Định dạng float
-  của Python dùng round-half-to-even, khớp yêu cầu đề "rounding half to even".
+- Xuất kết quả bằng `fixed << setprecision(6)` để có đúng 6 chữ số sau dấu
+  thập phân; sai số số thực nằm trong dung sai của đề.
 
 ## Độ phức tạp
 - Thời gian: mỗi bước, với một vector xuất phát, tổng công việc = số ô (64) cộng tổng bậc

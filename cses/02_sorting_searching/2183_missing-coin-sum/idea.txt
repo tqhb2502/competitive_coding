@@ -29,4 +29,4 @@ Vì sao đúng:
 - Thời gian: O(n log n) do sắp xếp (vòng duyệt chỉ O(n)).
 - Bộ nhớ: O(n) để lưu mảng đồng xu.
 - reach có thể lớn cỡ n * max(x_i) ~ 2*10^5 * 10^9 = 2*10^14, vượt 32-bit nên
-  C++ dùng long long; Python dùng số nguyên lớn tự nhiên nên không tràn số.
+  code dùng `long long`.

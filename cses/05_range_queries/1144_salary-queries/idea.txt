@@ -1,6 +1,8 @@
 Salary Queries - CSES 1144
 https://cses.fi/problemset/task/1144
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Có n nhân viên, mỗi người có một mức lương ban đầu. Ta xử lí q truy vấn thuộc hai loại:
 - "! k x": đổi lương của nhân viên thứ k thành x.
@@ -15,15 +17,18 @@ Gọi cnt[v] là số nhân viên đang có lương đúng bằng v. Khi đó:
 
 Vì miền lương tới 1e9 nên không thể tạo mảng đếm trực tiếp; ta dùng coordinate compression OFFLINE:
 - Đọc trước toàn bộ input, gom mọi lương có thể xuất hiện = các lương ban đầu p_i cộng với mọi giá trị x của các truy vấn cập nhật "!".
-- Sắp xếp và lấy tập giá trị duy nhất được mảng vals. Vị trí nén của một lương là bisect_left(vals, giá trị) + 1 (BIT đánh chỉ số từ 1).
-- Cận truy vấn a, b không cần đưa vào vals vì ta chỉ đếm trên các lương thực sự tồn tại; dùng bisect để quy a, b về biên chỉ số hợp lệ.
+- Sắp xếp và lấy tập giá trị duy nhất được mảng vals. Vị trí nén của một lương
+  được tìm bằng `std::lower_bound` rồi cộng 1 vì BIT đánh chỉ số từ 1.
+- Cận truy vấn a, b không cần đưa vào vals vì ta chỉ đếm trên các lương thực sự
+  tồn tại; dùng `lower_bound`/`upper_bound` để quy hai cận về chỉ số hợp lệ.
 
 Thao tác trên Fenwick:
 - Khởi tạo: với mỗi nhân viên, cộng 1 vào vị trí nén của lương ban đầu và lưu cur[k] = vị trí nén hiện tại của nhân viên k.
 - "! k x": update(cur[k], -1); tính pos mới của x; update(pos, +1); gán cur[k] = pos.
-- "? a b": số lương <= b là prefix(bisect_right(vals, b)); số lương < a là prefix(bisect_left(vals, a)); đáp án là hiệu của hai prefix.
+- "? a b": số lương <= b lấy bằng prefix tại `upper_bound(vals, b)`; số lương
+  < a lấy bằng prefix tại `lower_bound(vals, a)`; đáp án là hiệu hai prefix.
 
 ## Độ phức tạp
-Gọi N = n + q là số giá trị gom được. Nén tọa độ tốn O(N log N); mỗi thao tác BIT và mỗi bisect tốn O(log N), nên tổng thời gian là O((n + q) log N). Bộ nhớ O(N) cho vals, tree và cur.
-
-LƯU Ý TLE: với n, q tới 2e5 và hằng số của Python, lời giải Fenwick + bisect này thường vẫn kịp trên CSES nhưng biên thời gian sát; nếu chạy CPython bị chậm có thể cần nộp bằng PyPy. Thuật toán đã tối ưu (chỉ dùng stdlib, inline vòng lặp BIT).
+Gọi N = n + q là số giá trị gom được. Nén tọa độ tốn O(N log N); mỗi thao tác
+BIT và mỗi phép tìm biên tốn O(log N), nên tổng thời gian là
+O((n + q) log N). Bộ nhớ O(N) cho vals, tree và cur.

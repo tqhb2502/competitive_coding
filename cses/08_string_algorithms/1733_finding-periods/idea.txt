@@ -39,8 +39,3 @@ Kết quả: 3 6 7 (đúng với đề bài).
 - Thời gian: O(n) để tính prefix function, cộng O(số period) để đi chain (tối đa
   O(n), ví dụ xâu "aaaa...a" có mọi period từ 1 tới n). Tổng O(n).
 - Bộ nhớ: O(n) cho mảng pi.
-
-LƯU Ý TLE: với n lên tới 1e6, vòng lặp tính prefix function thuần Python có hằng
-số lớn (mỗi ký tự vài phép truy cập mảng), có thể chậm ~1-2s và có nguy cơ TLE
-trên CPython của CSES; thuật toán vẫn O(n) và chính xác, đã tối ưu bằng biến cục
-bộ và làm việc trực tiếp trên bytes để giảm thời gian chạy.

@@ -1,6 +1,8 @@
 Permutation Inversions - CSES 2229
 https://cses.fi/problemset/task/2229
 
+Tags: sliding-window
+
 ## Đề bài
 Đếm số hoán vị của các số 1..n có đúng k nghịch thế (nghịch thế là cặp
 chỉ số i < j nhưng giá trị a[i] > a[j]). In kết quả theo modulo 1e9+7.

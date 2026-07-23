@@ -26,5 +26,3 @@ chỉ thuộc tối đa một cặp. In ra số cặp lớn nhất và danh sác
 - Thời gian: O(V * E) trong trường hợp xấu nhất, với V = n <= 500 và E = k <= 1000,
   tức khoảng 5 * 10^5 phép cơ bản. Rất nhanh.
 - Bộ nhớ: O(n + m + k) cho danh sách kề và các mảng match/visited.
-- Với giới hạn nhỏ như vậy, lời giải pure Python chạy dư sức trong thời gian cho phép,
-  không có rủi ro TLE.

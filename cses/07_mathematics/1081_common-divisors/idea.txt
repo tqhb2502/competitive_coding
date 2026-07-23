@@ -21,17 +21,12 @@ Cách cài đặt hiệu quả:
 - Lập mảng đếm cnt[v] = số phần tử trong mảng có giá trị bằng v, với v từ 0..M (M là
   giá trị lớn nhất xuất hiện, M <= 10^6).
 - Với mỗi d từ M giảm dần về 1, số phần tử chia hết cho d là tổng cnt[d] + cnt[2d] +
-  cnt[3d] + ... = sum(cnt[d::d]). Ta dùng phép cắt lát (slice) cnt[d::d] rồi sum() để
-  tính ở tốc độ C, tránh vòng lặp Python bên trong.
+  cnt[3d] + ... Ta duyệt các bội của d bằng một vòng lặp; ngay khi tổng đạt 2 thì
+  có thể in d và kết thúc, không cần đếm nốt các bội còn lại.
 - d đầu tiên (lớn nhất) mà tổng này >= 2 chính là đáp án; in ra và dừng. Vì n >= 2 nên
   chậm nhất tới d = 1 luôn cho tổng = n >= 2, đáp án luôn tồn tại.
 
 ## Độ phức tạp
 - Thời gian: tổng công việc của vòng sieve là sum_{d=1}^{M} (M/d) = M * H(M) ~
-  M*ln(M); với M = 10^6 xấp xỉ 1.4*10^7 thao tác ở mức C (nhờ slice + sum), tức là
-  O(M log M).
-- Bộ nhớ: O(M) cho mảng cnt (khoảng 8 MB cho danh sách 10^6 phần tử).
-
-LƯU Ý TLE: Vòng sieve điều hòa ~1.4*10^7 thao tác được thực thi ở tốc độ C thông qua
-sum(cnt[d::d]) nên rủi ro TLE thấp trên CPython của CSES; tuy nhiên nếu vẫn vượt thời
-gian có thể chuyển sang PyPy hoặc chỉ duyệt d tới M thay vì 10^6.
+  M*ln(M), tức O(M log M); việc dừng sớm chỉ làm giảm số phép cộng thực tế.
+- Bộ nhớ: O(M) cho mảng cnt.

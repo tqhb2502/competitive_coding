@@ -11,23 +11,22 @@ In ra:
 ## Ý tưởng
 1. Vì n rất nhỏ (tối đa 8), số hoán vị tối đa là 8! = 40320 nên ta có thể
    sinh toàn bộ hoán vị mà không lo về hiệu năng.
-2. Trước tiên sắp xếp các ký tự của xâu theo thứ tự tăng dần. Sau đó sinh
-   lần lượt mọi hoán vị của xâu. Vì có thể có ký tự trùng nhau nên sẽ xuất
-   hiện các hoán vị trùng lặp.
-3. Dùng một set để loại bỏ trùng lặp, đồng thời set tự giữ các xâu theo thứ
-   tự từ điển (trong C++ dùng next_permutation duyệt từ xâu đã sort, trong
-   Python dùng itertools.permutations rồi lọc qua set và sort lại).
+2. Trước tiên sắp xếp xâu tăng dần, sau đó gọi `next_permutation` liên tiếp.
+   Khi bắt đầu từ xâu đã sort, hàm này duyệt các cách sắp xếp giá trị theo thứ
+   tự từ điển; các ký tự bằng nhau không tạo ra nhiều xâu kết quả giống nhau.
+3. Code vẫn chèn từng xâu vào `set<string>` để lưu toàn bộ kết quả theo thứ tự
+   từ điển và bảo đảm tính duy nhất.
 4. In ra số lượng phần tử phân biệt, rồi in từng xâu, mỗi xâu một dòng.
 
 Vì sao đúng:
 - Việc duyệt mọi hoán vị của các vị trí chắc chắn bao phủ mọi cách sắp xếp
   các ký tự.
 - set đảm bảo mỗi xâu chỉ xuất hiện đúng một lần (loại trùng do ký tự lặp).
-- Thứ tự từ điển được bảo đảm nhờ sắp xếp (set của C++ hoặc sorted của Python).
+- Thứ tự từ điển được bảo đảm bởi `set`.
 
 ## Độ phức tạp
-- Thời gian: O(n! * n) để sinh và ghép các hoán vị, cộng O(k log k * n) để
-  sắp xếp. Với n <= 8 thì rất nhỏ, chạy tức thời.
+- Thời gian: O(k * n * log k), với k là số hoán vị phân biệt, do sinh xâu kế
+  tiếp và chèn vào `set`. Vì k <= 8! nên rất nhỏ.
 - Bộ nhớ: O(k * n) để lưu tập các xâu phân biệt (tối đa ~40320 xâu độ dài 8).
 
 ## LƯU Ý TLE

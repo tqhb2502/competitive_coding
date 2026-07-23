@@ -1,6 +1,8 @@
 Advertisement - CSES 1142
 https://cses.fi/problemset/task/1142
 
+Tags: monotonic-stack, nearest-element
+
 ## Đề bài
 Cho n tấm ván liên tiếp, mỗi tấm rộng 1 và có chiều cao k_i. Hãy tìm diện tích
 lớn nhất của một hình chữ nhật nằm hoàn toàn bên trong hàng rào.

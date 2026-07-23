@@ -30,26 +30,11 @@ Chuyển trạng thái (xét lần lượt từng cuốn i, giá p = price[i], s
   ta phải bảo đảm dp[j - p] vẫn là giá trị "trước khi xét cuốn i". Cách kinh điển
   là duyệt j GIẢM DẦN (từ x xuống p) để tránh dùng lại cùng một cuốn nhiều lần.
 
-Tối ưu cho CPython (chỉ dùng thư viện chuẩn, không numpy):
-- Thay vì vòng for chỉ số từng phần tử (rất chậm trong Python thuần), ta thực hiện
-  bước cập nhật một cuốn bằng thao tác cắt lát (slicing) kết hợp list comprehension,
-  cho phép phần lớn công việc chạy ở tầng C của CPython:
-    seg_new = dp[p:x+1]        # các giá trị dp[j] hiện tại (không mua)
-    seg_old = dp[0:x+1-p]      # các giá trị dp[j - p] (mua cuốn i)
-    dp[p:x+1] = [a + v if a + v > b else b for a, b in zip(seg_old, seg_new)]
-- Đọc dp qua slice tạo hai bản sao độc lập trước khi ghi đè nên không có xung đột
-  thứ tự đọc/ghi; kết quả giống hệt vòng lặp duyệt j giảm dần của 0/1 knapsack và
-  mảng dp vẫn không giảm.
-
 Đáp án:
 - dp[x] là số trang lớn nhất mua được với ngân sách x. Do dp không giảm theo j nên
   dp[x] cũng bằng max(dp).
 
 ## Độ phức tạp
 - Thời gian: O(n * x), tối đa 1000 * 100000 = 1e8 phép cập nhật.
-- Bộ nhớ: O(x).
-
-LƯU Ý TLE: Với Python thuần, khối lượng O(n * x) = 1e8 vẫn có thể vượt giới hạn ~1s
-của CSES (vốn nhắm cho C++), dù kỹ thuật slicing + list comprehension đã nhanh hơn
-nhiều so với vòng for chỉ số thông thường. Nếu bị TLE, nên nộp bằng PyPy3 hoặc viết
-lại bằng C++.
+- Bộ nhớ phụ của DP là O(x); tính cả hai mảng giá và số trang, tổng bộ nhớ
+  là O(n+x).

@@ -9,7 +9,8 @@ https://cses.fi/problemset/task/1621
 - Số lượng giá trị phân biệt chính bằng kích thước của tập hợp (set) các phần tử, vì set tự động loại bỏ các phần tử trùng lặp.
 - Ta đọc toàn bộ n số, đưa tất cả vào một hash set rồi lấy số phần tử còn lại làm đáp án.
 - Cách khác tương đương: sắp xếp mảng rồi đếm số vị trí có giá trị khác với phần tử liền trước (đây là lý do bài nằm trong chuyên đề Sorting and Searching). Tuy nhiên dùng set đơn giản và đủ nhanh.
-- Mẹo tăng tốc cho Python: đọc token dưới dạng chuỗi byte và đếm trực tiếp bằng len(set(...)), không cần ép kiểu int. Điều này vẫn đúng vì mỗi số nguyên trong ràng buộc có duy nhất một biểu diễn chuỗi thập phân, nên hai số bằng nhau khi và chỉ khi hai chuỗi bằng nhau.
+- Code C++ đọc từng giá trị `long long` và chèn ngay vào `unordered_set`; đặt
+  trước dung lượng và hạ `max_load_factor` để giảm số lần rehash.
 
 ## Độ phức tạp
 - Thời gian: O(n) trung bình khi dùng hash set (hoặc O(n log n) nếu dùng cách sắp xếp). Với n <= 2*10^5 đều rất nhanh.

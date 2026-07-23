@@ -12,27 +12,27 @@ nhất có độ dài 3 (tam giác). Nếu không tồn tại chu trình nào th
 
 ## Ý tưởng
 Dùng DFS để phát hiện chu trình trong đồ thị vô hướng. Vì n <= 1e5 và m <= 2e5,
-ta dùng DFS LẶP (iterative) với stack tường minh để tránh lỗi RecursionError hay
-tràn stack.
+ta dùng DFS LẶP (iterative) với stack tường minh để tránh tràn call stack.
 
 - Lưu mảng parent[]: parent[v] là đỉnh mà từ đó ta đi đến v trên cây DFS.
 - Với mỗi đỉnh u đang xét, duyệt lần lượt các đỉnh kề v:
     + Nếu v == parent[u]: bỏ qua (do không có cạnh bội, chỉ có đúng một cạnh nối
       u và parent[u], nên bỏ qua đúng cạnh này là an toàn).
     + Nếu v chưa thăm: đẩy v vào stack và đặt parent[v] = u.
-    + Nếu v đã thăm và v != parent[u]: ta tìm thấy một BACK EDGE u -> v.
+    + Nếu v đang ở trạng thái `state[v] = 1` (còn nằm trên stack DFS): ta tìm
+      thấy một BACK EDGE u -> v.
+    + Nếu v đã xử lý xong (`state[v] = 2`): bỏ qua.
 - Truy ngược: bắt đầu từ u, liên tục đi theo parent cho tới khi gặp v, thu được
   đường đi u -> parent[u] -> ... -> v trên cây DFS. Cộng thêm cạnh ngược v -> u
   tạo thành chu trình. Kết quả in ra là [u, ..., v, u] (đỉnh đầu lặp lại ở cuối),
   số lượng số in ra chính là k cần in.
 
-Tính đúng đắn: trong DFS trên đồ thị VÔ HƯỚNG chỉ có tree edge và back edge,
-KHÔNG có cross edge hay forward edge. Do đó khi u nhìn thấy đỉnh v đã thăm mà v
-khác parent[u], thì v chắc chắn là tổ tiên của u và còn nằm trên stack, nên chuỗi
-parent từ u luôn dẫn về tới v. Việc truy ngược theo parent tạo ra đúng một chu
-trình hợp lệ, mọi cạnh trong chu trình đều tồn tại. Nếu duyệt hết mọi thành phần
-liên thông mà không gặp back edge nào thì đồ thị không có chu trình -> in
-"IMPOSSIBLE".
+Tính đúng đắn: tập đỉnh có trạng thái 1 chính là các đỉnh trên đường đi DFS hiện
+tại. Do đó khi u nhìn thấy đỉnh v có `state[v] = 1` và v khác parent[u], v là tổ
+tiên của u, nên chuỗi parent từ u luôn dẫn về tới v. Việc truy ngược theo parent
+tạo ra đúng một chu trình hợp lệ, mọi cạnh trong chu trình đều tồn tại. Nếu duyệt
+hết mọi thành phần liên thông mà không gặp back edge nào thì đồ thị không có chu
+trình -> in "IMPOSSIBLE".
 
 ## Độ phức tạp
 - Thời gian: O(n + m) cho việc đọc, dựng danh sách kề và chạy DFS.

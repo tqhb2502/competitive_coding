@@ -23,26 +23,18 @@ có gcd = 1 được đếm đúng một lần, các cặp khác triệt tiêu.
 
 Cách tính trong code:
 1. Đọc input, dựng freq[] tới maxv = max(x_i).
-2. Sàng Eratosthenes đánh dấu số nguyên tố đến maxv.
-3. Tính mu[] đến maxv: khởi tạo mu[m] = 1; với mỗi số nguyên tố p thì đổi dấu
-   (nhân -1) tất cả bội của p (đếm số ước nguyên tố phân biệt), rồi đặt mu[m] = 0
-   cho mọi m chia hết cho p^2 (m không squarefree).
-4. ans = sum_{d} mu[d] * C(cnt[d], 2), trong đó cnt[d] = tổng freq của các bội
-   của d (dùng slicing sum để chạy ở tốc độ C thay vì vòng lặp Python).
+2. Dùng linear sieve để tính đồng thời danh sách nguyên tố và mu[]:
+   - nếu v là nguyên tố thì mu[v] = -1;
+   - với mỗi prime p, nếu p chia v thì mu[p*v] = 0 và dừng;
+   - nếu p không chia v thì mu[p*v] = -mu[v].
+3. Với mỗi d có mu[d] != 0, duyệt các bội d, 2d, ... để tính cnt[d], rồi cộng
+   mu[d] * C(cnt[d], 2) vào đáp án.
 
 Không cần lấy dư (modulo): đề bài yêu cầu in ra số nguyên chính xác. Đáp án lớn
-nhất khoảng C(1e5, 2) ~ 5e9, vượt 2^31 (C++ dùng long long; Python dùng số nguyên
-lớn tự nhiên nên không tràn số).
+nhất khoảng C(1e5, 2) ~ 5e9, vượt 2^31 nên đáp án và số cặp trung gian dùng
+`long long`.
 
 ## Độ phức tạp
-- Sàng + tính mu: O(maxv log log maxv).
-- Tính cnt[d] cho tất cả d qua slicing sum: tổng số phần tử duyệt
-  ~ sum_{d} maxv/d = O(maxv log maxv) ~ 1.4e7 phép cộng ở tốc độ C.
-- Bộ nhớ: O(maxv) cho freq, mu, sieve (maxv <= 1e6).
-Tổng thể là O(maxv log maxv), rất nhanh so với n.
-
-LƯU Ý TLE: pure Python với maxv = 1e6 khá nặng; đã tối ưu bằng cách chỉ xét những
-d có mu[d] != 0 và dùng slicing sum (sum(freq[d::d])) chạy ở tốc độ C. Đo
-worst-case (n = 1e5, giá trị tới 1e6) trên CPython 3.9 mất khoảng 1.0-1.3s (gồm cả
-thời gian khởi động Python), tức là sát ngưỡng 1s của CPython. Nên nộp bằng PyPy3
-để an toàn; với PyPy3 thời gian chạy thấp hơn nhiều và không lo TLE.
+- Linear sieve: O(maxv).
+- Các vòng duyệt bội có tổng O(maxv log maxv).
+- Bộ nhớ: O(n + maxv) cho mảng đầu vào, freq, mu và dữ liệu sàng.

@@ -1,6 +1,8 @@
 Sliding Window Minimum - CSES 3221
 https://cses.fi/problemset/task/3221
 
+Tags: monotonic-deque, sliding-window, window-extrema
+
 ## Đề bài
 - Mảng có n phần tử được sinh theo công thức: x_1 = x, và với i >= 2 thì
   x_i = (a * x_{i-1} + b) mod c.

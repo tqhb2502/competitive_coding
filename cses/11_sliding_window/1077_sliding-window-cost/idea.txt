@@ -1,6 +1,8 @@
 Sliding Window Cost - CSES 1077
 https://cses.fi/problemset/task/1077
 
+Tags: sliding-window
+
 ## Đề bài
 Cho mảng gồm n số nguyên và một cửa sổ trượt có độ dài k. Với mỗi vị trí của
 cửa sổ, ta cần đưa mọi phần tử trong cửa sổ về cùng một giá trị x với chi phí là

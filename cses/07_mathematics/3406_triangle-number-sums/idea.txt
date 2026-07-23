@@ -34,10 +34,9 @@ trường hợp.
 3) Đáp án = 3: các trường hợp còn lại (Gauss bảo đảm luôn đủ với 3 số tam giác).
 
 Phân tích thừa số của 4n+1:
-4n+1 <= 4*10^12 + 1 (nhỏ hơn 2^42). Bản C++ sàng các số nguyên tố tới sqrt(4n+1)
-rồi chia thử (trial division); bản Python dùng Miller-Rabin (kiểm tra nguyên tố
-tất định với các base 2..37, đúng cho mọi số < 3.2*10^18) kết hợp Pollard's rho.
-Mỗi lần phân tích rất nhanh, với t <= 100 truy vấn là không đáng kể.
+4n+1 <= 4*10^12 + 1 (nhỏ hơn 2^42). Đọc trước toàn bộ truy vấn để lấy Nmax,
+sàng các số nguyên tố tới sqrt(4*Nmax+1), rồi chia thử 4n+1 bằng danh sách này
+cho từng truy vấn.
 
 Kiểm tra ví dụ:
 - n=1: 8n+1=9=3^2 -> 1.
@@ -49,6 +48,8 @@ Kiểm tra ví dụ:
 Tất cả khớp với output mẫu.
 
 ## Độ phức tạp
-- Thời gian: mỗi truy vấn O((4n+1)^{1/4}) cho phân tích thừa số + O(1) kiểm tra
-  số chính phương. Tổng thể O(t * n^{1/4}), rất nhanh với t <= 100.
-- Bộ nhớ: O(1) (chỉ lưu vài thừa số nguyên tố; bản C++ giữ thêm mảng sàng).
+- Tiền xử lý: O(sqrt(Nmax) log log Nmax) thời gian và O(sqrt(Nmax)) bộ nhớ cho
+  sàng cùng danh sách nguyên tố.
+- Mỗi truy vấn thử tối đa pi(sqrt(4n+1)) số nguyên tố, nên cận xấu nhất là
+  O(sqrt(n) / log n); vòng lặp thường dừng sớm khi phần dư đã là nguyên tố.
+- Bộ nhớ còn có O(t) để lưu các truy vấn.

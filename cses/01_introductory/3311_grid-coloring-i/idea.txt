@@ -30,7 +30,5 @@ Tính đúng:
 - Thời gian: O(n * m * 4) = O(n * m), rất nhanh.
 - Bộ nhớ: O(n * m) để lưu lưới kết quả.
 
-LƯU Ý TLE: Với n, m <= 500 (250000 ô) vòng lặp Python thuần vẫn chạy trong
-khoảng dưới 1 giây nên an toàn. Nếu giới hạn lớn hơn và bị TLE, có thể port
-sang C++ (duyệt mảng char, chọn màu bằng vòng for 4 bước) để nhanh hơn nhiều
-lần nhờ không có overhead của interpreter.
+Với n, m <= 500, code C++ xét nhiều nhất bốn màu cho mỗi trong tối đa 250000
+ô, nên nằm thoải mái trong giới hạn.

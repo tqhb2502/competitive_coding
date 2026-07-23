@@ -11,18 +11,18 @@ https://cses.fi/problemset/task/2194
 - Đây là bài toán "cặp điểm gần nhất" (closest pair). Vì cần in bình phương
   khoảng cách nên toàn bộ phép tính dùng SỐ HỌC NGUYÊN CHÍNH XÁC:
   d2 = dx*dx + dy*dy, với dx = x1 - x2, dy = y1 - y2. Tọa độ <= 10^9 nên
-  d2 <= ~8*10^18, vẫn nằm gọn trong số nguyên lớn (big int) của Python
-  -> không bao giờ tràn số, không dùng float nên kết quả tuyệt đối chính xác.
+  d2 <= 8*10^18, vẫn nằm trong `long long`; không dùng float để tính khoảng
+  cách nên kết quả chính xác.
 
 - Thuật toán: randomized incremental + spatial hash grid (kỳ vọng O(n)):
-  1. Xáo trộn ngẫu nhiên (random.shuffle) thứ tự các điểm. Bước này giúp phá vỡ
+  1. Xáo trộn ngẫu nhiên bằng `std::shuffle`. Bước này giúp phá vỡ
      mọi trường hợp xấu (adversarial), đảm bảo kỳ vọng tốt bất kể input.
   2. Khởi tạo best = bình phương khoảng cách của hai điểm đầu tiên.
   3. Đặt kích thước ô lưới s = isqrt(best) (căn bậc hai NGUYÊN, s >= 1 vì các
-     điểm phân biệt nên best >= 1). Băm mỗi điểm vào ô (x // s, y // s). Grid là
-     dict LỒNG NHAU: cột cx -> (cy -> danh sách điểm). Dùng khóa số nguyên
-     (nhanh hơn khóa tuple) và bỏ qua nhanh các cột rỗng. Floor division của
-     Python xử lý đúng cả tọa độ âm.
+     điểm phân biệt nên best >= 1). Băm mỗi điểm vào ô (floor(x/s), floor(y/s)).
+     Grid là `unordered_map<Cell, vector<Point>, CellHash>`; `CellHash` dùng
+     splitmix64 và salt theo thời gian để chống va chạm hash có chủ đích. Hàm
+     `floor_divide` riêng bảo đảm chỉ số ô đúng với cả tọa độ âm.
   4. Thêm từng điểm p còn lại:
      - Tính ô (cx, cy) của p. Duyệt 3x3 ô xung quanh, so sánh d2 với từng điểm
        đã chèn. Nếu tìm được d2 < best -> cập nhật best.
@@ -45,10 +45,3 @@ https://cses.fi/problemset/task/2194
 - Kỳ vọng O(n): số lần "cải thiện" (rebuild) kỳ vọng là O(log n), mỗi rebuild
   O(i); tổng chi phí rebuild kỳ vọng O(n) (backwards analysis). Mỗi lần chèn
   kỳ vọng O(1). Bộ nhớ O(n) cho grid và danh sách điểm.
-
-LƯU Ý TLE: CSES chỉ chạy CPython thường (không PyPy) với giới hạn thời gian
-1.0s. Với n = 2*10^5, thuật toán kỳ vọng O(n) này chạy khoảng 1-2s phần tính
-toán trên máy test (dao động theo thứ tự shuffle), nên VẪN CÓ RỦI RO TLE trên
-CPython của CSES ở một số test biên. Đã tối ưu bằng dict lồng nhau + khóa số
-nguyên; giải pháp thay thế (divide & conquer) chạy CHẬM HƠN trong Python thuần
-do overhead đệ quy. Không được dùng numpy hay thư viện ngoài.

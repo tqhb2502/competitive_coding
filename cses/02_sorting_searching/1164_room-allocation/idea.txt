@@ -12,9 +12,9 @@ nhất và gán số phòng cho từng khách, in kết quả theo đúng thứ 
 Dùng thuật toán greedy kết hợp min-heap (priority queue) theo ngày đi:
 1. Gắn thêm chỉ số gốc idx cho mỗi khách để cuối cùng in lại đúng thứ tự đầu vào.
 2. Sắp xếp tất cả khách theo ngày đến a tăng dần.
-3. Duyệt lần lượt các khách theo thứ tự đã sắp xếp. Dùng một min-heap lưu các cặp
-   (ngày_đi, số_phòng) của những phòng đang được sử dụng, đỉnh heap là phòng có
-   ngày đi nhỏ nhất.
+3. Duyệt lần lượt các khách theo thứ tự đã sắp xếp. Dùng một min-heap lưu một
+   cặp (ngày_đi_gần_nhất, số_phòng) cho mỗi phòng đã mở; đỉnh heap là phòng có
+   ngày đi gần nhất nhỏ nhất.
    - Với khách hiện tại (a, b): nếu heap không rỗng và phòng ở đỉnh thoả điều kiện
      heap_top.ngay_di < a, nghĩa là phòng đó đã trống trước khi khách này đến, thì
      tái sử dụng: lấy phòng đó ra khỏi heap, gán cho khách hiện tại, rồi đẩy lại
@@ -23,9 +23,9 @@ Dùng thuật toán greedy kết hợp min-heap (priority queue) theo ngày đi:
      phòng k, gán phòng mới cho khách, đẩy (b, k) vào heap.
 4. Số phòng tối thiểu chính là giá trị k lớn nhất (tổng số phòng đã mở).
 
-Vì sao đúng: xét khách theo thứ tự ngày đến tăng dần nên mọi phòng đang mở đều
-thuộc về khách đến trước (hoặc cùng ngày). Trong các phòng đang mở, phòng có ngày
-đi sớm nhất là phòng dễ trống nhất; nếu phòng này chưa trống thì mọi phòng khác
+Vì sao đúng: xét khách theo thứ tự ngày đến tăng dần nên trạng thái gần nhất của
+mọi phòng đã mở đều thuộc về khách đến trước (hoặc cùng ngày). Phòng có ngày đi
+sớm nhất là phòng dễ trống nhất; nếu phòng này chưa trống thì mọi phòng khác
 cũng chưa trống, nên bắt buộc mở phòng mới. Số phòng đang mở đồng thời tại một
 thời điểm đúng bằng số khoảng giao nhau nhiều nhất (maximum overlap), cũng là cận
 dưới lý thuyết, nên đáp án là tối ưu.
@@ -34,5 +34,5 @@ dưới lý thuyết, nên đáp án là tối ưu.
 - Sắp xếp: O(n log n).
 - Mỗi khách push/pop heap tối đa một lần: O(n log n).
 - Tổng thời gian: O(n log n). Bộ nhớ: O(n) cho mảng khách, heap và mảng đáp án.
-- Với n <= 2*10^5 thì O(n log n) là dư sức; chỉ cần đọc/ghi I/O nhanh (dùng
-  sys.stdin.buffer để đọc, gom kết quả rồi ghi một lần).
+- Với n <= 2*10^5, code C++ dùng `priority_queue` và fast I/O nên nằm trong
+  giới hạn.

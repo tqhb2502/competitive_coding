@@ -40,8 +40,3 @@ toán quy về range-min cổ điển mà segment tree giải chính xác.
 ## Độ phức tạp
 - Thời gian: O((n + q) log n).
 - Bộ nhớ: O(n) cho mỗi cây (tổng O(n)).
-
-LƯU Ý TLE: Với n, q lên tới 2·10^5 và giới hạn 1.00 s hướng tới C++, một lời giải
-segment tree thuần Python (mỗi truy vấn thực hiện tới 4 lần duyệt cây) có nguy cơ
-TLE trên test nặng. Thuật toán là tối ưu về mặt lý thuyết; nếu cần có thể phải
-chuyển sang PyPy hoặc tối ưu hằng số sâu hơn.

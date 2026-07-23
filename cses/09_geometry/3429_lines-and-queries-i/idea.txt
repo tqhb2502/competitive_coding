@@ -16,23 +16,21 @@ Tree (một biến thể segment tree, mỗi node lưu một đường thẳng) 
 - Mỗi node quản lý một đoạn [l, r] và lưu ĐÚNG MỘT đường thẳng, là đường
   "tốt nhất tại trung điểm m = (l + r) / 2" trong số các đường từng đi qua node.
 - Khi chèn một đường mới:
-    + So sánh giá trị của đường mới với đường hiện tại của node tại trung điểm m.
+    + Nếu node đang rỗng, lưu đường mới và dừng.
+    + So sánh đường mới với đường hiện tại tại đầu trái l và trung điểm m.
       Đường thắng tại m được giữ lại ở node; đường thua bị "đẩy xuống".
-    + Tại m đường thua có giá trị <= đường thắng, nên hiệu (thua trừ thắng) là
-      hàm bậc nhất không dương tại m; nó chỉ có thể dương (đường thua vượt lên)
-      trên ĐÚNG MỘT phía của m. Phía đó được xác định bằng cách so sánh HỆ SỐ
-      GÓC (slope): nếu hệ số góc của đường thua nhỏ hơn của đường thắng thì đường
-      thua trội hơn ở nửa trái (x < m) nên đi xuống con trái; ngược lại đi xuống
-      con phải. Nhờ vậy mỗi lần chèn chỉ đi một nhánh từ gốc xuống lá: O(log C).
+    + Nếu kết quả so sánh tại l và m khác nhau thì hai đường đổi thứ tự ở nửa
+      trái, nên đẩy đường thua xuống con trái; ngược lại xuống con phải. Nhờ vậy
+      mỗi lần chèn chỉ đi một nhánh từ gốc xuống lá: O(log C).
 - Truy vấn tại x: đi từ gốc xuống lá theo x, lấy max các giá trị f(x) của đường
   lưu ở mọi node trên đường đi. O(log C) với C = N + 1 = 100001.
 
 Số nguyên chính xác (exact integer arithmetic):
 - Mọi so sánh chỉ dùng biểu thức nguyên a*x + b. Với |a|, |b| <= 10^9 và
-  x <= 10^5 thì |giá trị| <= ~1.0001e14, nằm gọn trong kiểu số nguyên (Python
-  big int, C++ long long) nên không tràn số và không có sai số như float.
-- Node "rỗng" khởi tạo bằng đường (slope = 0, intercept = số rất âm NEG) nên
-  luôn thua mọi đường thật, không ảnh hưởng kết quả lấy max.
+  x <= 10^5 thì |giá trị| <= ~1.0001e14, nằm gọn trong `long long` nên không
+  tràn số và không có sai số như float.
+- Một mảng `occupied` phân biệt node rỗng với node đang giữ đường. Khi truy vấn,
+  node rỗng đóng góp giá trị âm vô cực.
 
 Vì sao đúng: Li Chao Tree duy trì ngầm bao trên (upper envelope) của tập đường.
 Tính chất "giữ đường tốt nhất tại trung điểm, đẩy đường thua sang đúng nửa mà
@@ -43,7 +41,3 @@ ra kết quả đúng.
 ## Độ phức tạp
 - Thời gian: O(n log C) ~ 2*10^5 * 17.
 - Bộ nhớ: O(C), hai mảng kích thước ~4*(10^5 + 1).
-
-LƯU Ý TLE: trên CPython thuần, ~2*10^5 thao tác * ~17 vòng lặp có nhân số nguyên
-lớn có thể chạm giới hạn thời gian; nếu bị TLE hãy nộp bằng PyPy3. Thuật toán vẫn
-là tối ưu (O(n log C)); code đã inline vòng lặp và dùng biến cục bộ để giảm hằng số.

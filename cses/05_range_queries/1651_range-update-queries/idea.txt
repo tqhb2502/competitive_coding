@@ -1,6 +1,8 @@
 Range Update Queries - CSES 1651
 https://cses.fi/problemset/task/1651
 
+Tags: difference-array, range-update
+
 ## Đề bài
 Cho một mảng gồm n phần tử và q truy vấn thuộc hai loại:
 - "1 a b u": cộng thêm giá trị u vào mọi phần tử trong đoạn [a, b] (cập nhật đoạn).
@@ -28,5 +30,4 @@ tử, và mỗi cập nhật đoạn chỉ chỉnh sửa hai điểm biên nên 
 - Mỗi cập nhật và mỗi truy vấn đều là O(log n) nhờ Fenwick tree.
 - Tổng thời gian O((n + q) log n), bộ nhớ O(n).
 - Với n, q <= 2*10^5, giải pháp chạy tốt; Fenwick tree có hằng số nhỏ hơn hẳn
-  segment tree nên đây là cách nhanh nhất trong Python cho dạng point-update +
-  prefix-sum.
+  segment tree cho dạng point-update + prefix-sum này.

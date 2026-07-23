@@ -24,8 +24,8 @@ Thuật toán:
 - Lưu adjacency list, mỗi phần tử là cặp (đỉnh_kề, edge_id). Vì đồ thị vô hướng nên
   mỗi cạnh xuất hiện ở cả hai đỉnh nhưng dùng chung một edge_id; mảng used[] đánh dấu
   cạnh đã đi qua để không dùng lại cạnh đó lần thứ hai.
-- Cài đặt Hierholzer bằng stack (iterative), không đệ quy, nhằm tránh RecursionError /
-  tràn stack khi n, m lớn. Mỗi đỉnh giữ một con trỏ ptr để duyệt adjacency, nhờ đó
+- Cài đặt Hierholzer bằng stack (iterative), không đệ quy, nhằm tránh tràn call
+  stack khi n, m lớn. Mỗi đỉnh giữ một con trỏ ptr để duyệt adjacency, nhờ đó
   toàn bộ thuật toán chạy trong O(n + m).
 - Sau khi chạy, đảo ngược mảng circuit thu được để có thứ tự di chuyển đúng.
 

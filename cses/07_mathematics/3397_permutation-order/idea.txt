@@ -8,7 +8,7 @@ Xử lý t truy vấn, mỗi truy vấn thuộc một trong hai loại:
   Loại 2: cho n và một hoán vị của 1..n, tìm thứ hạng k của hoán vị đó.
 Ràng buộc: 1 <= t <= 1000, 1 <= n <= 20, 1 <= k <= n!. Không có modulo.
 Vì n <= 20 nên n! <= 20! ~ 2.4e18, vẫn nằm trong phạm vi số nguyên 64-bit không dấu;
-Python xử lý số nguyên lớn tùy ý nên không lo tràn.
+code dùng `unsigned long long` để chứa giai thừa và thứ hạng.
 
 ## Ý tưởng
 Dùng hệ cơ số giai thừa (factorial number system).
@@ -35,6 +35,5 @@ Loại 2 (hoán vị -> k): mã hóa ngược lại.
   fact[n-1-i] hoán vị đứng trước, nên tổng cho đúng thứ hạng.
 
 ## Độ phức tạp
-Mỗi truy vấn O(n^2) do dùng list.pop / list.index trên danh sách độ dài <= 20.
+Mỗi truy vấn O(n^2) do `vector::erase` và tìm tuyến tính trên danh sách độ dài <= 20.
 Tổng cộng O(t * n^2) <= 1000 * 400 = 4e5 phép toán. Bộ nhớ O(n).
-Đọc toàn bộ input một lần, ghi output một lần nên không có nguy cơ TLE.

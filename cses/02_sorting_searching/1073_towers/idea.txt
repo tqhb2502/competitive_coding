@@ -1,6 +1,8 @@
 Towers - CSES 1073
 https://cses.fi/problemset/task/1073
 
+Tags: binary-search
+
 ## Đề bài
 - Có n khối lập phương đến lần lượt theo thứ tự cho trước, khối thứ i có kích thước k_i.
 - Với mỗi khối, ta hoặc đặt nó lên đỉnh một tháp đã có (chỉ được đặt khi kích thước khối đang đặt NHỎ HƠN THỰC SỰ khối ở đỉnh tháp), hoặc bắt đầu một tháp mới chỉ gồm khối đó.
@@ -10,7 +12,7 @@ https://cses.fi/problemset/task/1073
 Tham lam (greedy) kết hợp tìm kiếm nhị phân (binary search), chính là patience sorting.
 - Ta duy trì một danh sách tops chứa giá trị đỉnh hiện tại của tất cả các tháp, và luôn giữ danh sách này được sắp xếp tăng dần.
 - Khi xử lý khối kích thước k:
-  * Ta muốn đặt k lên một tháp có đỉnh > k (để khối trên nhỏ hơn khối dưới). Để tham lam tối ưu, ta chọn tháp có đỉnh NHỎ NHẤT trong số các đỉnh > k, tức là upper bound của k (bisect_right trong Python, upper_bound trong C++).
+  * Ta muốn đặt k lên một tháp có đỉnh > k (để khối trên nhỏ hơn khối dưới). Để tham lam tối ưu, ta chọn tháp có đỉnh NHỎ NHẤT trong số các đỉnh > k, tức là vị trí `upper_bound(tops, k)`.
   * Nếu tồn tại đỉnh như vậy tại vị trí j: đặt khối lên tháp đó, đỉnh mới trở thành k, ta gán tops[j] = k.
   * Nếu không có đỉnh nào > k: bắt buộc tạo tháp mới, thêm k vào cuối tops.
 - Đáp số là số phần tử của tops sau khi xử lý hết tất cả các khối.
@@ -26,6 +28,7 @@ Vì sao greedy này tối ưu?
 
 ## Độ phức tạp
 - Thời gian: O(n log n) do mỗi khối tốn một lần tìm kiếm nhị phân O(log n) và một phép gán hoặc thêm vào cuối O(1).
-- Bộ nhớ: O(n) cho danh sách tops và mảng dữ liệu đầu vào.
+- Bộ nhớ: O(n) cho danh sách tops; code C++ xử lý các khối ngay khi đọc nên
+  không lưu thêm mảng đầu vào.
 
-LƯU Ý TLE: n tối đa 2*10^5 nên O(n log n) với bisect (viết bằng C) hoàn toàn an toàn trong Python trên CSES. Nếu vẫn gặp TLE do vòng lặp Python, bản C++ dùng vector với upper_bound gán tại chỗ sẽ chạy nhanh hơn nhiều nhờ không có overhead thông dịch.
+Với n tối đa 2*10^5, `vector` kết hợp `upper_bound` chạy trong giới hạn.

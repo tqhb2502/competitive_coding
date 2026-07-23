@@ -38,22 +38,9 @@ Chuyển trạng thái (transition — mấu chốt để KHÔNG kể thứ tự
 
 Ví dụ x = 9, coins = {2,3,5}: các tổ hợp là 2+2+5, 3+3+3, 2+2+2+3 -> đáp án 3.
 
-Ghi chú cài đặt Python thuần thư viện chuẩn:
-- Đọc toàn bộ dữ liệu một lần bằng sys.stdin.buffer.read().split() cho nhanh.
-- Gán các tên hay dùng (mảng ways, hằng MOD) vào biến cục bộ để CPython tra cứu
-  nhanh hơn.
-- Vòng trong dùng phép trừ có điều kiện (if v >= MOD: v -= MOD) thay cho phép
-  chia lấy dư (%) vì trừ nhanh hơn trong CPython.
-- Đã thử kỹ thuật prefix sum theo lớp thặng dư (residue class) modulo c bằng
-  itertools.accumulate trên các lát cắt ways[r::c] nhưng thực tế CHẬM HƠN vòng
-  lặp trực tiếp trên CPython, nên giữ vòng lặp DP thuần cho đơn giản và nhanh.
+Cài đặt bỏ qua ngay đồng xu c > x. Trong vòng cập nhật, tổng của hai số nhỏ hơn
+MOD nên chỉ cần trừ MOD một lần nếu kết quả đạt MOD.
 
 ## Độ phức tạp
-- Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tích cỡ ~10^8.
-
-LƯU Ý TLE: DP thuần Python O(n * x) với x tới 10^6 và n tới 100 (khoảng 10^8 phép
-tính, đo thực tế trường hợp xấu nhất khi tất cả đồng xu đều nhỏ mất ~20 giây trên
-CPython) gần như chắc chắn VƯỢT giới hạn ~1 giây của CSES. Đây là độ phức tạp tốt
-nhất có thể đạt bằng thư viện chuẩn (thuật toán không thể nhanh hơn O(n*x)). Để
-được chấp nhận (AC) nên nộp bản C++ tương đương, hoặc chạy bằng PyPy nếu CSES cho
-phép; lời giải Python này được giữ ĐÚNG về mặt kết quả và dùng thuần thư viện chuẩn.
+- Thời gian O(n*x).
+- Bộ nhớ O(n+x) cho vector đồng xu và mảng `ways`.

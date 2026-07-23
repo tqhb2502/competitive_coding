@@ -28,8 +28,3 @@ khớp hoàn toàn với output mẫu.
 ## Độ phức tạp
 - Thời gian: O(n) cho mỗi hàm nhờ phân tích khấu hao, tổng O(n).
 - Bộ nhớ: O(n) cho hai mảng kết quả.
-
-LƯU Ý TLE: n có thể tới 10^6. Hai vòng lặp O(n) với chi phí mỗi bước của Python là
-đáng kể; trên CPython thuần giải pháp có nguy cơ TLE so với giới hạn thời gian dành
-cho C++ của CSES. Thuật toán vẫn hoàn toàn đúng; đã tối ưu bằng cách xử lý trên
-bytes, cache biến cục bộ và gộp output thành một lần ghi.

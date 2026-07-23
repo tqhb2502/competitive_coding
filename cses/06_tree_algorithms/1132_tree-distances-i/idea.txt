@@ -8,16 +8,13 @@ node là số cạnh trên đường đi (duy nhất) nối chúng.
 
 ## Ý tưởng
 - Mô hình hóa: cây có n node, mỗi cạnh trọng số 1. Lưu đồ thị bằng adjacency
-  list; để chạy nhanh có thể biểu diễn dạng CSR (compressed sparse row) bằng
-  các mảng phẳng thay cho list of lists.
-- Tính chất mấu chốt (diameter endpoints): với BẤT KỲ node v nào, node xa nhất
-  tính từ v luôn là một trong hai đầu mút của đường kính (diameter) của cây.
-  Do đó khoảng cách lớn nhất từ v = max(khoảng cách từ v tới đầu mút A,
-  khoảng cách từ v tới đầu mút B).
-- Chứng minh (phản chứng): gọi (A, B) là hai đầu mút của một đường kính, và w
-  là node xa nhất từ v. Có thể chỉ ra đường đi từ v tới w phải "gặp" đường kính,
-  và w bắt buộc là A hoặc B; nếu không ta ghép được một đường đi dài hơn
-  diameter, mâu thuẫn. Vậy max(distA[v], distB[v]) là khoảng cách xa nhất từ v.
+  list `vector<vector<int>>`.
+- Tính chất mấu chốt (diameter endpoints): cố định hai đầu mút A, B của một
+  đường kính. Với BẤT KỲ node v nào, ít nhất một trong A hoặc B là một node xa
+  nhất từ v. Do đó khoảng cách lớn nhất từ v bằng max(distA[v], distB[v]).
+- Đây là bổ đề chuẩn trên cây: nếu tồn tại x xa v hơn cả A lẫn B, cấu trúc các
+  đường đi duy nhất giữa x, v và đường kính A-B sẽ cho phép ghép một đường đi
+  dài hơn A-B, mâu thuẫn với định nghĩa đường kính.
 - Thuật toán:
   1. BFS từ một node bất kỳ (chọn node 1) -> tìm node A xa nhất; A là một đầu
      mút của diameter.
@@ -26,10 +23,9 @@ node là số cạnh trên đường đi (duy nhất) nối chúng.
   3. BFS từ B -> mảng distB[].
   4. Đáp án của node v = max(distA[v], distB[v]).
 - Vì mọi cạnh trọng số 1 nên BFS cho ra khoảng cách ngắn nhất. BFS chạy kiểu
-  ITERATIVE (queue là mảng + hai con trỏ head/tail) để tránh đệ quy sâu gây
-  stack overflow khi n lớn (tối đa 2*10^5).
+  ITERATIVE bằng `std::queue`, tránh tràn call stack do đệ quy sâu khi n lớn
+  (tối đa 2*10^5).
 
 ## Độ phức tạp
 - Thời gian: O(n) cho mỗi lần BFS, tổng cộng 3 lần BFS -> O(n).
-- Bộ nhớ: O(n) cho adjacency list dạng CSR và các mảng khoảng cách.
-- Với n = 2*10^5, thuật toán O(n) nằm gọn trong giới hạn, kể cả Python thuần.
+- Bộ nhớ: O(n) cho adjacency list và các mảng khoảng cách.

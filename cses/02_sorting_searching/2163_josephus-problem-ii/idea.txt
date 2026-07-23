@@ -37,7 +37,5 @@ Cấu trúc dữ liệu (order-statistics segment tree):
 - Thời gian: O(n log n) vì có n lần loại, mỗi lần một lần đi xuống segment tree O(log n).
 - Bộ nhớ: O(n) cho segment tree (mảng kích thước 2*size, với size là lũy thừa 2 nhỏ nhất >= n).
 
-LƯU Ý TLE: Với n = 2*10^5, thuật toán O(n log n) tương ứng khoảng 3.6 triệu vòng lặp lồng
-nhau trong CPython thuần; time limit 1.00 s của CSES được đặt cho C++ nên bản Python có nguy
-cơ TLE. Bản port C++ dùng Fenwick/segment tree tương tự (hoặc GNU pbds ordered_set / policy
-tree order_of_key + find_by_order) chạy chỉ vài mili-giây nên vượt qua thoải mái.
+Với n = 2*10^5, code C++ thực hiện khoảng n log n bước đi xuống cây và xuất n
+số, phù hợp với giới hạn.

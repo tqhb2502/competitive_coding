@@ -34,18 +34,18 @@ Transition (từ đường chéo d-1 sang d):
 
 Answer: nối các ký tự đã chọn cho d = 0, 1, ..., 2n-2, được xâu độ dài 2n-1.
 
-Cài đặt nhanh (để tránh TLE trong Python thuần): tổng số ô xử lý là O(n^2)
-(tối đa ~9,000,000 với n=3000) nên vòng lặp Python từng ô sẽ quá chậm. Ta làm
-mọi thao tác theo lô (bulk) ở mức C:
-- Lưu lưới thành một chuỗi byte row-major độ dài n*n. Ký tự trên đường chéo d
-  ứng với các chỉ số cách đều bước step = n-1, lấy được bằng slice mức C.
-- Biểu diễn frontier bằng chuỗi byte 0/1 (một byte cho mỗi hàng). Phép "đi
-  xuống" (dịch hàng r-1 -> r) tương ứng dịch phải 8 bit trên số nguyên lớn:
-  F >> 8; phép OR bit cho ra tập ứng viên.
-- Che các ô không phải ứng viên thành 255 bằng bytes.translate rồi OR với ký tự
-  đường chéo; dùng min() để lấy mn; dùng bytes.translate lần nữa để lấy frontier
-  mới (các vị trí == mn).
+Cài đặt dùng hai mảng `vector<char>` độ dài n là `frontier` và
+`next_frontier`, đánh dấu theo chỉ số hàng. Trên mỗi đường chéo d, chỉ cần duyệt
+các hàng từ `lo` đến `hi`:
+
+- Lượt thứ nhất kiểm tra điều kiện có thể đi tới từ frontier cũ và tìm ký tự nhỏ
+  nhất trong các ô ứng viên.
+- Lượt thứ hai đánh dấu vào frontier mới đúng những ô ứng viên mang ký tự nhỏ
+  nhất đó.
+
+Sau đó đổi vai trò hai mảng và tiếp tục với đường chéo kế tiếp.
 
 ## Độ phức tạp
-Thời gian O(n^2); trong Python chạy hoàn toàn ở mức C nên rất nhanh (thực nghiệm
-n=3000 khoảng 0.3s). Bộ nhớ O(n^2) cho chuỗi lưới cộng O(n) cho frontier.
+- Thời gian: O(n^2), vì tổng độ dài của các đường chéo là n^2 và mỗi đường chéo
+  được duyệt hai lần.
+- Bộ nhớ: O(n^2) cho lưới, cộng O(n) cho hai frontier và xâu kết quả.

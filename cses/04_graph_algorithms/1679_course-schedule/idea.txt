@@ -14,7 +14,7 @@ Mô hình đồ thị:
 
 Thuật toán Kahn (topo sort bằng BFS trên bậc vào):
 1. Xây dựng danh sách kề adj và mảng bậc vào indeg (in-degree) cho từng đỉnh.
-2. Đưa mọi đỉnh có indeg = 0 (không có khóa tiên quyết) vào một hàng đợi (deque).
+2. Đưa mọi đỉnh có indeg = 0 (không có khóa tiên quyết) vào `std::queue`.
 3. Lặp: lấy đỉnh u ra khỏi hàng đợi, thêm u vào kết quả. Với mỗi cạnh u -> v,
    giảm indeg[v] đi 1; nếu indeg[v] về 0 thì đưa v vào hàng đợi.
 4. Nếu kết quả chứa đủ n đỉnh thì in ra thứ tự đó; ngược lại (còn đỉnh bị kẹt
@@ -26,10 +26,10 @@ Vì sao đúng:
 - Đồ thị có sắp xếp topo hợp lệ khi và chỉ khi nó là DAG (không có chu trình).
   Nếu có chu trình, các đỉnh trong chu trình không bao giờ đạt indeg = 0 nên không
   được lấy ra, khiến số đỉnh kết quả nhỏ hơn n -> kết luận IMPOSSIBLE.
-- Bài toán chấp nhận bất kỳ thứ tự topo hợp lệ nào, nên dùng deque là đủ.
+- Bài toán chấp nhận bất kỳ thứ tự topo hợp lệ nào, nên một hàng đợi FIFO là đủ.
 
 ## Độ phức tạp
 - Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh được duyệt đúng một lần.
 - Bộ nhớ: O(n + m) cho danh sách kề và mảng bậc vào.
-- Với n <= 1e5 và m <= 2e5, thuật toán chạy rất nhẹ. Dùng BFS (deque) nên
+- Với n <= 1e5 và m <= 2e5, thuật toán chạy rất nhẹ. Dùng BFS lặp nên
   không có nguy cơ tràn stack như DFS đệ quy.

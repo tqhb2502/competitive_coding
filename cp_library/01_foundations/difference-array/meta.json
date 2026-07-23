@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "difference-array",
+  "title": "Difference Array",
+  "category": "01_foundations",
+  "summary": "Ghi nhận cập nhật cộng đoạn bằng hai thay đổi tại biên rồi khôi phục toàn bộ mảng bằng một lần quét.",
+  "aliases": [
+    "imos method",
+    "offline range addition"
+  ],
+  "tags": [
+    "difference-array",
+    "offline",
+    "range-update"
+  ],
+  "status": "stress-tested",
+  "source": "algorithm.hpp",
+  "complexities": {
+    "build": "O(n)",
+    "update": "O(1)",
+    "materialize": "O(n)",
+    "memory": "O(n)"
+  },
+  "tests": [
+    "test.cpp"
+  ],
+  "practice": [
+    {
+      "title": "CSES Range Update Queries",
+      "path": "cses/05_range_queries/1651_range-update-queries"
+    }
+  ]
+}

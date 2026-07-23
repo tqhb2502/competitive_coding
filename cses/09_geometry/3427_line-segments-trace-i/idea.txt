@@ -32,8 +32,8 @@ Dùng Convex Hull Trick (CHT) đơn điệu:
   tính bằng số nguyên nên luôn chính xác.
 
 ## Tính đúng đắn
-- Mọi phép so sánh và cross product đều là số nguyên (Python big int, C++ dùng
-  __int128 để không tràn số), nên không có sai số dấu phẩy động.
+- Mọi phép so sánh và cross product đều là số nguyên; code dùng `__int128` cho
+  tích chéo để không tràn số, nên không có sai số dấu phẩy động.
 - Với x nguyên, y = b + s*x luôn là số nguyên, khớp với yêu cầu in số nguyên.
   Tại x = m: y = y1 + s*m = y1 + (y2 - y1) = y2 (đúng đầu mút phải).
 - Upper envelope của các đường thẳng cho đúng giá trị lớn nhất tại mọi x; và vì
@@ -43,4 +43,3 @@ Dùng Convex Hull Trick (CHT) đơn điệu:
 ## Độ phức tạp
 - Thời gian: O(n log n) cho bước sắp xếp + O(n) xây hull + O(n + m) cho truy vấn.
 - Bộ nhớ: O(n).
-Với n, m <= 1e5, thuật toán chạy rất nhanh ngay cả với pure Python stdlib.

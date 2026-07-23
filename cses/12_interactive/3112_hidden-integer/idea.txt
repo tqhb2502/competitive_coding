@@ -1,6 +1,8 @@
 Hidden Integer - CSES 3112
 https://cses.fi/problemset/task/3112
 
+Tags: binary-search, monotone-predicate, search-on-answer
+
 ## Đề bài
 Judge giấu một số nguyên x với 1 <= x <= 10^9. Ta phải đoán ra x qua các truy vấn.
 - Truy vấn (query): in ra dòng "? y" với 1 <= y <= 10^9.

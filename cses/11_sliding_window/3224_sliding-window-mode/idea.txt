@@ -1,6 +1,8 @@
 Sliding Window Mode - CSES 3224
 https://cses.fi/problemset/task/3224
 
+Tags: coordinate-compression, sliding-window, sorting
+
 ## Đề bài
 Cho một mảng gồm n số nguyên và một số k. Với mỗi cửa sổ gồm k phần tử liên tiếp
 (trượt từ trái sang phải), hãy in ra mode của cửa sổ đó, tức phần tử xuất hiện

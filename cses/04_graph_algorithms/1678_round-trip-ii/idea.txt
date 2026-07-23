@@ -33,7 +33,7 @@ gray thì v chắc chắn là tổ tiên của u trên cây DFS, nên chuỗi pa
 
 Phải chạy DFS bắt đầu từ MỌI đỉnh chưa thăm để bao phủ cả đồ thị không liên
 thông. DFS được viết theo kiểu ITERATIVE (stack tường minh + mảng con trỏ chỉ số
-it[]) vì n có thể tới 1e5, đệ quy sẽ gây RecursionError / stack overflow.
+it[]) vì n có thể tới 1e5, tránh tràn call stack do đệ quy sâu.
 
 Truy vết và in kết quả:
 - Khi tìm được back edge u -> v: đi từ u theo parent cho tới v để lấy các đỉnh
@@ -53,4 +53,4 @@ Tính đúng đắn:
 ## Độ phức tạp
 - Thời gian: O(n + m) - mỗi đỉnh và mỗi cạnh được xét đúng một lần.
 - Bộ nhớ: O(n + m) cho danh sách kề, các mảng color, parent, it và stack.
-- Với n <= 1e5, m <= 2e5, độ phức tạp tuyến tính này an toàn cho pure Python.
+- Với n <= 1e5, m <= 2e5, độ phức tạp tuyến tính nằm trong giới hạn.

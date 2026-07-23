@@ -1,6 +1,8 @@
 Nearest Campsites I - CSES 3306
 https://cses.fi/problemset/task/3306
 
+Tags: coordinate-compression, sorted-array, sorting, two-pointers
+
 ## Đề bài
 Cho n điểm trại đã đặt và m điểm trại trống trên lưới. Khoảng cách giữa hai
 điểm là khoảng cách Manhattan |x1 - x2| + |y1 - y2|. Với mỗi điểm trại trống,

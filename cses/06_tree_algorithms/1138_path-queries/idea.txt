@@ -1,6 +1,8 @@
 Path Queries - CSES 1138
 https://cses.fi/problemset/task/1138
 
+Tags: difference-array, range-update
+
 ## Đề bài
 Cho một cây có gốc gồm n đỉnh (đỉnh 1 là gốc), mỗi đỉnh mang một giá trị. Có q truy vấn:
   - "1 s x": đổi giá trị của đỉnh s thành x.
@@ -10,7 +12,7 @@ Cho một cây có gốc gồm n đỉnh (đỉnh 1 là gốc), mỗi đỉnh ma
 Nhận xét mấu chốt: đường đi từ gốc đến s chính là tập hợp mọi tổ tiên của s (kể cả
 chính s). Vì vậy tổng cần tính là tổng giá trị của tất cả các đỉnh u là tổ tiên của s.
 
-Làm phẳng cây bằng Euler tour: dùng DFS lặp (iterative, tránh RecursionError vì n có
+Làm phẳng cây bằng Euler tour: dùng DFS lặp (iterative, tránh tràn call stack vì n có
 thể tới 2*10^5) để gán cho mỗi đỉnh v hai mốc thời gian tin[v] (lúc vào) và tout[v]
 (lúc ra). Tính chất: u là tổ tiên của s (kể cả u = s) khi và chỉ khi
     tin[u] <= tin[s] <= tout[u].
@@ -35,8 +37,3 @@ BIT được khởi tạo trong O(n) từ một mảng hiệu (difference array)
 ## Độ phức tạp
   - Thời gian: O(n) dựng Euler tour và BIT, mỗi truy vấn O(log n). Tổng O((n + q) log n).
   - Bộ nhớ: O(n) cho danh sách kề, tin/tout, parent và BIT.
-
-LƯU Ý TLE: Với n, q tới 2*10^5 và giới hạn thời gian nhắm cho C++, lời giải Python
-thuần (mỗi truy vấn vài vòng lặp log n) có thể chạm ngưỡng thời gian trên các test xấu
-nhất của CSES. Thuật toán vẫn ĐÚNG; đã tối ưu đọc/ghi I/O và inline các vòng BIT để
-giảm hằng số. Không dùng numpy hay thư viện bên thứ ba.

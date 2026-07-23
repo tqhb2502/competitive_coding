@@ -1,6 +1,8 @@
 Sliding Window Xor - CSES 3426
 https://cses.fi/problemset/task/3426
 
+Tags: sliding-window
+
 ## Đề bài
 - Mảng gồm n phần tử được SINH ra (không đọc trực tiếp) theo công thức truy hồi:
     x_1 = x
@@ -39,5 +41,5 @@ https://cses.fi/problemset/task/3426
 
 ## Độ phức tạp
 - Thời gian: O(n) — một lượt sinh mảng và một lượt trượt cửa sổ.
-- Bộ nhớ: O(n) để lưu mảng đã sinh (mảng int tĩnh ~ 40 MB với n = 10^7, nằm trong
-  giới hạn bộ nhớ của CSES).
+- Bộ nhớ được cấp phát cố định theo giới hạn `MAX_N`: mảng `int` tĩnh
+  10,000,005 phần tử, khoảng 40 MB (tương đương O(MAX_N)).

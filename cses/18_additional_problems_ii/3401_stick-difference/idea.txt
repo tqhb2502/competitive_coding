@@ -1,6 +1,8 @@
 Stick Difference - CSES 3401
 https://cses.fi/problemset/task/3401
 
+Tags: binary-search, coordinate-compression, monotone-predicate, sorting
+
 ## Đề bài
 Cho n thanh gỗ có độ dài nguyên a_i. Với mỗi k = 1..m, ta cắt đúng k nhát để
 tạo thành n+k đoạn có độ dài nguyên dương, sao cho hiệu (đoạn dài nhất trừ đoạn

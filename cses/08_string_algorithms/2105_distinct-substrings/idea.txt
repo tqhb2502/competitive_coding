@@ -8,10 +8,9 @@ duy nhất.
 
 ## Ý tưởng
 Sử dụng suffix automaton (SAM).
-- SAM là automaton tối thiểu chấp nhận đúng tất cả các hậu tố (suffix) của s.
-  Điểm mấu chốt: mỗi ĐƯỜNG ĐI khác rỗng xuất phát từ trạng thái gốc (initial)
-  tương ứng 1-1 với một xâu con phân biệt của s. Vì vậy số xâu con phân biệt
-  bằng tổng số đường đi khác rỗng bắt đầu từ trạng thái gốc.
+- SAM là một automaton gọn biểu diễn các lớp endpos của s. Điểm mấu chốt: mỗi
+  ĐƯỜNG ĐI khác rỗng xuất phát từ trạng thái gốc (initial) tương ứng 1-1 với
+  một xâu con phân biệt của s.
 - Mỗi trạng thái v (khác trạng thái gốc) đại diện cho một lớp các xâu con có
   cùng tập vị trí kết thúc (endpos). Các xâu trong lớp này có độ dài liên tiếp
   từ len[link[v]] + 1 đến len[v]. Do đó số xâu con MỚI mà trạng thái v đóng góp
@@ -22,20 +21,16 @@ Sử dụng suffix automaton (SAM).
 Vì sao đúng:
 - SAM đảm bảo mỗi xâu con phân biệt được biểu diễn bởi đúng một cặp
   (trạng thái, độ dài), với độ dài nằm trong khoảng (len[link[v]], len[v]].
-  Các khoảng này không chồng lấn giữa các trạng thái và phủ hết toàn bộ xâu con,
-  nên tổng (len[v] - len[link[v]]) không đếm trùng và không bỏ sót.
+  Các khoảng độ dài của hai trạng thái có thể chồng lấn về mặt số học, nhưng
+  hai trạng thái đại diện cho hai lớp endpos khác nhau nên các cặp
+  (trạng thái, độ dài) vẫn phân biệt. Các cặp này phủ đúng mọi xâu con, vì vậy
+  tổng (len[v] - len[link[v]]) không đếm trùng và không bỏ sót.
 
 Xây dựng SAM: thêm từng ký tự vào cuối, cập nhật transitions và suffix link,
-tạo thêm một trạng thái "clone" khi cần tách lớp. Số trạng thái <= 2n-1,
-số cạnh <= 3n-4. Kết quả có thể lớn tới n*(n+1)/2 ~ 5e9 nên cần kiểu số nguyên
-64-bit (C++); Python dùng số nguyên lớn vô hạn nên không tràn số.
+tạo thêm một trạng thái "clone" khi cần tách lớp. Số trạng thái <= 2n và số
+cạnh chuyển là O(n). Kết quả có thể lớn tới n*(n+1)/2 ~ 5e9 nên cần kiểu số nguyên
+64-bit (`long long`).
 
 ## Độ phức tạp
-- Thời gian: O(n) amortized (transitions cho bảng chữ cái nhỏ), lý thuyết
-  O(n * log|alphabet|) nếu dùng cấu trúc có thứ tự.
-- Bộ nhớ: O(n) trạng thái, mỗi trạng thái lưu bảng transitions.
-
-LƯU Ý TLE: Với n = 1e5, dùng dict cho mỗi trạng thái trong pure Python có thể
-chậm (ước lượng vài trăm ms đến ~1s trên CPython). Thuật toán là đúng; nếu CSES
-báo TLE trên CPython thì nên nộp bằng PyPy hoặc chuyển sang suffix array + LCP
-với mảng phẳng để tăng tốc.
+- Thời gian: O(n) khấu hao với transition lưu trong `array<int,26>`.
+- Bộ nhớ: O(26n) = O(n).

@@ -43,11 +43,9 @@ n để không tính lại các truy vấn trùng nhau.
 Kiểm chứng: n = 2 cho 8 (A = 3, B = 5); n = 6 cho 2864 (A = 843, B = 2021).
 
 ## Độ phức tạp
-- Time: O(t * log n) — mỗi truy vấn tính M^(n-1) bằng lũy thừa ma trận 2x2 và số học
-  modulo.
-- Space: O(1) — không cần mảng kích thước 10^6, chỉ giữ vài ma trận 2x2 và cache.
-
-LƯU Ý TLE: cách precompute tuyến tính O(max_n) với max_n = 10^6 bằng Python thuần chạy
-sát giới hạn 1.00s trên CSES (biên độ an toàn mỏng). Vì vậy ta dùng lũy thừa ma trận
-O(t * log n) (với t <= 100, n <= 10^6 chỉ khoảng vài nghìn phép nhân ma trận 2x2) để
-loại bỏ hoàn toàn nguy cơ TLE, kết hợp đọc/ghi nhanh bằng sys.stdin.buffer.
+- Gọi u là số chiều cao khác nhau và H là chiều cao lớn nhất. Với
+  `unordered_map`, thời gian kỳ vọng là O(t + u log H): mọi truy vấn vẫn cần
+  đọc, tra cache và in kết quả, còn mỗi chiều cao mới cần một lần lũy thừa
+  ma trận. Xấu nhất theo số phép lũy thừa là O(t log H).
+- Cache chứa u phần tử nhưng code `reserve` số bucket theo t, nên tổng bộ nhớ
+  là O(t); phép lũy thừa ma trận chỉ dùng thêm O(1).

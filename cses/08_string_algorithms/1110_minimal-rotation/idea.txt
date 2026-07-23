@@ -36,8 +36,3 @@ về O(n); duyệt hết ta thu được đúng chỉ số của rotation nhỏ 
 - Thời gian: O(n) (duyệt xâu nhân đôi độ dài 2n, failure function khấu hao O(1)
   mỗi bước).
 - Bộ nhớ: O(n) cho xâu nhân đôi và mảng f.
-
-LƯU Ý TLE: với n tới 1e6, xâu nhân đôi dài 2e6 và vòng lặp Python thuần chạy
-2e6 bước có thể chậm (~vài giây) và có nguy cơ TLE trên CSES (giới hạn nhắm cho
-C++). Thuật toán vẫn ĐÚNG và tối ưu về mặt lý thuyết O(n); ta làm việc trên
-bytes để tăng tốc tối đa mà tuyệt đối không dùng numpy hay thư viện bên thứ ba.

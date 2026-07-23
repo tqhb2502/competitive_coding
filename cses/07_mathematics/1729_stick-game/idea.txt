@@ -50,9 +50,3 @@ Kiểm tra ví dụ: n=10, P={1,3,4} -> WLWWWWLWLW (khớp).
   kề nhau (nếu i thua thì i-1 phải thắng), do đó số thế thua <= n/2. Trường hợp
   xấu nhất ~ (n/2) * k = 5*10^7 phép gán, cộng vòng duyệt O(n).
 - Bộ nhớ: O(n + maxp) cho mảng byte.
-
-LƯU Ý TLE: Trong Python thuần, trường hợp xấu nhất ~5*10^7 phép gán mức Python
-(khi số thế thua ~ n/2 và k = 100) có thể vượt giới hạn thời gian ~1s của CSES
-trên CPython. Thuật toán vẫn ĐÚNG; đây là O(n*k) tối ưu như lời giải C++ chuẩn.
-Nếu bị TLE, cần nộp bằng PyPy3 hoặc chuyển sang C++; không dùng thư viện bên
-thứ ba (numpy...) theo quy định.

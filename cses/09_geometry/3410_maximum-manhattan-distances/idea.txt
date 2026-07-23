@@ -31,5 +31,4 @@ Thuật toán: khi thêm mỗi điểm, cập nhật bốn biến running min/ma
 rồi in ra max(maxU-minU, maxV-minV). Mỗi bước tốn O(1).
 
 ## Độ phức tạp
-Thời gian O(n), bộ nhớ O(1) ngoài phần đọc input và mảng kết quả. Với n <= 2e5
-chương trình chạy rất nhanh, không có rủi ro TLE.
+Thời gian O(n), bộ nhớ phụ O(1); mỗi đáp án được in ngay sau khi đọc điểm.

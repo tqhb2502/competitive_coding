@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "example-entry",
+  "title": "Example Entry",
+  "category": "01_foundations",
+  "summary": "Một câu mô tả ngắn về bài toán entry giải quyết.",
+  "aliases": [
+    "alternative name"
+  ],
+  "tags": [
+    "example",
+    "foundation"
+  ],
+  "status": "draft",
+  "source": "algorithm.hpp",
+  "complexities": {
+    "time": "O(n)",
+    "memory": "O(1)"
+  },
+  "tests": [
+    "test.cpp"
+  ],
+  "practice": [
+    {
+      "title": "CSES Missing Number",
+      "path": "cses/01_introductory/1083_missing-number"
+    }
+  ]
+}

@@ -33,5 +33,10 @@ Cách tính:
   vì MOD = 10^9 + 7 là số nguyên tố và gcd(n, MOD) = 1.
 
 ## Độ phức tạp
-Thời gian O(sqrt(n) + số_ước * log(n)), bộ nhớ O(số_ước). Với n, m <= 10^6
-chương trình chạy tức thời, không có nguy cơ TLE.
+Gọi tau(n) là số ước của n.
+- Liệt kê ước: O(sqrt(n)).
+- Với mỗi ước d, tính phi(d) bằng chia thử O(sqrt(d)) và lũy thừa modulo
+  O(log n).
+- Tổng thời gian:
+  O(sqrt(n) + sum_{d|n}(sqrt(d) + log n)), có thể chặn thô bởi
+  O(tau(n) * sqrt(n)); bộ nhớ O(tau(n)).

@@ -15,8 +15,8 @@ Diện tích thực là |2A| / 2. Vì đề bài yêu cầu in 2a nên ta chỉ 
 
 Mỗi số hạng x_i * y_{i+1} - x_{i+1} * y_i chính là cross product của hai vector
 tính từ gốc tọa độ và luôn là số nguyên. Ta cộng dồn toàn bộ bằng số nguyên rồi
-lấy giá trị tuyệt đối. Python dùng big integer nên không bao giờ tràn số; ở C++
-ta cộng dồn bằng __int128 để tránh tràn (mỗi tích cỡ ~1e18, tổng qua n <= 1000
+lấy giá trị tuyệt đối. Code cộng dồn bằng `__int128` để tránh tràn (mỗi tích
+cỡ ~1e18, tổng qua n <= 1000
 số hạng cỡ ~1e21). Không dùng float để tránh mọi sai số làm tròn (bài toán hình
 học của CSES rất nhạy về precision).
 
@@ -27,4 +27,3 @@ cho ra 2a đúng bất kể chiều duyệt của đầu vào.
 ## Độ phức tạp
 Thời gian O(n) để duyệt các đỉnh một lần. Bộ nhớ O(n) để lưu tọa độ (có thể giảm
 xuống O(1) nếu xử lý streaming, nhưng O(n) là đủ với n <= 1000).
-Không có rủi ro TLE với ràng buộc n <= 1000.

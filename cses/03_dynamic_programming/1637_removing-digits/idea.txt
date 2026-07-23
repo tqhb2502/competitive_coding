@@ -26,5 +26,4 @@ Cách Greedy (dùng trong lời giải vì nhanh hơn nhiều):
 
 ## Độ phức tạp
 - DP: thời gian O(n * số_chữ_số) ~ O(7n), bộ nhớ O(n).
-- Greedy: thời gian O(số_bước * số_chữ_số), bộ nhớ O(1); chạy tức thì, an toàn
-  tuyệt đối về thời gian ngay cả với Python.
+- Greedy dùng trong code: O(số_bước * số_chữ_số) thời gian và O(1) bộ nhớ.

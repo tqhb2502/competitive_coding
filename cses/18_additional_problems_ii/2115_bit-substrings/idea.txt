@@ -1,6 +1,8 @@
 Bit Substrings - CSES 2115
 https://cses.fi/problemset/task/2115
 
+Tags: prefix-sum
+
 ## Đề bài
 Cho một chuỗi bit độ dài n. Với mỗi k = 0..n, đếm số substring không rỗng
 chứa đúng k chữ số 1, rồi in ra n+1 giá trị đó. Ràng buộc n <= 2*10^5.

@@ -1,6 +1,8 @@
 All Manhattan Distances - CSES 3411
 https://cses.fi/problemset/task/3411
 
+Tags: prefix-sum
+
 ## Đề bài
 Cho tập hợp n điểm trên mặt phẳng. Hãy tính tổng khoảng cách Manhattan giữa MỌI
 cặp điểm. Khoảng cách Manhattan giữa hai điểm i và j được định nghĩa là:
@@ -25,8 +27,7 @@ tử trước, luôn không âm), nên kết quả bằng chính |a_i - a_j|.
 
 Toàn bộ phép tính giữ nguyên số nguyên (exact integer arithmetic), không dùng
 float. Tọa độ tới cỡ 1e9 và n tới 2e5 nên tổng có thể lớn cỡ n^2 * range ~
-10^20, vượt quá 64-bit: Python dùng big integer tự động, còn C++ dùng __int128
-để tránh tràn số (overflow).
+10^20, vượt quá 64-bit; code dùng `__int128` để tránh tràn số.
 
 ## Độ phức tạp
 - Thời gian: O(n log n) do hai lần sort (một cho x, một cho y); phần cộng dồn

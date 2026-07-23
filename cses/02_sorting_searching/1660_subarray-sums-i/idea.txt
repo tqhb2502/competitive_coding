@@ -1,6 +1,8 @@
 Subarray Sums I - CSES 1660
 https://cses.fi/problemset/task/1660
 
+Tags: counting, sliding-window, two-pointers
+
 ## Đề bài
 Cho một mảng gồm n số nguyên DƯƠNG. Hãy đếm số lượng subarray (đoạn con liên tiếp) có tổng đúng bằng x.
 
@@ -14,7 +16,8 @@ Vì sao đúng:
 - Với mỗi vị trí kết thúc right cố định, do các phần tử dương nên tồn tại nhiều nhất MỘT vị trí bắt đầu left sao cho tổng đoạn [left, right] bằng đúng x. Con trỏ left không bao giờ lùi lại (chỉ tiến lên), nên mỗi cặp (left, right) được xét đúng một lần.
 - Khi cur == x nghĩa là đoạn hiện tại có tổng đúng x, đếm thêm 1. Nếu cur < x thì không có đoạn nào kết thúc tại right có tổng x với left hiện tại (mọi đoạn ngắn hơn còn nhỏ hơn nữa vì toàn số dương). Tính đơn điệu bảo đảm không bỏ sót đoạn nào.
 
-Lưu ý về kiểu dữ liệu: n tối đa 2*10^5 và a_i tối đa 10^9 nên tổng có thể lên tới 2*10^14, vượt 32-bit; trong C++ cần dùng long long. Python xử lý số nguyên lớn tự động nên không lo tràn số.
+Lưu ý về kiểu dữ liệu: n tối đa 2*10^5 và a_i tối đa 10^9 nên tổng có thể lên
+tới 2*10^14; code C++ dùng `long long` cho giá trị đích và tổng cửa sổ.
 
 Phương án thay thế: prefix sum + hashmap (đếm số cặp prefix sao cho pref[j]-pref[i]=x) cũng chạy O(n) và áp dụng được cho cả số âm. Ở đây do toàn số dương nên two-pointer gọn và nhanh hơn (không cần hashmap).
 
@@ -22,4 +25,5 @@ Phương án thay thế: prefix sum + hashmap (đếm số cặp prefix sao cho 
 - Thời gian: O(n) vì mỗi con trỏ left và right chỉ đi tối đa n bước.
 - Bộ nhớ: O(n) để lưu mảng.
 
-LƯU Ý TLE: Với n = 2*10^5 thuật toán O(n), phần đọc dữ liệu là điểm nhạy cảm nhất trong Python. Cần dùng sys.stdin.buffer.read() và tách số một lần thay vì input() theo dòng. Với cách đọc nhanh này Python 3 thường vượt qua trong giới hạn thời gian. Nếu vẫn TLE, bản C++ với vòng lặp two-pointer trên mảng long long và đọc buffer sẽ chạy dư sức.
+Với n = 2*10^5, code C++ dùng fast I/O và hai con trỏ tuyến tính nên nằm trong
+giới hạn.

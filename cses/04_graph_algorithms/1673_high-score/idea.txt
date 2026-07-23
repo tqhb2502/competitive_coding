@@ -36,23 +36,15 @@ Cho một đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n đỉnh và m cạn
   chu trình dương ảnh hưởng tới đường đi. Vì mọi đỉnh good đều đi tới được n nên chu trình
   này chắc chắn nằm trên một đường đi 1 -> n, do đó đáp án là -1.
 - Ngược lại, đáp án là dist[n].
-- Tối ưu (active set): mỗi vòng chỉ duyệt các đỉnh vừa được cập nhật ở vòng trước thay vì
-  quét lại toàn bộ cạnh. Nếu tập active rỗng thì đã đạt điểm dừng cố định, dừng sớm và
-  chắc chắn không có chu trình dương, in dist[n]. Riêng vòng kiểm tra vẫn quét toàn bộ
-  cạnh good một lần (chi phí O(E)) để kết luận chính xác.
+- Code C++ quét toàn bộ các cạnh good trong mỗi vòng. Nếu một vòng không có cập nhật
+  nào thì đã hội tụ và dừng sớm; sau cùng quét thêm toàn bộ cạnh good đúng một lần để
+  phát hiện chu trình dương.
 
 ## Độ phức tạp
 - BFS cắt tỉa: O(n + m).
-- Bellman-Ford (active set): tệ nhất vẫn O(V * E) = O(n * m) = 2500 * 5000 = 1.25 * 10^7
-  phép relax, nhưng thực tế nhanh hơn nhiều vì chỉ duyệt các đỉnh vừa thay đổi. Ví dụ với
-  đồ thị dạng chuỗi dài (worst case của Bellman-Ford quét toàn bộ cạnh) thì active set
-  chỉ tốn O(n + m).
+- Bellman-Ford: O(V_good * E_good), xấu nhất O(n * m) =
+  2500 * 5000 = 1.25 * 10^7 phép relax; có thể dừng sớm khi một vòng không đổi.
 - Bộ nhớ: O(n + m).
 
-LƯU Ý TLE: Đây là bài O(V*E) vốn nhắm tới C++; trong Python thuần vẫn có nguy cơ TLE trên
-test cực đoan. Đã giảm mạnh thời gian bằng cách cắt tỉa đồ thị (R1 giao R2) và Bellman-Ford
-theo active set (thay vì quét lại toàn bộ cạnh mỗi vòng như bản O(n*m) ngây thơ). Với input
-dạng chuỗi thời gian chạy còn ~0.02s; tuy nhiên một số input đối nghịch được dựng riêng (hub
-tỏa rộng, mọi đích đều tới được n nên không bị cắt tỉa) vẫn có thể lên tới ~3*10^6 phép relax
-và mất khoảng 1.5s. Muốn triệt để nhanh hơn cần numpy (không phải thư viện chuẩn) hoặc phân
-rã SCC phức tạp mà bản thân vẫn còn worst case O(V*E) khi đồ thị là một SCC lớn.
+Việc chỉ giữ đồ thị con good có thể giảm đáng kể số cạnh thực tế; ngay cả cận
+xấu nhất 1.25 * 10^7 phép relax vẫn phù hợp với code C++.

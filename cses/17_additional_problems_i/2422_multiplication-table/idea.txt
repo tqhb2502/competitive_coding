@@ -1,6 +1,8 @@
 Multiplication Table - CSES 2422
 https://cses.fi/problemset/task/2422
 
+Tags: binary-search, monotone-predicate, search-on-answer
+
 ## Đề bài
 Cho n lẻ. Xét bảng nhân n x n với phần tử tại hàng i cột j bằng i*j. Sắp xếp
 toàn bộ n^2 giá trị theo thứ tự không giảm và in ra phần tử ở giữa, tức phần

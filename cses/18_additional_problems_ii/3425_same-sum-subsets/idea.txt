@@ -1,6 +1,8 @@
 Same Sum Subsets - CSES 3425
 https://cses.fi/problemset/task/3425
 
+Tags: counting, sorted-array, two-pointers
+
 ## Đề bài
 Cho n số nguyên dương (n <= 40, tổng các số <= 2^n - 2). Hãy dựng hai tập con
 rời nhau, không rỗng và có cùng tổng. Nếu không tồn tại thì in "IMPOSSIBLE".

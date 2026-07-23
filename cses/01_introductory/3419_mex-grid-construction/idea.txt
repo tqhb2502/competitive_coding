@@ -30,6 +30,7 @@ https://cses.fi/problemset/task/3419
 
 ## Độ phức tạp
 - Thời gian: O(n^2) để sinh toàn bộ lưới.
-- Bộ nhớ: O(n) cho mỗi dòng (dùng join), không lưu cả lưới.
+- Bộ nhớ: O(1) ngoài dữ liệu xuất; code C++ tính và in trực tiếp từng ô,
+  không lưu cả dòng hay cả lưới.
 
 LƯU Ý TLE: Với n <= 100 nên chỉ có tối đa 10000 số, cực kỳ nhẹ, không có rủi ro TLE.

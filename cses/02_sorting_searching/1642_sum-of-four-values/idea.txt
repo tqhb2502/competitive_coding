@@ -40,7 +40,5 @@ mà không thấy thì thực sự không tồn tại -> in "IMPOSSIBLE".
   bình nhờ hashmap).
 - Bộ nhớ: O(n^2) trong trường hợp xấu nhất để lưu các tổng cặp trong hashmap.
 
-LƯU Ý TLE: với n = 1000, số phép toán khoảng 10^6 thao tác trên dict; trong
-Python thuần điều này có thể chạm giới hạn thời gian 1.00s của CSES (rủi ro
-biên). Bản C++ dùng std::unordered_map (hoặc sort + two-pointer) sẽ nhanh hơn
-nhiều lần và vượt qua thoải mái.
+Với n = 1000 có khoảng 10^6 lượt tìm/chèn. Code đặt trước dung lượng và hạ
+`max_load_factor` của `unordered_map` để tránh rehash tốn kém.

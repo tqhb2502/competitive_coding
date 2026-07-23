@@ -33,27 +33,10 @@ tổng dp[n][*] đếm đúng và không trùng lặp mọi mảng hợp lệ.
 
 Tối ưu bộ nhớ: chỉ cần một hàng dp hiện tại, dùng một mảng 1 chiều độ dài m+2 với
 hai ô đệm (padding) ở đầu (chỉ số 0) và cuối (chỉ số m+1) luôn bằng 0 để tránh
-kiểm tra biên khi cộng v-1 và v+1.
-
-Chi tiết cài đặt Python (chỉ dùng thư viện chuẩn, KHÔNG dùng thư viện ngoài):
-- Đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split() cho nhanh.
-- Với vị trí chưa biết (x[i] == 0), thay vì lặp từng v ta cộng cùng lúc ba "lát
-  cắt" (slice) của list bằng zip: core[k] = dp[k] + dp[k+1] + dp[k+2], khi đó
-  dp_new[v] = core[v-1] = dp[v-1] + dp[v] + dp[v+1] đúng theo công thức chuyển.
-- Kỹ thuật "hoãn mod" (defer modulo): cộng dồn không mod trong tối đa 16 bước liên
-  tiếp rồi mới lấy modulo một lần. Mỗi phần tử tăng tối đa gấp 3 sau mỗi bước, nên
-  sau 16 bước giá trị vẫn nhỏ hơn 3^16 * 10^9 ~ 4.3 * 10^16; Python dùng số nguyên
-  chính xác tuyệt đối nên hoãn mod luôn giữ đúng kết quả mà vẫn cộng nhanh.
-- Khi gặp giá trị đã biết (x[i] != 0), reset bộ đếm hoãn mod và tính trực tiếp một
-  ô, lấy modulo ngay.
+kiểm tra biên khi cộng v-1 và v+1. Code dùng hai vector `dp` và `next`; trước mỗi
+vị trí, xóa `next` về 0. Nếu vị trí chưa biết thì tính đủ v=1..m, còn nếu đã biết
+thì chỉ tính đúng một ô. Tổng ba số được nâng lên `long long` trước khi lấy modulo.
 
 ## Độ phức tạp
-Thời gian O(n * m) (tối đa khoảng 10^7 phép tính), bộ nhớ O(m).
-
-LƯU Ý TLE: với worst-case n = 10^5 và m = 100, phần lõi phải thực hiện tới ~10^7
-phép cộng ở mức Python. Ngay cả sau khi tối ưu (cộng slice bằng zip + hoãn mod),
-CPython vẫn mất khoảng 4 giây cho trường hợp toàn số 0, vượt giới hạn ~1 giây của
-CSES và sẽ bị TLE trên CPython thuần. Đây là giới hạn thực tế của Python thuần cho
-bài này; để chắc chắn AC nên nộp bằng C++ (nhanh nhất) hoặc PyPy (thường qua được
-nhờ JIT). Không được dùng numpy/thư viện ngoài để lách TLE vì CSES chỉ chạy CPython
-với thư viện chuẩn.
+Thời gian O(n * m) (tối đa khoảng 10^7 phép tính). Hai hàng DP dùng O(m)
+bộ nhớ phụ; code còn lưu mảng đầu vào nên tổng bộ nhớ là O(n+m).

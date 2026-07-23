@@ -1,6 +1,8 @@
 Khách hàng nhà hàng - CSES 1619
 https://cses.fi/problemset/task/1619
 
+Tags: sorted-array, two-pointers
+
 ## Đề bài
 - Có n khách hàng, mỗi khách có thời điểm đến a và thời điểm rời đi b (a < b).
 - Cần tìm số lượng khách hàng tối đa cùng có mặt trong nhà hàng tại một thời điểm.
@@ -20,8 +22,9 @@ https://cses.fi/problemset/task/1619
   của cur chính là số khách tối đa.
 - Cài đặt tối ưu: thay vì sắp xếp các cặp (thời điểm, delta), ta sắp xếp riêng
   mảng thời điểm đến và mảng thời điểm rời đi, rồi hợp nhất bằng hai con trỏ
-  (two-pointer). Cách này tránh việc tạo tuple nên chạy nhanh hơn đáng kể.
+  (two-pointer). Nhờ đó code chỉ lưu hai vector số nguyên và không cần mảng
+  event riêng.
 
 ## Độ phức tạp
-- Thời gian: O(n log n) do bước sắp xếp 2*n sự kiện.
-- Bộ nhớ: O(n) để lưu danh sách sự kiện.
+- Thời gian: O(n log n) để sắp xếp hai mảng thời điểm, sau đó quét O(n).
+- Bộ nhớ: O(n) cho hai mảng thời điểm đến và rời đi.

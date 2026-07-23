@@ -1,6 +1,8 @@
 Sliding Window Inversions - CSES 3223
 https://cses.fi/problemset/task/3223
 
+Tags: coordinate-compression, sliding-window, sorting
+
 ## Đề bài
 Cho mảng gồm n phần tử và một cửa sổ kích thước k. Với mỗi vị trí của cửa sổ khi
 trượt từ trái sang phải, hãy đếm số nghịch thế (inversion) bên trong cửa sổ đó,
@@ -36,7 +38,7 @@ nhất, nó chỉ là điểm cuối của các cặp mới, đúng bằng số 
 cửa sổ. Các nghịch thế giữa những phần tử còn lại không đổi, nên inv được cập nhật
 chính xác.
 
-LƯU Ý TLE: số nghịch thế trong một cửa sổ có thể tới k*(k-1)/2 ~ 2*10^10, vượt quá
+LƯU Ý TRÀN SỐ: số nghịch thế trong một cửa sổ có thể tới k*(k-1)/2 ~ 2*10^10, vượt quá
 int, nên phải dùng long long để tránh tràn số.
 
 ## Độ phức tạp

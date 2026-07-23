@@ -26,15 +26,9 @@ con số này.
    cho p, do đó nghịch đảo luôn tồn tại (không cần xét trường hợp đặc biệt
    x_i == 1 mod p).
 
-   Tối ưu quan trọng: thay vì gọi pow(x_i - 1, p-2, p) cho từng i (mỗi lần là một
-   phép lũy thừa nặng ~30 bước), ta nghịch đảo hàng loạt bằng thủ thuật
-   Montgomery. Đặt d_i = (x_i - 1) mod p:
-     - Tính tiền tố prefix[i] = d_0 * d_1 * ... * d_{i-1} và tích toàn bộ acc.
-     - Nghịch đảo tích toàn bộ bằng đúng một phép pow: inv_acc = pow(acc, p-2, p).
-     - Quét ngược để lấy từng nghịch đảo: inv(d_i) = inv_acc * prefix[i],
-       rồi cập nhật inv_acc *= d_i.
-   Như vậy toàn bộ n nghịch đảo chỉ tốn 1 phép pow cộng O(n) phép nhân thay vì n
-   phép pow.
+   Với mỗi thừa số, code tính trực tiếp
+       inv(x_i - 1) = (x_i - 1)^(p-2) mod p
+   bằng lũy thừa nhị phân rồi nhân với tử số.
 
 3) Tích các ước
    Công thức kinh điển: tích các ước = N^{D/2}, với D là số ước.
@@ -61,16 +55,9 @@ Tính đúng đắn:
 - D, S đúng theo định nghĩa chuẩn.
 - Với tích ước, số mũ E_i luôn là số nguyên không âm (nhờ kỹ thuật chia đôi trên
   số nguyên), sau đó rút gọn mod (p-1) hoàn toàn hợp lệ do điều kiện gcd = 1.
-- Nghịch đảo hàng loạt cho cùng kết quả với việc nghịch đảo riêng lẻ (chỉ khác
-  cách tổ chức phép nhân), nên không ảnh hưởng tính đúng đắn.
-
-LƯU Ý TLE: đọc input một lần bằng sys.stdin.buffer.read().split(), in kết quả một
-lần. Nhờ nghịch đảo hàng loạt, mỗi thừa số chỉ còn hai phép pow nặng cộng vài
-phép nhân, nên với pure Python cho giới hạn này không có nguy cơ TLE đáng kể.
+- Mỗi mẫu số x_i - 1 khác 0 modulo p nên nghịch đảo Fermat luôn tồn tại.
 
 ## Độ phức tạp
-- Thời gian: O(n log(maxK)). Mỗi thừa số chỉ còn hai phép pow nặng (một cho
-  x^{k+1} ở phần tổng, một cho x^E ở phần tích) cộng vài phép nhân; phần nghịch
-  đảo chỉ tốn 1 phép pow chung cho toàn bộ. Với n ~ 78498 tổng khoảng vài triệu
-  phép nhân modulo, chạy dưới ~0.5s bằng pure CPython.
-- Bộ nhớ: O(n) lưu các cặp (x_i, k_i) và các mảng phụ cho nghịch đảo hàng loạt.
+- Thời gian: O(n * (log max(k_i) + log p)). Mỗi thừa số dùng lũy thừa nhị phân
+  cho tử số chuỗi hình học, nghịch đảo mẫu số và số mũ trong tích các ước.
+- Bộ nhớ: O(n) để lưu các cặp (x_i, k_i).

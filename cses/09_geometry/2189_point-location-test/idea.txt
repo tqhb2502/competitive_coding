@@ -21,11 +21,9 @@ tức dấu của nó cho biết chiều quay của bộ ba điểm p1 -> p2 -> 
 - Nếu cross = 0: hai vector cùng phương nên ba điểm thẳng hàng -> "TOUCH".
 
 Lưu ý về số học chính xác: tọa độ tới 1e9 nên mỗi hiệu có thể tới 2e9 và tích
-tới 4e18, tổng có thể vượt phạm vi 64-bit một chút. Bản C++ dùng __int128 còn
-Python dùng big int tự động, nhờ vậy tránh hoàn toàn tràn số và sai số làm tròn
-của số thực.
+tới 4e18, hiệu hai tích có thể vượt phạm vi 64-bit. Code dùng `__int128`, nhờ
+vậy tránh tràn số; toàn bộ phép tính là số nguyên nên không có sai số làm tròn.
 
 ## Độ phức tạp
 - Thời gian: O(t) cho t truy vấn, mỗi truy vấn chỉ vài phép nhân và trừ nguyên.
-- Bộ nhớ: O(t) do đọc toàn bộ input một lần và gom kết quả xuất một lần để
-  tăng tốc I/O.
+- Bộ nhớ phụ: O(1), vì từng truy vấn được xử lý ngay khi đọc.

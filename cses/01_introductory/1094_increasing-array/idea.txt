@@ -22,8 +22,8 @@ Tại sao đúng (tính đúng đắn):
   kiệm nhất: nếu tăng ít hơn thì vi phạm điều kiện không giảm; tăng nhiều hơn chỉ
   làm tốn thêm bước và không có lợi ích (còn làm khó cho các phần tử sau vì làm
   prev lớn hơn cần thiết). Do đó greedy cho kết quả tối ưu.
-- Kết quả có thể rất lớn (tối đa ~ n * 10^9 = 2*10^14), vượt int 32-bit, nên C++
-  phải dùng long long; Python dùng số nguyên lớn nên không tràn số.
+- Kết quả có thể rất lớn (tối đa ~ n * 10^9 = 2*10^14), vượt `int` 32-bit,
+  nên code C++ dùng `long long`.
 
 Ví dụ kiểm tra: mảng [3, 2, 5, 1, 7]
 - prev=3

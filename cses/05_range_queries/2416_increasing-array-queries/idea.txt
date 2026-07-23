@@ -1,6 +1,8 @@
 Increasing Array Queries - CSES 2416
 https://cses.fi/problemset/task/2416
 
+Tags: difference-array, monotonic-stack, offline, prefix-sum, range-query, range-update, static-array
+
 ## Đề bài
 Cho mảng x[1..n]. Mỗi phép thao tác được tăng một phần tử lên 1. Với mỗi truy vấn
 (a, b), hãy tính số phép thao tác tối thiểu để biến đoạn con x[a..b] thành một dãy
@@ -49,8 +51,3 @@ phụ thuộc các vị trí [a, b] đang đúng.
 ## Độ phức tạp
 Thời gian O((n + q) log n): O(n) thao tác stack, mỗi thao tác kèm một cập nhật BIT
 O(log n); mỗi truy vấn O(log n). Bộ nhớ O(n + q).
-
-LƯU Ý TLE: với n, q tới 2·10^5 kèm hệ số log và giới hạn thời gian CSES đặt cho C++,
-lời giải pure Python (CPython) có nguy cơ TLE dù thuật toán đã tối ưu O((n+q) log n).
-Code đã bind biến ra local và inline vòng lặp BIT để giảm hằng số; PyPy3 nếu có thì gần
-như chắc chắn qua.

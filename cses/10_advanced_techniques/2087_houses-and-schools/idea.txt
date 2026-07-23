@@ -1,6 +1,8 @@
 Houses and Schools - CSES 2087
 https://cses.fi/problemset/task/2087
 
+Tags: prefix-sum, range-query, static-array, two-pointers
+
 ## Đề bài
 - Có n ngôi nhà xếp thẳng hàng ở các vị trí 1..n; nhà thứ i có c[i] trẻ em.
 - Đặt k trường học tại k ngôi nhà nào đó. Mỗi trẻ đi tới trường gần nhất, khoảng

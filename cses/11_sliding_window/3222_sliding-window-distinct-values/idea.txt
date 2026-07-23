@@ -1,6 +1,8 @@
 Sliding Window Distinct Values - CSES 3222
 https://cses.fi/problemset/task/3222
 
+Tags: sliding-window
+
 ## Đề bài
 Cho mảng gồm n số nguyên và một cửa sổ (window) độ dài k. Với mỗi cửa sổ gồm k
 phần tử liên tiếp, hãy đếm số giá trị phân biệt (distinct values) bên trong cửa

@@ -38,10 +38,6 @@ chiều ngược, nên ghi ngược lại cho ra chính xác T = '#' + s. Đây 
 inverse BWT chuẩn, deterministic (không dùng hashing) nên không sợ anti-hash test.
 
 ## Độ phức tạp
-Đếm ký tự O(m * bảng chữ cái). Tính LF O(m). Bước đi khôi phục O(m). Tổng thời
-gian O(n), bộ nhớ O(n) (mảng lf và out). Với n <= 1e6 là tuyến tính.
-
-LƯU Ý TLE: n có thể lên tới 1e6 và có hai vòng lặp Python cấp độ phần tử (tính LF
-và bước đi LF, mỗi vòng khoảng 1e6 lần lặp tuần tự, không thể vector hóa vì phụ
-thuộc tuần tự). Trên CPython với giới hạn 1.00 s đây là rủi ro TLE; nên nộp bằng
-PyPy3 trên CSES cho an toàn. Thuật toán là tuyến tính và đúng.
+Đếm ký tự và tính LF tốn O(m), tính các vị trí đầu tiên tốn O(256), bước đi
+khôi phục tốn O(m). Tổng thời gian O(m + 256) = O(m), bộ nhớ O(m) cho mảng LF
+và xâu kết quả.

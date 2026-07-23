@@ -1,6 +1,8 @@
 Traffic Lights - CSES 1163
 https://cses.fi/problemset/task/1163
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 - Có một con đường dài x, các vị trí được đánh số từ 0 đến x.
 - Lần lượt thêm n đèn giao thông tại các vị trí p_1, p_2, ..., p_n (đôi một khác nhau, 0 < p_i < x).

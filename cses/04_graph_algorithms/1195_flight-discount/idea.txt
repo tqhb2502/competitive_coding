@@ -21,6 +21,9 @@ Với mỗi cạnh (u, v, w) sinh ra ba dịch chuyển:
 Chạy Dijkstra một lần trên đồ thị trạng thái (2*n đỉnh) xuất phát từ
 (1, 0) với khoảng cách 0. Mọi trọng số (w hoặc w/2) đều không âm nên
 Dijkstra cho kết quả tối ưu. Đáp án là min(dist[(n, 0)], dist[(n, 1)]).
+Mặc dù đề yêu cầu dùng phiếu, mọi w đều dương nên áp phiếu lên một cạnh bất kỳ
+không thể làm chi phí tăng; vì thế lấy min cả hai trạng thái vẫn cho cùng kết
+quả với việc bắt buộc dùng đúng một phiếu.
 
 Đồ thị trạng thái mã hóa chính xác việc "đã dùng phiếu hay chưa", nên
 mỗi đường đi hợp lệ dùng tối đa một phiếu tương ứng 1-1 với một đường đi
@@ -30,10 +33,3 @@ trong đồ thị trạng thái từ (1, 0), bảo đảm tính đúng đắn.
 Số đỉnh trạng thái 2n <= 2e5, số cạnh trạng thái 3m <= 6e5.
 Thời gian: Dijkstra dùng heap O((V + E) log V) = O((n + m) log n).
 Bộ nhớ: O(n + m) cho danh sách kề và mảng dist.
-
-LƯU Ý TLE: Với n <= 1e5, m <= 2e5, Dijkstra thuần Python có thể chạm
-giới hạn thời gian trên CSES (vốn đặt cho C++). Đã tối ưu bằng cách đọc
-input qua sys.stdin.buffer, gộp trạng thái vào một mảng dist phẳng
-(index = node*2 + used) và dùng heapq với kiểm tra "lazy deletion".
-Phần lớn trường hợp lời giải vượt qua được, nhưng vẫn có rủi ro TLE ở
-test xấu nhất.

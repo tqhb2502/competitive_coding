@@ -1,6 +1,8 @@
 Visiting Cities - CSES 1203
 https://cses.fi/problemset/task/1203
 
+Tags: coordinate-compression, difference-array, offline, prefix-sum, range-update, sorting
+
 ## Đề bài
 Cho đồ thị có hướng, trọng số dương, gồm n thành phố và m chuyến bay. Tìm tất
 cả các thành phố mà MỌI đường đi ngắn nhất (chi phí nhỏ nhất) từ thành phố 1

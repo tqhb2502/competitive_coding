@@ -36,8 +36,8 @@ chuyển đó.
 
 ## Độ phức tạp
 - Thời gian: mỗi truy vấn tính trong O(1), tổng O(t).
-- Bộ nhớ: O(1) (chỉ gom kết quả vào một list để in một lần).
+- Bộ nhớ: O(1); code C++ in trực tiếp kết quả của từng truy vấn.
 
 LƯU Ý TLE: không có rủi ro TLE vì thuật toán O(1) mỗi truy vấn, chỉ cần đọc/ghi
 nhanh. Giá trị tối đa khoảng (10^9)^2 = 10^18 vẫn nằm trong phạm vi số nguyên lớn
-của Python (và long long của C++) nên không bị tràn số.
+của `long long` nên không bị tràn số.

@@ -1,6 +1,8 @@
 Writing Numbers - CSES 1086
 https://cses.fi/problemset/task/1086
 
+Tags: binary-search, monotone-predicate, search-on-answer
+
 ## Đề bài
 Viết lần lượt các số nguyên dương 1, 2, 3, ...; mỗi phím chữ số 0..9 chỉ được
 bấm tối đa n lần. Hãy tìm số cuối cùng có thể viết ra. Ràng buộc: n <= 10^18.

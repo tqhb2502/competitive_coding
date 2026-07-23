@@ -1,6 +1,8 @@
 Maximum Building I - CSES 1147
 https://cses.fi/problemset/task/1147
 
+Tags: monotonic-stack, nearest-element
+
 ## Đề bài
 Cho lưới kích thước n*m gồm các ô trống ('.') và các ô có cây ('*'). Hãy tìm
 diện tích của hình chữ nhật lớn nhất chỉ chứa toàn ô trống. Ràng buộc n, m <= 1000.

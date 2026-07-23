@@ -16,7 +16,7 @@ nhất có thể thu được.
   của các phòng trong SCC. Đồ thị sau khi condense là một DAG (không còn chu trình).
 - Thuật toán:
   - Bước 1: Tìm SCC bằng Tarjan cài đặt dạng iterative (dùng stack tường minh để
-    tránh đệ quy sâu gây stack overflow / RecursionError khi n tới 1e5).
+    tránh tràn call stack khi n tới 1e5).
   - Bước 2: Tính comp_val[c] = tổng xu của các phòng thuộc SCC c.
   - Bước 3: Xây danh sách kề của DAG condense: với mỗi cạnh gốc a -> b mà
     comp[a] khác comp[b], thêm cạnh comp[a] -> comp[b].
@@ -32,11 +32,9 @@ nhất có thể thu được.
 
 ## Độ phức tạp
 - Thời gian: O(n + m) cho Tarjan, condense và DP.
-- Bộ nhớ: O(n + m) cho CSR adjacency, các mảng của Tarjan và danh sách kề condense.
-- Giá trị đáp án có thể tới n * 1e9 = 1e14; int của Python là số nguyên lớn tùy ý
-  và C++ dùng long long nên không tràn số.
+- Bộ nhớ: O(n + m) cho các danh sách kề dạng `vector<vector<int>>`, danh sách
+  cạnh và các mảng của Tarjan/DP.
+- Giá trị đáp án có thể tới n * 1e9 = 1e14 nên code dùng `long long`.
 
-LƯU Ý TLE: n tới 1e5 và m tới 2e5, thuật toán O(n+m) là tối ưu về mặt lý thuyết,
-nhưng CPython thuần với vòng lặp Tarjan + xây danh sách kề condense có hằng số lớn,
-nên vẫn có khả năng TLE ở giới hạn thời gian ~1s của CSES. Code đã tối ưu (đọc input
-một lần, dùng CSR, tránh tạo tuple trong stack, dùng biến cục bộ) để giảm rủi ro.
+Tarjan được cài đặt lặp bằng stack tường minh, tránh tràn call stack khi đồ thị
+có đường đi rất sâu.

@@ -1,6 +1,8 @@
 Missing Coin Sum Queries - CSES 2184
 https://cses.fi/problemset/task/2184
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Cho một dãy n đồng xu với các giá trị x_1..x_n. Có q truy vấn, mỗi truy vấn cho
 một đoạn [a, b]. Với mỗi truy vấn hãy tìm tổng dương nhỏ nhất KHÔNG thể tạo ra
@@ -27,7 +29,8 @@ phủ khoảng giá trị [lo, hi], đặt s = SUM[node_b] - SUM[node_a]:
   - nếu s == 0: bỏ qua (đoạn này không có đồng nào);
   - nếu vals[lo] > R + 1: dừng toàn bộ, đáp án = R + 1;
   - nếu vals[hi] <= R + 1: cộng hết một lần (R += s) và tỉa cả cây con;
-  - ngược lại (node bắc cầu qua ngưỡng R+1): đệ quy xuống con trái rồi con phải.
+  - ngược lại (node bắc cầu qua ngưỡng R+1): đẩy con phải rồi con trái vào
+    stack để con trái được xử lý trước.
 Vì DFS duyệt theo thứ tự giá trị tăng dần và R chỉ tăng, khi gặp một node có giá
 trị nhỏ nhất > R + 1 thì mọi giá trị còn lại chắc chắn lớn hơn nên dừng được ngay.
 
@@ -36,10 +39,6 @@ trị nhỏ nhất > R + 1 thì mọi giá trị còn lại chắc chắn lớn 
   mỗi lần chèn tạo O(log m) node mới.
 - Số bước greedy mỗi truy vấn là O(log(tổng tiền)) vì R tăng ít nhất theo cấp
   Fibonacci; mỗi ngưỡng duyệt thêm O(log m) node, tổng cỡ O(log m * log(tổng)).
-  Toàn cục xấp xỉ O((n + q) log m) với hằng số nhỏ.
-- Bộ nhớ: các mảng LC, RC, SUM kích thước ~ n*(log m + 2); SUM dùng int64.
-
-LƯU Ý TLE: giới hạn n, q ≤ 2·10^5 và time limit của CSES nhắm C++. Bản Python
-thuần này (persistent segment tree + DFS trên từng truy vấn) có hằng số lớn nên rất
-có thể bị TLE ở các test lớn nhất; thuật toán vẫn ĐÚNG. Không dùng numpy hay thư
-viện bên thứ ba theo quy định.
+- Tổng thời gian O(n log m + q log m log S), với S là tổng giá trị đồng xu
+  tối đa trong một truy vấn.
+- Bộ nhớ O(n log m) node trong `vector<Node>`; trường `sum` dùng `long long`.

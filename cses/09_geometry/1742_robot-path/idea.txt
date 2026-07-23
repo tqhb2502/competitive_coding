@@ -1,6 +1,8 @@
 Robot Path - CSES 1742
 https://cses.fi/problemset/task/1742
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Robot xuất phát tại (0, 0) và thực hiện n lệnh, mỗi lệnh đi một đoạn theo một
 trong bốn hướng U/D/L/R (lên/xuống/trái/phải) với độ dài nguyên. Robot dừng
@@ -38,15 +40,11 @@ là tổng độ dài mọi đoạn. Mọi toạ độ đều nguyên nên t và
 nguyên; toàn bộ dùng integer arithmetic nên không có sai số.
 
 ## Độ phức tạp
-Xử lý theo thứ tự và dừng sớm: mỗi đoạn chỉ cần một truy vấn stabbing O(log n)
-cùng một thao tác quản lý khoảng, tổng cộng O(n log n) thời gian và O(n) bộ nhớ.
-
-LƯU Ý TLE: Bản Python ở đây liệt kê MỌI giao điểm của toàn bộ hình rồi mới lấy
-min, chứ không dừng ngay tại giao đầu tiên. Vì vậy với dữ liệu lưới dày (số giao
-vuông góc k = O(n^2)) chi phí trở thành gần O(n^2). Đã đo trong CPython: ~27 giây
-với n = 12500 và ~116 giây với n = 25000, chắc chắn TLE (giới hạn CSES là 1
-giây); ngay cả dữ liệu thưa n = 1e5 cũng đã mất ~1 giây. Bản Python được giữ
-nguyên vì đã kiểm chứng ĐÚNG trên ~93000 test ngẫu nhiên và suy biến (đảo chiều,
-chồng lấn collinear, chạm chữ T, lưới dày, toạ độ lớn, thứ tự CW/CCW); muốn AC
-chắc chắn nên dùng C++ (bản C++ ở đây xử lý theo thứ tự và dừng sớm nên đạt
-O(n log n)).
+- Một đoạn được chèn vào O(log n) node của segment tree; mỗi lần chèn vào
+  `std::set` tốn O(log n). Truy vấn đi qua O(log n) node và tại mỗi node thực
+  hiện `lower_bound`/`upper_bound` O(log n). Vì vậy phần stabbing tốn
+  O(log^2 n) cho mỗi đoạn.
+- Các interval map có tổng O(n) lần chèn/xóa và chi phí O(log n) khấu hao cho
+  mỗi khoảng được xử lý.
+- Tổng thời gian O(n log^2 n), bộ nhớ O(n log n) vì mỗi đoạn được lưu ở
+  O(log n) tập; các interval map dùng thêm O(n).

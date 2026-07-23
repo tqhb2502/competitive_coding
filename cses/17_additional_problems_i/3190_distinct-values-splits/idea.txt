@@ -1,6 +1,8 @@
 Distinct Values Splits - CSES 3190
 https://cses.fi/problemset/task/3190
 
+Tags: coordinate-compression, counting, prefix-sum, range-query, sliding-window, sorting, two-pointers
+
 ## Đề bài
 Cho mảng gồm n phần tử. Đếm số cách chia mảng thành các đoạn liên tiếp sao
 cho trong mỗi đoạn, mọi giá trị đều phân biệt. In kết quả theo modulo 10^9+7.

@@ -16,7 +16,7 @@ https://cses.fi/problemset/task/3217
   (theo số cạnh) từ (0,0) tới tất cả các ô.
 - 8 nước đi của quân mã: (+-1, +-2) và (+-2, +-1).
 
-Cách cài đặt (tối ưu cho Python):
+Cách cài đặt trong code C++:
 - Trải bàn cờ thành một mảng 1 chiều PHẲNG có "viền" (padding) dày 2 ô mỗi bên,
   chiều rộng mỗi hàng W = n + 4. Như vậy mỗi nước đi quân mã (lệch tối đa 2 ô)
   luôn rơi vào trong mảng, không bao giờ cần kiểm tra biên.
@@ -26,9 +26,9 @@ Cách cài đặt (tối ưu cho Python):
   dist[start] = 0.
 - 8 nước đi được đổi thành 8 độ lệch chỉ số phẳng:
   (+-1,+-2) và (+-2,+-1)  ->  +-W+-2 và +-2W+-1.
-- BFS theo TỪNG LỚP (layer): giữ danh sách "cur" các ô ở khoảng cách d-1; với
-  mỗi ô xét 8 độ lệch, ô nào đang là -1 thì gán = d và thêm vào lớp kế tiếp. Vì
-  xét theo lớp nên khoảng cách d biết sẵn, không cần lưu kèm trong hàng đợi.
+- Dùng một `vector<int>` làm hàng đợi và một chỉ số `head`. Với mỗi ô `current`
+  được lấy ra, ô kề chưa thăm nhận `dist[next] = dist[current] + 1` rồi được
+  đẩy vào cuối vector. Mỗi ô chỉ vào hàng đợi một lần.
 - In ma trận dist theo từng hàng (chỉ lấy phần bên trong), các số cách nhau bởi
   dấu cách.
 
@@ -43,11 +43,9 @@ Tính đúng đắn:
 ## Độ phức tạp
 - Thời gian: O(n^2) - mỗi ô được thăm đúng một lần, mỗi ô xét 8 nước đi.
   Với n = 1000 là khoảng 10^6 ô, tổng ~8 * 10^6 thao tác.
-- Bộ nhớ: O(n^2) cho mảng khoảng cách (có viền) và danh sách lớp.
+- Bộ nhớ: O(n^2) cho mảng khoảng cách có viền và hàng đợi.
 
 LƯU Ý TLE:
-- Cách padding + mảng phẳng + BFS theo lớp (bỏ kiểm tra biên, bỏ tuple tọa độ,
-  bỏ deque) nhanh hơn đáng kể so với BFS thông thường (nhanh khoảng 5x). Với
-  n = 1000 chạy khoảng ~0.9 giây trên máy thử nghiệm, đủ sát giới hạn 1s của
-  CSES. Nếu vẫn TLE trên CPython, chuyển sang C++ với BFS tương tự (mảng int
-  phẳng, hàng đợi thủ công) sẽ chạy trong vài chục mili giây.
+- Mảng phẳng có padding loại bỏ kiểm tra biên và hàng đợi `vector + head` tránh
+  cấp phát theo từng tọa độ. Với n = 1000, tổng công việc khoảng 8 * 10^6 lần
+  xét cạnh.

@@ -1,6 +1,8 @@
 Ferris Wheel - CSES 1090
 https://cses.fi/problemset/task/1090
 
+Tags: sorted-array, two-pointers
+
 ## Đề bài
 Có n đứa trẻ, đứa thứ i có cân nặng p[i]. Mỗi gondola chở tối đa 2 đứa trẻ và
 tổng cân nặng của chúng không được vượt quá x. Hãy tìm số gondola tối thiểu cần
@@ -28,5 +30,4 @@ Tính tối ưu (exchange argument):
 ## Độ phức tạp
 - Thời gian: O(n log n) do bước sort, phần two-pointer chỉ O(n).
 - Bộ nhớ: O(n) để lưu mảng cân nặng.
-Với n <= 2*10^5, thuật toán rất nhanh; trong Python dùng fast I/O (đọc toàn bộ
-input một lần bằng sys.stdin.buffer) là đủ, không có rủi ro TLE.
+Với n <= 2*10^5, code C++ chỉ cần một lần `sort` và một lượt hai con trỏ.

@@ -1,6 +1,8 @@
 Increasing Subsequence II - CSES 1748
 https://cses.fi/problemset/task/1748
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Cho một mảng gồm n số nguyên. Hãy đếm số lượng dãy con tăng ngặt (strictly
 increasing subsequence) không rỗng của mảng. Hai dãy con ở các vị trí khác nhau
@@ -33,20 +35,13 @@ Tối ưu để tránh O(n^2):
   Duyệt theo i tăng dần nên BIT chỉ chứa các j < i; truy vấn tới r-1 (không gồm r)
   bảo đảm điều kiện tăng NGẶT a[j] < a[i].
 
-Tối ưu hằng số (giảm nguy cơ TLE):
-- Mọi phép trong DP đều là phép cộng nên chỉ cần rút gọn dp = (s+1) % MOD, còn
-  các ô Fenwick KHÔNG cần mod trong vòng update: mỗi ô bị cộng tối đa n giá trị
-  đều < MOD nên luôn < n*MOD ~ 2*10^14, vẫn nằm trong phạm vi số nguyên 64-bit.
-  Bỏ được mod trong vòng update giúp giảm đáng kể hằng số thời gian.
-- CẢNH BÁO: KHÔNG được thay phép mod của dp bằng một lần trừ MOD; với dãy tăng
-  ngặt dp bùng nổ theo 2^i khiến số nguyên phình to vô hạn và chương trình treo.
+Các phép cộng trong Fenwick tree đều được lấy modulo MOD. Trong `update`, mỗi ô
+đang nhỏ hơn MOD và giá trị cộng vào cũng nhỏ hơn MOD, nên chỉ cần trừ MOD một
+lần nếu tổng đạt MOD. `query` cộng các ô bằng `long long` rồi lấy modulo trước
+khi trả về. Nhờ vậy mọi ô Fenwick luôn nằm trong kiểu `int`, còn các tổng trung
+gian vẫn an toàn.
 
 ## Độ phức tạp
 - Thời gian: O(n log n) — sort để nén tọa độ, và n lần query/update trên Fenwick
   tree, mỗi lần O(log n).
 - Bộ nhớ: O(n).
-
-LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản)
-vẫn có thể chậm so với giới hạn thời gian CSES (1s) vốn hướng đến C++. Đã dùng
-sys.stdin fast I/O, biến cục bộ, tính sẵn rank và bỏ mod thừa để giảm hằng số,
-nhưng trên CPython thuần vẫn có khả năng vượt thời gian.

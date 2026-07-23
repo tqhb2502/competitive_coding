@@ -36,9 +36,4 @@ quả bằng đúng đoạn [a, b].
 
 ## Độ phức tạp
 Build O(n). Mỗi truy vấn O(log n) lần merge. Tổng thời gian O((n + q) log n), bộ
-nhớ O(n) (4 mảng độ dài 2*n).
-
-LƯU Ý TLE: với n, q tới 2*10^5 và hằng số lớn của Python, khoảng q*log n phép merge
-(vài triệu lần, mỗi lần hàng chục thao tác Python) rất có thể vượt giới hạn thời
-gian trên CSES (giới hạn đặt theo C++). Thuật toán ĐÚNG; nếu cần vượt, hãy chạy
-bằng PyPy hoặc viết lại bằng C++.
+nhớ O(n) cho vector gồm O(n) node tóm tắt đoạn.

@@ -12,7 +12,7 @@ thứ tự từ điển và in ra phần tử thứ k.
 đếm theo số lần xuất hiện.)
 
 ## Ý tưởng
-Dùng Suffix Automaton (SAM). SAM của s có ≤ 2n-1 state và ≤ 3n-4 transition. Mỗi
+Dùng Suffix Automaton (SAM). SAM của s có ≤ 2n state và O(n) transition. Mỗi
 substring của s ứng với đúng một đường đi (mỗi transition thêm một ký tự) xuất
 phát từ state khởi đầu. State đích của đường đi thuộc một lớp tương đương endpos;
 mọi substring trong cùng một state có CÙNG số lần xuất hiện trong s, bằng kích
@@ -49,10 +49,6 @@ state u có endpos size = cnt[u], cách cộng cnt[u] + g[u] đếm chính xác 
 (có lặp) đi qua mỗi cạnh, không trùng, không sót.
 
 ## Độ phức tạp
-Xây SAM: O(n) trung bình (dùng dict/mảng cho transition). Tính cnt và g:
-O(số state + số transition) = O(n). Bước đi tìm đáp án: O(|đáp án| * 26) ≤
-O(n * 26). Bộ nhớ O(n). Tổng thời gian O(n) (với hằng số của SAM).
-
-LƯU Ý TLE: với n = 1e5, SAM thuần Python xây bằng dict chạy khoảng 0.6–1.0s trên
-máy cục bộ, sát giới hạn 1s của CSES nên có thể TLE trên CPython. Thuật toán vẫn
-đúng và tối ưu về mặt lý thuyết O(n); nếu cần có thể phải chuyển sang PyPy/C++.
+Xây SAM: O(n) khấu hao với `array<int,26>` cho transition. Tính cnt và g:
+O(số state * 26) = O(26n). Bước đi tìm đáp án: O(|đáp án| * 26) <=
+O(26n). Bộ nhớ O(26n) = O(n).

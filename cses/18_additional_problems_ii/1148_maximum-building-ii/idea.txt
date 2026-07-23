@@ -1,6 +1,8 @@
 Maximum Building II - CSES 1148
 https://cses.fi/problemset/task/1148
 
+Tags: difference-array, monotonic-stack, nearest-element, offline, prefix-sum, range-update
+
 ## Đề bài
 Cho lưới n*m gồm ô trống ('.') và cây ('*'). Với mỗi kích thước h*w
 (1 <= h <= n, 1 <= w <= m), đếm số vị trí đặt được một hình chữ nhật h*w

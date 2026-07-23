@@ -1,6 +1,8 @@
 Sliding Window Or - CSES 3405
 https://cses.fi/problemset/task/3405
 
+Tags: sliding-window
+
 ## Đề bài
 - Mảng a[1..n] được sinh bởi công thức truy hồi: x1 = x, x[i] = (a*x[i-1] + b) mod c,
   trong đó phần tử a[i] chính là x[i].
@@ -8,7 +10,8 @@ https://cses.fi/problemset/task/3405
   trong cửa sổ.
 - In ra XOR của toàn bộ các giá trị OR đó.
 - Ràng buộc: 1 <= k <= n <= 10^7; 0 <= x, a, b <= 10^9; 1 <= c <= 10^9.
-  Suy ra mọi giá trị phần tử đều nhỏ hơn c <= 10^9 < 2^30.
+  Phần tử đầu x1 = x có thể không nhỏ hơn c nhưng vẫn không vượt 10^9; từ x2
+  trở đi các giá trị đều nhỏ hơn c. Vì vậy mọi phần tử vẫn nhỏ hơn 2^30.
 
 ## Ý tưởng
 - Vì n có thể lớn tới 10^7 nên phải sinh mảng và trả lời mọi cửa sổ trong thời gian

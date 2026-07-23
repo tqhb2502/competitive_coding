@@ -40,5 +40,6 @@ Cách tính c:
 ## Độ phức tạp
 - Thời gian: O(n + m * alpha(n)) cho DSU, cộng O(log d) cho lũy thừa nhanh.
   Với n <= 1e5 và m <= 2e5 chạy rất nhanh.
-- Bộ nhớ: O(n + m) cho mảng parent/rank và dữ liệu đọc vào.
+- Bộ nhớ: O(n) cho các mảng DSU; mỗi cạnh được hợp nhất ngay khi đọc nên không
+  cần lưu danh sách cạnh.
 - Không có nguy cơ TLE: thuật toán gần như tuyến tính, thừa sức trong giới hạn.

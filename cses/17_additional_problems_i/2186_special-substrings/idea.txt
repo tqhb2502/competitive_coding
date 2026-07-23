@@ -1,6 +1,8 @@
 Special Substrings - CSES 2186
 https://cses.fi/problemset/task/2186
 
+Tags: prefix-sum
+
 ## Đề bài
 Cho một xâu độ dài n gồm các chữ cái thường a..z. Một substring được gọi là đặc
 biệt nếu mọi loại ký tự có xuất hiện trong TOÀN BỘ xâu đầu vào đều xuất hiện với

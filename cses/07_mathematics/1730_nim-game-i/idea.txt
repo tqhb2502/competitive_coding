@@ -25,10 +25,8 @@ Vì sao đúng (lý luận Sprague-Grundy / XOR):
   đến lượt. Bằng quy nạp, X == 0 luôn thua, X != 0 luôn thắng.
 
 Cài đặt: với mỗi test case, đọc n cùng n số, tính XOR dồn tất cả, in "first" nếu
-kết quả khác 0, ngược lại in "second". Đọc toàn bộ input một lần và gộp kết quả
-ghi ra một lần cho nhanh.
+kết quả khác 0, ngược lại in "second".
 
 ## Độ phức tạp
 - Thời gian: O(tổng n) trên tất cả test case, tức O(2*10^5). Rất nhẹ.
-- Bộ nhớ: O(1) thêm cho mỗi test case (chỉ cần biến XOR dồn); tổng thể chi phối
-  bởi buffer input.
+- Bộ nhớ phụ: O(1) cho biến XOR dồn.

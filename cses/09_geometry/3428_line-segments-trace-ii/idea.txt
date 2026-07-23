@@ -1,6 +1,8 @@
 Line Segments Trace II - CSES 3428
 https://cses.fi/problemset/task/3428
 
+Tags: two-pointers
+
 ## Đề bài
 Cho n đoạn thẳng, mỗi đoạn có hai đầu mút nguyên (x1, y1) và (x2, y2) với
 0 <= x1 < x2 <= m, và hệ số góc (slope) của đoạn là số nguyên. Với mỗi hoành độ
@@ -14,8 +16,8 @@ Mỗi đoạn thẳng là một hàm tuyến tính y = a*x + b, nhưng chỉ xá
     này chia hết, tính bằng integer division cho kết quả chính xác.
   - b = y1 - a*x1 là intercept.
 Vì a nguyên và x nguyên nên y = a*x + b tại mọi điểm nguyên đều là số nguyên. Do
-đó toàn bộ tính toán dùng số nguyên (Python big int, hoặc __int128 trong C++) để
-tránh sai số dấu phẩy động - rất quan trọng với bài hình học của CSES.
+đó toàn bộ tính toán dùng số nguyên; code dùng `__int128` cho các tích chéo để
+tránh tràn và không có sai số dấu phẩy động.
 
 Bài toán quy về: tính upper envelope (giá trị lớn nhất của tập các đường) của các
 "line segment" (đường tuyến tính bị giới hạn trên một khoảng), đánh giá tại mọi
@@ -57,8 +59,3 @@ Tính đúng:
 - Tổng số line trên các node = O(n log m); tổng độ dài phạm vi các node có line
   = O(m log m).
 - Thời gian: O((n + m) log m + n log n) (sort theo slope). Bộ nhớ: O(n log m + m).
-
-LƯU Ý TLE: Với n, m <= 1e5, thuật toán là O((n + m) log m) nhưng chạy bằng pure
-CPython có thể chậm (khoảng vài giây) do số vòng lặp Python lớn (~1e7). Trên PyPy3
-sẽ chạy tốt; trên CPython có thể vượt giới hạn thời gian 1s của CSES. Code vẫn ĐÚNG
-về mặt kết quả.

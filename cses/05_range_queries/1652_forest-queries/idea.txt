@@ -1,6 +1,8 @@
 Forest Queries - CSES 1652
 https://cses.fi/problemset/task/1652
 
+Tags: prefix-sum, range-query, static-array
+
 ## Đề bài
 Cho một lưới n x n gồm các ô trống ('.') và các ô có cây ('*'). Lưới là TĨNH,
 không có thao tác cập nhật. Với mỗi truy vấn là một hình chữ nhật cho bởi bốn số
@@ -24,8 +26,3 @@ Dùng mảng cộng dồn hai chiều (2D prefix sum).
 ## Độ phức tạp
 - Thời gian: O(n^2) để xây prefix sum + O(1) mỗi truy vấn, tổng O(n^2 + q).
 - Bộ nhớ: O(n^2) cho bảng P (khoảng (n+1)^2 số nguyên).
-
-LƯU Ý TLE: thuật toán O(n^2 + q) rất nhẹ nên rủi ro TLE thấp kể cả trong Python
-thuần. Phần tốn thời gian nhất là đọc/parse 2*10^5 truy vấn và xây bảng 10^6 phần
-tử; đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần
-bằng sys.stdout.buffer.write giúp giữ trong giới hạn cho phép.

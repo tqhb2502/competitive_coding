@@ -44,8 +44,4 @@ https://cses.fi/problemset/task/2164
 
 ## Độ phức tạp
 - Thời gian: O(log n) mỗi truy vấn => tổng O(q log n) ~ 1e5 * 30 = 3e6 phép tính.
-- Bộ nhớ: O(1) thêm cho mỗi truy vấn (chỉ lưu danh sách kết quả để in một lần).
-
-LƯU Ý TLE: O(q log n) ~ 3e6 bước vòng lặp trong Python thuần vẫn đủ nhanh cho giới
-hạn thời gian nới rộng của CSES cho Python, rủi ro TLE thấp; không dùng thư viện
-bên thứ ba.
+- Bộ nhớ phụ: O(1) cho mỗi truy vấn.

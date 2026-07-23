@@ -32,8 +32,3 @@ khác nhau ngay dưới LCA), nên parent[a] là tổ tiên chung thấp nhất.
 - Tiền xử lý: O(n log n) thời gian và O(n log n) bộ nhớ cho bảng up.
 - Mỗi truy vấn: O(log n). Tổng: O((n + q) log n).
 - Với n, q <= 2e5 và log n ~ 18, tổng thao tác khoảng vài triệu.
-
-LƯU Ý TLE: Trong pure Python trên CSES, phần dựng bảng up (~n*log n) và q truy vấn
-mỗi truy vấn O(log n) có thể chậm; với n, q = 2e5 có nguy cơ TLE. Thuật toán vẫn
-đúng; đã tối ưu bằng đọc input một lần, cache biến cục bộ và tránh đệ quy. Nếu cần,
-chạy bằng PyPy sẽ an toàn.

@@ -32,7 +32,3 @@ Dùng Heavy-Light Decomposition (HLD) kết hợp với segment tree (max):
 - Mỗi cập nhật loại 1: O(log n).
 - Mỗi truy vấn loại 2: O(log^2 n) (O(log n) chain, mỗi chain O(log n)).
 - Tổng: O(n + q log^2 n) thời gian, O(n) bộ nhớ.
-
-LƯU Ý TLE: n, q lên tới 2·10^5 và mỗi truy vấn tốn O(log^2 n) với vòng lặp segment
-tree lồng nhau. Trên CSES (giới hạn nhắm cho C++), pure Python CPython có nguy cơ TLE
-ở test xấu nhất, dù thuật toán đã tối ưu và inline vòng lặp nóng.

@@ -41,4 +41,4 @@ Kiểm tra ví dụ:
 ## Độ phức tạp
 - Thời gian: O(tổng n) trên tất cả test case (tổng n <= 2*10^5), chỉ duyệt tuyến
   tính và XOR.
-- Bộ nhớ: O(1) thêm (đọc toàn bộ input một lần rồi xử lý theo con trỏ).
+- Bộ nhớ phụ: O(1), vì các giá trị được xử lý ngay khi đọc.

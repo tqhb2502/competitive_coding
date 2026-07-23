@@ -21,17 +21,10 @@ không có thao tác cập nhật, chỉ có truy vấn min trên đoạn.
     kết quả = min( sp[k][a], sp[k][b - 2^k + 1] )
   Hai đoạn con độ dài 2^k phủ kín [a, b] (có thể chồng lấn), và nhờ min là
   idempotent nên phần chồng lấn không ảnh hưởng kết quả.
-- Chi tiết cài đặt (Python): mỗi hàng k được tính bằng list comprehension với
-  zip(prev, prev[half:]) để tận dụng vòng lặp C bên trong cho nhanh; đọc toàn
-  bộ input bằng sys.stdin.buffer.read().split() và ghi kết quả một lần bằng
-  sys.stdout.buffer.write(...) để tối ưu tốc độ I/O.
+- Bảng log được dựng trước để lấy k trong O(1); mỗi hàng sparse table được tính
+  bằng một vòng lặp từ hàng ngay trước nó.
 
 ## Độ phức tạp
 - Xây dựng: O(n log n) thời gian, O(n log n) bộ nhớ.
 - Mỗi truy vấn: O(1).
 - Tổng: O(n log n + q).
-
-LƯU Ý TLE: Với n, q tới 2*10^5, thuật toán O(n log n + q) là tối ưu; tuy nhiên
-hằng số của Python vẫn lớn. Cách viết bằng list comprehension + zip và tra bảng
-log giúp giảm rủi ro, nhưng trong trường hợp xấu nhất trên CPython vẫn có thể
-sát giới hạn thời gian của CSES (vốn đặt cho C++).

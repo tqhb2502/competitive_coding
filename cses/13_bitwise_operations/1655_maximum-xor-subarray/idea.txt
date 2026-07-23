@@ -14,17 +14,19 @@ Kỹ thuật: prefix XOR + binary trie (XOR trie) trên các bit.
   lớn nhất. Đoạn con luôn có độ dài >= 1, tương ứng i khác j, nhưng vì
   p[i] ^ p[i] = 0 nên việc cho phép i bằng j không làm tăng kết quả
   (kết quả tối thiểu là 0).
-- Ta chèn dần từng p[i] vào một binary trie lưu các bit từ cao xuống thấp
-  (x_i <= 10^9 < 2^30 nên xét 30 bit). Với mỗi p[i], sau khi chèn ta truy vấn
-  giá trị XOR lớn nhất giữa p[i] và một giá trị đã có trong trie: tại mỗi bit
-  ưu tiên đi theo nhánh bit ngược lại (để bit kết quả thành 1), nếu không có
-  thì đi theo nhánh cùng bit.
+- Ta chèn p[0] = 0 trước vào một binary trie lưu các bit từ cao xuống thấp
+  (x_i <= 10^9 < 2^30 nên xét 30 bit). Với mỗi p[i] tiếp theo, ta truy vấn
+  giá trị XOR lớn nhất giữa p[i] và một prefix đã có trong trie, rồi mới chèn
+  p[i] để phục vụ các vị trí sau. Tại mỗi bit, truy vấn ưu tiên đi theo nhánh
+  bit ngược lại (để bit kết quả thành 1), nếu không có thì đi theo nhánh cùng
+  bit.
 
 Tính đúng đắn:
 - Trie tham lam từ bit cao nhất bảo đảm tối đa hoá giá trị XOR: chọn được bit
   cao bằng 1 luôn tốt hơn mọi tổ hợp các bit thấp hơn.
-- Chèn p[0] = 0 trước bảo đảm mọi đoạn con bắt đầu từ chỉ số 1 đều được xét,
-  và mọi cặp prefix đều được so khớp khi ta lần lượt chèn và truy vấn.
+- Chèn p[0] = 0 trước bảo đảm mọi đoạn con bắt đầu từ chỉ số 1 đều được xét.
+  Vì p[i] được truy vấn trước khi chèn, trie lúc đó chứa đúng p[0..i-1], nên
+  mọi cặp prefix có chỉ số trái nhỏ hơn chỉ số phải được xét đúng lúc.
 
 ## Độ phức tạp
 - Thời gian: O(n * B) với B là số bit (~30), tức O(n log(maxVal)).

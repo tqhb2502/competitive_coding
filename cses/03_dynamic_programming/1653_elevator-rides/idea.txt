@@ -20,7 +20,7 @@ Trạng thái (state):
 Mẹo mã hoá (encoding): gộp cặp (rides, weight) thành một số nguyên duy nhất
   state = rides * BIG + weight, với BIG = x + 1 (vì luôn có weight <= x).
   Khi đó lấy min trên số nguyên này chính là so sánh lexicographic mong muốn,
-  giúp vòng lặp (nhất là trong Python) chạy nhanh hơn.
+  đồng thời chỉ cần lưu một số cho mỗi mask.
 
 Chuyển trạng thái (transition):
   Với mỗi người p thuộc mask, gọi prev = dp[mask không có p].
@@ -37,13 +37,9 @@ Cơ sở (base case):
 
 Đáp án:
   full = (1 << n) - 1
-  answer = dp[full] // BIG   (phần rides của state cuối cùng).
+  answer = dp[full] / BIG   (phần rides của state cuối cùng, phép chia nguyên).
 
 ## Độ phức tạp
 Thời gian: với mỗi mask ta duyệt các bit đang bật, tổng số phép bằng tổng các
            popcount = n * 2^(n-1) ~ 20 * 2^19 ≈ 10^7  =>  O(n * 2^n).
 Bộ nhớ:    mảng dp kích thước 2^n số nguyên  =>  O(2^n). Với n = 20 là ~10^6.
-
-LƯU Ý TLE: n = 20 nên vòng lặp ~10^7 bước trên CPython có thể chậm (vài giây);
-  giới hạn CSES (1s) nhắm cho C++ nên có nguy cơ TLE nếu chấm bằng CPython3.
-  Nếu bị TLE hãy nộp bằng PyPy (CSES có hỗ trợ) thì sẽ dư thời gian.

@@ -25,8 +25,8 @@ Dùng KMP automaton kết hợp DP, đếm theo phần bù.
   KHÔNG chứa pattern.
 - Kết quả = (26^n - so_xau_khong_chua) mod 1e9+7.
 
-Tối ưu: với mỗi trạng thái j, ta nén (gom) các ký tự dẫn tới cùng một trạng
-thái kế tiếp thành cặp (next_state, so_luong), giúp vòng lặp DP nhanh hơn.
+Trong code, mỗi trạng thái thử trực tiếp cả 26 ký tự; bảng chữ cái cố định nên
+đây chỉ là một hệ số hằng.
 
 Tính đúng đắn:
 - KMP automaton là một DFA nhận diện "đã từng xuất hiện pattern". Đường đi độ

@@ -1,6 +1,8 @@
 Sum of Four Squares - CSES 3355
 https://cses.fi/problemset/task/3355
 
+Tags: sorted-array, two-pointers
+
 ## Đề bài
 - Có t test (1 ≤ t ≤ 1000). Mỗi test cho một số nguyên n (0 ≤ n ≤ 10^7),
   tổng tất cả các n không vượt quá 10^7.
@@ -20,6 +22,8 @@ Cơ sở toán học:
    số chỉ cần đến 3 số chính phương.
 
 Thuật toán đưa bài toán về việc tìm 3 số chính phương:
+
+Trường hợp n = 0, in ngay `0 0 0 0`. Các bước dưới đây chỉ áp dụng cho n > 0.
 
 Bước 1 - Khử thừa số 4:
    Viết n = 4^k * t với t không chia hết cho 4. Nếu t = a^2+b^2+c^2+d^2 thì
@@ -55,6 +59,7 @@ Vì sao đúng:
   K/sqrt(ln m) (hằng số Landau-Ramanujan, ~0.76), với m ~ 10^7 vào khoảng ~19%.
   Do đó trung bình chỉ cần vài lần thử c là gặp nghiệm, mỗi lần O(sqrt(m)).
   Chi phí mỗi truy vấn xấp xỉ O(sqrt(n)) trên thực tế.
-- Tổng thể: vì tổng các n ≤ 10^7, tổng công việc rất nhỏ (cỡ vài triệu phép
-  toán trong trường hợp xấu), thừa sức trong giới hạn thời gian.
-- Bộ nhớ: O(1) ngoài mảng input.
+- Cận xấu nhất của `three_squares(m)` là O(m): có O(sqrt(m)) giá trị c và mỗi
+  lần gọi two-pointer tốn O(sqrt(m)). Vì tổng các n qua mọi test không vượt
+  10^7, tổng thời gian có cận O(sum n); thực tế thường gần O(sum sqrt(n)).
+- Bộ nhớ phụ: O(1), vì từng truy vấn được xử lý ngay khi đọc.

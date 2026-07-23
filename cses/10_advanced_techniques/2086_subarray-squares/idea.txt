@@ -1,6 +1,8 @@
 Subarray Squares - CSES 2086
 https://cses.fi/problemset/task/2086
 
+Tags: prefix-sum, range-query, static-array
+
 ## Đề bài
 Cho mảng gồm n số nguyên dương, chia mảng thành đúng k đoạn con liên tiếp
 (subarray) không rỗng. Chi phí của mỗi đoạn con bằng bình phương tổng các phần

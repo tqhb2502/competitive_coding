@@ -20,11 +20,10 @@ https://cses.fi/problemset/task/1694
     blocking flow bằng DFS (dùng mảng iterator để bỏ qua các cạnh đã bão hòa). Lặp cho
     tới khi BFS không còn tìm được đường tăng luồng.
 - Tính đúng đắn: Dinic kết thúc khi không còn augmenting path trong residual graph, khi
-  đó luồng đã đạt cực đại. Vì c có thể tới 1e9 nên giá trị luồng có thể lớn; C++ dùng
-  long long, còn Python dùng số nguyên lớn (big int) tự nhiên nên không tràn số.
+  đó luồng đã đạt cực đại. Vì c có thể tới 1e9 nên giá trị luồng và capacity được
+  lưu bằng `long long`.
 
 ## Độ phức tạp
 - Thời gian: Dinic tổng quát O(V^2 * E). Với n <= 500 và m <= 1000 (số cạnh kể cả
   residual khoảng 2m), chi phí rất nhỏ so với giới hạn nên chạy nhanh.
 - Bộ nhớ: O(V + E) cho danh sách kề và các mảng to[], cap[].
-- Không có rủi ro TLE với ràng buộc nhỏ này, kể cả trong pure Python.

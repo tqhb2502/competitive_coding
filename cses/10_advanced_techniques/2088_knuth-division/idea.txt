@@ -1,6 +1,8 @@
 Knuth Division - CSES 2088
 https://cses.fi/problemset/task/2088
 
+Tags: prefix-sum, range-query, static-array
+
 ## Đề bài
 Cho mảng gồm n phần tử dương. Ta phải tách mảng thành n phần tử riêng lẻ bằng các
 lần cắt. Mỗi lần cắt chia một đoạn con liên tục thành hai phần liên tục, chi phí

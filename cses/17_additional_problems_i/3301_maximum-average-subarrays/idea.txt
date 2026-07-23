@@ -1,6 +1,8 @@
 Maximum Average Subarrays - CSES 3301
 https://cses.fi/problemset/task/3301
 
+Tags: binary-search, monotone-predicate, prefix-sum
+
 ## Đề bài
 Cho mảng gồm n số nguyên. Với mỗi vị trí i, hãy tìm độ dài của đoạn con kết
 thúc tại i có trung bình cộng lớn nhất. Nếu có nhiều đoạn cùng đạt trung bình

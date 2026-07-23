@@ -27,15 +27,13 @@ Cài đặt hiệu quả (duyệt tập con có cắt tỉa):
   hay chẵn.
 
 Vì sao đúng: các a_i phân biệt và là số nguyên tố nên tích tập con = LCM, bảo đảm
-công thức bao hàm - loại trừ áp dụng chính xác. Python dùng số nguyên arbitrary
-precision nên tích không bị tràn số; bản C++ dùng phép so sánh prod > n / prime để
-tránh tràn số khi nhân.
+công thức bao hàm - loại trừ áp dụng chính xác. Trước khi nhân, code kiểm tra
+`prod > n / prime`; nhờ đó vừa cắt nhánh có đóng góp bằng 0, vừa tránh tràn số.
 
 ## Độ phức tạp
 - Số tập con có tích <= n bị chặn (k <= 20; tích 20 số nguyên tố phân biệt nhỏ nhất
   đã vượt 1e18 nên rất nhiều tập con bị cắt tỉa). Trường hợp xấu nhất tối đa 2^k
   tập con, mỗi tập con xử lý O(1) phép nhân và chia.
-- Thời gian: O(số tập con hợp lệ) <= O(2^k). Bộ nhớ: O(số tập con hợp lệ).
-
-LƯU Ý TLE: Với k <= 20 và có cắt tỉa, chương trình chạy rất nhanh, không có rủi ro
-TLE.
+- Mỗi lần kiểm tra mở rộng tương ứng với một tập con khác nhau, kể cả khi tích
+  của nó vượt n và bị loại, nên thời gian bị chặn bởi O(2^k).
+- Bộ nhớ: O(S), với S là số tập con có tích không vượt n; S <= 2^k.

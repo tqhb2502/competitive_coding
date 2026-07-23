@@ -40,10 +40,6 @@ Chi tiết cài đặt:
   - Với mỗi đồng xu c, quét i từ c tới x và cập nhật dp[i] = min(dp[i], dp[i-c]+1).
 
 ## Độ phức tạp
-Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 là tối đa khoảng 10^8
-phép cập nhật cơ bản.
-
-LƯU Ý TLE: trên CSES với CPython thuần, vòng lặp DP O(n * x) tới ~10^8 bước rất có
-thể vượt quá giới hạn ~1 giây. Đây đã là thuật toán tốt nhất và trung thực chỉ dùng
-thư viện chuẩn; để chắc chắn qua giới hạn thời gian nên nộp bằng C++ hoặc PyPy3
-(không dùng thư viện bên thứ ba).
+Gọi c là số mệnh giá phân biệt không vượt x sau khi lọc.
+- Thời gian: O(n log n) để sắp xếp, khử trùng và O(c*x) cho DP; c <= n.
+- Bộ nhớ: O(n+x) cho vector đồng xu và mảng DP.

@@ -1,6 +1,8 @@
 Permutation Subsequence - CSES 3404
 https://cses.fi/problemset/task/3404
 
+Tags: binary-search
+
 ## Đề bài
 Cho hai mảng đều là hoán vị (mảng thứ nhất là hoán vị của 1..n, mảng thứ hai là
 hoán vị của 1..m). Tìm độ dài và in ra một dãy con chung dài nhất (LCS). Một dãy

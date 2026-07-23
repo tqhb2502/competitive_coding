@@ -20,7 +20,7 @@ quay lại). Do đó:
     answer = 2 * W(S) - dist(a, b)
 với W(S) = số cạnh của Steiner tree của S, dist(a, b) = khoảng cách a-b trong cây.
 
-Rút gọn về O(1) mỗi truy vấn:
+Rút gọn phần công thức sau LCA về O(1):
 Đặt C = tập coin, T_C = Steiner tree của riêng C (cố định), W_C = số cạnh của T_C.
 Co (contract) toàn bộ các cạnh của T_C thành một điểm r (T_C liên thông nên co lại
 thành 1 đỉnh). Trong cây đã co:
@@ -61,5 +61,5 @@ Tính đúng đắn:
 
 ## Độ phức tạp
 - Tiền xử lý: O(n log n) cho binary lifting, O(n) cho BFS và đếm coin.
-- Mỗi truy vấn: O(log n) do LCA.
+- Mỗi truy vấn: O(log n) để tìm LCA; sau khi có LCA, công thức còn lại tốn O(1).
 - Tổng: O((n + q) log n) thời gian, O(n log n) bộ nhớ. Thoải mái với n, q <= 2*10^5.

@@ -40,7 +40,3 @@ ngược lên phủ định đang ở phía source), nên phép gán nhất quá
 - Số node = 2*m, số cạnh = 2*n. Tarjan chạy O(V + E) = O(n + m) thời gian.
 - Bộ nhớ O(n + m) cho adjacency list và các mảng phụ trợ.
 - Với n, m <= 1e5: khoảng 2e5 node và 2e5 cạnh, hoàn toàn trong giới hạn.
-
-LƯU Ý TLE: Cài đặt Tarjan iterative bằng Python thuần cho ~2e5 node/cạnh thường đủ
-nhanh, nhưng vẫn có rủi ro chạm giới hạn thời gian trên CSES vì overhead của Python;
-input đọc bằng sys.stdin.buffer.read() và tránh đệ quy để giảm thiểu rủi ro.

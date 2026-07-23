@@ -33,5 +33,5 @@ Vì sao đúng:
 - Bộ nhớ: O(2^n) nếu lưu toàn bộ danh sách bước để in một lần (n <= 16 nên tối đa
   65535 bước, rất nhỏ). Độ sâu đệ quy chỉ O(n).
 
-LƯU Ý TLE: Với n <= 16, số bước tối đa 2^16 - 1 = 65535 nên chạy rất nhanh trong
-Python. Không có rủi ro TLE.
+Với n <= 16, số bước tối đa 2^16 - 1 = 65535; code C++ đặt trước dung lượng
+cho vector bước nên không có rủi ro TLE.

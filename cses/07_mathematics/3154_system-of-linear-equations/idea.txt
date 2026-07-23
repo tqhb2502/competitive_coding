@@ -25,55 +25,28 @@ Thuật toán:
    elimination). Duyệt từng cột col = 0..m-1:
    - Tìm trong các hàng chưa dùng làm pivot một hàng có hệ số tại col khác 0
      (mod p). Nếu không có -> col là biến tự do (free variable), bỏ qua.
-   - Nếu có, chọn nó làm pivot cho cột col, đưa lên vị trí r, rồi khử cột col
-     khỏi mọi hàng phía dưới:  row_i <- row_i - factor * row_pivot,
-     với factor = a_{i,col} * inv(a_{pivot,col}) mod p.
-2) Thế ngược (back-substitution) từ pivot cuối lên đầu để tính nghiệm. Với mỗi
-   hàng pivot ứng với cột col:  x_col = (b - sum_{c>col} a_c * x_c) * inv(a_col).
-   Các biến tự do được gán bằng 0.
-3) Kiểm chứng nghiệm vừa dựng trên HỆ GỐC: nếu thỏa mãn mọi phương trình thì in
-   ra, ngược lại hệ vô nghiệm và in "-1". Việc kiểm chứng trực tiếp này vừa phát
-   hiện vô nghiệm một cách chắc chắn, vừa là một lưới an toàn cho toàn bộ quá
-   trình khử.
+   - Nếu có, đổi hàng đó lên vị trí r và nhân cả hàng với nghịch đảo của pivot
+     để hệ số pivot trở thành 1.
+   - Khử cột col khỏi mọi hàng phía dưới:
+         row_i <- row_i - a_{i,col} * row_pivot.
+   - Lưu `pivot_row[col] = r`; cột không có pivot là biến tự do.
+2) Sau khử tiến, nếu tồn tại hàng có toàn bộ m hệ số bằng 0 nhưng vế phải khác
+   0 thì phương trình có dạng 0 = b với b != 0, nên hệ vô nghiệm và in "-1".
+3) Nếu hệ có nghiệm, thế ngược từ cột cuối về đầu. Các biến tự do được gán 0.
+   Với cột pivot col, do hệ số pivot đã được chuẩn hóa thành 1:
+       x_col = b - sum_{c>col} a_c * x_c  (mod p).
 
 Vì sao đúng:
 - Các phép biến đổi hàng sơ cấp (đổi chỗ, nhân hàng với hằng khác 0, cộng bội
   của hàng khác) không làm thay đổi tập nghiệm, nên hệ sau khi khử tương đương
   hệ ban đầu.
-- Trong GF(p) mọi hệ số pivot khác 0 đều khả nghịch nên back-substitution luôn
-  chia được.
-- Đặt biến tự do = 0 cho ta MỘT nghiệm riêng hợp lệ khi hệ có nghiệm. Nếu hệ vô
-  nghiệm thì không có x nào thỏa hệ gốc, nên bước kiểm chứng sẽ thất bại và ta
-  in "-1". Ngược lại nếu nghiệm dựng ra thỏa toàn bộ hệ gốc thì nó chắc chắn là
-  một nghiệm đúng.
-
-Mẹo tăng tốc trong Python thuần (bignum packing):
-Khử Gauss cỡ 500x500 mod p là O(n^2 * m) ~ 1.25e8 phép toán vô hướng; nếu viết
-vòng lặp Python theo từng cột sẽ rất chậm. Thay vào đó ta ĐÓNG GÓI (pack) mỗi
-hàng (m hệ số + vế phải) thành MỘT số nguyên lớn (big integer) của Python, mỗi
-giá trị chiếm một "slot" rộng W = 72 bit (9 byte). Khi đó một phép biến đổi cả
-hàng  row_i <- row_i + mult * row_pivot  trở thành một phép nhân + cộng số lớn
-duy nhất, được CPython thực thi ở tầng C thay vì vòng lặp Python.
-- Ta giữ các hàng đang hoạt động ở dạng "căn chỉnh" (aligned): slot 0 luôn là hệ
-  số của cột đang xét, nên đọc hệ số chỉ là (row & MASK) - O(1); sau khi khử một
-  cột ta dịch phải  row >> W  để bỏ cột đó và căn chỉnh sang cột kế.
-- An toàn tràn/nhớ: trước khi dùng, hàng pivot được reduce đầy đủ (mọi slot < p
-  < 2^30), nên mỗi lần khử chỉ cộng thêm mult*slot < p*p < 2^60 vào một slot
-  đích. Một slot bị cộng dồn tối đa (số pivot) <= 500 < 2^9 lần, nên luôn <
-  500*2^60 < 2^69 < 2^72 = 2^W. Vì vậy không slot nào tràn sang slot bên cạnh
-  (cách đóng gói luôn hợp lệ) và  >> W  loại bỏ cột đã xong một cách sạch sẽ.
-  Các hàng pivot đã reduce đọc lại đúng số dư.
+- Trong GF(p), mọi pivot khác 0 đều khả nghịch nên phép chuẩn hóa luôn hợp lệ.
+- Một hàng 0 = b != 0 là điều kiện vô nghiệm. Nếu không có hàng mâu thuẫn, việc
+  gán các biến tự do bằng 0 rồi thế ngược thỏa mọi hàng pivot, nên cho một nghiệm
+  hợp lệ của hệ tương đương.
 
 ## Độ phức tạp
-- Thời gian: O(n^2 * m) phép toán trên slot, thực hiện qua ~O(n * rank) phép toán
-  số lớn (mỗi phép O(số slot còn lại)). Với n = m = 500 là khoảng 1.25e8 thao
-  tác slot cấp thấp.
-- Bộ nhớ: O(n * m) - lưu ma trận gốc để kiểm chứng cùng các hàng đã đóng gói,
-  khoảng vài chục MB, thoải mái trong 512 MB.
-
-LƯU Ý TLE: Với trường hợp dày đặc nhất (n = m = 500, hạng đầy đủ) lời giải này
-chạy sát ngưỡng 1.0 s trên CPython thuần (đo được ~0.9-1.3 s phần tính toán trên
-máy thử). Nếu CPython bị TLE, hãy nộp bằng PyPy3 (CSES có hỗ trợ) - khi đó chạy
-rất nhanh (~0.2-0.3 s). Thuật toán và cách đóng gói bignum đã là cách tối ưu khả
-dĩ trong phạm vi thư viện chuẩn; tuyệt đối không dùng numpy hay thư viện bên thứ
-ba.
+- Gọi r <= min(n,m) là hạng. Khử tiến tốn O(n * m * r), cộng O(r log p) để
+  tính nghịch đảo các pivot và O(m^2) cho thế ngược; có thể viết gọn là
+  O(n * m * min(n,m)).
+- Bộ nhớ: O(n * m) cho ma trận mở rộng.

@@ -33,5 +33,4 @@ Tính đúng đắn:
 - Thời gian: O(số nhánh của cây quay lui) — chạy tức thì.
 - Bộ nhớ: O(1) (vài mảng cố định kích thước 8 và 15).
 
-LƯU Ý TLE: Vì bàn cờ chỉ 8x8 và số nhánh rất nhỏ, giải pháp Python chạy rất
-nhanh, không có rủi ro TLE.
+Vì bàn cờ cố định 8x8 và số nhánh không quá lớn, code quay lui chạy tức thì.

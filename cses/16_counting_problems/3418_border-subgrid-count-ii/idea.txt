@@ -1,6 +1,8 @@
 Border Subgrid Count II - CSES 3418
 https://cses.fi/problemset/task/3418
 
+Tags: prefix-sum, range-query
+
 ## Đề bài
 Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Với mỗi chữ cái, đếm số lưới
 con hình chữ nhật có toàn bộ đường viền là chữ cái đó. In ra k dòng, mỗi dòng là

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "two-pointers",
+  "title": "Two Pointers",
+  "category": "01_foundations",
+  "summary": "Quét dãy đã sắp xếp bằng hai đầu tiến đơn điệu để tìm hoặc đếm cặp theo tổng.",
+  "aliases": [
+    "opposite-direction pointers"
+  ],
+  "tags": [
+    "array",
+    "counting",
+    "sorted-array",
+    "two-pointers"
+  ],
+  "status": "stress-tested",
+  "source": "algorithm.hpp",
+  "complexities": {
+    "time": "O(n)",
+    "memory": "O(1)"
+  },
+  "tests": [
+    "test.cpp"
+  ],
+  "practice": [
+    {
+      "title": "CSES Ferris Wheel",
+      "path": "cses/02_sorting_searching/1090_ferris-wheel"
+    }
+  ]
+}

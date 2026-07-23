@@ -29,9 +29,6 @@ Tính đúng đắn: fact[i] * inv_fact[i] ≡ 1 (mod p) do khởi tạo
 inv_fact[MX] = (fact[MX])^(p-2) và truy hồi inv_fact[i-1] = inv_fact[i] * i,
 do đó fact[a] * inv_fact[b] * inv_fact[a-b] đúng bằng a!/(b!(a-b)!) mod p.
 
-Đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần bằng
-sys.stdout.write để tránh chậm do I/O.
-
 ## Độ phức tạp
 - Tiền xử lý: O(MX) cho factorial + O(log p) cho một lần pow + O(MX) cho inverse factorial.
 - Mỗi truy vấn: O(1). Tổng thời gian: O(MX + n).

@@ -37,7 +37,5 @@ Tính đúng đắn:
 - Thời gian: O(n) để đếm và O(n) để dựng xâu kết quả => O(n).
 - Bộ nhớ: O(n) cho xâu kết quả, O(26) cho mảng đếm.
 
-LƯU Ý TLE: n có thể tới 10^6. Trong Python cần dùng I/O nhanh
-(sys.stdin.buffer.read, xử lý trên bytes, dùng "".join thay vì cộng xâu từng
-phần) để tránh TLE. Bản C++ đếm bằng mảng int[26] và in trực tiếp qua buffer
-nên nhanh hơn nhiều, không lo TLE.
+Với n tới 10^6, code C++ đếm bằng `array<int, 26>`, dựng hai nửa bằng
+`std::string` và xuất bằng fast I/O; toàn bộ công việc vẫn là O(n).

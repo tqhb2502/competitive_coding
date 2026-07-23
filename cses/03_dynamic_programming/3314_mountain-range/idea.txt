@@ -1,6 +1,8 @@
 Mountain Range - CSES 3314
 https://cses.fi/problemset/task/3314
 
+Tags: monotonic-stack, nearest-element
+
 ## Đề bài
 Có n ngọn núi xếp thành một hàng, núi thứ i cao h_i. Ta bắt đầu một hành trình lượn
 (hang gliding) tại một ngọn núi bất kỳ. Được phép lượn từ núi a sang núi b nếu núi a
@@ -47,5 +49,4 @@ bộ đoạn lượn tới được của X. Mỗi núi chỉ đẩy lên tối 
 
 ## Độ phức tạp
 Thời gian: O(n log n) (chỉ do bước sort theo chiều cao; monotonic stack và vòng DP đều
-O(n)). Bộ nhớ: O(n). Với n = 2*10^5 chạy nhanh trong Python (~1s tính cả I/O), không có
-rủi ro TLE đáng kể.
+O(n)). Bộ nhớ: O(n).

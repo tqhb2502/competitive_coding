@@ -46,5 +46,3 @@ Vì sao đúng:
 ## Độ phức tạp
   - Thời gian O(n): tính rank O(n), duyệt một lần O(n), tạo xâu O(n).
   - Bộ nhớ O(n) cho rank, c và xâu kết quả.
-
-LƯU Ý TLE: với n <= 1e5, giải pháp pure Python chạy thoải mái trong giới hạn.

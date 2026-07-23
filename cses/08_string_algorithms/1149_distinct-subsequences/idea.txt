@@ -29,7 +29,6 @@ Dùng Dynamic Programming đếm distinct subsequences.
   tự c lặp lại, đảm bảo mỗi chuỗi phân biệt chỉ được đếm một lần. dp cuối cùng
   dp[n] đã tính CẢ chuỗi rỗng, nên đáp án = dp[n] - 1, rồi lấy modulo cho
   không âm.
-- Đọc input nhanh bằng buffer, ghi output một lần.
 
 ## Độ phức tạp
 - Thời gian: O(n), mỗi ký tự xử lý O(1) nhờ mảng last kích thước 26.

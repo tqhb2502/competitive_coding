@@ -46,9 +46,4 @@ khi nó là tổ tiên của a.
 
 ## Độ phức tạp
 Thời gian O(n + q), bộ nhớ O(n). Mọi bước duyệt (tìm cycle, gán cycle, DFS tính
-depth/Euler tour) đều iterative nên không lo tràn đệ quy (RecursionError) với n tới 2e5.
-
-LƯU Ý TLE: Thuật toán là O(n + q) nên rủi ro TLE thấp. Tuy vậy với n, q = 2e5 trong
-Python thuần cần I/O nhanh: đọc toàn bộ input bằng sys.stdin.buffer.read().split() và
-ghi kết quả một lần bằng sys.stdout.write. Các vòng lặp nóng đã bind biến ra local để
-tăng tốc.
+depth/Euler tour) đều iterative nên không lo tràn call stack với n tới 2e5.

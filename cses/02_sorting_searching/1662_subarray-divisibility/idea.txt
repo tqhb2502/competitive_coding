@@ -1,6 +1,8 @@
 Subarray Divisibility - CSES 1662
 https://cses.fi/problemset/task/1662
 
+Tags: prefix-sum
+
 ## Đề bài
 Cho một mảng gồm n số nguyên (các phần tử có thể âm). Hãy đếm số lượng
 subarray (đoạn con liên tiếp) có tổng chia hết cho n.
@@ -17,8 +19,8 @@ có cùng số dư (residue) khi chia cho n.
 
 Thuật toán duyệt một lần:
 - Duyệt từng phần tử, cộng dồn để có prefix sum, rồi lấy số dư r = prefix % n.
-  Vì phần tử có thể âm nên cần đưa r về khoảng [0, n-1] (Python tự trả về số dư
-  không âm; C++ cần cộng thêm n nếu r âm).
+  Vì phần tử có thể âm nên code chuẩn hóa bằng `(prefix % n + n) % n` để đưa r
+  về khoảng [0, n-1].
 - Dùng mảng đếm cnt[0..n-1], khởi tạo cnt[0] = 1 tương ứng prefix rỗng P[0] = 0.
 - Với mỗi prefix mới có số dư r: số subarray hợp lệ kết thúc tại vị trí đó chính
   là cnt[r] (số prefix trước đó cùng số dư). Cộng cnt[r] vào đáp án rồi tăng
@@ -28,11 +30,10 @@ Cách đếm tích lũy này bảo đảm mỗi cặp (l, r) hợp lệ được
 đương công thức tổng của C(cnt[r], 2) trên mọi số dư.
 
 Lưu ý về kiểu dữ liệu: đáp án có thể lên tới khoảng C(2e5, 2) ≈ 2e10, vượt phạm vi
-32-bit, nên C++ phải dùng long long (Python có số nguyên vô hạn nên không tràn).
+32-bit, nên code dùng `long long`.
 
 ## Độ phức tạp
 - Thời gian: O(n) để duyệt mảng một lần.
 - Bộ nhớ: O(n) cho mảng đếm cnt.
 
-LƯU Ý TLE: Với n = 2e5, độ phức tạp O(n) cùng fast I/O (sys.stdin.buffer + split)
-là rất an toàn trong Python, gần như không có rủi ro TLE.
+Với n = 2e5, một lượt duyệt O(n) cùng fast I/O không có rủi ro TLE.

@@ -17,23 +17,19 @@ sao cho không có cạnh nào bị dùng lại giữa các tuyến, rồi in ra
   chung cạnh (theo định lý Menger / max-flow min-cut). Đó là đáp án k.
 - Chạy Dinic (max-flow) để tính k.
 - Tái tạo (decompose) k đường đi:
-  + Xét các cạnh forward còn lại capacity = 0 (tức đã có một đơn vị luồng chạy qua,
-    net flow = 1) và đưa vào danh sách kề flowadj.
-  + Lặp đúng k lần: xuất phát từ s, mỗi bước đi theo một cạnh còn luồng chưa dùng
-    (dùng con trỏ ptr cho từng đỉnh) cho đến khi tới t.
-  + Nhờ bảo toàn luồng tại mỗi đỉnh trung gian (in-flow = out-flow), mỗi khi bước
-    vào một đỉnh ta luôn có một cạnh ra chưa dùng nên luôn đi tiếp được và cuối
-    cùng tới t.
-  + Nếu trên đường đi gặp lại một đỉnh đã nằm trên tuyến hiện tại (Dinic có thể
-    sinh ra chu trình), ta CẮT BỎ đoạn chu trình (splice) để tuyến là đường đi đơn
-    giản, không lặp đỉnh. Các cạnh chu trình coi như bị tiêu thụ, không ảnh hưởng
-    các tuyến khác.
+  + Xét các cạnh gốc có forward capacity = 0 sau Dinic, tức đang mang một đơn vị
+    net flow, rồi đưa chúng vào danh sách kề flowEdges.
+  + Lặp đúng k lần: chạy BFS chỉ trên các cạnh mang luồng chưa bị tiêu thụ để tìm
+    một đường đi từ s tới t. Mảng parentVertex/parentEdge dùng để truy vết đường.
+  + Truy vết từ t về s, đánh dấu từng cạnh trên tuyến là consumed để các tuyến
+    sau không dùng lại cạnh đó.
 - Tính đúng đắn: max-flow = số đường đi edge-disjoint tối đa; bảo toàn luồng bảo
-  đảm bóc tách đủ đúng k tuyến và tiêu thụ hết các cạnh mang luồng; việc cắt chu
-  trình chỉ bỏ các cạnh tạo vòng kín, giữ lại đường đi 1 -> n hợp lệ.
+  đảm sau khi bỏ một đường s -> t, phần luồng còn lại vẫn chứa thêm k-1 đơn vị
+  luồng. Vì thế mỗi lần BFS đều tìm được một tuyến và bóc tách đủ đúng k tuyến.
 
 ## Độ phức tạp
-- Dinic trên đồ thị đơn vị capacity: O(E * sqrt(V)); ở đây E <= 2m = 2000 và
-  V = n <= 500 nên chạy rất nhanh.
-- Tái tạo đường đi: O(V + E). Bộ nhớ: O(V + E).
-- Với n <= 500, m <= 1000 bài toán rất nhỏ, không có rủi ro TLE trong pure Python.
+- Dùng cận tổng quát của Dinic: O(V^2 * E); với V <= 500, E = O(m) và mọi
+  capacity bằng 1, thực tế nhỏ hơn nhiều.
+- Tái tạo: O(k * (V + E)) do chạy tối đa k lần BFS. Bộ nhớ: O(V + E) ngoài
+  danh sách các tuyến xuất ra.
+- Với n <= 500, m <= 1000, cách cài đặt này nằm trong giới hạn.

@@ -10,7 +10,7 @@ https://cses.fi/problemset/task/2104
 ## Ý tưởng
 Dùng Suffix Automaton (SAM) của xâu s.
 
-- SAM của s là một automaton nhỏ (nhiều nhất 2n - 1 trạng thái) nhận diện đúng toàn
+- SAM của s là một automaton nhỏ (nhiều nhất 2n trạng thái) nhận diện đúng toàn
   bộ các xâu con của s. Đi từ trạng thái khởi đầu theo các ký tự của một pattern p:
     + Nếu tại một bước không có transition tương ứng => p không phải xâu con của s
       => in -1.
@@ -44,11 +44,6 @@ Tính đúng đắn:
 - Các pattern trùng nhau sẽ tới cùng một trạng thái nên cho cùng đáp án.
 
 ## Độ phức tạp
-- Xây SAM: O(n) (transition lưu bằng dict, có hệ số bảng chữ cái).
+- Xây SAM: O(n) khấu hao với bảng transition `array<int,26>`.
 - Trả lời: O(tổng độ dài các pattern) = O(5e5) lần tra transition.
-- Bộ nhớ: O(n) trạng thái, mỗi trạng thái một bảng/dict transition.
-
-LƯU Ý TLE: Đây là thuật toán đúng và tối ưu về mặt lý thuyết (O(n + tổng |p|)),
-nhưng chạy bằng CPython thuần trên CSES với ~2e5 trạng thái SAM và ~5e5 ký tự truy
-vấn có thể chậm và có nguy cơ TLE (giới hạn thời gian nhắm cho C++). Không dùng
-numpy/thư viện ngoài; chỉ tối ưu bằng cách nội địa hoá biến và I/O nhanh.
+- Bộ nhớ: O(26n) = O(n).

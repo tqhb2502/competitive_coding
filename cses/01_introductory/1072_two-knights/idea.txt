@@ -40,10 +40,8 @@ Kiểm tra với ví dụ:
 
 ## Độ phức tạp
    - Thời gian: O(n) (một vòng lặp từ 1 đến n, mỗi bước tính số học O(1)).
-   - Bộ nhớ: O(n) cho danh sách kết quả trước khi in (có thể coi là O(1)
-     ngoài phần output).
+   - Bộ nhớ: O(1); code C++ tính và in trực tiếp đáp án của từng kích thước k.
 
 LƯU Ý TLE:
-   Các số có thể rất lớn (k=10000 => k^4 ~ 10^16) nên dùng số nguyên lớn của
-   Python là an toàn, không tràn số.
-   Không có rủi ro TLE: n <= 10000, thuật toán O(n) rất nhanh trong Python.
+   Các số có thể rất lớn (k=10000 => k^4 ~ 10^16), nên code C++ dùng long long.
+   Không có rủi ro TLE: n <= 10000 và thuật toán O(n).

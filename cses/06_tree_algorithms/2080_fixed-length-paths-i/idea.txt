@@ -24,7 +24,7 @@ PHÂN LOẠI ĐƯỜNG ĐI CÓ LCA = L
 THUẬT TOÁN O(n) BẰNG LONG-PATH DECOMPOSITION (heavy path theo chiều cao)
 - Tính height[v] (số cạnh của đường đi xuống dài nhất từ v) và heavy[v] (con
   cho height lớn nhất) bằng DFS ITERATIVE dùng stack tường minh, KHÔNG dùng đệ
-  quy để tránh RecursionError / stack overflow khi n tới 2*10^5.
+  quy để tránh tràn call stack khi n tới 2*10^5.
 - Cấp phát một memory pool: mỗi heavy chain (từ đỉnh đầu chuỗi xuống tới lá sâu
   nhất) chiếm một đoạn liên tiếp trong mảng D có kích thước height+1. Đặt con
   trỏ Dptr[v] sao cho cnt[v][i] = D[Dptr[v] + i] và Dptr[v] = Dptr[heavy[v]] - 1.
@@ -47,9 +47,3 @@ VÌ SAO ĐÚNG
 ## Độ phức tạp
 - Thời gian O(n), bộ nhớ O(n). Đây là thuật toán tối ưu về mặt tiệm cận (nhanh
   hơn centroid decomposition O(n log n)).
-
-LƯU Ý TLE: Với n = 2*10^5 và giới hạn 1.00 s dành cho C++, lời giải Python thuần
-này (dù đã tối ưu hằng số: đọc input một lần, dùng mảng phẳng, thừa kế cnt qua
-con trỏ) vẫn có RỦI RO TLE trên các test xấu (cây ngẫu nhiên nhiều nhánh) vì
-CSES chỉ chạy CPython. Thuật toán là O(n) đúng và không thể nhanh hơn về tiệm
-cận; nếu TLE thì đó là do hằng số của CPython chứ không phải do độ phức tạp.

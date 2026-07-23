@@ -1,6 +1,8 @@
 Distinct Values Sum - CSES 3150
 https://cses.fi/problemset/task/3150
 
+Tags: coordinate-compression, sorting
+
 ## Đề bài
 Cho mảng gồm n phần tử. Với mỗi mảng con liên tiếp [a, b], gọi d(a, b) là số
 giá trị phân biệt trong mảng con đó. Hãy tính tổng d(a, b) trên tất cả các mảng

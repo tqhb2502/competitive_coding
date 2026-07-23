@@ -16,8 +16,6 @@ https://cses.fi/problemset/task/1083
 ## Độ phức tạp
 - Thời gian: O(n) để đọc và cộng dồn các số.
 - Bộ nhớ: O(1) ngoài phần đọc input (chỉ lưu tổng).
-- Python hỗ trợ số nguyên lớn nên không lo tràn số với n <= 2*10^5.
+- Code C++ dùng `long long` cho tổng đầy đủ và phần còn lại.
 
-LƯU Ý TLE: Không có rủi ro TLE. n <= 2*10^5, thuật toán O(n) với fast I/O
-(sys.stdin.buffer) chạy rất nhanh trong Python. Bản C++ cũng dùng công thức
-S - T với kiểu long long để tránh tràn số.
+Không có rủi ro TLE: code chỉ đọc và trừ dần n-1 số với fast I/O.
