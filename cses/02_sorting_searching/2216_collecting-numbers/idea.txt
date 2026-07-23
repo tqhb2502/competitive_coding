@@ -1,33 +1,30 @@
-Bài toán: Collecting Numbers (CSES 2216)
+Collecting Numbers - CSES 2216
+https://cses.fi/problemset/task/2216
 
-Đề bài tóm tắt:
-Cho một mảng chứa mỗi số từ 1 đến n đúng một lần. Mỗi vòng (round) ta duyệt
+## Đề bài
+Cho một mảng chứa mỗi số nguyên từ 1 đến n đúng một lần. Ở mỗi vòng, ta duyệt
 mảng từ trái sang phải và thu thập các số theo thứ tự tăng dần liên tiếp
-(1, 2, 3, ...) bắt đầu từ số nhỏ nhất chưa thu thập. Hỏi cần bao nhiêu vòng
-để thu thập hết tất cả các số.
+(1, 2, 3, ...), bắt đầu từ số nhỏ nhất chưa được thu thập. Hỏi cần bao nhiêu
+vòng để thu thập hết tất cả các số.
 
-Ý tưởng chính:
-- Ghi lại vị trí (index) của mỗi giá trị trong mảng: pos[v] = chỉ số mà giá
+## Ý tưởng
+- Ghi lại vị trí (index) của mỗi giá trị trong mảng: pos[v] là chỉ số nơi giá
   trị v xuất hiện.
-- Ta xét lần lượt các giá trị 1, 2, ..., n. Giá trị v có thể được thu thập
-  ngay trong cùng một vòng với giá trị v-1 khi và chỉ khi v nằm ở BÊN PHẢI
-  của v-1 trong mảng, tức là pos[v] > pos[v-1]. Khi đó khi duyệt trái sang
-  phải ta gặp v-1 trước rồi mới tới v nên thu thập được liền mạch.
+- Xét lần lượt các giá trị 1, 2, ..., n. Giá trị v có thể được thu thập ngay
+  trong cùng một vòng với v-1 khi và chỉ khi v nằm ở BÊN PHẢI của v-1, tức là
+  pos[v] > pos[v-1]. Khi đó, lúc duyệt từ trái sang phải, ta gặp v-1 trước rồi
+  mới tới v nên thu thập được liền mạch.
 - Ngược lại, nếu pos[v] < pos[v-1] thì v đứng trước v-1, không thể lấy trong
-  cùng vòng, phải bắt đầu một vòng mới.
-
-Do đó số vòng = 1 + (số lượng chỉ số v trong khoảng [2, n] mà pos[v] < pos[v-1]).
+  cùng vòng nên phải bắt đầu một vòng mới.
+- Do đó số vòng = 1 + (số lượng giá trị v trong khoảng [2, n] mà pos[v] < pos[v-1]).
 
 Tính đúng đắn:
 - Mỗi vòng thu thập một dãy giá trị liên tiếp tăng dần mà các vị trí của chúng
-  cũng tăng dần (duyệt trái sang phải). Một "đứt gãy" xảy ra chính xác tại
-  những v mà pos[v] < pos[v-1]. Số vòng bằng số đoạn liên tiếp tăng theo vị
-  trí, và số đoạn = 1 + số đứt gãy. Đây là kết quả tối ưu và duy nhất vì quá
-  trình thu thập là xác định (deterministic), không có lựa chọn nào khác.
+  cũng tăng dần (do duyệt từ trái sang phải). Một "đứt gãy" xảy ra chính xác
+  tại những v mà pos[v] < pos[v-1]. Số vòng bằng số đoạn tăng theo vị trí, và
+  số đoạn = 1 + số đứt gãy. Đây là kết quả tối ưu và duy nhất vì quá trình thu
+  thập là xác định (deterministic), không có lựa chọn nào khác.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) để đọc mảng, dựng pos và quét một lần.
 - Bộ nhớ: O(n) cho mảng pos.
-
-Cách cài đặt nhanh: dùng sys.stdin.buffer để đọc toàn bộ input một lần, tách
-số bằng split(), chỉ quét một vòng tuyến tính nên rất nhẹ.

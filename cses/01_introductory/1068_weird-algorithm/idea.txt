@@ -1,29 +1,27 @@
-Bài toán: Weird Algorithm (dãy Collatz)
+Thuật toán kỳ lạ (Weird Algorithm) - CSES 1068
+https://cses.fi/problemset/task/1068
 
-Đề bài:
+## Đề bài
 - Cho số nguyên dương n (1 <= n <= 10^6).
-- Áp dụng quy tắc: nếu n chẵn thì chia đôi (n / 2), nếu n lẻ thì nhân ba cộng một (3n + 1).
+- Áp dụng quy tắc lặp: nếu n chẵn thì chia đôi (n / 2), nếu n lẻ thì nhân ba cộng một (3n + 1).
 - Lặp lại cho đến khi n = 1.
 - In ra tất cả các giá trị của n trong quá trình (kể cả giá trị đầu và giá trị 1 ở cuối),
   cách nhau bởi dấu cách, trên cùng một dòng.
 
-Cách làm:
-- Bắt đầu từ n, mô phỏng trực tiếp từng bước:
-  + Lưu giá trị hiện tại vào danh sách kết quả.
-  + Nếu n chẵn: n = n // 2. Nếu n lẻ: n = 3 * n + 1.
-  + Dừng khi n == 1 (vẫn phải in ra 1).
-- Cuối cùng ghép tất cả giá trị bằng " ".join và in một lần (fast I/O) để tránh chậm.
+## Ý tưởng
+- Mô phỏng trực tiếp dãy Collatz đúng theo định nghĩa bài toán:
+  + Ghi lại giá trị hiện tại của n vào kết quả.
+  + Nếu n chẵn: n = n / 2. Nếu n lẻ: n = 3 * n + 1.
+  + Dừng khi n = 1 (vẫn phải in ra giá trị 1).
+- Ghép tất cả giá trị bằng dấu cách và in một lần (fast I/O) để tránh chậm.
+- Tính đúng đắn: dãy Collatz với n <= 10^6 luôn hội tụ về 1 (đã được kiểm chứng thực nghiệm
+  rất xa), nên vòng lặp chắc chắn kết thúc; ta chỉ mô phỏng theo định nghĩa nên kết quả chính xác.
 
-Tính đúng đắn:
-- Dãy Collatz với n <= 10^6 luôn hội tụ về 1 (đã được kiểm chứng thực nghiệm rất xa),
-  nên vòng lặp chắc chắn kết thúc.
-- Ta chỉ mô phỏng đúng theo định nghĩa bài toán nên kết quả chính xác.
-
-Lưu ý về tràn số:
+LƯU Ý (tràn số):
 - Giá trị trung gian có thể vượt quá 10^6 (với n <= 10^6, giá trị lớn nhất khoảng ~2^32),
-  nhưng Python hỗ trợ số nguyên lớn vô hạn nên không bị tràn.
+  nên trong C++ cần dùng kiểu long long để tránh tràn; Python hỗ trợ số nguyên lớn vô hạn.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(L) với L là độ dài dãy Collatz (với n <= 10^6, L tối đa khoảng ~500 bước),
   rất nhỏ nên chạy tức thì.
 - Bộ nhớ: O(L) để lưu dãy kết quả.

@@ -1,11 +1,3 @@
-# Two Knights - CSES 1072
-# https://cses.fi/problemset/task/1072
-#
-# For each board size k (1..n), count placements of two knights that do not
-# attack each other:
-#   answer(k) = C(k*k, 2) - 4*(k-1)*(k-2)
-#             = k*k*(k*k - 1)//2 - 4*(k-1)*(k-2)
-
 import sys
 
 
@@ -14,9 +6,13 @@ def main():
     n = int(data[0])
 
     out = []
+    # Với mỗi bàn cờ k x k (k từ 1 đến n) áp dụng công thức đếm bù trừ.
     for k in range(1, n + 1):
+        # Tổng số cách chọn 2 ô bất kỳ: C(k*k, 2) = k*k*(k*k-1)//2.
         total = k * k * (k * k - 1) // 2
+        # Số cặp Mã tấn công nhau: 4 * (k-1) * (k-2).
         attacking = 4 * (k - 1) * (k - 2)
+        # Kết quả = tổng số cặp - số cặp tấn công nhau.
         out.append(str(total - attacking))
 
     sys.stdout.write("\n".join(out))

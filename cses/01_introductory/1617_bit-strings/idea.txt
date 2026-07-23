@@ -1,25 +1,20 @@
-Bài toán: Bit Strings (CSES 1617)
+Bit Strings - CSES 1617
+https://cses.fi/problemset/task/1617
 
-Đề bài:
-- Cho số nguyên n. Đếm số lượng chuỗi bit (chuỗi gồm các ký tự 0 hoặc 1) có độ dài n.
+## Đề bài
+- Cho số nguyên n. Đếm số lượng chuỗi bit (chuỗi chỉ gồm ký tự 0 hoặc 1) có độ dài n.
 - In kết quả theo modulo 10^9 + 7.
 - Ràng buộc: 1 <= n <= 10^6.
 
-Ý tưởng:
-- Mỗi vị trí trong chuỗi có thể là 0 hoặc 1, tức là có 2 lựa chọn.
-- Vì các vị trí độc lập với nhau, tổng số chuỗi bit độ dài n là 2^n.
-- Do n có thể lớn tới 10^6 và kết quả rất lớn, ta tính 2^n modulo 10^9 + 7.
+## Ý tưởng
+- Mỗi vị trí trong chuỗi có 2 lựa chọn là 0 hoặc 1, và các vị trí độc lập với nhau.
+- Theo nguyên lý nhân, số chuỗi bit độ dài n đúng bằng 2^n.
+- Vì n có thể lớn tới 10^6 nên kết quả rất lớn, ta tính 2^n modulo 10^9 + 7.
+- Dùng lũy thừa nhanh (binary exponentiation) để tính 2^n mod (10^9 + 7).
+- Trong Python có thể dùng hàm dựng sẵn pow(2, n, MOD), vốn đã cài lũy thừa modulo hiệu quả.
 
-Cách tính:
-- Sử dụng lũy thừa nhanh (fast exponentiation / binary exponentiation) để tính 2^n mod (10^9 + 7).
-- Trong Python, hàm dựng sẵn pow(2, n, MOD) đã cài đặt lũy thừa modulo hiệu quả.
-
-Tính đúng đắn:
-- Số chuỗi bit độ dài n đúng bằng 2^n theo nguyên lý nhân (mỗi vị trí 2 lựa chọn, n vị trí).
-- Lũy thừa nhanh cho kết quả chính xác của 2^n mod (10^9 + 7).
-
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(log n) cho phép lũy thừa nhanh.
 - Bộ nhớ: O(1).
 
-Không có rủi ro TLE vì thuật toán chỉ là một phép lũy thừa modulo O(log n), rất nhanh.
+LƯU Ý TLE: Không có rủi ro TLE vì thuật toán chỉ là một phép lũy thừa modulo O(log n), rất nhanh.

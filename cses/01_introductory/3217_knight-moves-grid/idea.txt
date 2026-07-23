@@ -1,17 +1,19 @@
-Bài toán: Knight Moves Grid (CSES 3217)
+Knight Moves Grid - CSES 3217
+https://cses.fi/problemset/task/3217
 
-Đề bài:
-- Có một bàn cờ n x n. Với mỗi ô, in ra số nước đi tối thiểu mà quân mã (knight)
-  cần để đi từ ô đó tới góc trên-trái (ô (0,0)).
+## Đề bài
+- Cho bàn cờ n x n. Với mỗi ô, hãy in ra số nước đi tối thiểu mà quân mã
+  (knight) cần để đi từ ô đó tới góc trên-trái, tức ô (0,0).
 - Ràng buộc: 4 <= n <= 1000.
 
-Ý tưởng:
-- Do số nước đi của quân mã là đối xứng: số nước đi từ ô A đến ô B bằng số nước
-  đi từ B đến A (mỗi nước đi có thể đi ngược lại). Vì vậy thay vì tính khoảng
-  cách từ MỖI ô tới góc (0,0), ta chỉ cần làm MỘT lần BFS xuất phát từ góc (0,0).
+## Ý tưởng
+- Nước đi của quân mã có tính đối xứng: số nước đi từ ô A đến ô B bằng số nước
+  đi từ B đến A (mỗi nước đi đều có nước đi ngược lại). Vì vậy thay vì tính
+  khoảng cách từ MỖI ô về góc (0,0), ta chỉ cần chạy MỘT lần BFS xuất phát từ
+  góc (0,0).
 - BFS (tìm kiếm theo chiều rộng) trên đồ thị mà mỗi ô là một đỉnh, mỗi nước đi
-  hợp lệ của quân mã là một cạnh (trọng số 1). BFS cho ra khoảng cách ngắn nhất
-  (theo số cạnh) từ (0,0) đến tất cả các ô.
+  hợp lệ của quân mã là một cạnh trọng số 1. BFS cho ra khoảng cách ngắn nhất
+  (theo số cạnh) từ (0,0) tới tất cả các ô.
 - 8 nước đi của quân mã: (+-1, +-2) và (+-2, +-1).
 
 Cách cài đặt (tối ưu cho Python):
@@ -24,9 +26,9 @@ Cách cài đặt (tối ưu cho Python):
   dist[start] = 0.
 - 8 nước đi được đổi thành 8 độ lệch chỉ số phẳng:
   (+-1,+-2) và (+-2,+-1)  ->  +-W+-2 và +-2W+-1.
-- BFS theo TỪNG LỚP (layer): giữ danh sách "cur" các ô ở khoảng cách d-1; với mỗi
-  ô xét 8 độ lệch, ô nào đang là -1 thì gán = d và thêm vào lớp kế tiếp. Vì xét
-  theo lớp nên khoảng cách d biết sẵn, không cần lưu kèm trong hàng đợi.
+- BFS theo TỪNG LỚP (layer): giữ danh sách "cur" các ô ở khoảng cách d-1; với
+  mỗi ô xét 8 độ lệch, ô nào đang là -1 thì gán = d và thêm vào lớp kế tiếp. Vì
+  xét theo lớp nên khoảng cách d biết sẵn, không cần lưu kèm trong hàng đợi.
 - In ma trận dist theo từng hàng (chỉ lấy phần bên trong), các số cách nhau bởi
   dấu cách.
 
@@ -38,12 +40,12 @@ Tính đúng đắn:
   cho kết quả giống hệt BFS có kiểm tra biên 0 <= r,c < n.
 - Vì n >= 4, bàn cờ đủ lớn để mọi ô đều đến được góc, không có ô nào là -1.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n^2) - mỗi ô được thăm đúng một lần, mỗi ô xét 8 nước đi.
   Với n = 1000 là khoảng 10^6 ô, tổng ~8 * 10^6 thao tác.
 - Bộ nhớ: O(n^2) cho mảng khoảng cách (có viền) và danh sách lớp.
 
-Ghi chú về tốc độ:
+LƯU Ý TLE:
 - Cách padding + mảng phẳng + BFS theo lớp (bỏ kiểm tra biên, bỏ tuple tọa độ,
   bỏ deque) nhanh hơn đáng kể so với BFS thông thường (nhanh khoảng 5x). Với
   n = 1000 chạy khoảng ~0.9 giây trên máy thử nghiệm, đủ sát giới hạn 1s của

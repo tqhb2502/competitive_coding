@@ -1,58 +1,51 @@
-Bài toán: Cho lưới n x n các chữ cái in hoa (A-Z). Đi từ ô góc trái-trên (0,0)
-đến ô góc phải-dưới (n-1, n-1), mỗi bước chỉ được sang phải hoặc xuống dưới. Mỗi
-đường đi tạo thành một xâu độ dài đúng 2n-1. Hãy in ra xâu nhỏ nhất theo thứ tự
-từ điển (lexicographically minimal). Ràng buộc: 1 <= n <= 3000.
+Minimal Grid Path - CSES 3359
+https://cses.fi/problemset/task/3359
 
-Ý TƯỞNG CHÍNH (greedy theo đường chéo phụ / anti-diagonal + BFS frontier):
+## Đề bài
+Cho lưới n x n gồm các chữ cái in hoa (A-Z). Đi từ ô góc trái-trên (0, 0)
+đến ô góc phải-dưới (n-1, n-1), mỗi bước chỉ được sang phải hoặc xuống dưới.
+Mỗi đường đi tạo thành một xâu có độ dài đúng 2n-1. Hãy in ra xâu nhỏ nhất
+theo thứ tự từ điển (lexicographically minimal). Ràng buộc: 1 <= n <= 3000.
 
-Nhận xét: mọi ô (r, c) mà một đường đi đi qua ở "bước thứ d" đều thỏa r + c = d.
-Các ô có cùng r + c = d nằm trên cùng một đường chéo phụ d (d chạy từ 0 đến 2n-2).
-Vì thế mọi đường đi đều đi qua đúng một ô trên mỗi đường chéo d, và ký tự thứ d
-của xâu chính là chữ tại ô đó. Do đó ta có thể quyết định ký tự thứ d một cách
-tham lam từ trái sang phải: chọn ký tự nhỏ nhất có thể, rồi loại bỏ mọi lựa chọn
-không đạt được ký tự nhỏ nhất đó.
+## Ý tưởng
+Tham lam theo từng đường chéo phụ (anti-diagonal) kết hợp một "frontier".
 
-STATE (frontier): duy trì tập "frontier" = tập các ô trên đường chéo d hiện tại
-mà prefix (tiền tố) tối ưu (nhỏ nhất theo từ điển) dẫn tới chúng là GIỐNG NHAU và
-bằng tiền tố tối ưu toàn cục. Mọi ô trong frontier có chung tiền tố nên chúng
-hoàn toàn tương đương khi so sánh phần đường đi còn lại.
+Nhận xét: mọi ô (r, c) mà đường đi đi qua ở "bước thứ d" đều thỏa r + c = d,
+tức nằm trên cùng đường chéo phụ d (d chạy từ 0 đến 2n-2). Vì vậy mọi đường đi
+đều đi qua đúng một ô trên mỗi đường chéo, và ký tự thứ d của xâu chính là chữ
+tại ô đó. Do đó có thể quyết định ký tự thứ d một cách tham lam từ trái sang
+phải: chọn ký tự nhỏ nhất có thể rồi loại bỏ mọi lựa chọn không đạt được nó.
 
-BASE CASE: đường chéo d = 0 chỉ có ô (0,0). Ký tự đầu tiên bắt buộc là grid[0][0].
-frontier ban đầu = { hàng 0 }.
+State (frontier): tập các ô trên đường chéo d hiện tại mà tiền tố tối ưu (nhỏ
+nhất theo từ điển) dẫn tới chúng là GIỐNG NHAU và bằng tiền tố tối ưu toàn cục.
+Vì cùng tiền tố nên các ô này hoàn toàn tương đương khi so phần đường đi còn lại.
 
-TRANSITION (từ đường chéo d-1 sang d):
+Base case: đường chéo d = 0 chỉ có ô (0, 0). Ký tự đầu tiên bắt buộc là
+grid[0][0]. Frontier ban đầu = { hàng 0 }.
+
+Transition (từ đường chéo d-1 sang d):
 - Sinh các ô ứng viên: từ mỗi ô (r, c) trong frontier, đi phải cho ô (r, c+1)
-  (vẫn ở hàng r) và đi xuống cho ô (r+1, c) (hàng r+1), miễn là còn nằm trong
-  lưới. Nói theo chỉ số hàng: ứng viên tại hàng rr trên đường chéo d hợp lệ nếu
-  hàng rr thuộc frontier cũ (đi phải) HOẶC hàng rr-1 thuộc frontier cũ (đi xuống),
-  và rr là hàng hợp lệ trên đường chéo d, tức lo <= rr <= hi với
-  lo = max(0, d-(n-1)), hi = min(d, n-1).
+  (vẫn ở hàng r) và đi xuống cho ô (r+1, c) (hàng r+1), miễn là còn trong lưới.
+  Theo chỉ số hàng: hàng rr trên đường chéo d là ứng viên nếu rr thuộc frontier
+  cũ (đi phải) HOẶC rr-1 thuộc frontier cũ (đi xuống), với lo <= rr <= hi trong
+  đó lo = max(0, d-(n-1)) và hi = min(d, n-1).
 - Tìm ký tự nhỏ nhất mn trong các ô ứng viên, thêm mn vào kết quả.
-- frontier mới = các ô ứng viên có ký tự đúng bằng mn.
+- Frontier mới = các ô ứng viên có ký tự đúng bằng mn.
 
-ANSWER: nối các ký tự đã chọn cho d = 0, 1, ..., 2n-2, được xâu độ dài 2n-1.
+Answer: nối các ký tự đã chọn cho d = 0, 1, ..., 2n-2, được xâu độ dài 2n-1.
 
-TÍNH ĐÚNG (correctness): xét theo quy nạp trên d. Giả sử frontier ở đường chéo
-d-1 đúng là tập các ô đạt được tiền tố tối ưu chung (dài d ký tự). Ký tự thứ d
-của bất kỳ đường đi tối ưu nào phải là min các ký tự đạt được từ frontier này khi
-đi 1 bước; ta chọn đúng mn đó. Mọi ô ứng viên có ký tự > mn không thể nằm trên
-đường đi tối ưu nên bị loại; các ô có ký tự = mn giữ nguyên tính "chung tiền tố",
-nên frontier mới đúng cho đường chéo d. Vì tất cả ô trong frontier có cùng tiền
-tố, việc so sánh về sau chỉ phụ thuộc phần còn lại, đảm bảo greedy cho ra xâu nhỏ
-nhất tuyệt đối.
-
-CÀI ĐẶT NHANH (để tránh TLE trong Python thuần):
-Tổng số ô xử lý là O(n^2) (tối đa ~9,000,000 với n=3000), nên vòng lặp Python từng
-ô sẽ quá chậm. Ta thực hiện mọi thao tác theo lô (bulk) ở mức C:
-- Lưu lưới thành một chuỗi byte big theo hàng (row-major), độ dài n*n. Ký tự trên
-  đường chéo d ứng với các chỉ số cách đều nhau bước step = n-1, nên lấy được bằng
-  phép slice big[start : ... : step] (mức C).
-- Biểu diễn frontier bằng chuỗi byte 0/1 (một byte cho mỗi hàng). Phép "đi xuống"
-  (dịch hàng r-1 -> r) tương ứng dịch phải 8 bit trên số nguyên lớn: F >> 8; phép
-  OR bit cho ra tập ứng viên (giá trị 0/1 nên OR không sinh nhớ).
+Cài đặt nhanh (để tránh TLE trong Python thuần): tổng số ô xử lý là O(n^2)
+(tối đa ~9,000,000 với n=3000) nên vòng lặp Python từng ô sẽ quá chậm. Ta làm
+mọi thao tác theo lô (bulk) ở mức C:
+- Lưu lưới thành một chuỗi byte row-major độ dài n*n. Ký tự trên đường chéo d
+  ứng với các chỉ số cách đều bước step = n-1, lấy được bằng slice mức C.
+- Biểu diễn frontier bằng chuỗi byte 0/1 (một byte cho mỗi hàng). Phép "đi
+  xuống" (dịch hàng r-1 -> r) tương ứng dịch phải 8 bit trên số nguyên lớn:
+  F >> 8; phép OR bit cho ra tập ứng viên.
 - Che các ô không phải ứng viên thành 255 bằng bytes.translate rồi OR với ký tự
-  đường chéo; dùng min() (mức C) để lấy mn; dùng bytes.translate lần nữa để lấy
-  frontier mới (các vị trí == mn).
+  đường chéo; dùng min() để lấy mn; dùng bytes.translate lần nữa để lấy frontier
+  mới (các vị trí == mn).
 
-ĐỘ PHỨC TẠP: thời gian O(n^2) nhưng chạy hoàn toàn ở mức C nên rất nhanh (thực
-nghiệm n=3000 khoảng 0.3s). Bộ nhớ O(n^2) cho chuỗi lưới cộng O(n) cho frontier.
+## Độ phức tạp
+Thời gian O(n^2); trong Python chạy hoàn toàn ở mức C nên rất nhanh (thực nghiệm
+n=3000 khoảng 0.3s). Bộ nhớ O(n^2) cho chuỗi lưới cộng O(n) cho frontier.

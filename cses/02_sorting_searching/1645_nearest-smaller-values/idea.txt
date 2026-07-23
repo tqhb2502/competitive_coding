@@ -1,40 +1,37 @@
-Bài toán: Nearest Smaller Values (CSES 1645)
+Nearest Smaller Values - CSES 1645
+https://cses.fi/problemset/task/1645
 
-ĐỀ BÀI
-Cho một mảng gồm n số nguyên. Với mỗi vị trí i (đánh chỉ số từ 1),
-cần tìm vị trí gần nhất nằm BÊN TRÁI của i mà có giá trị NHỎ HƠN giá trị
-tại i. Nếu không tồn tại vị trí như vậy thì in ra 0.
+## Đề bài
+Cho một mảng gồm n số nguyên. Với mỗi vị trí i (đánh chỉ số từ 1), hãy tìm
+vị trí gần nhất nằm BÊN TRÁI của i mà có giá trị NHỎ HƠN giá trị tại i. Nếu
+không tồn tại vị trí như vậy thì in ra 0.
 
 Ví dụ: mảng 2 5 1 4 8 3 2 5 cho kết quả 0 1 0 3 4 3 3 7.
 
-Ý TƯỞNG (monotonic stack)
-Ta duyệt mảng từ trái sang phải và duy trì một stack chứa các CHỈ SỐ mà
-giá trị tương ứng đang TĂNG NGHIÊM NGẶT (strictly increasing) theo thứ tự
-từ đáy lên đỉnh stack.
+## Ý tưởng
+Sử dụng monotonic stack. Ta duyệt mảng từ trái sang phải và duy trì một stack
+chứa các CHỈ SỐ mà giá trị tương ứng đang TĂNG NGHIÊM NGẶT (strictly
+increasing) theo thứ tự từ đáy lên đỉnh stack.
 
 Khi xử lý vị trí i với giá trị x = a[i]:
-- Lặp bỏ (pop) khỏi đỉnh stack tất cả các chỉ số j mà a[j] >= x, vì các
-  vị trí đó không thể là "nearest smaller value" cho i, và quan trọng hơn,
-  chúng cũng không bao giờ có thể là đáp án cho bất kỳ vị trí nào bên phải
-  của i nữa (vì i đứng gần hơn và có giá trị <= chúng).
-- Sau khi pop xong: nếu stack rỗng thì không có phần tử nhỏ hơn nào bên
-  trái, đáp án là 0. Ngược lại, đỉnh stack chính là chỉ số gần nhất bên
-  trái có giá trị nhỏ hơn x, đó là đáp án cho i.
+- Lặp bỏ (pop) khỏi đỉnh stack tất cả các chỉ số j mà a[j] >= x. Các vị trí
+  đó không thể là đáp án cho i, và cũng không bao giờ là đáp án cho bất kỳ vị
+  trí nào bên phải i (vì i đứng gần hơn và có giá trị nhỏ hơn hoặc bằng chúng),
+  nên loại bỏ được vĩnh viễn.
+- Sau khi pop xong: nếu stack rỗng thì không có phần tử nhỏ hơn nào bên trái,
+  đáp án là 0. Ngược lại, đỉnh stack chính là chỉ số gần nhất bên trái có giá
+  trị nhỏ hơn x, đó là đáp án cho i (đổi sang chỉ số bắt đầu từ 1).
 - Cuối cùng push i vào stack.
 
-TÍNH ĐÚNG ĐẮN
-Stack luôn giữ tính chất tăng nghiêm ngặt về giá trị. Do đó nếu stack
-không rỗng sau khi pop, đỉnh stack là phần tử bên trái gần nhất có giá trị
-< a[i]: mọi phần tử ở giữa đỉnh stack và i đều đã bị pop vì chúng có giá
-trị >= a[i]. Việc pop là hợp lệ vì một phần tử j có a[j] >= a[i] và
-j < i sẽ luôn bị "che" bởi i đối với mọi vị trí k > i (i gần k hơn và
-a[i] <= a[j]), nên j vô dụng và có thể loại bỏ vĩnh viễn.
+Tính đúng đắn: stack luôn giữ tính chất tăng nghiêm ngặt về giá trị, nên nếu
+stack không rỗng sau khi pop thì đỉnh stack là phần tử bên trái gần nhất có
+giá trị nhỏ hơn a[i]; mọi phần tử ở giữa đều đã bị pop vì có giá trị >= a[i].
 
-ĐỘ PHỨC TẠP
-- Thời gian: O(n) amortized, vì mỗi chỉ số được push đúng một lần và
-  pop nhiều nhất một lần.
+## Độ phức tạp
+- Thời gian: O(n) khấu hao (amortized), vì mỗi chỉ số được push đúng một lần
+  và pop nhiều nhất một lần.
 - Bộ nhớ: O(n) cho stack và mảng kết quả.
 
-Với n <= 2*10^5, O(n) là quá đủ nhanh; kết hợp fast I/O (đọc toàn bộ
-input bằng sys.stdin.buffer, ghi kết quả một lần bằng ' '.join) là an toàn
-trong Python trên CSES.
+Với n <= 2*10^5, O(n) là quá đủ nhanh; kết hợp fast I/O (đọc toàn bộ input
+bằng sys.stdin.buffer, ghi kết quả một lần bằng ' '.join) là an toàn trong
+Python trên CSES.

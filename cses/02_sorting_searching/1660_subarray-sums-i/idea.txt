@@ -1,22 +1,25 @@
-Bài toán: Subarray Sums I (CSES 1660)
+Subarray Sums I - CSES 1660
+https://cses.fi/problemset/task/1660
 
-Yêu cầu: Cho mảng gồm n số nguyên DƯƠNG, đếm số lượng subarray (đoạn con liên tiếp) có tổng đúng bằng x.
+## Đề bài
+Cho một mảng gồm n số nguyên DƯƠNG. Hãy đếm số lượng subarray (đoạn con liên tiếp) có tổng đúng bằng x.
 
-Ý tưởng chính (two-pointer / sliding window):
-- Vì mọi phần tử đều là số dương, khi ta mở rộng cửa sổ về bên phải thì tổng cửa sổ chỉ TĂNG, và khi thu hẹp cửa sổ từ bên trái thì tổng chỉ GIẢM. Tính đơn điệu này cho phép dùng kỹ thuật two-pointer.
-- Duy trì hai con trỏ left và right cùng một biến cur là tổng của đoạn [left, right).
-- Với mỗi right, cộng a[right] vào cur. Trong khi cur > x, ta trừ a[left] ra khỏi cur và tăng left (thu hẹp cửa sổ). Sau đó nếu cur == x thì tìm được một subarray hợp lệ, tăng biến đếm answer.
+## Ý tưởng
+Dùng kỹ thuật two-pointer (sliding window):
+- Vì mọi phần tử đều là số dương, khi mở rộng cửa sổ về bên phải thì tổng cửa sổ chỉ TĂNG, còn khi thu hẹp cửa sổ từ bên trái thì tổng chỉ GIẢM. Tính đơn điệu này cho phép dùng two-pointer.
+- Duy trì hai con trỏ left, right cùng biến cur là tổng của đoạn [left, right).
+- Với mỗi right, cộng a[right] vào cur. Trong khi cur > x, trừ a[left] khỏi cur rồi tăng left (thu hẹp cửa sổ). Sau đó nếu cur == x thì tìm được một subarray hợp lệ, tăng biến đếm answer.
 
 Vì sao đúng:
-- Với mỗi vị trí kết thúc right cố định, do các phần tử dương nên tồn tại nhiều nhất MỘT vị trí bắt đầu left sao cho tổng đoạn [left, right] bằng đúng x. Con trỏ left không bao giờ lùi lại (chỉ tiến lên), nên mỗi cặp (left, right) được xét đúng một lần. Khi cur == x nghĩa là đoạn hiện tại có tổng đúng x, đếm thêm 1. Nếu cur < x thì không có đoạn nào kết thúc tại right có tổng x với left hiện tại (mọi đoạn ngắn hơn còn nhỏ hơn nữa vì số dương).
-- Cách này duyệt hết mọi đoạn có tổng = x mà không bỏ sót vì tính đơn điệu đã bảo đảm chỉ cần một left duy nhất cho mỗi right.
+- Với mỗi vị trí kết thúc right cố định, do các phần tử dương nên tồn tại nhiều nhất MỘT vị trí bắt đầu left sao cho tổng đoạn [left, right] bằng đúng x. Con trỏ left không bao giờ lùi lại (chỉ tiến lên), nên mỗi cặp (left, right) được xét đúng một lần.
+- Khi cur == x nghĩa là đoạn hiện tại có tổng đúng x, đếm thêm 1. Nếu cur < x thì không có đoạn nào kết thúc tại right có tổng x với left hiện tại (mọi đoạn ngắn hơn còn nhỏ hơn nữa vì toàn số dương). Tính đơn điệu bảo đảm không bỏ sót đoạn nào.
 
-Lưu ý về kiểu dữ liệu: n tối đa 2*10^5 và a_i tối đa 10^9 nên tổng có thể lên tới 2*10^14, vượt 32-bit. Python xử lý số nguyên lớn tự động nên không lo tràn số; khi port sang C++ cần dùng long long.
+Lưu ý về kiểu dữ liệu: n tối đa 2*10^5 và a_i tối đa 10^9 nên tổng có thể lên tới 2*10^14, vượt 32-bit; trong C++ cần dùng long long. Python xử lý số nguyên lớn tự động nên không lo tràn số.
 
-Phương án thay thế: prefix sum + hashmap (đếm số cặp prefix sao cho pref[j]-pref[i]=x) cũng chạy O(n), áp dụng được cho cả số âm. Ở đây do toàn số dương nên two-pointer gọn và nhanh hơn (không cần hashmap).
+Phương án thay thế: prefix sum + hashmap (đếm số cặp prefix sao cho pref[j]-pref[i]=x) cũng chạy O(n) và áp dụng được cho cả số âm. Ở đây do toàn số dương nên two-pointer gọn và nhanh hơn (không cần hashmap).
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) vì mỗi con trỏ left và right chỉ đi tối đa n bước.
 - Bộ nhớ: O(n) để lưu mảng.
 
-LƯU Ý TLE: Với n = 2*10^5 thuật toán O(n), phần đọc dữ liệu là điểm nhạy cảm nhất trong Python. Cần dùng sys.stdin.buffer.read() và tách số một lần thay vì input() theo dòng. Với cách đọc nhanh này Python 3 thường vượt qua trong giới hạn thời gian. Nếu vẫn TLE, bản C++ với vòng lặp two-pointer trên mảng long long và scanf/đọc buffer sẽ chạy dư sức trong giới hạn.
+LƯU Ý TLE: Với n = 2*10^5 thuật toán O(n), phần đọc dữ liệu là điểm nhạy cảm nhất trong Python. Cần dùng sys.stdin.buffer.read() và tách số một lần thay vì input() theo dòng. Với cách đọc nhanh này Python 3 thường vượt qua trong giới hạn thời gian. Nếu vẫn TLE, bản C++ với vòng lặp two-pointer trên mảng long long và đọc buffer sẽ chạy dư sức.

@@ -8,10 +8,10 @@ int main() {
     int n;
     std::cin >> n;
 
-    // Follow the greedy observation from the original solution: subtracting
-    // the largest available digit is an optimal transition at every step.
+    // Greedy: mỗi bước trừ n đi chữ số lớn nhất của nó (tối ưu, trùng với DP).
     int steps = 0;
     while (n > 0) {
+        // Tìm chữ số lớn nhất trong biểu diễn thập phân của n.
         int largest_digit = 0;
         for (int value = n; value > 0; value /= 10) {
             largest_digit = std::max(largest_digit, value % 10);

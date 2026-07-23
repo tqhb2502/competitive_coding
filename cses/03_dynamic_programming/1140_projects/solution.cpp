@@ -20,6 +20,7 @@ int main() {
         std::cin >> project.start >> project.end >> project.reward;
     }
 
+    // Sắp xếp các dự án theo ngày kết thúc tăng dần (weighted interval scheduling).
     std::sort(projects.begin(), projects.end(),
               [](const Project& lhs, const Project& rhs) {
                   if (lhs.end != rhs.end) {
@@ -31,20 +32,22 @@ int main() {
                   return lhs.reward < rhs.reward;
               });
 
+    // Mảng các ngày kết thúc đã sắp xếp, dùng cho tìm kiếm nhị phân.
     std::vector<int> end_days(n);
     for (int i = 0; i < n; ++i) {
         end_days[i] = projects[i].end;
     }
 
-    // dp[i] is the maximum reward using only the first i projects.
+    // dp[i] = tổng tiền thưởng lớn nhất khi chỉ xét i dự án đầu tiên.
     std::vector<long long> dp(n + 1, 0);
     for (int i = 0; i < n; ++i) {
-        // Endpoints are inclusive, so a compatible project must end strictly
-        // before the current project's start day.
+        // Ngày là bao gồm cả hai đầu mút, nên dự án tương thích phải kết thúc
+        // trước ngày bắt đầu của dự án hiện tại; đếm số dự án đó bằng lower_bound.
         const int compatible_count = static_cast<int>(
             std::lower_bound(end_days.begin(), end_days.begin() + i,
                              projects[i].start) -
             end_days.begin());
+        // Chọn phương án tốt hơn: nhận dự án i hay bỏ qua nó.
         const long long take =
             dp[compatible_count] + projects[i].reward;
         dp[i + 1] = std::max(dp[i], take);

@@ -9,18 +9,19 @@ int main() {
     std::string sequence;
     std::cin >> sequence;
 
-    int best = 0;
-    int current = 0;
+    int best = 0;        // độ dài đoạn lặp dài nhất tìm được
+    int current = 0;     // độ dài dãy ký tự giống nhau liên tiếp hiện tại
     char previous = '\0';
 
+    // Duyệt chuỗi một lần từ trái sang phải.
     for (char nucleotide : sequence) {
         if (nucleotide == previous) {
-            ++current;
+            ++current;              // vẫn cùng ký tự -> kéo dài đoạn hiện tại
         } else {
-            previous = nucleotide;
+            previous = nucleotide;  // đổi ký tự -> bắt đầu đoạn mới
             current = 1;
         }
-        best = std::max(best, current);
+        best = std::max(best, current);  // cập nhật đáp án sau mỗi bước
     }
 
     std::cout << best << '\n';

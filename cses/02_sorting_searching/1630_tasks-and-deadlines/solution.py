@@ -1,8 +1,3 @@
-# Tasks and Deadlines - CSES 1630
-# https://cses.fi/problemset/task/1630
-# Greedy: reward = sum(d) - sum(f). sum(d) is constant, so minimize sum(f)
-# by doing tasks with shortest duration a first (Shortest Processing Time).
-
 import sys
 
 
@@ -11,16 +6,20 @@ def main():
     idx = 0
     n = int(data[idx]); idx += 1
 
+    # Đọc n cặp (thời gian a, deadline d).
     tasks = []
     for _ in range(n):
         a = int(data[idx]); d = int(data[idx + 1]); idx += 2
         tasks.append((a, d))
 
-    # Sort by duration ascending (SPT rule).
+    # Greedy Shortest Processing Time: sắp xếp theo thời gian a tăng dần
+    # để tối thiểu tổng các thời điểm kết thúc, nhờ đó tối đa tổng phần thưởng.
     tasks.sort(key=lambda x: x[0])
 
-    t = 0          # current finishing time
-    ans = 0        # total reward
+    # Duyệt theo thứ tự đã sắp: t là thời điểm kết thúc hiện tại,
+    # cộng dồn phần thưởng (d - t) của từng công việc.
+    t = 0
+    ans = 0
     for a, d in tasks:
         t += a
         ans += d - t

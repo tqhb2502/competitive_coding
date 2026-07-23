@@ -1,41 +1,43 @@
 Number Spiral - CSES 1071
 https://cses.fi/problemset/task/1071
 
-BÀI TOÁN:
-Cho lưới vô hạn hình xoắn ốc, ô góc trên-trái (1,1) có số 1. Các số tăng dần
-theo các lớp chữ "L" lồng nhau. Với mỗi truy vấn (y, x) (hàng y, cột x), cần
-tìm số nằm tại ô đó. Có t truy vấn, 1 <= t <= 10^5, 1 <= y, x <= 10^9.
+## Đề bài
+Cho một lưới vô hạn được điền số theo hình xoắn ốc: ô góc trên-trái (1, 1)
+mang số 1, các số tăng dần theo các lớp chữ "L" lồng nhau. Với mỗi truy vấn
+(y, x) (hàng y, cột x), hãy tìm số nằm tại ô đó.
+Ràng buộc: có t truy vấn, 1 <= t <= 10^5, 1 <= y, x <= 10^9.
 
-QUAN SÁT (góc trái-trên của lưới 5x5):
+Góc trên-trái của lưới (khối 5x5) trông như sau:
 1   2   9   10  25
 4   3   8   11  24
 5   6   7   12  23
 16  15  14  13  22
 17  18  19  20  21
 
-Ý tưởng: đặt m = max(y, x). Ô (y, x) luôn nằm trên lớp chữ "L" thứ m (lớp này
-gồm hàng m và cột m). Đường chéo chính (k,k) có giá trị k^2 - k + 1
-(1, 3, 7, 13, 21, ...). Hướng tăng của mỗi lớp ĐẢO CHIỀU tùy theo m chẵn hay lẻ:
+## Ý tưởng
+Đặt m = max(y, x). Ô (y, x) luôn nằm trên lớp chữ "L" thứ m (lớp này gồm hàng m
+và cột m). Đường chéo chính (k, k) có giá trị k^2 - k + 1 (1, 3, 7, 13, 21, ...).
+Hướng tăng của mỗi lớp ĐẢO CHIỀU tùy theo m chẵn hay lẻ:
 
-- Nếu m lẻ: cột phải (x == m) giảm khi y tăng -> giá trị = m^2 - y + 1;
-  còn hàng dưới (y == m) tăng khi x tăng -> giá trị = (m-1)^2 + x.
+- Nếu m lẻ: cột phải (x == m) giảm khi y tăng  -> giá trị = m^2 - y + 1;
+  còn hàng dưới (y == m) tăng khi x tăng       -> giá trị = (m-1)^2 + x.
 - Nếu m chẵn: cột phải (x == m) tăng khi y tăng -> giá trị = (m-1)^2 + y;
-  còn hàng dưới (y == m) giảm khi x tăng -> giá trị = m^2 - x + 1.
+  còn hàng dưới (y == m) giảm khi x tăng        -> giá trị = m^2 - x + 1.
 
 Vì m = max(y, x) nên luôn có ít nhất một trong hai điều kiện x == m hoặc y == m
 đúng; tại ô góc (m, m) cả hai công thức cho cùng kết quả nên không mâu thuẫn.
 
-TẠI SAO ĐÚNG:
-Mỗi lớp m thêm một viền chữ "L" gồm các số liên tiếp. Số ở góc chéo (m,m) là
-m^2 - m + 1 (có thể chứng minh bằng quy nạp: tổng số ô trong hình vuông (m-1)x(m-1)
-là (m-1)^2, cộng thêm các ô trên cạnh của lớp m). Từ góc chéo, đi dọc theo hàng
-hoặc cột của lớp chỉ đơn giản là cộng/trừ theo từng bước 1, chiều tùy vào tính
-chẵn/lẻ của m. Các công thức trên chính là dạng rút gọn của phép di chuyển đó.
+Tại sao đúng: mỗi lớp m thêm một viền chữ "L" gồm các số liên tiếp. Số ở góc chéo
+(m, m) là m^2 - m + 1 (chứng minh bằng quy nạp: tổng số ô trong hình vuông
+(m-1)x(m-1) là (m-1)^2, cộng thêm các ô trên cạnh của lớp m). Từ góc chéo, đi dọc
+theo hàng hoặc cột của lớp chỉ đơn giản là cộng/trừ theo từng bước 1, chiều tùy
+vào tính chẵn/lẻ của m. Các công thức trên chính là dạng rút gọn của phép di
+chuyển đó.
 
-ĐỘ PHỨC TẠP:
-- Mỗi truy vấn tính trong O(1). Tổng O(t).
-- Bộ nhớ O(1) (chỉ cộng đầu ra vào một list để in một lần).
-- Giá trị tối đa khoảng (10^9)^2 = 10^18, vẫn nằm trong phạm vi số nguyên lớn
-  của Python nên không bị tràn số.
+## Độ phức tạp
+- Thời gian: mỗi truy vấn tính trong O(1), tổng O(t).
+- Bộ nhớ: O(1) (chỉ gom kết quả vào một list để in một lần).
 
-Không có rủi ro TLE: thuật toán O(1) mỗi truy vấn, chỉ cần đọc/ghi nhanh.
+LƯU Ý TLE: không có rủi ro TLE vì thuật toán O(1) mỗi truy vấn, chỉ cần đọc/ghi
+nhanh. Giá trị tối đa khoảng (10^9)^2 = 10^18 vẫn nằm trong phạm vi số nguyên lớn
+của Python (và long long của C++) nên không bị tràn số.

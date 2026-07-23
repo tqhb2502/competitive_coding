@@ -1,23 +1,24 @@
-BÀI TOÁN: String Reorder (CSES 1743)
+String Reorder - CSES 1743
+https://cses.fi/problemset/task/1743
+
+## Đề bài
 Cho một xâu gồm các chữ cái in hoa (A-Z), độ dài n (1 <= n <= 10^6).
 Hãy sắp xếp lại các ký tự sao cho không có hai ký tự kề nhau giống nhau,
-và tìm xâu NHỎ NHẤT theo thứ tự từ điển thỏa mãn điều kiện đó.
-Nếu không thể sắp xếp, in ra -1.
+và in ra xâu NHỎ NHẤT theo thứ tự từ điển thỏa mãn điều kiện đó.
+Nếu không thể sắp xếp được, in ra -1.
 
---------------------------------------------------------------------
+## Ý tưởng
+
 1) ĐIỀU KIỆN TỒN TẠI
---------------------------------------------------------------------
 Gọi M = số lần xuất hiện lớn nhất của một ký tự, n = độ dài xâu.
 Có thể sắp xếp để không có 2 ký tự kề nhau giống nhau KHI VÀ CHỈ KHI:
         M <= ceil(n/2) = (n+1)//2     (tương đương 2*M <= n+1)
-Vì nếu M > (n+1)//2 thì ký tự đó sẽ buộc phải có ít nhất 2 lần kề nhau.
+Vì nếu M > (n+1)//2 thì ký tự đó buộc phải có ít nhất 2 lần kề nhau.
 Nếu 2*M > n+1  ->  in ra -1.
 
---------------------------------------------------------------------
-2) Ý TƯỞNG THAM LAM (GREEDY THEO TỪNG VỊ TRÍ)
---------------------------------------------------------------------
-Tại mỗi vị trí, đặt ký tự NHỎ NHẤT có thể mà phần còn lại VẪN còn
-khả năng hoàn thành hợp lệ. Xét trạng thái còn lại:
+2) THAM LAM (GREEDY THEO TỪNG VỊ TRÍ)
+Tại mỗi vị trí, đặt ký tự NHỎ NHẤT có thể mà phần còn lại VẪN còn khả
+năng hoàn thành hợp lệ. Xét trạng thái còn lại:
    - m  = tổng số ký tự còn lại.
    - M  = số lần xuất hiện lớn nhất trong số các ký tự còn lại (curmax).
    - d  = ký tự đạt giá trị M (ký tự "trội").
@@ -33,35 +34,30 @@ Nhận xét then chốt (luôn có 2*M <= m+1 do bất biến khả thi):
      thành được phần còn lại. Do đó chọn ký tự NHỎ NHẤT khác prev.
 
 Vì sao đúng (tối ưu từ điển):
- - Trường hợp LỎNG: chứng minh mọi ký tự != prev đều khả thi, nên ký tự
-   nhỏ nhất khả thi chính là ký tự nhỏ nhất != prev.
+ - Trường hợp LỎNG: mọi ký tự != prev đều khả thi, nên ký tự nhỏ nhất
+   khả thi chính là ký tự nhỏ nhất != prev.
  - Trường hợp CĂNG: chỉ một lựa chọn d là khả thi, và mọi lời giải đều
    buộc đặt d ở đây, nên đặt d cũng là nhỏ nhất theo từ điển.
  Tham lam "chọn nhỏ nhất còn khả thi" ở mỗi bước => cho kết quả nhỏ nhất
  theo thứ tự từ điển.
 
---------------------------------------------------------------------
 3) CÀI ĐẶT HIỆU QUẢ
---------------------------------------------------------------------
 Chỉ có 26 chữ cái:
  - Đếm số lần xuất hiện count[0..25].
  - Duy trì curmax (max hiện tại) bằng mảng freq[k] = số ký tự có đúng k
-   lần còn lại; mỗi lần giảm 1 ký tự chỉ phải cập nhật O(1) và curmax
-   giảm nhiều nhất 1 đơn vị.
+   lần còn lại; mỗi lần giảm 1 ký tự chỉ cập nhật O(1) và curmax giảm
+   nhiều nhất 1 đơn vị.
  - Duy trì "active" = danh sách các chữ cái còn count>0 (đã sắp xếp) để
    lấy ngay ký tự nhỏ nhất / nhỏ nhì trong O(1).
  - Duy trì maxletter cho trường hợp CĂNG (kiểm tra tính hợp lệ, quét lại
    trong 26 khi bị "cũ").
- - Kết quả ghi vào bytearray rồi xuất 1 lần (fast I/O).
+ - Kết quả ghi vào bytearray/string rồi xuất 1 lần (fast I/O).
 
---------------------------------------------------------------------
-4) ĐỘ PHỨC TẠP
---------------------------------------------------------------------
+## Độ phức tạp
  - Thời gian: O(n) (hằng số nhỏ liên quan 26). Mỗi vị trí xử lý O(1)
    khấu hao; thao tác quét 26 chỉ xảy ra ít lần.
  - Bộ nhớ: O(n) cho xâu kết quả và input, O(26) cho các mảng phụ.
 
---------------------------------------------------------------------
 LƯU Ý TLE: Với n đến 10^6, vòng lặp Python thuần (10^6 bước) có thể mất
 vài giây, trong khi giới hạn thời gian của CSES (~1s) được đặt cho C++,
 nên bản Python này có NGUY CƠ TLE. Bản C++ cùng thuật toán (dùng mảng int,

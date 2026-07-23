@@ -1,50 +1,36 @@
-Bài toán: Collecting Numbers II (CSES 2217)
+Collecting Numbers II - CSES 2217
+https://cses.fi/problemset/task/2217
 
-1. Nhắc lại bài gốc (Collecting Numbers I)
-- Ta có một hoán vị chứa mỗi số từ 1 đến n đúng một lần. Mỗi vòng (round) ta đi
-  từ trái sang phải và thu thập các số theo thứ tự tăng dần, tiếp tục từ chỗ đã
-  dừng ở vòng trước.
+## Đề bài
+Cho một hoán vị gồm các số từ 1 đến n. Mỗi vòng (round) ta đi từ trái sang phải và
+thu thập các số theo thứ tự tăng dần, tiếp tục từ chỗ đã dừng ở vòng trước; số vòng
+cần dùng để thu hết tất cả các số chính là kết quả. Có m truy vấn, mỗi truy vấn đổi
+chỗ giá trị ở hai vị trí a và b của mảng. Sau MỖI truy vấn hãy in ra số vòng hiện tại.
+
+## Ý tưởng
 - Gọi pos[v] là vị trí (chỉ số) của giá trị v trong mảng.
-- Nhận xét mấu chốt: khi thu thập giá trị v rồi tới v+1, nếu pos[v+1] nằm SAU
-  pos[v] (pos[v] < pos[v+1]) thì ta thu tiếp v+1 trong cùng vòng; ngược lại nếu
-  pos[v] > pos[v+1] thì v+1 đứng trước v nên phải bắt đầu một vòng mới.
-- Do đó: số vòng = 1 + (số chỉ số v trong [1, n-1] thỏa pos[v] > pos[v+1]).
+- Nhận xét mấu chốt: khi thu giá trị v rồi tới v+1, nếu pos[v] < pos[v+1] thì v+1
+  nằm sau v nên thu tiếp trong cùng vòng; ngược lại pos[v] > pos[v+1] thì phải bắt
+  đầu một vòng mới. Do đó số vòng = 1 + (số cặp liên tiếp (v, v+1) với pos[v] > pos[v+1]).
   Gọi số cặp "bad" đó là count, đáp án = count + 1.
-
-2. Xử lý các truy vấn swap (bài II)
-- Mỗi truy vấn đổi chỗ hai VỊ TRÍ a và b trong mảng, tức đổi chỗ hai GIÁ TRỊ
-  va = arr[a] và vb = arr[b].
-- Việc đổi chỗ chỉ làm thay đổi pos của va và vb, nên chỉ ảnh hưởng tới các cặp
-  liên tiếp có chứa va hoặc vb, cụ thể là các cặp có chỉ số:
-      va-1, va, vb-1, vb   (chỉ giữ những chỉ số nằm trong [1, n-1]).
-- Quy trình cập nhật incremental cho mỗi truy vấn:
-    (1) Lấy trực tiếp bốn chỉ số cặp ứng viên i1=va-1, i2=va, i3=vb-1, i4=vb (đặt
-        bằng 0 nếu nằm ngoài [1, n-1] để đánh dấu không hợp lệ). Không dùng set;
-        chỉ khử trùng lặp bằng vài lệnh if vì va, vb chỉ có thể tạo trùng khi là
-        hai giá trị kề nhau: vb=va+1 khiến i2 trùng i3, còn vb=va-1 khiến i1 trùng
-        i4 (khi đó cho chỉ số trùng về 0).
-    (2) Với mỗi cặp hợp lệ, nếu hiện tại là "bad" thì count -= 1 (bỏ đóng góp cũ).
-    (3) Thực hiện swap: cập nhật arr[a], arr[b] và pos[va], pos[vb].
+- Mỗi truy vấn chỉ đổi pos của hai giá trị va = arr[a] và vb = arr[b], nên chỉ ảnh
+  hưởng tới bốn chỉ số cặp ứng viên: va-1, va, vb-1, vb (chỉ giữ những chỉ số nằm
+  trong [1, n-1]). Ta cập nhật count tăng dần (incremental) cho mỗi truy vấn:
+    (1) Lấy bốn chỉ số cặp ứng viên; khử trùng lặp: chỉ trùng khi va, vb kề nhau
+        (vb = va+1 khiến cặp va trùng cặp vb-1; vb = va-1 khiến cặp va-1 trùng cặp vb).
+    (2) Với mỗi cặp hợp lệ, nếu đang là "bad" thì count -= 1 (bỏ đóng góp cũ).
+    (3) Thực hiện swap: cập nhật arr và pos của va, vb.
     (4) Với mỗi cặp hợp lệ, nếu bây giờ là "bad" thì count += 1 (thêm đóng góp mới).
     (5) In ra count + 1.
+- Vì mọi cặp khác giữ nguyên pos nên giữ nguyên trạng thái, chỉ cần trừ rồi cộng lại
+  đóng góp của đúng những cặp liên quan tới va, vb là ra count mới chính xác.
 
-3. Tính đúng đắn
-- Công thức số vòng = 1 + số cặp bad là chính xác cho mọi hoán vị (chứng minh ở
-  mục 1). Sau mỗi swap mảng vẫn là hoán vị hợp lệ.
-- Chỉ các cặp liên quan tới va, vb mới có thể đổi trạng thái bad/không bad, mọi
-  cặp khác giữ nguyên pos nên giữ nguyên trạng thái. Vì vậy trừ đi đóng góp cũ
-  rồi cộng lại đóng góp mới của đúng những cặp này cho ra count mới chính xác.
-- Nhờ bước khử trùng lặp (cho chỉ số trùng về 0), trường hợp va, vb kề nhau (các
-  cặp bị ảnh hưởng chồng nhau) không bị cộng/trừ lặp.
-
-4. Độ phức tạp
-- Khởi tạo: O(n).
-- Mỗi truy vấn chỉ đụng tối đa 4 cặp -> O(1), không cấp phát thêm bộ nhớ.
-  Tổng: O(n + m).
-- Bộ nhớ: O(n) cho arr và pos.
+## Độ phức tạp
+- Thời gian: khởi tạo O(n), mỗi truy vấn chỉ đụng tối đa 4 cặp -> O(1). Tổng O(n + m).
+- Bộ nhớ: O(n) cho mảng arr và pos.
 
 LƯU Ý TLE: với n, m ≤ 2×10^5 thuật toán O(n + m). Điểm mấu chốt để tránh TLE trong
-CPython là KHÔNG tạo set cho mỗi truy vấn (việc cấp phát 2×10^5 set nhỏ khá đắt, đủ
-chạm giới hạn 1 giây của CSES). Bản này xử lý trực tiếp bốn chỉ số cặp bằng vài
-lệnh if để khử trùng lặp, kết hợp đọc input một lần bằng
-sys.stdin.buffer.read().split() và ghi output bằng '\n'.join, nên nhẹ hơn hẳn.
+CPython là KHÔNG tạo set cho mỗi truy vấn (cấp phát 2×10^5 set nhỏ khá đắt, đủ chạm
+giới hạn 1 giây của CSES). Bản này xử lý trực tiếp bốn chỉ số cặp bằng vài lệnh if để
+khử trùng lặp, kết hợp đọc input một lần bằng sys.stdin.buffer.read().split() và ghi
+output bằng '\n'.join, nên nhẹ hơn hẳn.

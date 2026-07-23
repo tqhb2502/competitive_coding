@@ -1,9 +1,12 @@
-Bài toán: Maximum Subarray Sum II (CSES 1644)
-Cho mảng n phần tử, tìm tổng lớn nhất của một subarray liên tiếp có độ dài
-nằm trong đoạn [a, b]. Giá trị có thể âm.
+Maximum Subarray Sum II - CSES 1644
+https://cses.fi/problemset/task/1644
 
-Ý tưởng chính:
-- Dùng prefix sum: đặt prefix[0] = 0 và prefix[i] = a[0] + ... + a[i-1].
+## Đề bài
+Cho mảng gồm n số nguyên (có thể âm). Hãy tìm tổng lớn nhất của một subarray
+liên tiếp có độ dài nằm trong đoạn [a, b].
+
+## Ý tưởng
+- Dùng prefix sum: đặt prefix[0] = 0 và prefix[i] = arr[0] + ... + arr[i-1].
   Khi đó tổng của subarray từ vị trí (l+1) đến r bằng prefix[r] - prefix[l],
   và độ dài của nó là (r - l).
 - Ràng buộc a <= r - l <= b tương đương với r - b <= l <= r - a.
@@ -11,22 +14,22 @@ nằm trong đoạn [a, b]. Giá trị có thể âm.
   prefix[l] NHỎ NHẤT, để prefix[r] - prefix[l] lớn nhất. Đáp số là max trên
   mọi r (chạy từ a đến n) của giá trị đó.
 
-Sliding window minimum:
-- Khi r tăng thêm 1 thì cả hai đầu của cửa sổ [r-b, r-a] cùng dịch sang phải 1.
-  Đầu phải mới trở nên hợp lệ là l = r - a, ta đẩy nó vào một monotonic deque
-  giữ các chỉ số theo prefix tăng dần (pop các phần tử ở cuối có prefix >= prefix[l]).
-- Đầu trái: loại khỏi deque mọi chỉ số < r - b (độ dài vượt quá b).
-- Phần tử đầu deque luôn là chỉ số l có prefix nhỏ nhất trong cửa sổ hợp lệ.
-  Vì a <= b nên l = r - a >= r - b, cửa sổ không bao giờ rỗng.
+- Sliding window minimum bằng monotonic deque:
+  + Khi r tăng thêm 1 thì cả hai đầu của cửa sổ [r-b, r-a] cùng dịch sang phải 1.
+    Đầu phải mới trở nên hợp lệ là l = r - a, ta đẩy nó vào một monotonic deque
+    giữ các chỉ số theo prefix tăng dần (pop các phần tử ở cuối có prefix >= prefix[l]).
+  + Đầu trái: loại khỏi deque mọi chỉ số < r - b (độ dài vượt quá b).
+  + Phần tử đầu deque luôn là chỉ số l có prefix nhỏ nhất trong cửa sổ hợp lệ.
+    Vì a <= b nên l = r - a >= r - b, cửa sổ không bao giờ rỗng.
 
-Tính đúng đắn:
-- Mọi cặp (l, r) hợp lệ đều được xét đúng một lần: l đi vào deque tại đúng
-  thời điểm r = l + a và bị loại khi r > l + b. Deque monotonic đảm bảo đầu deque
-  chính là min prefix trên cửa sổ hiện tại, nên với mỗi r ta lấy được subarray
-  tốt nhất kết thúc tại r với độ dài trong [a, b].
-- Khởi tạo ans = -1e18 để xử lý trường hợp tất cả tổng đều âm.
+- Tính đúng đắn:
+  + Mọi cặp (l, r) hợp lệ đều được xét đúng một lần: l đi vào deque tại đúng
+    thời điểm r = l + a và bị loại khi r > l + b. Deque monotonic đảm bảo đầu deque
+    chính là min prefix trên cửa sổ hiện tại, nên với mỗi r ta lấy được subarray
+    tốt nhất kết thúc tại r với độ dài trong [a, b].
+  + Khởi tạo ans = -1e18 để xử lý trường hợp tất cả tổng đều âm.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian O(n): mỗi chỉ số vào/ra deque tối đa một lần.
 - Bộ nhớ O(n) cho mảng prefix và deque.
 

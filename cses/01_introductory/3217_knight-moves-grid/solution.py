@@ -1,16 +1,3 @@
-# Knight Moves Grid - CSES 3217
-# https://cses.fi/problemset/task/3217
-# BFS from the top-left corner (0,0). Knight moves are symmetric, so the
-# minimum number of moves from any square to (0,0) equals the BFS distance
-# from (0,0) to that square.
-#
-# Performance: the grid has up to n*n = 10^6 cells. To keep the BFS fast in
-# pure Python we lay the board out as a flat 1-D array surrounded by a 2-cell
-# border ("padding"). Padding cells are pre-marked as visited (-2), so the
-# eight knight moves never need in-bounds checks - a move that would leave the
-# board simply lands on a padding cell and is skipped. The BFS runs layer by
-# layer, so the distance of the current layer is known implicitly.
-
 import sys
 
 
@@ -20,19 +7,23 @@ def main():
         return
     n = int(data[0])
 
-    W = n + 4                       # row width including a 2-cell border
-    dist = [-2] * (W * W)           # -2 = padding / wall (skipped in BFS)
-    for r in range(n):              # mark the real n x n interior as unvisited
+    # Trải bàn cờ thành mảng 1 chiều phẳng có viền dày 2 ô mỗi bên.
+    # Viền = -2 (tường, coi như đã thăm nên bị bỏ qua trong BFS).
+    W = n + 4                       # chiều rộng mỗi hàng, gồm cả viền 2 ô
+    dist = [-2] * (W * W)
+    for r in range(n):              # đánh dấu vùng n x n thực sự = -1 (chưa thăm)
         base = (r + 2) * W + 2
         dist[base:base + n] = [-1] * n
 
-    start = 2 * W + 2               # padded index of corner (0,0)
+    start = 2 * W + 2               # chỉ số phẳng của góc (0,0)
     dist[start] = 0
 
-    # Eight knight moves as flat offsets on the padded grid.
+    # 8 nước đi của quân mã đổi thành 8 độ lệch chỉ số trên mảng phẳng.
     offs = (W + 2, W - 2, -W + 2, -W - 2,
             2 * W + 1, 2 * W - 1, -2 * W + 1, -2 * W - 1)
 
+    # BFS theo TỪNG LỚP: cur giữ các ô ở khoảng cách d-1, khoảng cách d biết sẵn
+    # nên không cần lưu kèm trong hàng đợi. Viền -2 tự chặn nước đi ra ngoài biên.
     cur = [start]
     d = 1
     while cur:
@@ -41,12 +32,13 @@ def main():
         for idx in cur:
             for off in offs:
                 j = idx + off
-                if dist[j] == -1:
+                if dist[j] == -1:   # chỉ đi tới ô chưa thăm
                     dist[j] = d
                     ap(j)
         cur = nxt
         d += 1
 
+    # In ma trận khoảng cách, chỉ lấy phần bên trong, các số cách nhau bởi dấu cách.
     out = []
     for r in range(n):
         base = (r + 2) * W + 2

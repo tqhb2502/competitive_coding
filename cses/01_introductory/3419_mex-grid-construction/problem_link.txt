@@ -1,2 +1,0 @@
-Mex Grid Construction
-https://cses.fi/problemset/task/3419

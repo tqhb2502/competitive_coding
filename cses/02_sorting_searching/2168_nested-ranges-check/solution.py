@@ -1,11 +1,8 @@
-# Nested Ranges Check - https://cses.fi/problemset/task/2168
-# Với mỗi đoạn, kiểm tra nó có chứa đoạn khác và có bị đoạn khác chứa hay không.
-# Sort theo x rồi quét một lượt, giữ max_y (cho "bị chứa") và min_y (cho "chứa").
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần cho nhanh (I/O nhanh trên CSES).
     data = sys.stdin.buffer.read().split()
     if not data:
         return
@@ -19,9 +16,10 @@ def main():
         pos += 2
 
     contains = bytearray(n)   # đoạn i có chứa đoạn khác?
-    contained = bytearray(n)  # đoạn i có bị chứa bởi đoạn khác?
+    contained = bytearray(n)  # đoạn i có bị đoạn khác chứa?
 
-    # (A) "bị chứa": sort x tăng, y giảm -> giữ max_y của các đoạn đã xét.
+    # (A) "bị chứa": sắp x tăng, y giảm (nhờ dấu -ys) rồi giữ max_y các đoạn đã xét.
+    # Nếu y hiện tại <= max_y thì có đoạn trước bao trọn đoạn này.
     a = sorted((xs[i], -ys[i], i) for i in range(n))
     max_y = -1
     for _x, ny, i in a:
@@ -31,7 +29,8 @@ def main():
         else:
             max_y = y
 
-    # (B) "chứa đoạn khác": sort x giảm, y tăng -> giữ min_y của các đoạn đã xét.
+    # (B) "chứa đoạn khác": sắp x giảm (nhờ dấu -xs), y tăng rồi giữ min_y các đoạn đã xét.
+    # Nếu y hiện tại >= min_y thì đoạn này bao trọn một đoạn trước.
     b = sorted((-xs[i], ys[i], i) for i in range(n))
     min_y = 1 << 62
     for _nx, y, i in b:
@@ -40,6 +39,7 @@ def main():
         else:
             min_y = y
 
+    # Dòng 1: cờ "chứa"; dòng 2: cờ "bị chứa".
     out1 = ' '.join('1' if v else '0' for v in contains)
     out2 = ' '.join('1' if v else '0' for v in contained)
     sys.stdout.write(out1 + '\n' + out2 + '\n')

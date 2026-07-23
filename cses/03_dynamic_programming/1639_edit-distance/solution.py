@@ -1,13 +1,3 @@
-# Edit Distance - CSES 1639
-# https://cses.fi/problemset/task/1639
-#
-# Levenshtein edit distance giữa hai chuỗi.
-# Dùng thuật toán bit-parallel của Myers/Hyyrö: biểu diễn các delta dọc
-# giữa các ô kề nhau bằng bitmask VP/VN (số nguyên lớn m bit), cập nhật theo
-# từng ký tự của text bằng các phép bitwise + một phép cộng tạo carry.
-# Khác bản approximate-matching: hàng 0 của bảng DP là 0,1,2,... nên khi dịch
-# trái HP ta nhồi bit 1 vào ((Ph<<1)|1). Độ phức tạp ~ O(n*m/64), rất nhanh.
-
 import sys
 
 
@@ -16,29 +6,36 @@ def edit_distance(P, T):
     m = len(P)
     if m == 0:
         return len(T)
+
+    # Peq[ch] = bitmask các vị trí ký tự ch xuất hiện trong pattern P.
     Peq = {}
     for i, ch in enumerate(P):
         Peq[ch] = Peq.get(ch, 0) | (1 << i)
+
     mask = (1 << m) - 1
-    hb = 1 << (m - 1)          # bit cao nhất = hàng m (dp[m][.])
+    hb = 1 << (m - 1)           # bit cao nhất ứng với hàng m (dp[m][.])
     VP = mask                   # cột 0: dp[i][0]-dp[i-1][0] = +1 với mỗi i
     VN = 0
     score = m                   # dp[m][0] = m
     Peq_get = Peq.get
+
     for ch in T:
         Eq = Peq_get(ch, 0)
         Xv = Eq | VN
-        Xh = (((Eq & VP) + VP) ^ VP) | Eq   # D0: cho biết ô lấy từ đường chéo
+        Xh = (((Eq & VP) + VP) ^ VP) | Eq   # D0: ô lấy giá trị từ đường chéo
         Ph = VN | ~(Xh | VP)                # delta ngang dương (+1)
         Mh = VP & Xh                        # delta ngang âm (-1)
         Ph &= mask
         Mh &= mask
+        # Cập nhật score theo delta ngang tại bit cao nhất (hàng m).
         if Ph & hb:
             score += 1
         elif Mh & hb:
             score -= 1
-        Ph = ((Ph << 1) | 1) & mask         # nhồi +1 cho hàng 0 (edit distance toàn cục)
+        # Dịch trái và nhồi +1 cho hàng 0 (đặc thù edit distance toàn cục).
+        Ph = ((Ph << 1) | 1) & mask
         Mh = (Mh << 1) & mask
+        # Cập nhật delta dọc VP/VN cho vòng ký tự kế tiếp.
         VP = (Mh | ~(Xv | Ph)) & mask
         VN = (Ph & Xv) & mask
     return score

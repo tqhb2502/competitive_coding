@@ -1,66 +1,53 @@
-Bài toán: Two Sets II (CSES 1093)
-Đếm số cách chia các số nguyên 1..n thành hai tập hợp có tổng bằng nhau.
-Kết quả lấy modulo 1000000007. Ràng buộc: 1 ≤ n ≤ 500.
+Two Sets II - CSES 1093
+https://cses.fi/problemset/task/1093
 
-Ý tưởng tổng quát
+## Đề bài
+Đếm số cách chia các số nguyên 1, 2, ..., n thành hai tập hợp sao cho tổng của
+hai tập bằng nhau. Hai cách chia được xem là giống nhau nếu chúng đổi vai trò hai
+tập cho nhau. Kết quả lấy modulo 1000000007. Ràng buộc: 1 ≤ n ≤ 500.
+
+## Ý tưởng
 - Gọi total = n*(n+1)/2 là tổng của tất cả các số từ 1 đến n.
-- Nếu total là số lẻ thì không thể chia thành hai tập có tổng bằng nhau, đáp án là 0.
-- Nếu total chẵn, mỗi tập phải có tổng target = total/2.
-- Bài toán quy về: đếm số subset (tập con) có tổng đúng bằng target, đây là bài toán
-  đếm subset sum bằng quy hoạch động kiểu 0/1 knapsack.
+- Nếu total lẻ thì không thể chia thành hai tập có tổng bằng nhau, đáp án là 0.
+- Nếu total chẵn, mỗi tập phải có tổng target = total/2. Bài toán quy về đếm số
+  subset (tập con) có tổng đúng bằng target — đây là bài đếm subset sum bằng quy
+  hoạch động kiểu 0/1 knapsack.
 
-Tránh đếm lặp (không cần chia đôi)
-- Nếu đếm mọi subset có tổng target thì mỗi cách chia bị đếm 2 lần (một subset S và phần
-  bù của nó cùng thỏa mãn). Thông thường sẽ phải chia kết quả cho 2.
-- Mẹo gọn hơn: cố định số n luôn nằm ở tập thứ hai, tức là chỉ xét các subset của
-  {1,...,n-1} có tổng bằng target. Với mỗi cách chia hợp lệ, số n nằm ở đúng một tập, và
-  tập KHÔNG chứa n chính là một subset của {1,...,n-1} có tổng target. Do đó mỗi cách chia
-  được đếm đúng 1 lần, không cần chia cho 2 (tránh phải tính nghịch đảo modulo).
+- Tránh đếm lặp: nếu đếm mọi subset có tổng target thì mỗi cách chia bị đếm 2 lần
+  (một subset S và phần bù của nó đều hợp lệ). Mẹo gọn hơn là cố định số n luôn
+  nằm ở tập thứ hai, tức chỉ xét các subset của {1, ..., n-1} có tổng target. Khi
+  đó mỗi cách chia được đếm đúng 1 lần, không cần chia cho 2 (tránh nghịch đảo mod).
 
-Trạng thái quy hoạch động
-- dp[j] = số subset của các item đã xét cho tổng bằng đúng j (mọi giá trị lấy mod 1e9+7).
+- Trạng thái: dp[j] = số subset của các item đã xét cho tổng đúng bằng j (mọi giá
+  trị lấy mod 1e9+7).
 - Base case: dp[0] = 1 (tập rỗng cho tổng 0), dp[j>0] = 0.
-- Duyệt lần lượt các item k = 1, 2, ..., n-1 (chú ý: KHÔNG duyệt tới n).
-- Chuyển trạng thái (0/1 knapsack, mỗi số dùng tối đa một lần): với mỗi k, cập nhật
+- Chuyển trạng thái (0/1 knapsack, mỗi số dùng tối đa một lần): duyệt lần lượt các
+  item k = 1, 2, ..., n-1 (KHÔNG duyệt tới n); với mỗi k cập nhật
       dp[j] = dp[j] + dp[j-k]   với j chạy GIẢM dần.
   Duyệt j giảm dần bảo đảm mỗi số chỉ được dùng một lần trong một subset.
-- Vì các giá trị đều nhỏ hơn MOD, thay cho phép chia lấy dư đắt đỏ, ta chỉ cần cộng rồi
-  trừ MOD một lần nếu kết quả ≥ MOD (nhanh hơn toán tử % trong CPython).
+- Vì mọi giá trị đều nhỏ hơn MOD, thay cho phép chia lấy dư đắt đỏ, ta chỉ cần cộng
+  rồi trừ MOD một lần khi kết quả ≥ MOD (nhanh hơn toán tử % trong CPython).
 
-Cắt tỉa cửa sổ (giảm mạnh số phép tính) — thuần Python
-- Đặt s_k = 1 + 2 + ... + k là tổng các item đã xét; s_full = tổng của toàn bộ item 1..n-1;
-  gap = s_full - target là tổng tối đa có thể "bỏ đi" mà vẫn còn cơ hội chạm target.
-- Tại bước k chỉ cần cập nhật dp[j] với j nằm trong cửa sổ [lo, hi]:
-    hi = min(target, s_k)   -> không thể vượt quá tổng lớn nhất đạt được bằng item 1..k,
-                               và cũng không cần vượt quá target.
-    lo = max(k, s_k - gap)  -> nếu j < s_k - gap thì dù có bỏ hết các item còn lại cũng
-                               không thể giảm về đúng target, nên vô ích; ngoài ra j < k
-                               không có nguồn dp[j-k] để cộng (giá trị vẫn giữ nguyên đúng).
-- Có thể chứng minh mọi chỉ số nguồn dp[j-k] cần dùng đều nằm trong cửa sổ của bước trước,
-  nên việc bỏ qua phần ngoài cửa sổ không làm sai kết quả.
-- Nhờ cắt tỉa hai đầu, với n = 500 số phép cộng giảm từ khoảng 31 triệu xuống còn khoảng
-  12,1 triệu.
+- Cắt tỉa cửa sổ (bản Python): với s_k = 1 + 2 + ... + k, s_full = tổng toàn bộ item
+  1..n-1, gap = s_full - target, tại bước k chỉ cần cập nhật dp[j] với j trong cửa
+  sổ [lo, hi]:
+    hi = min(target, s_k)   -> không vượt quá tổng lớn nhất đạt được bằng item 1..k.
+    lo = max(k, s_k - gap)  -> nếu j < s_k - gap thì dù bỏ hết item còn lại cũng không
+                               giảm về đúng target; ngoài ra j < k không có nguồn
+                               dp[j-k] để cộng.
+  Mọi chỉ số nguồn dp[j-k] cần dùng đều nằm trong cửa sổ bước trước nên cắt tỉa không
+  làm sai kết quả. Với n = 500, số phép cộng giảm từ ~31 triệu xuống ~12,1 triệu.
 
-Đáp án
-- Sau khi xử lý hết k, đáp án là dp[target] (đã ở dạng mod 1e9+7).
-- Trường hợp total lẻ trả về 0.
+- Đáp án: sau khi xử lý hết k, đáp án là dp[target] (đã ở dạng mod 1e9+7). Trường hợp
+  total lẻ trả về 0. Ví dụ: n = 7 -> đáp án 4.
 
-Vì sao đúng
-- dp[j] đếm chính xác số subset (dùng mỗi phần tử tối đa 1 lần) có tổng j nhờ công thức
-  knapsack 0/1 duyệt ngược. Việc bỏ qua phần tử n khiến mỗi cách chia được đếm đúng một lần
-  (đại diện bởi tập không chứa n).
-
-Độ phức tạp
+## Độ phức tạp
 - Thời gian gốc: O(n * target) = O(n * n^2/4) ~ O(n^3/4). Với n = 500, target ~ 62625,
   tổng số phép cộng cỡ 31 triệu; sau cắt tỉa còn ~12,1 triệu.
 - Bộ nhớ: O(target) cho mảng dp một chiều.
 
-Định dạng vào/ra
-- Đọc một số nguyên n từ đầu vào.
-- In ra một dòng chứa đáp án modulo 1000000007.
-- Ví dụ: n = 7 -> đáp án 4.
-
-LƯU Ý TLE: Đây là giải pháp thuần Python standard library (không numpy, không thư viện ngoài).
-Dù đã cắt tỉa còn ~12,1 triệu phép cộng, vòng lặp DP ở mức Python thuần vẫn chạy khoảng vài
-giây với n = 500 nên nhiều khả năng TLE trên CSES (giới hạn ~1s, hướng tới C++). Để chắc chắn
-qua, nên nộp bằng C++ hoặc PyPy3; thuật toán và định dạng vào/ra giữ nguyên như trên.
+LƯU Ý TLE: Đây là giải pháp thuần Python standard library (không numpy, không thư viện
+ngoài). Dù đã cắt tỉa còn ~12,1 triệu phép cộng, vòng lặp DP ở mức Python thuần vẫn chạy
+khoảng vài giây với n = 500 nên nhiều khả năng TLE trên CSES (giới hạn ~1s, hướng tới
+C++). Để chắc chắn qua, nên nộp bằng C++ hoặc PyPy3; thuật toán và định dạng vào/ra giữ
+nguyên như trên.

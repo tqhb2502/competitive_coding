@@ -11,13 +11,17 @@ int main() {
 
     string s;
     cin >> s;
+
+    // Sắp xếp các ký tự tăng dần để next_permutation duyệt từ hoán vị nhỏ nhất.
     sort(s.begin(), s.end());
 
+    // set tự loại các hoán vị trùng (do ký tự lặp) và giữ thứ tự từ điển.
     set<string> distinct_permutations;
     do {
         distinct_permutations.insert(s);
     } while (next_permutation(s.begin(), s.end()));
 
+    // In số lượng hoán vị phân biệt, rồi in từng xâu theo thứ tự từ điển.
     cout << distinct_permutations.size() << '\n';
     for (const string& permutation : distinct_permutations) {
         cout << permutation << '\n';

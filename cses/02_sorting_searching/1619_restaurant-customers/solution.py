@@ -1,8 +1,3 @@
-# Restaurant Customers - CSES 1619
-# https://cses.fi/problemset/task/1619
-# Sweep line: sort arrivals and departures, merge with a two-pointer,
-# track the peak number of simultaneous customers.
-
 import sys
 
 
@@ -12,6 +7,7 @@ def main():
         return
     n = int(data[0])
 
+    # Đọc thời điểm đến và rời đi của từng khách hàng
     arrivals = [0] * n
     departures = [0] * n
     idx = 1
@@ -20,22 +16,25 @@ def main():
         departures[i] = int(data[idx + 1])
         idx += 2
 
+    # Sắp xếp riêng mảng thời điểm đến và mảng thời điểm rời đi
     arrivals.sort()
     departures.sort()
 
-    best = 0
-    cur = 0
-    i = 0  # pointer into arrivals
-    j = 0  # pointer into departures
-    # Merge the two sorted event lists. Times are all distinct, so ties
-    # cannot happen; the comparison direction does not matter.
+    best = 0  # đỉnh (giá trị lớn nhất) của cur
+    cur = 0   # số khách đang có mặt
+    i = 0     # con trỏ trên mảng thời điểm đến
+    j = 0     # con trỏ trên mảng thời điểm rời đi
+
+    # Quét (sweep) bằng hai con trỏ để hợp nhất hai chuỗi sự kiện theo thời gian
     while i < n:
         if arrivals[i] < departures[j]:
+            # Sự kiện đến: thêm một khách và cập nhật đỉnh
             cur += 1
             if cur > best:
                 best = cur
             i += 1
         else:
+            # Sự kiện rời đi: bớt một khách
             cur -= 1
             j += 1
 

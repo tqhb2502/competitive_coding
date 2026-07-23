@@ -1,7 +1,3 @@
-# Projects - CSES 1140
-# https://cses.fi/problemset/task/1140
-# Weighted interval scheduling: sắp xếp theo ngày kết thúc, DP + tìm kiếm nhị phân.
-
 import sys
 from bisect import bisect_left
 
@@ -18,15 +14,17 @@ def main():
 
     # Sắp xếp theo ngày kết thúc b tăng dần (tuple bắt đầu bằng b).
     projects = sorted(zip(b_list, a_list, p_list))
-    ends = [t[0] for t in projects]  # mảng các b đã sắp xếp
+    ends = [t[0] for t in projects]  # mảng các ngày kết thúc đã sắp xếp
 
+    # dp[i] = tổng tiền thưởng lớn nhất khi chỉ xét i dự án đầu tiên.
     dp = [0] * (n + 1)
     bl = bisect_left
-    prev = 0  # prev = dp[i], lợi nhuận tối đa với i dự án đầu tiên
+    prev = 0  # prev = dp[i], tiền thưởng tối đa với i dự án đầu tiên
     for i in range(n):
         b, a, p = projects[i]
-        # số dự án có b < a (dự án tương thích): cần a_next >= b_prev + 1
+        # Số dự án có ngày kết thúc < a (dự án tương thích): cần a_sau >= b + 1.
         j = bl(ends, a, 0, i + 1)
+        # Chọn phương án tốt hơn: nhận dự án i hay bỏ qua nó.
         take = dp[j] + p
         if take > prev:
             prev = take

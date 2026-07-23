@@ -1,47 +1,44 @@
-Bài toán: Distinct Values Subarrays (CSES 3420)
+Distinct Values Subarrays - CSES 3420
+https://cses.fi/problemset/task/3420
 
-ĐỀ BÀI
-Cho một mảng gồm n số nguyên. Hãy đếm số lượng subarray (dãy con liên tiếp)
-mà trong đó tất cả các phần tử đều phân biệt (không trùng nhau).
+## Đề bài
+Cho một mảng gồm n số nguyên. Hãy đếm số lượng subarray (dãy con liên tiếp) mà
+trong đó tất cả các phần tử đều phân biệt (không có phần tử nào trùng nhau).
 
-Ý TƯỞNG CHÍNH: two-pointer (sliding window)
-- Ta duyệt con trỏ phải right từ 0 đến n-1. Với mỗi right, ta duy trì con trỏ
-  trái left nhỏ nhất sao cho cửa sổ [left, right] gồm toàn phần tử phân biệt.
+## Ý tưởng
+Sử dụng kỹ thuật two-pointer (sliding window):
+- Duyệt con trỏ phải right từ 0 đến n-1. Với mỗi right, ta duy trì con trỏ trái
+  left nhỏ nhất sao cho cửa sổ [left, right] gồm toàn phần tử phân biệt.
 - Dùng một hash map (dict) last để lưu vị trí xuất hiện gần nhất của mỗi giá trị.
-  Khi xét a[right], nếu giá trị a[right] đã từng xuất hiện ở vị trí p >= left,
-  thì ta phải dời left lên p + 1 để loại bỏ phần tử trùng.
-  Do đó: left = max(left, last[a[right]] + 1).
-- Sau khi cập nhật left, mọi subarray kết thúc tại right và bắt đầu tại một vị
-  trí trong đoạn [left, right] đều gồm các phần tử phân biệt. Số subarray như vậy
-  là (right - left + 1). Ta cộng dồn giá trị này vào đáp án.
-- Cập nhật last[a[right]] = right và tiếp tục.
+  Khi xét a[right], nếu giá trị a[right] đã từng xuất hiện ở vị trí p >= left thì
+  phải dời left lên p + 1 để loại bỏ phần tử trùng, tức là:
+  left = max(left, last[a[right]] + 1).
+- Sau khi cập nhật left, mọi subarray kết thúc tại right và bắt đầu tại một vị trí
+  trong đoạn [left, right] đều gồm các phần tử phân biệt. Số subarray như vậy là
+  (right - left + 1). Cộng dồn giá trị này vào đáp án.
+- Cập nhật last[a[right]] = right rồi tiếp tục sang right kế tiếp.
 
-TẠI SAO ĐÚNG
-- Với mỗi right cố định, tập các left hợp lệ (sao cho [left, right] toàn phần tử
-  phân biệt) là một đoạn liền [L, right], trong đó L là left nhỏ nhất khả thi.
-  Lý do: nếu [left, right] phân biệt thì mọi cửa sổ con [left', right] với
-  left' > left cũng phân biệt (bớt phần tử đi thì càng không thể trùng).
-- left chỉ tăng dần (monotonic) vì khi right tăng, ràng buộc chỉ chặt thêm; công
-  thức left = max(left, last[a[right]] + 1) bảo đảm điều này. Vì thế mỗi subarray
-  gồm toàn phần tử phân biệt được đếm đúng một lần: nó được tính tại right là chỉ
-  số kết thúc của nó, và (right - left + 1) đếm chính xác số điểm bắt đầu hợp lệ.
-- Tổng qua tất cả right cho ta tổng số subarray phân biệt.
+Vì sao đúng: với mỗi right cố định, tập các left hợp lệ là một đoạn liền
+[L, right] (nếu [left, right] phân biệt thì mọi cửa sổ con [left', right] với
+left' > left cũng phân biệt). Con trỏ left chỉ tăng dần (monotonic) vì khi right
+tăng thì ràng buộc chỉ chặt thêm, nên mỗi subarray phân biệt được đếm đúng một
+lần tại chỉ số kết thúc của nó.
 
-Kiểm tra ví dụ: a = [1, 2, 1, 3]
-  right=0: left=0, cộng 1  -> total=1
-  right=1: left=0, cộng 2  -> total=3
+Kiểm tra ví dụ a = [1, 2, 1, 3]:
+  right=0: left=0, cộng 1 -> total=1
+  right=1: left=0, cộng 2 -> total=3
   right=2: a=1 đã ở vị trí 0, left=1, cộng 2 -> total=5
-  right=3: left=1, cộng 3  -> total=8
+  right=3: left=1, cộng 3 -> total=8
 Đáp án 8, khớp với đề.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n) vì mỗi con trỏ chỉ đi tới, mỗi phần tử được xử lý O(1) lần
   (thao tác dict trung bình O(1)).
 - Bộ nhớ: O(n) cho dict last và mảng đầu vào.
 
 LƯU Ý TLE: Với n <= 2*10^5 và thuật toán O(n), Python thường vẫn kịp thời gian
-của CSES nếu dùng fast I/O (sys.stdin.buffer.read, xử lý bằng vòng lặp gọn).
-Rủi ro TLE ở mức thấp. Nếu chẳng may bị TLE do overhead của Python, bản port C++
-với vòng for O(n) và unordered_map (hoặc nén tọa độ + mảng int) sẽ chạy nhanh hơn
-nhiều lần và chắc chắn trong giới hạn. Đáp án có thể lớn (tối đa ~ n*(n+1)/2 ≈
-2*10^10) nên trong C++ cần dùng kiểu long long; Python dùng int nên không lo tràn.
+của CSES nếu dùng fast I/O (sys.stdin.buffer.read, xử lý bằng vòng lặp gọn). Rủi
+ro TLE ở mức thấp; nếu chẳng may bị TLE do overhead của Python thì bản C++ với
+vòng for O(n) và unordered_map sẽ chạy nhanh hơn nhiều lần. Đáp án có thể lớn
+(tối đa ~ n*(n+1)/2 ≈ 2*10^10) nên C++ phải dùng kiểu long long; Python dùng int
+nên không lo tràn số.

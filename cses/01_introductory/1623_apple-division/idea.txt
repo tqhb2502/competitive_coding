@@ -1,11 +1,12 @@
-Bài toán: Apple Division (CSES 1623)
+Apple Division - CSES 1623
+https://cses.fi/problemset/task/1623
 
-Đề bài:
+## Đề bài
 - Có n quả táo (1 <= n <= 20), mỗi quả có trọng lượng p_i (1 <= p_i <= 10^9).
 - Chia n quả táo thành 2 nhóm sao cho hiệu tổng trọng lượng giữa 2 nhóm là nhỏ nhất.
 - In ra hiệu nhỏ nhất đó.
 
-Ý tưởng:
+## Ý tưởng
 - Gọi total = tổng trọng lượng tất cả quả táo.
 - Nếu chọn 1 nhóm là tập con S (nhóm còn lại là phần bù), thì hiệu 2 nhóm là:
       |(total - sum(S)) - sum(S)| = |total - 2*sum(S)|.
@@ -32,11 +33,12 @@ Tính đúng đắn:
   Vì vậy ta duyệt hết mọi cách chia. Với mỗi a, việc chọn b gần key/2 nhất cho kết quả
   tối ưu cho a đó; lấy min trên tất cả a => đáp án toàn cục.
 
-Độ phức tạp:
+## Độ phức tạp
 - Sinh tổng tập con: O(2^(n/2)) = O(2^10) = ~1024 cho mỗi nửa.
 - Sắp xếp B: O(2^(n/2) * log). Duyệt A với bisect: O(2^(n/2) * log(2^(n/2))).
 - Tổng: khoảng O(2^(n/2) * n) ~ vài chục nghìn phép tính => rất nhanh.
 - Bộ nhớ: O(2^(n/2)) cho 2 mảng A, B.
 
-Kết luận: Meet in the middle giúp giải chắc chắn trong giới hạn thời gian,
-không lo TLE kể cả với Python.
+LƯU Ý TLE:
+- Meet in the middle giúp giải chắc chắn trong giới hạn thời gian,
+  không lo TLE kể cả với Python.

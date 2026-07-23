@@ -1,9 +1,7 @@
-# Digit Queries - CSES 2431
-# https://cses.fi/problemset/task/2431
-
 import sys
 
 
+# Tìm chữ số nằm ở vị trí thứ k (đếm từ 1) trong chuỗi 123456789101112...
 def solve(k):
     # d: số chữ số của nhóm hiện tại
     # count: số lượng số có d chữ số = 9 * 10^(d-1)
@@ -11,12 +9,14 @@ def solve(k):
     d = 1
     count = 9
     start = 1
+    # Trừ dần tổng số chữ số của từng nhóm cho đến khi k rơi vào nhóm hiện tại
     while k > d * count:
         k -= d * count
         d += 1
         count *= 10
         start *= 10
-    # k là vị trí 1-indexed trong khối các số có d chữ số
+    # k là vị trí 1-indexed trong khối các số có d chữ số:
+    # xác định số chứa chữ số và chỉ số chữ số bên trong số đó
     number = start + (k - 1) // d
     digit_index = (k - 1) % d
     return str(number)[digit_index]

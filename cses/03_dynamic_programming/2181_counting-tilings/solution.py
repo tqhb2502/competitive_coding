@@ -1,8 +1,3 @@
-# Counting Tilings - https://cses.fi/problemset/task/2181
-# Đếm số cách lát kín lưới n x m bằng các quân domino 1x2 và 2x1, lấy modulo 1e9+7.
-# Phương pháp: profile DP theo từng cột, bitmask trên n hàng (n <= 10 nên 2^n <= 1024).
-# Tối ưu cho CPython: sinh sẵn một hàm cộng dồn (code-gen) nhằm đưa toàn bộ vòng lặp
-# cộng bên trong xuống bytecode, tránh chi phí vòng lặp Python cấp cao.
 import sys
 
 

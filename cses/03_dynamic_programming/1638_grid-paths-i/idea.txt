@@ -1,35 +1,40 @@
-Bài toán: Đếm số đường đi từ ô trên-trái (0,0) đến ô dưới-phải (n-1,n-1) trên lưới n x n,
-chỉ được đi sang phải hoặc xuống dưới, không được đi vào ô có bẫy ('*'). Kết quả lấy modulo 1000000007.
+Grid Paths I - CSES 1638
+https://cses.fi/problemset/task/1638
 
-Ý tưởng (DP trên lưới):
-- DP state: dp[i][j] = số đường đi hợp lệ từ ô (0,0) đến ô (i,j).
-- Transition: nếu ô (i,j) là bẫy ('*') thì dp[i][j] = 0 (không thể đứng ở đó).
-  Ngược lại dp[i][j] = dp[i-1][j] + dp[i][j-1] (đường đến (i,j) phải đi từ ô phía trên
-  hoặc ô bên trái), tất cả lấy modulo MOD = 1000000007.
-- Base case: dp[0][0] = 1 nếu ô (0,0) không phải bẫy, ngược lại = 0 (khi đó đáp án là 0).
-  Với hàng đầu tiên và cột đầu tiên, các ô ngoài lưới coi như 0 nên công thức tổng quát
-  vẫn đúng khi ta xử lý cẩn thận biên (dùng giá trị 0 cho i-1<0 hoặc j-1<0).
-- Answer: dp[n-1][n-1].
+## Đề bài
+Cho lưới n x n, mỗi ô là ô trống ('.') hoặc ô có bẫy ('*'). Đếm số đường đi từ
+ô trên-trái (0,0) đến ô dưới-phải (n-1,n-1), mỗi bước chỉ được đi sang phải hoặc
+đi xuống dưới, không được đi vào ô có bẫy. Kết quả lấy modulo 1000000007.
 
-Vì sao đúng: mỗi đường đi hợp lệ đến (i,j) có bước cuối cùng hoặc là từ (i-1,j) đi xuống,
-hoặc từ (i,j-1) đi sang phải; hai tập này rời nhau và bao phủ mọi khả năng, nên số đường
-bằng tổng hai giá trị đó. Ô bẫy không thể đến được nên đặt bằng 0, tự động loại mọi đường
-đi qua bẫy khỏi các ô sau. Đây là quy hoạch động không có chu trình (chỉ phụ thuộc ô phía
-trên và bên trái đã tính trước), nên duyệt theo thứ tự hàng trên xuống, trong mỗi hàng từ
-trái sang phải là hợp lệ.
+## Ý tưởng
+Quy hoạch động (DP) trên lưới.
+- Trạng thái: dp[i][j] = số đường đi hợp lệ từ ô (0,0) đến ô (i,j).
+- Chuyển trạng thái: nếu ô (i,j) là bẫy ('*') thì dp[i][j] = 0 (không thể đứng ở đó,
+  đồng thời tự động loại mọi đường đi qua bẫy). Ngược lại
+      dp[i][j] = dp[i-1][j] + dp[i][j-1]   (mod MOD),
+  vì bước cuối đến (i,j) hoặc từ ô phía trên đi xuống, hoặc từ ô bên trái đi sang phải;
+  hai khả năng này rời nhau và bao phủ mọi đường. Các ô ngoài lưới (i-1<0 hoặc j-1<0)
+  coi như giá trị 0.
+- Cơ sở: dp[0][0] = 1 nếu ô (0,0) không phải bẫy, ngược lại = 0.
+- Đáp án: dp[n-1][n-1].
+- Modulo: MOD = 1000000007.
 
-Tối ưu bộ nhớ: chỉ cần một mảng 1 chiều dp có độ dài n (rolling array theo từng hàng),
-vì dp[j] mới = dp[j] (giá trị hàng trên) + dp[j-1] (giá trị vừa cập nhật ở bên trái cùng hàng).
+Thứ tự duyệt: mỗi ô chỉ phụ thuộc ô phía trên và ô bên trái (đã tính trước), nên duyệt
+theo hàng từ trên xuống, trong mỗi hàng từ trái sang phải.
 
-Tối ưu tốc độ (quan trọng cho Python thuần): trong vòng lặp mỗi hàng ta giữ một biến cục bộ
-'left' chính là dp[j-1] vừa tính của hàng hiện tại, tránh truy cập dp[j-1] và tránh nhánh
-kiểm tra j>0. Ngoài ra thay phép chia lấy dư bằng một phép trừ có điều kiện (nếu tổng >= MOD
-thì trừ MOD), vì tổng của hai giá trị đều < MOD nên chỉ cần trừ nhiều nhất một lần. Đọc dữ
-liệu bằng sys.stdin.buffer và so sánh mã byte của '*' (bằng 42) để không phải giải mã chuỗi.
+Tối ưu bộ nhớ: chỉ cần một mảng 1 chiều dp độ dài n (rolling array theo từng hàng),
+vì dp[j] mới = dp[j] (giá trị hàng trên) + dp[j-1] (giá trị vừa cập nhật ở bên trái).
 
-Độ phức tạp: thời gian O(n^2), bộ nhớ O(n). Với n <= 1000, n^2 = 10^6 phép cộng.
+Tối ưu tốc độ: giữ một biến cục bộ 'left' chính là dp[j-1] vừa tính của hàng hiện tại,
+tránh truy cập lại dp[j-1] và tránh nhánh kiểm tra j>0. Thay phép chia lấy dư bằng một
+phép trừ có điều kiện (nếu tổng >= MOD thì trừ MOD), vì tổng hai giá trị đều < MOD nên
+chỉ cần trừ nhiều nhất một lần. Đọc dữ liệu bằng sys.stdin.buffer và so sánh mã byte của
+'*' (bằng 42) để không phải giải mã chuỗi.
 
-LƯU Ý TLE: với n = 1000 (10^6 ô), một cài đặt Python thuần dùng phép chia lấy dư ở mọi ô
-và kiểm tra biên j>0 chạy sát mức giới hạn 1.00s và có thể vượt quá trong trường hợp lưới
-toàn ô trống (mọi ô đều đi vào nhánh cộng). Các tối ưu ở trên (biến 'left', trừ thay cho
-lấy dư, đọc theo byte) đưa thời gian xuống khoảng 0.7s, an toàn dưới giới hạn.
+## Độ phức tạp
+Thời gian O(n^2), bộ nhớ O(n). Với n <= 1000 thì n^2 = 10^6 phép cộng.
+
+LƯU Ý TLE: với n = 1000 (10^6 ô), một cài đặt Python thuần dùng phép chia lấy dư ở mọi
+ô và kiểm tra biên j>0 chạy sát mức giới hạn 1.00s và có thể vượt quá khi lưới toàn ô
+trống. Các tối ưu trên (biến 'left', trừ thay cho lấy dư, đọc theo byte) đưa thời gian
+xuống khoảng 0.7s, an toàn dưới giới hạn.

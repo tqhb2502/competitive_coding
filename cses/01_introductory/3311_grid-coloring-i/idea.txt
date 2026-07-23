@@ -1,37 +1,36 @@
-Bài: Grid Coloring I (CSES 3311)
-Link: https://cses.fi/problemset/task/3311
+Grid Coloring I - CSES 3311
+https://cses.fi/problemset/task/3311
 
-1. Đề bài
+## Đề bài
 - Cho lưới n x m, mỗi ô chứa một ký tự trong {A, B, C, D}.
-- Phải ĐỔI mỗi ô sang một ký tự KHÁC (vẫn thuộc {A,B,C,D}) sao cho không có
+- Phải ĐỔI mỗi ô sang một ký tự KHÁC (vẫn thuộc {A, B, C, D}) sao cho không có
   hai ô kề nhau (trên/dưới/trái/phải) trùng ký tự.
 - In ra lưới kết quả, hoặc "IMPOSSIBLE" nếu không thể.
 
-2. Nhận xét then chốt
-- Duyệt các ô theo thứ tự từ trái sang phải, từ trên xuống dưới (row-major).
-- Khi tô ô (i, j) ta chỉ cần đảm bảo nó khác 3 ràng buộc:
+## Ý tưởng
+- Duyệt các ô theo thứ tự row-major (từ trái sang phải, từ trên xuống dưới).
+- Khi tô ô (i, j) chỉ cần đảm bảo nó khác 3 ràng buộc:
     + khác màu GỐC của chính ô đó (yêu cầu "đổi sang màu khác"),
     + khác ô phía TRÊN (i-1, j) đã tô,
     + khác ô phía TRÁI (i, j-1) đã tô.
 - Các ô BÊN PHẢI và BÊN DƯỚI chưa được tô; khi đến lượt chúng, chúng sẽ tự
   đảm bảo khác ô (i, j). Như vậy mỗi cạnh kề đều được kiểm tra đúng một lần.
-- Có tối đa 3 màu bị cấm mà ta có 4 màu => LUÔN tồn tại ít nhất 1 màu hợp lệ.
+- Có tối đa 3 màu bị cấm mà ta có 4 màu => LUÔN tồn tại ít nhất 1 màu hợp lệ,
+  nên kết quả không bao giờ là IMPOSSIBLE (với mọi n, m >= 1).
+- Thuật toán tham lam (greedy): với mỗi ô, chọn màu đầu tiên trong 'ABCD'
+  không nằm trong tập bị cấm.
 
-3. Vì vậy kết quả không bao giờ là IMPOSSIBLE (với mọi n, m >= 1).
-   Thuật toán tham (greedy): với mỗi ô, chọn màu đầu tiên trong 'ABCD' không
-   nằm trong tập bị cấm.
-
-4. Tính đúng
+Tính đúng:
 - Tính chất "khác màu gốc" được bảo đảm trực tiếp khi chọn.
 - Mỗi cặp ô kề nhau: ô được tô sau luôn kiểm tra khác ô được tô trước (trên
   hoặc trái), nên không có hai ô kề trùng nhau.
-- Vì luôn còn >=1 màu hợp lệ nên thuật toán luôn hoàn tất.
+- Vì luôn còn >= 1 màu hợp lệ nên thuật toán luôn hoàn tất.
 
-5. Độ phức tạp
-- Thời gian: O(n * m * 4) = O(n*m) ~ 250000 * 4 phép so sánh, rất nhanh.
+## Độ phức tạp
+- Thời gian: O(n * m * 4) = O(n * m), rất nhanh.
 - Bộ nhớ: O(n * m) để lưu lưới kết quả.
 
 LƯU Ý TLE: Với n, m <= 500 (250000 ô) vòng lặp Python thuần vẫn chạy trong
-khoảng dưới 1 giây nên an toàn. Nếu giới hạn lớn hơn và bị TLE, bạn có thể
-port sang C++ (duyệt mảng char, chọn màu bằng vòng for 4 bước) để nhanh hơn
-nhiều lần nhờ không có overhead của interpreter.
+khoảng dưới 1 giây nên an toàn. Nếu giới hạn lớn hơn và bị TLE, có thể port
+sang C++ (duyệt mảng char, chọn màu bằng vòng for 4 bước) để nhanh hơn nhiều
+lần nhờ không có overhead của interpreter.

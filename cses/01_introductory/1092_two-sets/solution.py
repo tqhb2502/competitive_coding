@@ -1,6 +1,3 @@
-# Two Sets - CSES 1092
-# https://cses.fi/problemset/task/1092
-
 import sys
 
 
@@ -8,18 +5,18 @@ def main():
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 
-    # Total sum of 1..n is n*(n+1)/2. A valid split needs it to be even,
-    # which happens exactly when n % 4 == 0 or n % 4 == 3.
+    # Tổng 1..n = n*(n+1)/2 chỉ chẵn khi n % 4 == 0 hoặc n % 4 == 3; ngoài ra không chia được.
     if n % 4 != 0 and n % 4 != 3:
         sys.stdout.write("NO\n")
         return
 
-    target = n * (n + 1) // 4  # required sum for each set
+    target = n * (n + 1) // 4  # tổng mà mỗi tập cần đạt được
 
     set1 = []
     set2 = []
     remaining = target
-    # Greedy from the largest number downward: take i whenever it still fits.
+    # Tham lam: duyệt số lớn nhất về nhỏ nhất, lấy i vào tập 1 khi còn "vừa" (i <= remaining),
+    # phần còn lại dồn sang tập 2 nên tổng tập 2 cũng bằng target.
     for i in range(n, 0, -1):
         if i <= remaining:
             set1.append(i)
@@ -27,6 +24,7 @@ def main():
         else:
             set2.append(i)
 
+    # Gom kết quả rồi xuất một lần để tối ưu I/O.
     out = []
     out.append("YES")
     out.append(str(len(set1)))

@@ -1,38 +1,35 @@
-Bài toán: Josephus Problem I (CSES 2162)
+Josephus Problem I - CSES 2162
+https://cses.fi/problemset/task/2162
 
-Đề bài:
-Có n đứa trẻ được đánh số 1, 2, ..., n đứng thành một vòng tròn. Trò chơi diễn ra
-như sau: bắt đầu từ đầu vòng, ta bỏ qua một đứa rồi loại một đứa (loại cứ mỗi đứa
-thứ hai) cho đến khi không còn ai. Hãy in ra thứ tự các đứa trẻ bị loại.
+## Đề bài
+Có n đứa trẻ được đánh số 1, 2, ..., n đứng thành một vòng tròn. Bắt đầu từ đầu
+vòng, ta lần lượt bỏ qua một đứa rồi loại một đứa (tức là loại cứ mỗi đứa thứ hai)
+cho đến khi không còn ai. Hãy in ra thứ tự các đứa trẻ bị loại.
 
-Ý tưởng (simulation bằng queue / deque):
-- Đưa tất cả n đứa trẻ vào một hàng đợi (deque) theo thứ tự 1, 2, ..., n. Đầu deque
-  chính là đứa trẻ mà con trỏ đang chỉ tới trong vòng tròn.
+## Ý tưởng
+Mô phỏng vòng tròn bằng một hàng đợi hai đầu (deque):
+- Đưa tất cả n đứa trẻ vào deque theo thứ tự 1, 2, ..., n. Phần tử đầu deque chính
+  là đứa trẻ mà con trỏ đang chỉ tới trong vòng tròn.
 - Lặp lại cho đến khi deque rỗng:
     1. Lấy phần tử đầu deque ra rồi đẩy xuống cuối deque -> đây là thao tác "bỏ qua"
-       (skip) một đứa trẻ (nó vẫn còn trong vòng nên quay lại cuối hàng).
-    2. Lấy phần tử đầu deque tiếp theo ra -> đây là đứa trẻ bị "loại" (remove),
-       thêm nó vào danh sách kết quả.
+       (skip) một đứa trẻ, nó vẫn còn trong vòng nên quay lại cuối hàng.
+    2. Lấy phần tử đầu deque tiếp theo ra -> đây là đứa trẻ bị "loại" (remove), thêm
+       nó vào danh sách kết quả.
 - Danh sách kết quả chính là thứ tự bị loại cần in ra.
 
-Vì sao đúng:
-- Vòng tròn được mô phỏng chính xác bằng deque: khi "bỏ qua" một đứa, ta đưa nó ra
-  cuối hàng, tương đương với việc tiếp tục đi vòng quanh. Khi "loại" một đứa, ta bỏ
-  hẳn nó khỏi deque. Cứ mỗi hai phần tử đầu deque thì phần tử thứ nhất được giữ lại
-  (đưa xuống cuối) và phần tử thứ hai bị loại, đúng như luật "loại mỗi đứa thứ hai".
-- Kiểm chứng với n = 7: kết quả 2 4 6 1 5 3 7, khớp với đáp án mẫu.
+Vì sao đúng: cứ mỗi hai phần tử đầu deque thì phần tử thứ nhất được giữ lại (đưa
+xuống cuối) và phần tử thứ hai bị loại, đúng như luật "loại mỗi đứa thứ hai". Việc
+đưa một đứa xuống cuối hàng tương đương với tiếp tục đi vòng quanh vòng tròn.
+Kiểm chứng với n = 7: kết quả 2 4 6 1 5 3 7, khớp với đáp án mẫu.
 
-Độ phức tạp:
-- Mỗi vòng lặp loại đúng 1 phần tử, thực hiện O(1) thao tác trên deque (popleft/append).
-  Do đó tổng thời gian là O(n), bộ nhớ O(n).
-- Với n <= 2 * 10^5, thuật toán chạy rất nhẹ.
+## Độ phức tạp
+- Thời gian: O(n). Mỗi vòng lặp loại đúng 1 phần tử và chỉ thực hiện các thao tác
+  O(1) trên deque (popleft/append).
+- Bộ nhớ: O(n) để lưu deque và danh sách kết quả.
+- Với n <= 2 * 10^5 thuật toán chạy rất nhẹ. Đọc/ghi một lần bằng bộ đệm để xuất
+  nhanh, tránh in từng số một.
 
-Đọc/ghi dữ liệu:
-- Dùng sys.stdin.buffer để đọc n, và ' '.join(map(str, res)) + ghi một lần bằng
-  sys.stdout.write để xuất nhanh, tránh in từng số một.
-
-LƯU Ý TLE: Với n <= 2 * 10^5 thì collections.deque trong Python đủ nhanh và gần
-như chắc chắn không TLE. Nếu ràng buộc lớn hơn nhiều, thao tác append/popleft của
-deque vẫn là O(1) nên vẫn tuyến tính; khi port sang C++ có thể dùng std::deque hoặc
-std::queue<int> để đạt tốc độ cao hơn nữa và xuất kết quả bằng bộ đệm (ví dụ nối
-chuỗi hoặc dùng '\n'.join tương đương) để tránh chi phí I/O.
+LƯU Ý TLE: Với n <= 2 * 10^5 thì collections.deque trong Python đủ nhanh và gần như
+chắc chắn không TLE. Các thao tác append/popleft của deque đều là O(1) nên tổng thời
+gian vẫn tuyến tính kể cả khi ràng buộc lớn hơn; khi port sang C++ có thể dùng
+std::deque hoặc std::queue<int> và xuất kết quả bằng bộ đệm để đạt tốc độ cao hơn.

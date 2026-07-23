@@ -1,36 +1,21 @@
-# Factory Machines - CSES 1620
-# https://cses.fi/problemset/task/1620
-#
-# Binary search on the answer: find the smallest time T such that the machines
-# together can make at least t products, i.e. sum(T // k_i) >= t.
-#
-# Pure standard library only. Two tricks keep it fast in CPython:
-#   1. Tight search bounds derived from S = sum(1/k_i): the answer lies in
-#      [t/S, (t+n)/S] (the floor loses at most 1 per machine, so at most n
-#      total), which is a window of width ~n/S -> at most ~30 iterations.
-#   2. The per-check total sum(T // k_i) is computed as
-#      sum(map(mid.__floordiv__, k)), which runs the whole loop at C speed.
-
 import sys
 
 
 def solve(n, t, k):
-    # min(k)*t is always a valid upper bound: the fastest machine alone finishes
-    # t products in min(k)*t seconds, so f(min(k)*t) >= t.
+    # cap = min(k)*t luôn là cận trên hợp lệ: riêng máy nhanh nhất làm xong t
+    # sản phẩm trong min(k)*t giây, nên f(min(k)*t) >= t.
     cap = min(k) * t
 
-    # S = sum(1/k_i). With EXACT arithmetic, f(T) = sum(T // k_i) satisfies
-    #   T*S - n < f(T) <= T*S,  so the answer lies in [t/S, (t+n)/S], a window
-    # of width ~n/S -> only ~30 binary-search steps. S is computed in floating
-    # point, so these are used only as a fast hint: the exact integer guards
-    # below make the final bracket provably correct regardless of fp error.
+    # S = tổng(1/k_i). Với số học chính xác: T*S - n < f(T) = sum(T // k_i) <= T*S,
+    # nên đáp án nằm trong [t/S, (t+n)/S] - cửa sổ rộng ~n/S -> chỉ khoảng 30 vòng
+    # chặt nhị phân. S tính bằng số thực nên chỉ dùng như gợi ý nhanh; các chốt kiểm
+    # tra bằng số nguyên bên dưới bảo đảm khoảng tìm kiếm luôn đúng dù double có sai số.
     S = 0.0
     for x in k:
         S += 1.0 / x
 
-    # Generous relative pad (1e-6) absorbs the floating-point error of S (which,
-    # for n up to 2*10^5, is many orders of magnitude smaller) so that the hint
-    # bracket stays tight in the common case.
+    # Nới rộng tương đối 1e-6 để hấp thụ sai số dấu phẩy động của S (với n tới 2*10^5,
+    # sai số này nhỏ hơn nhiều bậc), giữ khoảng gợi ý vẫn chặt trong trường hợp thường.
     lo = int(t / S * (1.0 - 1e-6)) - 5
     if lo < 1:
         lo = 1
@@ -38,19 +23,19 @@ def solve(n, t, k):
     if hi > cap or hi < 1:
         hi = cap
 
-    # Exact integer guards: guarantee the true answer A (smallest T with
-    # f(T) >= t) satisfies lo <= A <= hi, so correctness never depends on the
-    # accuracy of the float hint.
-    #   * A <= hi  iff  f(hi) >= t.   If not, widen hi to the guaranteed cap.
-    #   * A >= lo  iff  f(lo-1) < t.  If not, lo overshot the answer; reset to 1.
+    # Chốt kiểm tra bằng số nguyên chính xác: bảo đảm đáp án thật A (giá trị T nhỏ
+    # nhất với f(T) >= t) thỏa lo <= A <= hi, nên tính đúng không phụ thuộc gợi ý thực.
+    #   * A <= hi  <=>  f(hi) >= t.   Nếu không, nới hi về cap chắc chắn hợp lệ.
+    #   * A >= lo  <=>  f(lo-1) < t.  Nếu không, lo đã vượt đáp án; đặt lại về 1.
     if sum(map(hi.__floordiv__, k)) < t:
         hi = cap
     if lo > 1 and sum(map((lo - 1).__floordiv__, k)) >= t:
         lo = 1
-    if lo > hi:            # numerical safety fallback: guaranteed valid bracket
+    if lo > hi:            # dự phòng an toàn số học: khoảng luôn hợp lệ
         lo = 1
 
-    # Binary search for the smallest T with sum(T // k_i) >= t.
+    # Chặt nhị phân tìm T nhỏ nhất với sum(T // k_i) >= t.
+    # sum(map(mid.__floordiv__, k)) chạy toàn bộ vòng chia lấy nguyên ở tầng C.
     while lo < hi:
         mid = (lo + hi) >> 1
         if sum(map(mid.__floordiv__, k)) >= t:
@@ -62,6 +47,7 @@ def solve(n, t, k):
 
 
 def main():
+    # Đọc nhanh toàn bộ dữ liệu vào; ghi kết quả bằng sys.stdout.write
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
     t = int(data[1])

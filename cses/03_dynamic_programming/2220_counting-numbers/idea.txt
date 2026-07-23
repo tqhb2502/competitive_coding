@@ -1,44 +1,47 @@
-Bài toán: đếm số nguyên trong đoạn [a, b] (0 <= a <= b <= 10^18) sao cho
-không có hai chữ số liền kề nào bằng nhau (trong biểu diễn thập phân chuẩn,
-tức không có số 0 đứng đầu).
+Counting Numbers - CSES 2220
+https://cses.fi/problemset/task/2220
 
-Ý tưởng chính: dùng hàm count(x) = số các số nguyên n với 0 <= n <= x thỏa mãn
-điều kiện. Khi đó đáp án = count(b) - count(a - 1). Với a = 0 thì count(-1) = 0.
+## Đề bài
+Đếm số lượng số nguyên trong đoạn [a, b] (với 0 <= a <= b <= 10^18) sao cho
+không có hai chữ số liền kề nào bằng nhau, xét theo biểu diễn thập phân chuẩn
+(không có chữ số 0 đứng đầu). Ví dụ 100 không hợp lệ vì có hai số 0 kề nhau,
+còn 123 thì hợp lệ.
 
-Kỹ thuật: Digit DP (quy hoạch động trên các chữ số) trên biểu diễn thập phân
-của x. Ta duyệt từng vị trí chữ số từ trái sang phải.
+## Ý tưởng
+Đặt count(x) là số các số nguyên n với 0 <= n <= x thỏa mãn điều kiện. Khi đó
+đáp án là count(b) - count(a - 1); riêng với a = 0 thì count(-1) = 0.
 
-State của DP: dp(pos, prev, started, tight)
+Dùng Digit DP (quy hoạch động trên các chữ số) trên biểu diễn thập phân của x,
+duyệt từng vị trí chữ số từ trái sang phải.
+
+Trạng thái: dp(pos, prev, started, tight)
 - pos: vị trí chữ số hiện tại (0 .. n-1, với n là số chữ số của x).
-- prev: chữ số ngay trước đó đã đặt (0..9). Dùng giá trị đặc biệt prev = 10
-  để biểu thị "chưa có chữ số nào" (còn đang trong vùng leading zero).
-- started: True nếu đã đặt một chữ số khác 0 (số đã thực sự "bắt đầu"),
-  dùng để bỏ qua các số 0 đứng đầu (leading zero) không tính là chữ số liền kề.
-- tight: True nếu tiền tố hiện tại vẫn đúng bằng tiền tố của x (bị chặn trên),
-  khi đó chữ số kế tiếp chỉ được chọn tối đa là chữ số tương ứng của x.
+- prev: chữ số ngay trước đó đã đặt (0..9); giá trị đặc biệt prev = 10 biểu thị
+  "chưa đặt chữ số nào" (vẫn đang trong vùng leading zero).
+- started: True nếu đã đặt một chữ số khác 0 (số đã thực sự bắt đầu), dùng để
+  bỏ qua các số 0 đứng đầu, không tính chúng là chữ số liền kề.
+- tight: True nếu tiền tố hiện tại đang đúng bằng tiền tố của x (bị chặn trên),
+  khi đó chữ số kế tiếp chỉ được chọn tối đa bằng chữ số tương ứng của x.
 
-Transition: tại vị trí pos, cho chữ số d chạy từ 0 tới limit
-(limit = chữ số của x tại pos nếu tight, ngược lại limit = 9).
+Chuyển trạng thái: tại vị trí pos cho chữ số d chạy từ 0 tới limit
+(limit = chữ số của x tại pos nếu tight, ngược lại limit = 9), với
+tight mới = tight và (d == limit):
 - Nếu chưa started:
-    + d = 0: vẫn là leading zero, chuyển sang dp(pos+1, prev=10, started=False, ...).
-    + d > 0: bắt đầu số, chuyển sang dp(pos+1, prev=d, started=True, ...).
+    + d = 0: vẫn là leading zero, sang dp(pos+1, prev=10, started=False, ...).
+    + d > 0: bắt đầu số, sang dp(pos+1, prev=d, started=True, ...).
 - Nếu đã started:
     + Nếu d == prev thì bỏ qua (vi phạm điều kiện hai chữ số liền kề bằng nhau).
-    + Ngược lại chuyển sang dp(pos+1, prev=d, started=True, ...).
-tight mới = tight and (d == limit).
+    + Ngược lại sang dp(pos+1, prev=d, started=True, ...).
 
-Base case: khi pos == n trả về 1 (đếm chính số vừa tạo). Trường hợp toàn bộ là
-leading zero (started = False cho tới cuối) tương ứng với số 0, cũng hợp lệ và
-được đếm đúng một lần.
+Cơ sở (base case): khi pos == n trả về 1 (đếm chính số vừa tạo). Trường hợp toàn
+bộ là leading zero (started = False tới cuối) tương ứng số 0, cũng hợp lệ và được
+đếm đúng một lần. Ràng buộc tight bảo đảm không sinh số vượt quá x, nên mỗi số
+trong [0, x] được đếm đúng một lần.
 
-Answer: count(b) - count(a - 1).
+Đáp án: count(b) - count(a - 1). Bài toán này không dùng modulo.
 
-Tính đúng đắn: mọi số 0..x được sinh đúng một lần nhờ ràng buộc tight (không vượt
-quá x) và việc phân tách theo từng vị trí chữ số. started xử lý chính xác các số
-0 đứng đầu để chúng không bị coi là chữ số liền kề. Điều kiện d != prev khi đã
-started đảm bảo không có hai chữ số kề nhau bằng nhau. Số 0 được đếm đúng một lần
-qua nhánh toàn leading zero.
-
-Độ phức tạp: n <= 19 chữ số. Số state là O(n * 11 * 2 * 2), mỗi state duyệt 10 chữ
-số, nên mỗi lần count(x) là O(n * 11 * 2 * 2 * 10) ~ vài nghìn phép tính. Gọi hàm
-2 lần. Rất nhanh, không có nguy cơ TLE. Bộ nhớ O(n * 11 * 2 * 2) cho memo.
+## Độ phức tạp
+x có n <= 19 chữ số. Số trạng thái là O(n * 11 * 2 * 2), mỗi trạng thái duyệt tối
+đa 10 chữ số, nên mỗi lần gọi count(x) chỉ tốn O(n * 11 * 2 * 2 * 10) phép tính
+(vài nghìn), và hàm được gọi 2 lần. Thời gian rất nhanh, không có nguy cơ TLE.
+Bộ nhớ O(n * 11 * 2 * 2) cho bảng memo.

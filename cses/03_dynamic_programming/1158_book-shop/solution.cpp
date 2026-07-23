@@ -19,10 +19,11 @@ int main() {
         std::cin >> page_count;
     }
 
-    // dp[money] is the largest page count attainable without spending more
-    // than money. Descending updates ensure each book is used at most once.
+    // dp[money] = số trang lớn nhất đạt được khi tổng giá KHÔNG VƯỢT QUÁ money.
+    // Base case: chưa xét cuốn nào nên mọi dp[money] = 0.
     std::vector<int> dp(budget + 1, 0);
     for (int book = 0; book < n; ++book) {
+        // 0/1 knapsack: duyệt money GIẢM DẦN để mỗi cuốn chỉ được dùng một lần.
         for (int money = budget; money >= prices[book]; --money) {
             dp[money] =
                 std::max(dp[money],
@@ -30,6 +31,7 @@ int main() {
         }
     }
 
+    // Đáp án: số trang lớn nhất mua được với ngân sách budget.
     std::cout << dp[budget] << '\n';
     return 0;
 }

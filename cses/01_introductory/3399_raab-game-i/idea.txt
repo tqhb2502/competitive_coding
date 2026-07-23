@@ -1,42 +1,40 @@
-Raab Game I - https://cses.fi/problemset/task/3399
+Raab Game I - CSES 3399
+https://cses.fi/problemset/task/3399
 
-1. Tóm tắt đề bài
-- Mỗi người chơi có n lá bài đánh số 1..n. Chơi n ván, mỗi ván mỗi người úp một lá;
-  ai có lá lớn hơn được 1 điểm, bằng nhau không ai được điểm.
-- Cho trước n và điểm cuối cùng a (người 1) và b (người 2).
-- Với mỗi test: nếu tồn tại cách chơi cho kết quả đúng, in "YES" rồi 2 dòng là dãy bài
-  của người 1 và người 2; ngược lại in "NO".
+## Đề bài
+- Hai người chơi, mỗi người có n lá bài đánh số 1..n. Chơi n ván, mỗi ván mỗi người
+  úp một lá; ai có lá lớn hơn được 1 điểm, bằng nhau thì không ai được điểm.
+- Cho trước n cùng điểm cuối cùng a (người 1) và b (người 2). Với mỗi test: nếu tồn tại
+  cách chơi cho kết quả đúng thì in "YES" rồi 2 dòng là dãy bài của người 1 và người 2;
+  ngược lại in "NO".
 - Ràng buộc: t <= 1000, n <= 100, 0 <= a, b <= n.
 
-2. Mô hình hóa
-- Mỗi ván ghép một lá của người 1 với một lá của người 2. Vì cả hai đều dùng hết bài,
-  đây chính là một phép ghép 1-1 giữa tập {1..n} (người 1) và tập {1..n} (người 2).
-- Coi người 2 đánh theo thứ tự 1,2,...,n. Khi đó cần tìm một hoán vị p của {1..n}
-  (p[i] = lá của người 1 đối đầu với lá i của người 2) sao cho:
+## Ý tưởng
+- Mô hình hóa: coi người 2 đánh theo thứ tự 1, 2, ..., n. Khi đó cần tìm một hoán vị p
+  của {1..n} (p[i] là lá của người 1 đối đầu với lá i của người 2) sao cho:
     + số vị trí p[i] > i bằng a  (người 1 thắng),
     + số vị trí p[i] < i bằng b  (người 2 thắng),
     + số vị trí p[i] = i bằng n - a - b  (hòa).
 
-3. Điều kiện khả thi
-- Hiển nhiên cần a + b <= n (phần còn lại là các ván hòa).
-- Trong mỗi hoán vị, tổng giá trị bằng tổng chỉ số (đều là 1+2+...+n). Vì vậy nếu có
-  ít nhất một vị trí p[i] > i (excedance) thì bắt buộc phải có ít nhất một vị trí p[i] < i
-  (deficiency) để bù lại, và ngược lại. Suy ra: a > 0 khi và chỉ khi b > 0.
-  => Nếu đúng một trong hai bằng 0 còn cái kia khác 0 thì VÔ NGHIỆM (in NO).
-- Kết luận: có nghiệm khi và chỉ khi  a + b <= n  VÀ  (a == 0) <=> (b == 0).
+- Điều kiện khả thi:
+    + Cần a + b <= n (phần còn lại là các ván hòa).
+    + Trong mỗi hoán vị, tổng giá trị bằng tổng chỉ số (đều là 1+2+...+n). Vì vậy nếu có
+      ít nhất một vị trí p[i] > i (excedance) thì bắt buộc phải có ít nhất một vị trí
+      p[i] < i (deficiency) để bù lại, và ngược lại. Suy ra a > 0 khi và chỉ khi b > 0.
+      => Nếu đúng một trong hai bằng 0 còn cái kia khác 0 thì VÔ NGHIỆM (in NO).
+    + Kết luận: có nghiệm khi và chỉ khi  a + b <= n  VÀ  (a == 0) <=> (b == 0).
 
-4. Cách dựng nghiệm (khi khả thi)
-- Nếu a = b = 0: hai người đánh giống hệt nhau 1,2,...,n (tất cả hòa).
-- Nếu a, b > 0: đặt m = a + b.
-  + Người 2 đánh: 1, 2, ..., n.
-  + Người 1 đánh: dịch vòng tròn m lá bài đầu lên b bước:
-        [b+1, b+2, ..., m, 1, 2, ..., b]  rồi tiếp  [m+1, m+2, ..., n].
-  + Kiểm chứng: với i = 1..a thì p[i] = i + b > i  -> đúng a ván thắng cho người 1.
-                với i = a+1..m thì p[i] = i - a < i -> đúng b ván thắng cho người 2.
-                với i = m+1..n thì p[i] = i        -> các ván hòa.
-  Cách viết gộp [b+1..m] + [1..b] + [m+1..n] tự động đúng cho cả trường hợp a=b=0
-  (khi đó m=0, hai danh sách đầu rỗng, còn lại là 1..n).
+- Cách dựng nghiệm (khi khả thi): đặt m = a + b.
+    + Người 2 đánh: 1, 2, ..., n.
+    + Người 1 đánh: dịch vòng tròn m lá bài đầu lên b bước:
+          [b+1, b+2, ..., m, 1, 2, ..., b]  rồi tiếp  [m+1, m+2, ..., n].
+    + Kiểm chứng: với i = 1..a thì p[i] = i + b > i  -> đúng a ván thắng cho người 1;
+                  với i = a+1..m thì p[i] = i - a < i -> đúng b ván thắng cho người 2;
+                  với i = m+1..n thì p[i] = i        -> các ván hòa.
+    + Cách viết gộp [b+1..m] + [1..b] + [m+1..n] tự động đúng cả trường hợp a=b=0
+      (khi đó m=0, hai danh sách đầu rỗng, còn lại là 1..n, tức tất cả đều hòa).
 
-5. Độ phức tạp
-- Mỗi test làm việc O(n) để dựng dãy bài. Tổng: O(t * n) <= 1000 * 100 = 1e5 phép tính.
-- Bộ nhớ O(n) mỗi test. Rất nhẹ, không có nguy cơ TLE trong Python trên CSES.
+## Độ phức tạp
+- Thời gian: mỗi test làm việc O(n) để dựng dãy bài. Tổng O(t * n) <= 1000 * 100 = 1e5.
+- Bộ nhớ: O(n) mỗi test.
+- LƯU Ý TLE: rất nhẹ, không có nguy cơ TLE trong Python trên CSES.

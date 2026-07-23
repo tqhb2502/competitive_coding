@@ -1,43 +1,43 @@
-Bài toán: Palindrome Reorder (CSES 1755)
-URL: https://cses.fi/problemset/task/1755
+Palindrome Reorder - CSES 1755
+https://cses.fi/problemset/task/1755
 
-Đề bài:
+## Đề bài
 - Cho một xâu ký tự độ dài n gồm các chữ cái in hoa A-Z.
 - Hãy sắp xếp lại các ký tự để tạo thành một xâu đối xứng (palindrome).
-- In ra một kết quả hợp lệ bất kỳ. Nếu không thể tạo được, in "NO SOLUTION".
+- In ra một kết quả hợp lệ bất kỳ; nếu không thể tạo được, in "NO SOLUTION".
 - Ràng buộc: 1 <= n <= 10^6.
 
-Ý tưởng:
+## Ý tưởng
 1. Đếm số lần xuất hiện của từng ký tự (26 chữ cái).
 2. Điều kiện để tạo thành palindrome:
    - Nếu n chẵn: mọi ký tự đều phải có số lượng chẵn.
    - Nếu n lẻ: đúng một ký tự duy nhất được phép có số lượng lẻ (ký tự đó sẽ
      nằm ở giữa palindrome).
-   => Nói chung: số lượng ký tự có tần suất lẻ phải <= 1. Nếu > 1 thì
-      in "NO SOLUTION".
+   => Nói chung: số lượng ký tự có tần suất lẻ phải <= 1. Nếu > 1 thì in
+      "NO SOLUTION".
 3. Cách dựng kết quả:
    - Với mỗi ký tự (theo thứ tự A->Z), lấy (count // 2) ký tự để tạo nửa trái.
    - Ký tự có tần suất lẻ (nếu có) đặt ở giữa.
    - Nửa phải là nghịch đảo (mirror) của nửa trái.
    - Kết quả = nua_trai + ky_tu_giua + dao(nua_trai).
-   Do đối xứng theo cách xây dựng này, kết quả chắc chắn là palindrome và
-   đúng số lượng từng ký tự ban đầu.
+   Do đối xứng theo cách xây dựng này, kết quả chắc chắn là palindrome và đúng
+   số lượng từng ký tự ban đầu.
 
-Ví dụ: "AAAACACBA": A=6, C=2, B=1 (chỉ B lẻ -> hợp lệ).
+Ví dụ: "AAAACACBA" có A=6, C=2, B=1 (chỉ B lẻ -> hợp lệ).
    Nửa trái = "AAA" + "C" = "AAAC", giữa = "B".
    Kết quả = "AAAC" + "B" + "CAAA" = "AAACBCAAA" (một palindrome hợp lệ).
    CSES chấp nhận bất kỳ lời giải đúng nào.
 
 Tính đúng đắn:
-- Palindrome đọc xuôi bằng đọc ngược. Ta xây nửa trái bất kỳ rồi phản chiếu
-  qua giữa nên luôn đối xứng. Chỉ khi có nhiều hơn 1 ký tự tần suất lẻ thì
-  không thể ghép đôi hết các ký tự -> không tồn tại palindrome.
+- Palindrome đọc xuôi bằng đọc ngược. Ta xây nửa trái bất kỳ rồi phản chiếu qua
+  giữa nên luôn đối xứng. Chỉ khi có nhiều hơn 1 ký tự tần suất lẻ thì không thể
+  ghép đôi hết các ký tự -> không tồn tại palindrome.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) để đếm và O(n) để dựng xâu kết quả => O(n).
 - Bộ nhớ: O(n) cho xâu kết quả, O(26) cho mảng đếm.
 
 LƯU Ý TLE: n có thể tới 10^6. Trong Python cần dùng I/O nhanh
-(sys.stdin.buffer.read, xử lý trên bytes, dùng "".join thay vì cộng xâu
-từng phần) để tránh TLE. Bản C++ sẽ đếm bằng mảng int[26] và in trực tiếp
-qua buffer nên nhanh hơn nhiều, không lo TLE.
+(sys.stdin.buffer.read, xử lý trên bytes, dùng "".join thay vì cộng xâu từng
+phần) để tránh TLE. Bản C++ đếm bằng mảng int[26] và in trực tiếp qua buffer
+nên nhanh hơn nhiều, không lo TLE.

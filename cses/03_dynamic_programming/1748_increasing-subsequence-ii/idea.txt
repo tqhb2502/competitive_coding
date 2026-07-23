@@ -1,54 +1,52 @@
 Increasing Subsequence II - CSES 1748
+https://cses.fi/problemset/task/1748
 
-Bài toán: Đếm số lượng dãy con tăng ngặt (strictly increasing subsequence) không rỗng của
-mảng gồm n số nguyên. Các dãy con ở vị trí khác nhau được tính riêng dù giá trị có thể trùng.
-Kết quả lấy modulo 1000000007.
+## Đề bài
+Cho một mảng gồm n số nguyên. Hãy đếm số lượng dãy con tăng ngặt (strictly
+increasing subsequence) không rỗng của mảng. Hai dãy con ở các vị trí khác nhau
+được tính riêng, ngay cả khi giá trị của chúng trùng nhau. Kết quả in ra lấy
+modulo 1000000007.
 
-State (trạng thái DP):
-- Gọi dp[i] = số lượng dãy con tăng ngặt kết thúc tại vị trí i (tức phần tử cuối cùng là a[i]).
+## Ý tưởng
+Dùng quy hoạch động theo phần tử kết thúc kết hợp Fenwick tree (BIT) và nén tọa
+độ (coordinate compression).
 
-Transition (công thức chuyển):
-- dp[i] = 1 + tổng của dp[j] với mọi j < i mà a[j] < a[i].
-  + Số 1 tương ứng dãy con chỉ gồm riêng phần tử a[i].
-  + Mỗi dãy con tăng kết thúc tại j (với a[j] < a[i]) có thể nối thêm a[i] vào cuối để tạo
-    thành một dãy con tăng mới kết thúc tại i.
+- Trạng thái: dp[i] = số dãy con tăng ngặt kết thúc đúng tại vị trí i (phần tử
+  cuối cùng là a[i]).
+- Công thức chuyển: dp[i] = 1 + tổng dp[j] với mọi j < i mà a[j] < a[i].
+    + Số 1 ứng với dãy con chỉ gồm riêng phần tử a[i].
+    + Mỗi dãy con tăng kết thúc tại j (a[j] < a[i]) đều nối thêm a[i] vào cuối
+      để tạo một dãy con tăng mới kết thúc tại i.
+- Cơ sở: mỗi phần tử tự nó là một dãy con độ dài 1, nên dp[i] luôn có ít nhất là 1.
+- Đáp án: tổng tất cả dp[i] với i từ 0 đến n-1, lấy modulo 1000000007.
+- Đúng đắn: mỗi dãy con tăng ngặt có duy nhất một phần tử cuối, nên phân hoạch
+  theo vị trí kết thúc không bỏ sót và không đếm trùng.
 
-Base case (trường hợp cơ sở):
-- Mỗi phần tử tự nó là một dãy con tăng độ dài 1, nên luôn có ít nhất giá trị 1 trong dp[i].
-
-Answer (đáp án):
-- Tổng tất cả dp[i] với i từ 0 đến n-1, lấy modulo 1000000007.
-
-Tại sao đúng:
-- Mỗi dãy con tăng ngặt có một phần tử cuối cùng duy nhất, nên việc phân hoạch theo vị trí
-  kết thúc i không bỏ sót và không đếm trùng. Công thức dp[i] duyệt qua tất cả khả năng cho
-  phần tử kề trước phần tử cuối (hoặc không có phần tử nào trước), do đó bao phủ đầy đủ.
-
-Tối ưu bằng Fenwick tree (BIT) + nén tọa độ (coordinate compression):
-- Nếu tính dp[i] bằng cách duyệt mọi j < i thì độ phức tạp O(n^2), quá chậm với n = 2*10^5.
-- Ta nên tính nhanh "tổng dp[j] với a[j] < a[i]" bằng prefix sum theo giá trị.
-- Vì a[i] tới 10^9 nên phải nén tọa độ: sắp xếp các giá trị phân biệt, gán rank.
-- Duyệt mảng từ trái sang phải. Với mỗi phần tử giá trị v có rank r:
-    dp = 1 + query(r-1)   (tổng dp của các giá trị có rank < r đã xử lý trước đó -> a[j] < a[i])
-    cộng dp vào total
+Tối ưu để tránh O(n^2):
+- "Tổng dp[j] với a[j] < a[i]" chính là prefix sum theo giá trị, tính nhanh bằng
+  Fenwick tree. Vì a[i] tới 10^9 nên phải nén tọa độ: sắp xếp các giá trị phân
+  biệt rồi gán rank.
+- Duyệt mảng từ trái sang phải. Với phần tử giá trị v có rank r:
+    dp = 1 + query(r-1)   (tổng dp của các giá trị rank < r đã xử lý -> a[j] < a[i])
+    total += dp
     update(r, dp)         (cộng dp vào BIT tại vị trí rank r)
-  Vì ta duyệt theo thứ tự i tăng dần, BIT chỉ chứa các j < i, đảm bảo điều kiện j < i.
-  Truy vấn prefix đến r-1 (không bao gồm r) đảm bảo điều kiện tăng NGẶT a[j] < a[i].
-
-Độ phức tạp:
-- Thời gian: O(n log n) cho sort + n lần query/update trên Fenwick tree, mỗi lần O(log n).
-- Bộ nhớ: O(n).
+  Duyệt theo i tăng dần nên BIT chỉ chứa các j < i; truy vấn tới r-1 (không gồm r)
+  bảo đảm điều kiện tăng NGẶT a[j] < a[i].
 
 Tối ưu hằng số (giảm nguy cơ TLE):
-- Vì mọi phép trong DP đều là phép cộng, kết quả cuối chỉ cần lấy mod một lần ở total.
-- Ta vẫn rút gọn dp = (s+1) % MOD để dp < MOD, nhưng KHÔNG rút gọn các ô Fenwick trong vòng update.
-  Mỗi ô tree bị cộng tối đa n lần các giá trị < MOD, nên luôn < n*MOD ~ 2*10^14, vẫn nằm trong
-  phạm vi số nguyên máy (< 2^63) và không làm CPython chuyển sang big-int chậm.
-- Nhờ bỏ được phép mod trong vòng update, vòng lặp BIT chạy nhanh hơn đáng kể (~1.3-1.7 lần) mà
-  vẫn cho kết quả chính xác. Rank được tính sẵn vào mảng ranks để tránh tra cứu dict trong vòng lặp.
-- CẢNH BÁO: KHÔNG được thay phép mod của dp bằng một lần trừ MOD; với dãy tăng ngặt dp bùng nổ theo
-  2^i khiến số nguyên phình to vô hạn và chương trình treo.
+- Mọi phép trong DP đều là phép cộng nên chỉ cần rút gọn dp = (s+1) % MOD, còn
+  các ô Fenwick KHÔNG cần mod trong vòng update: mỗi ô bị cộng tối đa n giá trị
+  đều < MOD nên luôn < n*MOD ~ 2*10^14, vẫn nằm trong phạm vi số nguyên 64-bit.
+  Bỏ được mod trong vòng update giúp giảm đáng kể hằng số thời gian.
+- CẢNH BÁO: KHÔNG được thay phép mod của dp bằng một lần trừ MOD; với dãy tăng
+  ngặt dp bùng nổ theo 2^i khiến số nguyên phình to vô hạn và chương trình treo.
 
-LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản) vẫn có thể chậm so
-với giới hạn thời gian CSES (1s) hướng đến C++. Đã dùng sys.stdin fast I/O, biến cục bộ, tính sẵn
-rank và bỏ mod thừa để giảm hằng số, nhưng trên CPython thuần vẫn có khả năng vượt thời gian.
+## Độ phức tạp
+- Thời gian: O(n log n) — sort để nén tọa độ, và n lần query/update trên Fenwick
+  tree, mỗi lần O(log n).
+- Bộ nhớ: O(n).
+
+LƯU Ý TLE: Với n = 2*10^5, Fenwick tree thuần Python (~7*10^6 phép toán cơ bản)
+vẫn có thể chậm so với giới hạn thời gian CSES (1s) vốn hướng đến C++. Đã dùng
+sys.stdin fast I/O, biến cục bộ, tính sẵn rank và bỏ mod thừa để giảm hằng số,
+nhưng trên CPython thuần vẫn có khả năng vượt thời gian.

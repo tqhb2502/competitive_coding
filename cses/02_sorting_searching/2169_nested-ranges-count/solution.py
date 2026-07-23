@@ -1,6 +1,3 @@
-# Nested Ranges Count - https://cses.fi/problemset/task/2169
-# Với mỗi range [a, b]: đếm số range nó CHỨA và số range CHỨA nó.
-# Dùng nén tọa độ trên b + Fenwick tree (BIT), quét hai lần.
 import sys
 
 

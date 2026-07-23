@@ -1,7 +1,3 @@
-# Array Division - CSES 1085
-# https://cses.fi/problemset/task/1085
-# Binary search on the answer (minimize the maximum subarray sum) + greedy check.
-
 import sys
 
 
@@ -11,12 +7,13 @@ def main():
     k = int(data[1])
     arr = [int(v) for v in data[2:2 + n]]
 
-    # feasible(limit): can we split arr into <= k contiguous parts,
-    # each with sum <= limit? Greedy: pack as much as possible per part.
+    # feasible(limit): dùng greedy kiểm tra có chia được mảng thành <= k đoạn liên
+    # tiếp, mỗi đoạn có tổng <= limit hay không (nhồi tối đa vào mỗi đoạn).
     def feasible(limit):
         parts = 1
         cur = 0
         for v in arr:
+            # Vượt limit thì đóng đoạn cũ, mở đoạn mới bắt đầu bằng phần tử này
             if cur + v > limit:
                 parts += 1
                 cur = v
@@ -26,8 +23,9 @@ def main():
                 cur += v
         return parts <= k
 
-    lo = max(arr)          # each single element must fit into a part
-    hi = sum(arr)          # k == 1 -> whole array is one part
+    lo = max(arr)          # mỗi phần tử đơn lẻ phải nằm vừa trong một đoạn
+    hi = sum(arr)          # khi k == 1 thì cả mảng là một đoạn duy nhất
+    # Binary search trên đáp án: tìm limit khả thi nhỏ nhất
     while lo < hi:
         mid = (lo + hi) // 2
         if feasible(mid):

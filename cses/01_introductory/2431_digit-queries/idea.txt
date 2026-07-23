@@ -1,11 +1,12 @@
-Bài toán: Digit Queries (CSES 2431)
+Digit Queries - CSES 2431
+https://cses.fi/problemset/task/2431
 
-Đề bài:
+## Đề bài
 - Xét chuỗi vô hạn tạo bởi việc nối liên tiếp các số nguyên dương:
   1 2 3 4 5 6 7 8 9 10 11 12 ... => "123456789101112..."
 - Với mỗi truy vấn k (1 <= k <= 10^18), in ra chữ số nằm ở vị trí thứ k (đếm từ 1).
 
-Ý tưởng:
+## Ý tưởng
 - Nhóm các số theo số chữ số d:
   + Các số có d chữ số: từ 10^(d-1) đến 10^d - 1, gồm 9 * 10^(d-1) số.
   + Mỗi số đóng góp d chữ số, nên tổng số chữ số của nhóm d là:
@@ -20,16 +21,17 @@ Bài toán: Digit Queries (CSES 2431)
         digit_index = (k - 1) % d
   + Kết quả = chữ số thứ digit_index của number (dạng chuỗi).
 
-Tính đúng đắn:
-- Vì số lượng chữ số trong mỗi nhóm d được đếm chính xác (d * 9 * 10^(d-1)),
-  việc trừ dần đưa k về đúng khối chứa nó. Trong khối đó, mỗi số chiếm
-  d chữ số liên tiếp nên phép chia lấy nguyên và lấy dư xác định chính xác
-  số và vị trí chữ số.
-- Với k <= 10^18: tổng số chữ số của các nhóm tăng rất nhanh (theo cấp số nhân),
-  nên d chỉ lên tới khoảng 18-19 là đủ bao phủ 10^18. Vòng lặp rất ngắn.
+- Tính đúng đắn: vì số lượng chữ số trong mỗi nhóm d được đếm chính xác
+  (d * 9 * 10^(d-1)), việc trừ dần đưa k về đúng khối chứa nó. Trong khối đó,
+  mỗi số chiếm d chữ số liên tiếp nên phép chia lấy nguyên và lấy dư xác định
+  chính xác số và vị trí chữ số.
 
-Độ phức tạp:
+## Độ phức tạp
 - Mỗi truy vấn: O(D) với D là số chữ số tối đa (~19) cho vòng lặp trừ dần,
   cộng với chi phí chuyển số sang chuỗi. Tổng thể O(q * D).
 - Bộ nhớ: O(1).
+
+## LƯU Ý TLE
+- Với k <= 10^18: tổng số chữ số của các nhóm tăng rất nhanh (theo cấp số nhân),
+  nên d chỉ lên tới khoảng 18-19 là đủ bao phủ 10^18. Vòng lặp rất ngắn.
 - Với q <= 1000, thuật toán cực kỳ nhanh, không có nguy cơ TLE.

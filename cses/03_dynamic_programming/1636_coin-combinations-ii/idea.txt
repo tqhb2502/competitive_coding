@@ -1,6 +1,10 @@
-Bài toán: Coin Combinations II (CSES 1636)
-Đếm số cách tạo ra tổng tiền x từ n loại đồng xu, KHÔNG kể thứ tự (các tổ hợp
-{2,3} và {3,2} chỉ tính là một). Kết quả lấy modulo 1000000007.
+Coin Combinations II - CSES 1636
+https://cses.fi/problemset/task/1636
+
+## Đề bài
+Cho n loại đồng xu với các mệnh giá cho trước và một tổng đích x. Hãy đếm số
+cách tạo ra đúng tổng x, mỗi loại đồng xu được dùng số lần tùy ý, KHÔNG kể thứ
+tự (hai tổ hợp {2,3} và {3,2} chỉ tính là một). Kết quả lấy modulo 1000000007.
 
 Định dạng vào/ra:
 - Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
@@ -8,55 +12,44 @@ Bài toán: Coin Combinations II (CSES 1636)
 - In ra một số nguyên: số cách tạo tổng x, lấy modulo 1000000007.
 - Ràng buộc: 1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6.
 
-Ý tưởng: đây là bài đếm tổ hợp (multiset) của unbounded knapsack, mỗi loại đồng
-xu được dùng số lần tùy ý.
+## Ý tưởng
+Đây là bài đếm số tổ hợp (multiset) kiểu unbounded knapsack: mỗi loại đồng xu
+được dùng số lần tùy ý, và ta không kể thứ tự.
 
-DP state:
-- ways[s] = số cách (không kể thứ tự) tạo ra tổng đúng bằng s, khi CHỈ được dùng
-  tập các loại đồng xu đã xét cho tới thời điểm hiện tại.
+Trạng thái (DP state):
+- ways[s] = số cách (không kể thứ tự) tạo ra tổng đúng bằng s khi CHỈ dùng những
+  loại đồng xu đã được xét cho tới thời điểm hiện tại.
 
 Base case:
 - ways[0] = 1 (đúng một cách tạo tổng 0: không dùng đồng xu nào).
 - ways[s] = 0 với mọi s > 0 lúc ban đầu.
 
-Transition (điểm mấu chốt để KHÔNG kể thứ tự):
-- Vòng NGOÀI duyệt qua từng loại đồng xu c; vòng TRONG duyệt s tăng dần từ c tới x:
+Chuyển trạng thái (transition — mấu chốt để KHÔNG kể thứ tự):
+- Vòng NGOÀI duyệt từng loại đồng xu c; vòng TRONG duyệt s tăng dần từ c tới x:
       ways[s] = (ways[s] + ways[s - c]) mod MOD
 - Vì đồng xu nằm ở vòng ngoài nên mỗi tổ hợp {số lượng mỗi loại xu} chỉ được sinh
   ra đúng một lần, do ta cố định thứ tự "xét các loại xu". Đây chính là điểm khác
   với Coin Combinations I (bài 1635) vốn để tổng ở vòng ngoài nên đếm cả thứ tự.
+- Việc cho s tăng dần cho phép loại xu c hiện tại được dùng lại nhiều lần
+  (unbounded). Nếu c > x thì bỏ qua loại xu đó vì nó không đóng góp gì.
 
-Answer:
+Đáp án (answer):
 - ways[x] mod MOD.
 
-Vì sao đúng:
-- Khi bổ sung một loại xu c, công thức ways[s] += ways[s - c] với s tăng dần cho
-  phép dùng c nhiều lần (unbounded). Do mỗi loại xu chỉ được "mở khóa" một lần
-  theo thứ tự cố định của vòng ngoài, ta đếm được đúng số bội (multiset) các đồng
-  xu, tức số tổ hợp không kể thứ tự.
-- Với ví dụ x = 9, coins = {2,3,5}: các tổ hợp là 2+2+5, 3+3+3, 2+2+2+3 -> đáp án 3.
+Ví dụ x = 9, coins = {2,3,5}: các tổ hợp là 2+2+5, 3+3+3, 2+2+2+3 -> đáp án 3.
 
-Độ phức tạp:
-- Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tích cỡ ~10^8.
-
-Cài đặt thuần thư viện chuẩn (không dùng thư viện ngoài):
+Ghi chú cài đặt Python thuần thư viện chuẩn:
 - Đọc toàn bộ dữ liệu một lần bằng sys.stdin.buffer.read().split() cho nhanh.
-- Dùng list Python cho bảng ways độ dài x + 1.
 - Gán các tên hay dùng (mảng ways, hằng MOD) vào biến cục bộ để CPython tra cứu
   nhanh hơn.
-- Vòng trong dùng phép trừ có điều kiện (if v >= MOD: v -= MOD) thay cho phép chia
-  lấy dư (%) vì trừ nhanh hơn trong CPython.
-- Nếu c > x thì bỏ qua loại xu đó (không đóng góp gì).
-- In kết quả bằng sys.stdout.write.
+- Vòng trong dùng phép trừ có điều kiện (if v >= MOD: v -= MOD) thay cho phép
+  chia lấy dư (%) vì trừ nhanh hơn trong CPython.
+- Đã thử kỹ thuật prefix sum theo lớp thặng dư (residue class) modulo c bằng
+  itertools.accumulate trên các lát cắt ways[r::c] nhưng thực tế CHẬM HƠN vòng
+  lặp trực tiếp trên CPython, nên giữ vòng lặp DP thuần cho đơn giản và nhanh.
 
-Ghi chú tối ưu (đã thử và loại bỏ):
-- Đã thử kỹ thuật "prefix sum theo lớp thặng dư (residue class) modulo c" bằng
-  itertools.accumulate trên các lát cắt bước nhảy (ways[r::c]). Về lý thuyết mỗi
-  loại xu chỉ cần một lượt accumulate ở tốc độ C, nhưng thực tế trên CPython nó
-  CHẬM HƠN vòng lặp trực tiếp: việc tạo lát cắt mới, phép lấy dư % trên từng phần
-  tử và gán lại lát cắt tốn kém hơn phép cộng + so sánh của vòng lặp thuần. Vì vậy
-  lời giải giữ vòng lặp DP trực tiếp, đơn giản và nhanh nhất trong các cách thuần
-  Python.
+## Độ phức tạp
+- Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tích cỡ ~10^8.
 
 LƯU Ý TLE: DP thuần Python O(n * x) với x tới 10^6 và n tới 100 (khoảng 10^8 phép
 tính, đo thực tế trường hợp xấu nhất khi tất cả đồng xu đều nhỏ mất ~20 giây trên

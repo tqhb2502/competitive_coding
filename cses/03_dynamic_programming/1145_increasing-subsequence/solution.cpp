@@ -9,8 +9,8 @@ int main() {
     int n;
     std::cin >> n;
 
-    // tails[i] is the smallest possible final value of a strictly increasing
-    // subsequence of length i + 1 in the prefix processed so far.
+    // tails[i] = giá trị đuôi nhỏ nhất có thể của một dãy con tăng nghiêm ngặt
+    // độ dài i+1, xét trên tiền tố đã duyệt. Mảng tails luôn tăng nghiêm ngặt.
     std::vector<int> tails;
     tails.reserve(n);
 
@@ -18,15 +18,19 @@ int main() {
         int value;
         std::cin >> value;
 
+        // lower_bound: tìm vị trí đầu tiên có giá trị >= value (bảo đảm nghiêm ngặt).
         const auto position =
             std::lower_bound(tails.begin(), tails.end(), value);
         if (position == tails.end()) {
+            // value lớn hơn mọi đuôi hiện có -> nối vào cuối, LIS dài thêm 1.
             tails.push_back(value);
         } else {
+            // Thay đuôi tốt hơn cho dãy con tăng cùng độ dài.
             *position = value;
         }
     }
 
+    // Số cột của tails chính là độ dài LIS.
     std::cout << tails.size() << '\n';
     return 0;
 }

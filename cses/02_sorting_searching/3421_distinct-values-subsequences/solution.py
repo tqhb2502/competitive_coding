@@ -1,18 +1,23 @@
-# Distinct Values Subsequences - https://cses.fi/problemset/task/3421
-# Answer = (product of (1 + cnt[v]) over distinct values v) - 1  (mod 1e9+7)
 import sys
 from collections import Counter
 
 
 def main():
+    # Đọc toàn bộ dữ liệu bằng bộ đệm để tăng tốc.
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
     xs = data[1:1 + n]
     MOD = 10 ** 9 + 7
-    cnt = Counter(xs)  # count by raw token; distinct tokens == distinct values
+
+    # Đếm số lần xuất hiện của từng giá trị (token phân biệt tương ứng giá trị phân biệt).
+    cnt = Counter(xs)
+
+    # Nhân dồn tích (1 + cnt[v]) trên mọi giá trị phân biệt, theo modulo.
     ans = 1
     for c in cnt.values():
         ans = ans * (1 + c) % MOD
+
+    # Trừ 1 để loại bỏ dãy con rỗng.
     ans = (ans - 1) % MOD
     sys.stdout.write(str(ans) + "\n")
 

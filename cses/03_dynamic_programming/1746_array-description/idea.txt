@@ -1,68 +1,58 @@
-Bài toán: Array Description (CSES 1746)
+Array Description - CSES 1746
+https://cses.fi/problemset/task/1746
 
-Đề bài: Cho mảng gồm n phần tử, mỗi phần tử là số nguyên trong [1, m].
-Giá trị 0 nghĩa là vị trí đó chưa biết (có thể điền tự do trong [1, m]).
-Điều kiện: hai phần tử kề nhau có hiệu tuyệt đối tối đa 1 (|a[i] - a[i+1]| <= 1).
-Đếm số mảng hợp lệ, kết quả lấy modulo 1000000007.
+## Đề bài
+Cho một mảng gồm n phần tử, mỗi phần tử là số nguyên trong đoạn [1, m].
+Một số vị trí đã biết giá trị, một số vị trí bị ẩn (ghi bằng 0) và có thể điền
+tự do một giá trị bất kỳ trong [1, m]. Điều kiện hợp lệ: hai phần tử kề nhau có
+hiệu tuyệt đối tối đa 1, tức |a[i] - a[i+1]| <= 1.
+Hãy đếm số mảng hợp lệ, kết quả lấy theo modulo 1000000007.
 
 Ràng buộc: 1 <= n <= 10^5, 1 <= m <= 100, 0 <= x_i <= m.
+Định dạng: dòng 1 gồm n và m; dòng 2 gồm n số mô tả mảng (0 là vị trí chưa biết);
+in ra một số nguyên là số mảng hợp lệ theo modulo 10^9 + 7.
 
-Định dạng vào/ra:
-- Dòng 1: hai số nguyên n và m.
-- Dòng 2: n số nguyên là nội dung mảng (0 là chưa biết).
-- In ra một số nguyên: số mảng hợp lệ theo modulo 10^9+7.
+## Ý tưởng
+Dùng quy hoạch động (DP) quét mảng từ trái sang phải.
 
-Ý tưởng DP:
-- Định nghĩa state: dp[i][v] = số cách điền hợp lệ cho tiền tố gồm i phần tử đầu
-  sao cho phần tử thứ i mang giá trị v (với v trong [1, m]).
-- Transition (chuyển trạng thái): vì hai phần tử kề nhau chênh nhau tối đa 1 nên
-  phần tử thứ i-1 chỉ có thể là v-1, v hoặc v+1. Do đó:
+- Trạng thái: dp[i][v] = số cách điền hợp lệ cho tiền tố gồm i phần tử đầu, sao
+  cho phần tử thứ i mang giá trị v (với v thuộc [1, m]).
+- Chuyển trạng thái: vì hai phần tử kề nhau chênh nhau tối đa 1 nên phần tử thứ
+  i-1 chỉ có thể là v-1, v hoặc v+1. Do đó:
       dp[i][v] = dp[i-1][v-1] + dp[i-1][v] + dp[i-1][v+1]   (lấy modulo)
-  Nếu x[i] != 0 (đã biết trước) thì chỉ giữ lại v = x[i], các giá trị khác dp[i][*] = 0.
+  Nếu x[i] != 0 (đã biết trước) thì chỉ giữ lại v = x[i], các giá trị khác bằng 0.
   Nếu x[i] == 0 thì mọi v trong [1, m] đều được phép.
-- Base case (điều kiện khởi tạo, i = 1):
-      Nếu x[1] == 0: dp[1][v] = 1 cho mọi v trong [1, m].
-      Nếu x[1] != 0: dp[1][x[1]] = 1, còn lại 0.
-- Đáp án: sum_{v=1..m} dp[n][v] (mod 1000000007).
+- Cơ sở (i = 1): nếu x[1] == 0 thì dp[1][v] = 1 với mọi v trong [1, m]; nếu
+  x[1] != 0 thì dp[1][x[1]] = 1, còn lại bằng 0.
+- Đáp án: tổng dp[n][v] với v chạy từ 1 tới m, lấy theo modulo 1000000007.
 
-Tính đúng đắn: mỗi mảng hợp lệ được xây dựng lần lượt từ trái sang phải; state
-dp[i][v] gói trọn thông tin cần thiết cho bước kế tiếp (chỉ cần biết giá trị v của
-phần tử cuối là đủ để áp ràng buộc |chênh lệch| <= 1). Ràng buộc x[i] != 0 được
-tôn trọng bằng cách chỉ cho phép đúng giá trị x[i]. Do đó tổng dp[n][*] đếm đúng
-và không trùng lặp tất cả các mảng hợp lệ.
+Tính đúng đắn: state dp[i][v] gói trọn thông tin cần thiết cho bước kế tiếp (chỉ
+cần biết giá trị v của phần tử cuối là đủ để áp ràng buộc |chênh lệch| <= 1).
+Ràng buộc x[i] != 0 được tôn trọng bằng cách chỉ cho phép đúng giá trị x[i], nên
+tổng dp[n][*] đếm đúng và không trùng lặp mọi mảng hợp lệ.
 
-Tối ưu bộ nhớ: chỉ cần một hàng dp hiện tại, dùng một mảng (list) 1 chiều độ dài
-m+2 với hai ô đệm (padding) ở đầu (chỉ số 0) và cuối (chỉ số m+1) luôn bằng 0 để
-tránh kiểm tra biên khi cộng v-1 và v+1. Khi x[i] != 0 chỉ cần tính đúng một giá
-trị nên bỏ qua vòng lặp đầy đủ, chỉ đặt đúng ô x[i] và xoá các ô còn lại.
+Tối ưu bộ nhớ: chỉ cần một hàng dp hiện tại, dùng một mảng 1 chiều độ dài m+2 với
+hai ô đệm (padding) ở đầu (chỉ số 0) và cuối (chỉ số m+1) luôn bằng 0 để tránh
+kiểm tra biên khi cộng v-1 và v+1.
 
-Độ phức tạp: thời gian O(n * m) (tối đa khoảng 10^7 phép tính), bộ nhớ O(m).
-
-Cài đặt thuần Python chuẩn (chỉ dùng thư viện chuẩn, KHÔNG dùng bất kỳ thư viện
-ngoài nào):
+Chi tiết cài đặt Python (chỉ dùng thư viện chuẩn, KHÔNG dùng thư viện ngoài):
 - Đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split() cho nhanh.
 - Với vị trí chưa biết (x[i] == 0), thay vì lặp từng v ta cộng cùng lúc ba "lát
-  cắt" (slice) của list bằng zip:
-      core[k] = dp[k] + dp[k+1] + dp[k+2]  (với zip(dp, dp[1:], dp[2:]))
-  Khi đó dp_new[v] = core[v-1] = dp[v-1] + dp[v] + dp[v+1] đúng như công thức
-  chuyển trạng thái. dp mới = [0] + core + [0] để giữ lại hai ô đệm.
-- Kỹ thuật "hoãn mod" (defer modulo): thay vì lấy modulo ở mỗi bước, ta cộng dồn
-  không mod trong tối đa 16 bước liên tiếp rồi mới lấy modulo một lần. Mỗi phần tử
-  tăng tối đa gấp 3 sau mỗi bước, nên sau 16 bước giá trị vẫn nhỏ hơn
-  3^16 * 10^9 ~ 4.3*10^16. Python dùng số nguyên chính xác tuyệt đối (không tràn),
-  nên hoãn mod luôn giữ đúng giá trị; số vẫn đủ nhỏ để phép cộng nhanh. Nhờ giảm
-  số lần lấy modulo, phần lõi chạy nhanh hơn khoảng 2 lần so với việc mod mỗi bước.
+  cắt" (slice) của list bằng zip: core[k] = dp[k] + dp[k+1] + dp[k+2], khi đó
+  dp_new[v] = core[v-1] = dp[v-1] + dp[v] + dp[v+1] đúng theo công thức chuyển.
+- Kỹ thuật "hoãn mod" (defer modulo): cộng dồn không mod trong tối đa 16 bước liên
+  tiếp rồi mới lấy modulo một lần. Mỗi phần tử tăng tối đa gấp 3 sau mỗi bước, nên
+  sau 16 bước giá trị vẫn nhỏ hơn 3^16 * 10^9 ~ 4.3 * 10^16; Python dùng số nguyên
+  chính xác tuyệt đối nên hoãn mod luôn giữ đúng kết quả mà vẫn cộng nhanh.
 - Khi gặp giá trị đã biết (x[i] != 0), reset bộ đếm hoãn mod và tính trực tiếp một
   ô, lấy modulo ngay.
 
-Kiểm thử: đã so khớp với thuật toán vét cạn (duyệt mọi mảng) trên nhiều bộ ngẫu
-nhiên nhỏ, và so khớp với bản DP mod-mỗi-bước trên các bộ trung bình có nhiều đoạn
-0 liên tiếp (kích hoạt nhánh hoãn mod). Ví dụ mẫu của đề (3 5 / 2 0 2 -> 3) cho
-kết quả đúng.
+## Độ phức tạp
+Thời gian O(n * m) (tối đa khoảng 10^7 phép tính), bộ nhớ O(m).
 
 LƯU Ý TLE: với worst-case n = 10^5 và m = 100, phần lõi phải thực hiện tới ~10^7
 phép cộng ở mức Python. Ngay cả sau khi tối ưu (cộng slice bằng zip + hoãn mod),
-CPython vẫn mất khoảng 4 giây cho trường hợp toàn số 0 -> vượt giới hạn ~1 giây của
+CPython vẫn mất khoảng 4 giây cho trường hợp toàn số 0, vượt giới hạn ~1 giây của
 CSES và sẽ bị TLE trên CPython thuần. Đây là giới hạn thực tế của Python thuần cho
 bài này; để chắc chắn AC nên nộp bằng C++ (nhanh nhất) hoặc PyPy (thường qua được
 nhờ JIT). Không được dùng numpy/thư viện ngoài để lách TLE vì CSES chỉ chạy CPython

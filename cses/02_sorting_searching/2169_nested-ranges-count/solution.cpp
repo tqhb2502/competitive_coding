@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// Một đoạn [left, right]; index là thứ tự nhập ban đầu để in đúng vị trí,
+// rightRank là rank của right sau khi nén tọa độ (dùng làm chỉ số cho BIT).
 struct Range {
     int left;
     int right;
@@ -11,16 +13,19 @@ struct Range {
     int rightRank;
 };
 
+// Fenwick tree (BIT) đánh chỉ số theo rank của b, lưu số đoạn đã chèn.
 class FenwickTree {
 public:
     explicit FenwickTree(int size) : tree(size + 1, 0) {}
 
+    // Chèn thêm một đoạn có right ở vị trí index.
     void add(int index) {
         for (int i = index; i < static_cast<int>(tree.size()); i += i & -i) {
             ++tree[i];
         }
     }
 
+    // Đếm số đoạn đã chèn có rank <= index (prefix sum).
     int prefixSum(int index) const {
         int result = 0;
         for (int i = index; i > 0; i -= i & -i) {
@@ -57,6 +62,7 @@ int main() {
         rightEndpoints[i] = ranges[i].right;
     }
 
+    // Nén tọa độ cho các giá trị right rồi gán rank 1-indexed cho mỗi đoạn.
     sort(rightEndpoints.begin(), rightEndpoints.end());
     rightEndpoints.erase(unique(rightEndpoints.begin(), rightEndpoints.end()),
                          rightEndpoints.end());
@@ -66,9 +72,12 @@ int main() {
             rightEndpoints.begin()) + 1;
     }
 
-    vector<int> contains(n, 0);
-    vector<int> contained(n, 0);
+    vector<int> contains(n, 0);   // số đoạn mà i chứa
+    vector<int> contained(n, 0);  // số đoạn chứa i
 
+    // Pass 1 - tính contains[i] = số j thỏa a_i <= a_j và b_j <= b_i.
+    // Sắp xếp theo a giảm dần, hòa thì b tăng dần; khi xử lý i mọi j đã chèn
+    // đều thỏa a_i <= a_j, chỉ cần đếm prefix b_j <= b_i.
     sort(ranges.begin(), ranges.end(), [](const Range& first, const Range& second) {
         if (first.left != second.left) {
             return first.left > second.left;
@@ -82,6 +91,9 @@ int main() {
         containsTree.add(range.rightRank);
     }
 
+    // Pass 2 - tính contained[i] = số j thỏa a_j <= a_i và b_i <= b_j.
+    // Sắp xếp theo a tăng dần, hòa thì b giảm dần; khi xử lý i mọi j đã chèn
+    // đều thỏa a_j <= a_i. Số b_j >= b_i = (số đã chèn) - (số b_j < b_i).
     sort(ranges.begin(), ranges.end(), [](const Range& first, const Range& second) {
         if (first.left != second.left) {
             return first.left < second.left;

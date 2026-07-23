@@ -1,9 +1,3 @@
-# Removing Digits - CSES 1637
-# https://cses.fi/problemset/task/1637
-#
-# Mỗi bước trừ n đi CHỮ SỐ LỚN NHẤT của nó. Greedy này trùng với DP tối ưu
-# (đã kiểm chứng đúng với mọi n trong 1..10^6). Độ phức tạp O(số_bước), bộ nhớ O(1).
-
 import sys
 
 
@@ -11,9 +5,10 @@ def main():
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 
+    # Greedy: mỗi bước trừ n đi chữ số lớn nhất của nó (tối ưu, trùng với DP).
     steps = 0
     while n > 0:
-        # Tìm chữ số lớn nhất của n.
+        # Tìm chữ số lớn nhất trong biểu diễn thập phân của n.
         mx = 0
         x = n
         while x:

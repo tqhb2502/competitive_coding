@@ -1,9 +1,11 @@
-Bài toán: Removal Game (CSES 1097)
+Removal Game - CSES 1097
+https://cses.fi/problemset/task/1097
 
-Đề bài: Cho một dãy n số (n <= 5000, mỗi số trong khoảng -10^9..10^9). Hai người
-chơi lần lượt lấy phần tử ở đầu hoặc cuối dãy hiện tại, cộng giá trị đó vào điểm
-của mình. Cả hai chơi tối ưu để tối đa điểm của bản thân. In ra điểm lớn nhất
-mà người đi trước (người 1) đạt được.
+## Đề bài
+Cho một dãy gồm n số nguyên (n <= 5000, mỗi số trong khoảng -10^9..10^9).
+Hai người chơi lần lượt, mỗi lượt lấy phần tử ở đầu hoặc ở cuối dãy hiện tại
+và cộng giá trị đó vào điểm của mình. Cả hai đều chơi tối ưu để tối đa hóa
+điểm của bản thân. Hãy in ra điểm lớn nhất mà người đi trước (người 1) đạt được.
 
 Định dạng vào/ra:
 - Dòng 1: số nguyên n.
@@ -11,60 +13,45 @@ mà người đi trước (người 1) đạt được.
 - In ra một số nguyên: điểm lớn nhất của người 1.
 - Bài toán KHÔNG có modulo (đáp án là số nguyên thật, có thể âm).
 
-Ý tưởng DP (lý thuyết trò chơi / minimax trên đoạn con):
+## Ý tưởng
+Quy hoạch động theo lý thuyết trò chơi (minimax) trên các đoạn con.
 
-Trạng thái (state):
+Trạng thái:
 - dp[i][j] = hiệu điểm lớn nhất (điểm người đang tới lượt TRỪ điểm đối thủ)
-  mà người đang tới lượt có thể đạt được, khi trò chơi chỉ còn xét đoạn con
-  a[i..j] và người này là người đi trước trên đoạn đó.
+  mà người đang tới lượt đạt được khi trò chơi chỉ còn xét đoạn con a[i..j].
 
-Chuyển trạng thái (transition):
-- Người tới lượt có 2 lựa chọn:
-  + Lấy phần tử đầu a[i]: được a[i], phần còn lại a[i+1..j] đối thủ đi trước,
-    nên hiệu của ta trên đoạn còn lại là -dp[i+1][j].
-    => giá trị = a[i] - dp[i+1][j]
-  + Lấy phần tử cuối a[j]: tương tự => giá trị = a[j] - dp[i][j-1]
-- dp[i][j] = max(a[i] - dp[i+1][j], a[j] - dp[i][j-1])
+Chuyển trạng thái:
+- Người tới lượt có 2 lựa chọn, sau khi lấy thì đối thủ trở thành người đi trước
+  trên phần còn lại nên hiệu điểm của ta trên phần đó bị đảo dấu:
+  + Lấy đầu a[i]  => giá trị = a[i] - dp[i+1][j]
+  + Lấy cuối a[j] => giá trị = a[j] - dp[i][j-1]
+- dp[i][j] = max(a[i] - dp[i+1][j], a[j] - dp[i][j-1]).
 
-Cơ sở (base case):
-- dp[i][i] = a[i] (chỉ còn 1 phần tử thì bắt buộc lấy nó, không có đối thủ đi).
+Cơ sở:
+- dp[i][i] = a[i] (còn đúng 1 phần tử thì bắt buộc lấy, không có đối thủ đi tiếp).
 
-Đáp án (answer):
+Đáp án:
 - Gọi diff = dp[0][n-1] = (điểm người 1) - (điểm người 2).
 - Gọi total = tổng tất cả phần tử = (điểm người 1) + (điểm người 2).
-- Suy ra điểm người 1 = (total + diff) / 2. Do total và diff luôn cùng tính chẵn
-  lẻ nên phép chia này luôn cho số nguyên (dùng chia lấy nguyên //).
+- Suy ra điểm người 1 = (total + diff) / 2. Vì total và diff luôn cùng tính chẵn lẻ
+  nên phép chia này luôn ra số nguyên (dùng chia lấy nguyên //).
 - Trường hợp n = 1: người 1 buộc phải lấy phần tử duy nhất => đáp án = a[0].
 
-Vì sao đúng:
-- Đây là trò chơi tổng-bằng-không (zero-sum) trên đoạn con; mỗi người đều tối ưu.
-  Khi đối thủ đi trước ở đoạn còn lại, "hiệu điểm của ta" trên đoạn đó chính là
-  ngược dấu hiệu điểm mà đối thủ (lúc đó là người đi trước) tối ưu được, tức là
-  -dp[con]. Vì cả hai đều chơi tối ưu, người tới lượt chọn max của 2 lựa chọn.
-  Quy hoạch động theo độ dài đoạn tăng dần đảm bảo mọi trạng thái con đã được
-  tính trước khi dùng.
+Cài đặt tối ưu bộ nhớ O(n):
+- Lặp theo độ dài đoạn L tăng dần và chỉ dùng một mảng 1 chiều dp. Trước bước L,
+  dp[i] đang giữ kết quả của đoạn dài L-1 bắt đầu tại i. Công thức cập nhật:
+      dp_mới[i] = max(a[i] - dp_cũ[i+1], a[i+L-1] - dp_cũ[i]).
+- Riêng Python: dùng zip trên các slice của a và dp cùng list comprehension so sánh
+  bằng biểu thức điều kiện (h if h >= t else t) thay cho max() để giảm hằng số.
 
-Cài đặt thuần Python (chỉ dùng thư viện chuẩn):
-- Chỉ import sys để đọc/ghi nhanh (sys.stdin.buffer.read, sys.stdout.write).
-- Tối ưu bộ nhớ còn O(n) bằng cách lặp theo độ dài đoạn L và dùng một mảng 1
-  chiều dp: trước bước L, dp[i] đang chứa kết quả của đoạn dài L-1 bắt đầu tại i.
-  Công thức cập nhật cho độ dài L (i chạy 0..n-L, m = n-L+1 đoạn hợp lệ):
-      dp_moi[i] = max( a[i] - dp_cu[i+1] , a[i+L-1] - dp_cu[i] )
-  Vì dp_moi[i] chỉ phụ thuộc dp_cu[i] và dp_cu[i+1], ta tính toàn bộ danh sách
-  mới rồi mới gán lại dp[0:m], nên cập nhật tại chỗ vẫn đúng.
-- Để giảm hằng số trên CPython, dùng zip trên các slice của a và dp
-  (a[0:m], dp[1:m+1], a[L-1:L-1+m], dp[0:m]) và một list comprehension so sánh
-  bằng biểu thức điều kiện (h if h >= t else t) thay cho gọi hàm max() —
-  cách này nhanh hơn đáng kể so với dùng max() trong đo đạc thực tế.
-
-Độ phức tạp (complexity):
-- Số trạng thái O(n^2), mỗi trạng thái O(1) => thời gian O(n^2). Với n = 5000
+## Độ phức tạp
+- Thời gian: O(n^2) — có O(n^2) trạng thái, mỗi trạng thái O(1). Với n = 5000
   là khoảng 12.5 triệu phép tính.
-- Bộ nhớ O(n).
+- Bộ nhớ: O(n).
 
 LƯU Ý TLE: Với n = 5000, vòng lặp O(n^2) (~12.5 triệu bước) chạy bằng CPython
-thuần mất khoảng 10 giây trên máy thử, vượt xa giới hạn ~1 giây của CSES nên
-gần như chắc chắn TLE trên test lớn. Đây là giới hạn cố hữu của Python thuần cho
-bài này; không có cách nào chỉ dùng thư viện chuẩn để đưa xuống dưới 1 giây một
-cách trung thực. Lời giải ở đây được giữ ĐÚNG và tối ưu hằng số tối đa trong
-phạm vi thư viện chuẩn. Để chắc chắn AC nên nộp bằng C++ hoặc chạy bằng PyPy.
+thuần mất khoảng 10 giây trên máy thử, vượt xa giới hạn ~1 giây của CSES nên gần
+như chắc chắn TLE trên test lớn. Đây là giới hạn cố hữu của Python thuần cho bài
+này; không có cách nào chỉ dùng thư viện chuẩn để đưa xuống dưới 1 giây một cách
+trung thực. Lời giải được giữ ĐÚNG và tối ưu hằng số tối đa trong phạm vi thư viện
+chuẩn. Để chắc chắn AC nên nộp bằng C++ hoặc chạy bằng PyPy.

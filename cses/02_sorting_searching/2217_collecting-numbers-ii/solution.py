@@ -1,7 +1,3 @@
-# Collecting Numbers II - https://cses.fi/problemset/task/2217
-# Số vòng (rounds) = 1 + số cặp giá trị liên tiếp (v, v+1) mà pos[v] > pos[v+1].
-# Mỗi lần swap chỉ ảnh hưởng tới một vài cặp kề giá trị, nên cập nhật count tăng dần.
-
 import sys
 
 
@@ -19,7 +15,7 @@ def main():
         arr[i] = v
         pos[v] = i
 
-    # Đếm số cặp "bad": pos[v] > pos[v+1] với v = 1..n-1
+    # Đếm số cặp "bad": pos[v] > pos[v+1] với v = 1..n-1; đáp án = count + 1
     count = 0
     for v in range(1, n):
         if pos[v] > pos[v + 1]:
@@ -41,10 +37,10 @@ def main():
             i3 = vb - 1 if vb - 1 >= 1 else 0
             i4 = vb if vb <= n - 1 else 0
             # Khử trùng lặp: chỉ có thể trùng khi va, vb là hai giá trị kề nhau.
-            # vb = va + 1 -> i2 (cặp (va, va+1)) trùng i3 (cặp (vb-1, vb)).
+            # vb = va + 1 -> cặp i2 (va, va+1) trùng cặp i3 (vb-1, vb).
             if i3 == i2:
                 i3 = 0
-            # vb = va - 1 -> i1 (cặp (va-1, va)) trùng i4 (cặp (vb, vb+1)).
+            # vb = va - 1 -> cặp i1 (va-1, va) trùng cặp i4 (vb, vb+1).
             if i4 == i1:
                 i4 = 0
 

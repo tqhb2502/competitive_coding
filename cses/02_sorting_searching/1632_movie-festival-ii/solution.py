@@ -1,13 +1,3 @@
-# Movie Festival II - CSES 1632
-# https://cses.fi/problemset/task/1632
-#
-# Greedy: sort movies by ending time. Maintain a multiset of the k members'
-# current last-end times (initially all 0). For each movie (a, b) in order of
-# increasing b, assign it to the member whose last-end time is the LARGEST value
-# that is still <= a (leaving members with smaller end times free for movies that
-# start earlier). We implement the ordered multiset with a Fenwick (BIT) tree
-# over coordinate-compressed end values, using a "find k-th occupied" query.
-
 import sys
 from bisect import bisect_right, bisect_left
 
@@ -19,29 +9,29 @@ def main():
 
     a_list = [0] * n
     b_list = [0] * n
-    coords = [0]  # value 0 is the initial end time of every member
+    coords = [0]  # Giá trị 0 là thời điểm rảnh ban đầu của mọi thành viên.
     for i in range(n):
         a = int(data[pos]); b = int(data[pos + 1]); pos += 2
         a_list[i] = a
         b_list[i] = b
         coords.append(b)
 
-    # Process movies in order of increasing ending time.
+    # Duyệt các phim theo thời gian kết thúc b tăng dần.
     order = sorted(range(n), key=lambda i: b_list[i])
 
-    # Coordinate compression over all multiset-possible values ({0} U {b_i}).
+    # Nén tọa độ trên toàn bộ giá trị có thể có trong multiset ({0} hợp {b_i}).
     V = sorted(set(coords))
     m = len(V)
 
     tree = [0] * (m + 1)
 
-    # Initialize: k members all at value 0, which is V[0] -> Fenwick index 1.
+    # Khởi tạo Fenwick: k thành viên đều ở giá trị 0, tức V[0] -> chỉ số Fenwick 1.
     i = 1
     while i <= m:
         tree[i] += k
         i += i & (-i)
 
-    # Largest power of two with (1 << LOG) <= m, for the find-k-th binary lifting.
+    # Lũy thừa 2 lớn nhất với (1 << LOG) <= m, dùng cho binary lifting find-k-th.
     LOG = 0
     while (1 << (LOG + 1)) <= m:
         LOG += 1
@@ -51,21 +41,21 @@ def main():
         a = a_list[oi]
         b = b_list[oi]
 
-        # p = number of compressed values <= a; these are Fenwick indices 1..p.
+        # p = số giá trị nén <= a; chúng nằm ở các chỉ số Fenwick 1..p.
         p = bisect_right(V, a)
 
-        # s = how many members currently have end time <= a (occupied slots in 1..p).
+        # s = số thành viên hiện có end <= a (số slot bị chiếm trong đoạn 1..p).
         s = 0
         i = p
         while i > 0:
             s += tree[i]
             i -= i & (-i)
         if s == 0:
-            continue  # no free member with last-end <= a
+            continue  # Không có thành viên rảnh nào với end <= a.
 
-        # find_kth(s): smallest index whose prefix sum >= s. Because exactly s
-        # occupied slots lie in [1..p], this is the LARGEST occupied index <= p,
-        # i.e. the member with the greatest end time that is still <= a.
+        # find_kth(s): chỉ số nhỏ nhất có prefix sum >= s. Vì có đúng s slot bị
+        # chiếm trong [1..p], đây là chỉ số LỚN NHẤT <= p bị chiếm, tức thành viên
+        # có end lớn nhất mà vẫn <= a.
         idx = 0
         rem = s
         pw = LOG
@@ -77,13 +67,13 @@ def main():
             pw -= 1
         idx += 1
 
-        # Remove that member's old end time.
+        # Xóa thời điểm rảnh cũ của thành viên đó khỏi multiset.
         i = idx
         while i <= m:
             tree[i] -= 1
             i += i & (-i)
 
-        # Insert the new end time b for that member.
+        # Chèn thời điểm rảnh mới b cho thành viên đó.
         bidx = bisect_left(V, b) + 1
         i = bidx
         while i <= m:

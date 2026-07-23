@@ -1,6 +1,11 @@
-Bài toán: đếm số cách CÓ THỨ TỰ (ordered, tức "compositions") để tạo ra tổng
-tiền đúng bằng x từ n loại đồng xu (mỗi loại dùng bao nhiêu lần cũng được).
-Ví dụ 2+3 và 3+2 được tính là HAI cách khác nhau. Kết quả lấy modulo 1000000007.
+Coin Combinations I - CSES 1635
+https://cses.fi/problemset/task/1635
+
+## Đề bài
+Cho n loại đồng xu với mệnh giá cho trước và một tổng đích x. Mỗi loại đồng xu
+được dùng bao nhiêu lần cũng được. Hãy đếm số cách CÓ THỨ TỰ (ordered, tức là
+"compositions") để tạo ra tổng tiền đúng bằng x; ví dụ 2+3 và 3+2 được tính là
+HAI cách khác nhau. Kết quả lấy modulo 1000000007.
 
 Định dạng vào/ra:
   - Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
@@ -8,53 +13,54 @@ Ví dụ 2+3 và 3+2 được tính là HAI cách khác nhau. Kết quả lấy 
   - In ra một số nguyên: số cách theo modulo 1000000007.
 Ràng buộc: 1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6.
 
-DP state:
+## Ý tưởng
+Quy hoạch động (DP) theo tổng tiền.
+
+Trạng thái:
   dp[s] = số cách có thứ tự để tạo ra tổng đúng bằng s.
 
-Base case:
+Cơ sở (base case):
   dp[0] = 1  (đúng một cách: không dùng đồng xu nào).
 
-Transition:
+Chuyển trạng thái (transition):
   dp[s] = tổng của dp[s - c] với mọi đồng xu c thỏa c <= s.
-  Ý tưởng: cố định đồng xu ĐỨNG CUỐI trong dãy là c. Phần đầu của dãy là một
-  cách có thứ tự tạo ra tổng (s - c), tức dp[s - c]. Vì ta duyệt qua MỌI c ở vị
-  trí cuối nên các hoán vị (permutation) được đếm tách biệt -> đúng với "thứ tự
-  quan trọng".
+  Ý tưởng: cố định đồng xu ĐỨNG CUỐI trong dãy là c. Phần đầu của dãy là một cách
+  có thứ tự tạo ra tổng (s - c), tức dp[s - c]. Vì ta duyệt qua MỌI đồng xu c ở vị
+  trí cuối nên các hoán vị (permutation) được đếm tách biệt, đúng với yêu cầu "thứ
+  tự quan trọng".
 
-Answer:
+Đáp án:
   dp[x] mod 1000000007.
 
 Tính đúng đắn (correctness):
-  Mỗi dãy có thứ tự tạo tổng s (với s > 0) tương ứng DUY NHẤT với cặp (đồng cuối
-  c, dãy có thứ tự tạo tổng s - c). Do đó công thức truy hồi bao phủ đủ và không
-  trùng lặp mọi dãy. Với s = 0 chỉ có dãy rỗng nên dp[0] = 1.
+  Mỗi dãy có thứ tự tạo tổng s (với s > 0) tương ứng DUY NHẤT với cặp (đồng cuối c,
+  dãy có thứ tự tạo tổng s - c). Do đó công thức truy hồi bao phủ đủ và không trùng
+  lặp mọi dãy. Với s = 0 chỉ có dãy rỗng nên dp[0] = 1.
 
-Độ phức tạp:
-  Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tối đa ~10^8
-  phép cộng cơ bản.
+Chi tiết cài đặt thuần thư viện chuẩn của Python (pure stdlib, tối ưu cho CPython):
+  - Đọc toàn bộ dữ liệu một lần bằng sys.stdin.buffer.read().split() và in kết quả
+    bằng sys.stdout.write để tăng tốc I/O. Bảng dp là một list Python.
+  - Sắp xếp các đồng xu tăng dần, đặt cmax = đồng xu lớn nhất, rồi chia miền s thành
+    hai vùng:
+      * Vùng biên s < cmax: chưa chắc mọi đồng xu đều dùng được, nên vòng lặp trong
+        có kiểm tra "c <= s". Vì coins đã sắp xếp tăng dần nên vừa gặp c > s là break
+        sớm, tránh duyệt thừa.
+      * Vùng nóng cmax <= s <= x: mọi đồng xu đều hợp lệ (s - c >= 0 với mọi c). Ở
+        đây sinh sẵn một hàm cộng "duỗi cuộn" (unrolled) bằng exec, dạng
+        dp[s] = (dp[s-c0] + dp[s-c1] + ... + dp[s-ck]) % MOD, với các mệnh giá được
+        nhúng thẳng vào biểu thức. Nhờ vậy bỏ được vòng lặp bên trong và phép kiểm
+        tra điều kiện, giúp CPython chạy nhanh hơn đáng kể so với vòng lặp lồng nhau.
+  - Mỗi bước lấy % MOD một lần cho dp[s]. Python dùng số nguyên vô hạn nên không tràn
+    số; việc lấy modulo ngay giữ cho các giá trị nhỏ, tránh số lớn làm chậm.
 
-Cài đặt thuần thư viện chuẩn (pure stdlib, tối ưu cho CPython):
-  - Đọc toàn bộ dữ liệu một lần bằng sys.stdin.buffer.read().split() và in kết
-    quả bằng sys.stdout.write (I/O nhanh). Bảng dp là một list Python.
-  - Sắp xếp các đồng xu tăng dần, đặt cmax = đồng xu lớn nhất, rồi chia miền s
-    thành hai vùng:
-      * Vùng biên s < cmax: chưa chắc mọi đồng xu đều dùng được, nên vòng lặp
-        trong có kiểm tra "c <= s". Vì coins đã sắp xếp tăng dần nên vừa gặp
-        c > s là break sớm, tránh duyệt thừa.
-      * Vùng nóng cmax <= s <= x: mọi đồng xu đều hợp lệ (s - c >= 0 với mọi c).
-        Ở đây sinh sẵn một hàm cộng "duỗi cuộn" (unrolled) bằng exec, dạng
-        dp[s] = (dp[s-c0] + dp[s-c1] + ... + dp[s-ck]) % MOD, với các mệnh giá
-        được nhúng thẳng vào biểu thức. Nhờ vậy bỏ được vòng lặp bên trong và
-        phép kiểm tra điều kiện, giúp CPython chạy nhanh hơn đáng kể so với vòng
-        lặp lồng nhau thông thường.
-  - Mỗi bước lấy % MOD một lần cho dp[s]. Python dùng số nguyên vô hạn nên không
-    tràn số; việc lấy modulo ngay giữ cho các giá trị nhỏ, tránh số lớn làm chậm.
+## Độ phức tạp
+Thời gian O(n * x), bộ nhớ O(x). Với n <= 100 và x <= 10^6 thì tối đa khoảng 10^8
+phép cộng cơ bản.
 
-LƯU Ý TLE: đây là lời giải O(n * x) thuần Python. Ở trường hợp xấu nhất
-n = 100, x = 10^6 (đặc biệt khi có nhiều đồng xu NHỎ như 1, 2, ... khiến vùng
-nóng gần như trải hết miền và mỗi bước phải cộng đủ 100 số hạng), số phép cộng
-lên tới ~10^8. Đo thực tế với n = 100, các đồng xu 1..100, x = 10^6 mất khoảng
-9 giây trên CPython — vượt xa giới hạn 1.0s (vốn nhắm cho C++). Vì bộ test CSES
-gần như chắc chắn có trường hợp này, lời giải CPython thuần rất dễ TLE. Muốn chắc
-chắn AC nên nộp bằng C++ hoặc PyPy (thuật toán giữ nguyên, chỉ đổi ngôn ngữ/trình
-thông dịch).
+LƯU Ý TLE: đây là lời giải O(n * x) thuần Python. Ở trường hợp xấu nhất n = 100,
+x = 10^6 (đặc biệt khi có nhiều đồng xu NHỎ như 1, 2, ... khiến vùng nóng gần như
+trải hết miền và mỗi bước phải cộng đủ 100 số hạng), số phép cộng lên tới khoảng
+10^8. Đo thực tế với n = 100, các đồng xu 1..100, x = 10^6 mất khoảng 9 giây trên
+CPython, vượt xa giới hạn 1.0s (vốn nhắm cho C++). Vì bộ test CSES gần như chắc chắn
+có trường hợp này, lời giải CPython thuần rất dễ TLE. Muốn chắc chắn AC nên nộp bằng
+C++ hoặc PyPy (thuật toán giữ nguyên, chỉ đổi ngôn ngữ hoặc trình thông dịch).

@@ -1,10 +1,3 @@
-# Elevator Rides - CSES 1653
-# https://cses.fi/problemset/task/1653
-#
-# Bitmask DP: dp[mask] = (rides, weight_của_chuyến_cuối) được mã hoá thành
-# một số nguyên  state = rides * BIG + weight  với BIG = x + 1.
-# So sánh min trên số nguyên này chính là so sánh lexicographic (rides, weight).
-
 import sys
 
 
@@ -14,31 +7,36 @@ def main():
     x = int(data[1])
     w = [int(data[2 + i]) for i in range(n)]
 
-    BIG = x + 1                 # weight luôn <= x nên BIG đảm bảo không tràn bậc
+    # Mã hoá cặp (rides, weight_chuyến_cuối) thành một số: state = rides * BIG + weight.
+    # BIG = x + 1 vì weight luôn <= x, nên lấy min trên số này chính là so sánh
+    # lexicographic (ưu tiên rides nhỏ, rồi tới weight của chuyến cuối).
+    BIG = x + 1
     size = 1 << n
     full = size - 1
 
     dp = [0] * size
-    dp[0] = BIG                 # rides = 1, weight = 0  ->  1 * BIG + 0
+    dp[0] = BIG                             # Base case: 1 chuyến mở, chưa chở ai (rides=1, weight=0).
 
     for mask in range(1, size):
         best = 1 << 62
         m = mask
+        # Thử chọn từng người p là người được thêm cuối cùng vào mask.
         while m:
             low = m & (-m)
             p = low.bit_length() - 1
             prev = dp[mask ^ low]
             wp = w[p]
-            wt = prev % BIG                 # weight của chuyến cuối ở state prev
-            if wt + wp <= x:                # nhét được vào chuyến đang mở
+            wt = prev % BIG                 # Weight của chuyến cuối ở state prev.
+            if wt + wp <= x:                # Còn chỗ -> nhét p vào chuyến đang mở.
                 cand = prev + wp
-            else:                           # phải mở chuyến mới
+            else:                           # Chuyến cuối đã đầy -> mở chuyến mới cho p.
                 cand = prev - wt + BIG + wp
             if cand < best:
                 best = cand
             m ^= low
         dp[mask] = best
 
+    # Đáp án là phần rides của state đầy đủ.
     sys.stdout.write(str(dp[full] // BIG) + "\n")
 
 

@@ -1,24 +1,30 @@
-Bài toán: Đếm số cách tạo ra tổng n bằng cách tung một con xúc xắc (mỗi lần ra giá trị từ 1 đến 6) một hoặc nhiều lần. Thứ tự các lần tung được coi là khác nhau. Kết quả lấy modulo 10^9+7.
+Dice Combinations - CSES 1633
+https://cses.fi/problemset/task/1633
 
-DP state:
-- dp[i] = số cách tạo ra tổng đúng bằng i.
+## Đề bài
+Đếm số cách tạo ra tổng đúng bằng n bằng cách tung một con xúc xắc nhiều lần,
+mỗi lần cho ra giá trị từ 1 đến 6. Thứ tự các lần tung được coi là khác nhau
+(đây là bài đếm composition của n với các phần tử thuộc khoảng 1..6).
+Kết quả lấy modulo 10^9 + 7.
 
-Base case:
-- dp[0] = 1 (có đúng một cách để tạo tổng 0: không tung lần nào — đây là điểm neo cho công thức truy hồi).
+## Ý tưởng
+- Trạng thái: dp[i] = số cách tạo ra tổng đúng bằng i.
+- Điểm neo (base case): dp[0] = 1, tức có đúng một cách tạo tổng 0 là không tung lần nào.
+- Công thức truy hồi (transition): phân loại theo giá trị j của lần tung CUỐI CÙNG,
+  với j thuộc {1, 2, 3, 4, 5, 6}. Trước lần tung cuối ta phải tạo được tổng i - j,
+  nên dp[i] = tổng dp[i - j] với j từ 1 đến 6, chỉ cộng khi i - j >= 0.
+  Mỗi phép cộng đều lấy modulo MOD = 10^9 + 7.
+- Đáp án: dp[n].
+- Tính đúng đắn: mỗi dãy các lần tung được đếm đúng một lần vì phân loại theo phần tử
+  cuối; các giá trị j khác nhau cho các dãy khác nhau nên không trùng, không sót.
+- Tối ưu: thay vì mỗi bước cộng lại 6 số hạng, ta duy trì một cửa sổ trượt
+  (sliding window) window = dp[i-1] + ... + dp[i-6]. Mỗi bước chỉ cộng thêm dp[i-1],
+  trừ đi dp[i-7] (khi i - 7 >= 0) rồi lấy modulo, đưa mỗi bước về O(1).
 
-Transition (công thức truy hồi):
-- Lần tung cuối cùng ra giá trị j với j thuộc {1, 2, 3, 4, 5, 6}. Trước lần tung đó ta phải đã tạo được tổng i - j.
-- Do đó dp[i] = tổng của dp[i - j] với j từ 1 đến 6, chỉ cộng khi i - j >= 0.
-- Tất cả phép cộng đều lấy modulo MOD = 10^9+7.
+## Độ phức tạp
+- Thời gian: O(n), với n <= 10^6 (nhờ cửa sổ trượt, mỗi bước O(1)).
+- Bộ nhớ: O(n) cho mảng dp.
 
-Answer (đáp án):
-- dp[n].
-
-Tại sao đúng:
-- Mỗi dãy các lần tung (một composition của n với các phần tử trong khoảng 1..6) được đếm đúng một lần, vì ta phân loại theo giá trị của lần tung CUỐI CÙNG. Với mỗi giá trị j cố định của lần cuối, số dãy còn lại tương ứng đúng bằng số cách tạo tổng i - j, tức dp[i - j]. Các trường hợp j khác nhau cho các dãy khác nhau (khác nhau ở phần tử cuối) nên không đếm trùng và không bỏ sót. Vì thứ tự có ý nghĩa nên đây là bài đếm composition, khớp hoàn toàn với cách phân loại theo phần tử cuối.
-
-Time / Space complexity:
-- Time: O(6 * n) = O(n), với n <= 10^6.
-- Space: O(n) cho mảng dp.
-
-LƯU Ý TLE: n có thể tới 10^6 nên vòng lặp cộng 6 số hạng mỗi bước (6*n phép cộng) có thể chậm trong pure Python. Trong solution.py ta tối ưu bằng sliding window: giữ biến window = dp[i-1]+...+dp[i-6], mỗi bước chỉ cộng dp[i-1], trừ dp[i-7] và lấy modulo một lần — chỉ còn O(1) thao tác/bước, tổng O(n). Đọc I/O bằng sys.stdin. Nếu vẫn TLE trên CSES, có thể nộp bằng PyPy.
+LƯU Ý TLE: n có thể tới 10^6 nên nếu mỗi bước cộng lại đủ 6 số hạng (6*n phép cộng)
+sẽ chậm trong pure Python. Ta tối ưu bằng sliding window để mỗi bước chỉ còn O(1)
+thao tác, tổng O(n); đọc I/O bằng sys.stdin. Nếu vẫn TLE trên CSES, có thể nộp bằng PyPy.

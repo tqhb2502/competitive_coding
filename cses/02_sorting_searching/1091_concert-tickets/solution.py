@@ -1,7 +1,3 @@
-# Concert Tickets - https://cses.fi/problemset/task/1091
-# Fenwick tree (BIT) lưu số lượng vé còn lại + binary lifting (find_kth).
-# Với mỗi khách: tìm vé giá cao nhất không vượt quá ngân sách, rồi xóa vé đó.
-
 import sys
 from bisect import bisect_right
 
@@ -20,12 +16,12 @@ def main():
     h = [int(x) for x in h]
     t = [int(x) for x in t]
 
-    # Coordinate compression của các giá vé.
+    # Nén tọa độ: các mức giá vé phân biệt, sắp tăng dần, gán chỉ số 1-based.
     unique = sorted(set(h))
     K = len(unique)
-    rank = {v: i + 1 for i, v in enumerate(unique)}  # 1-based
+    rank = {v: i + 1 for i, v in enumerate(unique)}
 
-    # Fenwick tree lưu số lượng vé còn lại tại mỗi chỉ số nén.
+    # Fenwick tree (BIT) lưu số lượng vé còn lại tại mỗi chỉ số nén.
     tree = [0] * (K + 1)
 
     def update(pos, delta):
@@ -33,6 +29,7 @@ def main():
             tree[pos] += delta
             pos += pos & (-pos)
 
+    # Tổng tiền tố: số vé còn lại có chỉ số giá <= pos.
     def prefix(pos):
         s = 0
         while pos > 0:
@@ -40,7 +37,7 @@ def main():
             pos -= pos & (-pos)
         return s
 
-    # find_kth: chỉ số nhỏ nhất có prefix sum >= k (binary lifting).
+    # find_kth (binary lifting): chỉ số nhỏ nhất có prefix sum >= k.
     LOG = K.bit_length()
 
     def find_kth(k):
@@ -52,20 +49,24 @@ def main():
                 k -= tree[nxt]
         return pos + 1
 
+    # Ban đầu đưa toàn bộ vé vào BIT.
     for v in h:
         update(rank[v], 1)
 
     out = []
     for budget in t:
-        pos_idx = bisect_right(unique, budget)  # số lượng giá <= budget
+        # pos_idx: số mức giá <= ngân sách (mọi chỉ số 1..pos_idx).
+        pos_idx = bisect_right(unique, budget)
         if pos_idx == 0:
             out.append("-1")
             continue
-        cnt = prefix(pos_idx)  # số vé còn lại có giá <= budget
+        # cnt: số vé còn lại có giá <= ngân sách.
+        cnt = prefix(pos_idx)
         if cnt == 0:
-            out.append("-1")
+            out.append("-1")  # Không còn vé phù hợp.
         else:
-            j = find_kth(cnt)  # vị trí vé giá cao nhất còn lại <= budget
+            # Vé thứ hạng cnt là vé giá cao nhất còn lại <= ngân sách; bán rồi xóa.
+            j = find_kth(cnt)
             out.append(str(unique[j - 1]))
             update(j, -1)
 

@@ -1,15 +1,16 @@
-Bài toán: Distinct Values Subsequences (CSES 3421)
+Distinct Values Subsequences - CSES 3421
+https://cses.fi/problemset/task/3421
 
-ĐỀ BÀI TÓM TẮT
-Cho mảng gồm n số nguyên. Đếm số lượng subsequence (dãy con chọn theo thứ tự chỉ số
-từ trái sang phải, được phép có khoảng trống) sao cho tất cả các phần tử trong dãy con
-đó đều PHÂN BIỆT về giá trị. Hai dãy con được coi là khác nhau nếu tập chỉ số được chọn
-khác nhau (nên cùng một giá trị nhưng ở vị trí khác nhau vẫn tính riêng). Không tính dãy
-con rỗng. In kết quả modulo 10^9 + 7.
+## Đề bài
+Cho một mảng gồm n số nguyên. Hãy đếm số lượng dãy con (subsequence: chọn các phần tử
+theo thứ tự chỉ số tăng dần, được phép bỏ trống) sao cho mọi phần tử trong dãy con đều
+PHÂN BIỆT về giá trị. Hai dãy con được xem là khác nhau nếu tập chỉ số được chọn khác
+nhau (cùng giá trị nhưng ở vị trí khác nhau vẫn được tính riêng). Không tính dãy con
+rỗng. In kết quả theo modulo 10^9 + 7.
 
-Ý TƯỞNG CHÍNH
-Vì một subsequence được xác định duy nhất bởi TẬP CHỈ SỐ được chọn (thứ tự đã cố định
-theo chỉ số tăng dần), nên bài toán quy về: đếm số tập con KHÁC RỖNG của các chỉ số sao
+## Ý tưởng
+Vì một dãy con được xác định duy nhất bởi TẬP CHỈ SỐ được chọn (thứ tự đã cố định theo
+chỉ số tăng dần), nên bài toán quy về việc đếm số tập con KHÁC RỖNG của các chỉ số sao
 cho các giá trị tại những chỉ số đó đôi một khác nhau.
 
 Nhóm các chỉ số theo giá trị. Gọi cnt[v] là số lần xuất hiện của giá trị v trong mảng.
@@ -17,25 +18,23 @@ Nhóm các chỉ số theo giá trị. Gọi cnt[v] là số lần xuất hiện
   - KHÔNG chọn giá trị v: 1 cách.
   - CHỌN đúng một trong cnt[v] lần xuất hiện của v: cnt[v] cách.
 Vì các giá trị khác nhau đóng góp độc lập, tổng số tập (kể cả tập rỗng) là:
-    product over all distinct v of (1 + cnt[v])
-Trừ đi 1 để loại tập rỗng:
-    ANSWER = (product (1 + cnt[v])) - 1   (mod 10^9 + 7)
+    tích của (1 + cnt[v]) trên mọi giá trị phân biệt v
+Trừ đi 1 để loại bỏ tập rỗng:
+    ANSWER = (tích (1 + cnt[v])) - 1   (mod 10^9 + 7)
 
-TẠI SAO ĐÚNG
-Mỗi tập chỉ số hợp lệ (giá trị đôi một khác nhau) tương ứng chính xác với việc: chọn một
-tập con S các giá trị phân biệt, rồi với mỗi giá trị trong S chọn đúng một vị trí xuất
-hiện. Số cách cho một tập giá trị S là product_{v in S} cnt[v]. Lấy tổng trên MỌI tập con
-S (kể cả rỗng) bằng cách khai triển tích: sum over S of product_{v in S} cnt[v]
-= product_v (1 + cnt[v]). Đây là hằng đẳng thức khai triển tích. Cuối cùng trừ 1 để bỏ
-trường hợp S rỗng (dãy con rỗng). Ví dụ mẫu: giá trị 1 (cnt=2), 2 (cnt=1), 3 (cnt=1)
-=> (1+2)(1+1)(1+1) - 1 = 12 - 1 = 11, khớp đáp án.
+Tại sao đúng: mỗi tập chỉ số hợp lệ tương ứng chính xác với việc chọn một tập con S các
+giá trị phân biệt, rồi với mỗi giá trị trong S chọn đúng một vị trí xuất hiện. Số cách
+cho một tập giá trị S là tích cnt[v] với v thuộc S. Lấy tổng trên MỌI tập con S (kể cả
+rỗng) chính là khai triển tích: tổng theo S của (tích cnt[v]) = tích (1 + cnt[v]). Cuối
+cùng trừ 1 để bỏ trường hợp S rỗng.
 
-CÀI ĐẶT
-Dùng một hash map (collections.Counter) để đếm số lần xuất hiện của từng giá trị, sau đó
-nhân dồn (1 + cnt) modulo 10^9 + 7. Đọc dữ liệu bằng sys.stdin.buffer để nhanh.
+Ví dụ mẫu: giá trị 1 (cnt=2), 2 (cnt=1), 3 (cnt=1) => (1+2)(1+1)(1+1) - 1 = 12 - 1 = 11,
+khớp đáp án mẫu.
 
-ĐỘ PHỨC TẠP
-- Thời gian: O(n) (đếm tần suất + nhân dồn).
+Cài đặt: dùng một hash map để đếm số lần xuất hiện của từng giá trị, sau đó nhân dồn
+(1 + cnt) theo modulo. Đọc dữ liệu bằng bộ đệm để tăng tốc.
+
+## Độ phức tạp
+- Thời gian: O(n) (đếm tần suất + nhân dồn tích).
 - Bộ nhớ: O(n) cho hash map các giá trị phân biệt.
-
-Với n <= 2*10^5, thuật toán O(n) chạy rất nhẹ, không có nguy cơ TLE trong Python.
+Với n <= 2*10^5, thuật toán O(n) chạy rất nhẹ.

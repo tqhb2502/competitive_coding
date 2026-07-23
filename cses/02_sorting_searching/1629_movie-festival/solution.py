@@ -1,11 +1,8 @@
-# Movie Festival - https://cses.fi/problemset/task/1629
-# Greedy interval scheduling: sort movies by ending time, then pick a movie
-# whenever its start time is >= the end time of the last chosen movie.
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ dữ liệu một lần rồi tách số (fast I/O).
     data = sys.stdin.buffer.read().split()
     if not data:
         return
@@ -17,14 +14,16 @@ def main():
     for _ in range(n):
         a = int(data[idx]); idx += 1
         b = int(data[idx]); idx += 1
-        # Store (end, start) so sorting by end time is natural.
+        # Lưu (end, start) để sắp xếp tự nhiên theo thời điểm kết thúc.
         movies.append((b, a))
 
+    # Sắp xếp tăng dần theo thời điểm kết thúc (greedy).
     movies.sort()
 
     count = 0
-    cur_end = -1  # end time of the last chosen movie (times are >= 1)
+    cur_end = -1  # Thời điểm kết thúc của phim vừa chọn gần nhất.
     for end, start in movies:
+        # Chọn phim nếu nó bắt đầu không sớm hơn lúc phim trước kết thúc.
         if start >= cur_end:
             count += 1
             cur_end = end

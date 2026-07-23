@@ -1,32 +1,32 @@
-Bài toán: Missing Coin Sum (CSES 2183)
-Cho n đồng xu có giá trị nguyên dương. Tìm tổng nhỏ nhất KHÔNG thể tạo được
-bằng bất kỳ tập con nào của các đồng xu.
+Missing Coin Sum - CSES 2183
+https://cses.fi/problemset/task/2183
 
-Ý tưởng (greedy sau khi sort):
+## Đề bài
+Cho n đồng xu có giá trị nguyên dương. Hãy tìm tổng nguyên dương nhỏ nhất mà
+KHÔNG thể tạo ra được bằng bất kỳ tập con nào của các đồng xu đã cho.
+
+## Ý tưởng
+Dùng greedy sau khi sắp xếp:
 - Sắp xếp các đồng xu theo thứ tự tăng dần.
-- Duy trì biến reach = tổng nhỏ nhất mà HIỆN TẠI ta CHƯA thể tạo ra.
-  Khởi tạo reach = 1 (vì 1 là tổng dương nhỏ nhất cần xét).
+- Duy trì biến reach = tổng nhỏ nhất mà HIỆN TẠI ta CHƯA thể tạo ra, khởi tạo
+  reach = 1 (vì 1 là tổng dương nhỏ nhất cần xét).
   Bất biến (invariant): tại mỗi bước, ta có thể tạo mọi tổng trong đoạn
   [1, reach - 1] bằng các đồng xu đã xét.
-- Duyệt các đồng xu theo thứ tự tăng dần với giá trị x:
-  + Nếu x <= reach: ta có thể tạo mọi tổng trong [1, reach - 1], và thêm
-    đồng x vào cho phép tạo thêm mọi tổng trong [x, reach - 1 + x].
-    Vì x <= reach nên hai đoạn [1, reach-1] và [x, reach-1+x] nối liền
-    (không có khoảng trống), do đó bây giờ ta tạo được [1, reach - 1 + x].
+- Duyệt các đồng xu theo thứ tự tăng dần, với mỗi đồng có giá trị x:
+  + Nếu x <= reach: đoạn [1, reach - 1] và đoạn mới [x, reach - 1 + x] nối
+    liền nhau (không có khoảng trống), nên ta tạo được [1, reach - 1 + x].
     Cập nhật reach += x.
-  + Nếu x > reach: xuất hiện khoảng trống. Ta không thể tạo được tổng = reach
-    (vì mọi đồng còn lại đều >= x > reach, không giúp lấp được reach).
-    Dừng lại, đáp án chính là reach.
+  + Nếu x > reach: xuất hiện khoảng trống. Vì các đồng còn lại đều >= x > reach
+    nên không thể lấp được tổng reach. Dừng lại, đáp án chính là reach.
 - Nếu duyệt hết mọi đồng xu mà không dừng, đáp án là reach.
 
 Vì sao đúng:
-- Việc sort đảm bảo khi xét đồng x, mọi đồng nhỏ hơn đã được cộng vào reach.
-  Nếu x > reach thì tất cả các đồng chưa xét cũng > reach, nên tổng reach
-  chắc chắn không thể tạo được -> reach là đáp án nhỏ nhất bị thiếu.
-- Bất biến [1, reach-1] luôn được duy trì như lập luận ở trên.
+- Việc sắp xếp bảo đảm khi xét đồng x thì mọi đồng nhỏ hơn đã được cộng vào
+  reach. Nếu x > reach thì tất cả các đồng chưa xét cũng > reach, nên tổng
+  reach chắc chắn không tạo được -> reach là đáp án nhỏ nhất bị thiếu.
 
-Độ phức tạp:
-- Thời gian: O(n log n) do sort (vòng duyệt chỉ O(n)).
+## Độ phức tạp
+- Thời gian: O(n log n) do sắp xếp (vòng duyệt chỉ O(n)).
 - Bộ nhớ: O(n) để lưu mảng đồng xu.
-- reach có thể lớn cỡ n * max(x_i) ~ 2*10^5 * 10^9 = 2*10^14, vượt 32-bit
-  nhưng Python dùng số nguyên lớn tự nhiên nên không tràn số.
+- reach có thể lớn cỡ n * max(x_i) ~ 2*10^5 * 10^9 = 2*10^14, vượt 32-bit nên
+  C++ dùng long long; Python dùng số nguyên lớn tự nhiên nên không tràn số.

@@ -1,18 +1,3 @@
-# Minimal Grid Path - CSES 3359
-# https://cses.fi/problemset/task/3359
-#
-# Đi từ góc trái-trên (0,0) đến góc phải-dưới (n-1,n-1), mỗi bước sang phải
-# hoặc xuống dưới, tìm xâu nhỏ nhất theo thứ tự từ điển (độ dài 2n-1).
-#
-# Ý tưởng: duyệt theo từng đường chéo phụ (anti-diagonal) r+c = d.
-# Giữ "frontier" = tập các ô trên đường chéo d mà prefix của nó là nhỏ nhất.
-# Chuyển sang đường chéo d+1: sinh các ô ứng viên (đi phải/xuống từ frontier),
-# chọn ký tự nhỏ nhất, chỉ giữ lại các ô có ký tự đó.
-#
-# Toàn bộ các phép trên được làm theo lô (bulk) ở mức C: biểu diễn frontier
-# bằng chuỗi byte 0/1 (một byte / một hàng), dịch xuống bằng phép >> 8 trên
-# số nguyên lớn, và dùng bytes.translate / min để tìm và lọc ký tự min.
-
 import sys
 
 

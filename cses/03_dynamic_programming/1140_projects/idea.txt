@@ -1,44 +1,40 @@
-Bài toán: Projects (CSES 1140) - Weighted Interval Scheduling.
+Projects - CSES 1140
+https://cses.fi/problemset/task/1140
 
-Cho n dự án, mỗi dự án có ngày bắt đầu a_i, ngày kết thúc b_i và tiền
-thưởng p_i. Nếu nhận một dự án thì bạn bận toàn bộ các ngày a_i..b_i
-(bao gồm cả hai đầu mút). Hai dự án không được chồng lấn: nếu một dự án
-kết thúc vào ngày b thì dự án tiếp theo phải bắt đầu vào ngày > b
-(tức a_next >= b + 1). Cần chọn tập dự án không chồng lấn để tổng tiền
-thưởng lớn nhất.
+## Đề bài
+Cho n dự án, mỗi dự án có ngày bắt đầu a, ngày kết thúc b và tiền
+thưởng p. Nếu nhận một dự án thì bạn bận toàn bộ các ngày từ a đến b
+(bao gồm cả hai đầu mút). Hai dự án đã chọn không được chồng lấn ngày:
+nếu một dự án kết thúc vào ngày b thì dự án tiếp theo phải bắt đầu vào
+ngày lớn hơn b (tức là a_sau >= b + 1). Hãy chọn một tập dự án không
+chồng lấn sao cho tổng tiền thưởng là lớn nhất.
 
-Ý tưởng DP (weighted interval scheduling):
-- Sắp xếp tất cả dự án theo ngày kết thúc b tăng dần.
-- Gọi ends là mảng các b đã sắp xếp. dp[i] = số tiền lớn nhất khi chỉ
-  xét i dự án đầu tiên (trong thứ tự đã sắp xếp).
+## Ý tưởng
+Đây là bài toán weighted interval scheduling giải bằng quy hoạch động.
 
-DP state:
-- dp[i] với i = 0..n, dp[i] = lợi nhuận tối đa dùng i dự án đầu tiên.
-
-Base case:
-- dp[0] = 0 (không dùng dự án nào).
-
-Transition:
-- Xét dự án thứ i (1-indexed) có (a, b, p). Có hai lựa chọn:
+- Sắp xếp tất cả dự án theo ngày kết thúc b tăng dần. Gọi ends là mảng
+  các giá trị b đã sắp xếp.
+- Trạng thái: dp[i] = tổng tiền thưởng lớn nhất khi chỉ xét i dự án đầu
+  tiên trong thứ tự đã sắp xếp (i chạy từ 0 đến n).
+- Cơ sở: dp[0] = 0 (chưa dùng dự án nào).
+- Chuyển trạng thái: xét dự án thứ i (1-indexed) có (a, b, p), có hai
+  lựa chọn:
   1) Không nhận dự án i: kế thừa dp[i-1].
-  2) Nhận dự án i: cần tìm dự án cuối cùng "tương thích", tức dự án có
-     b < a. Vì đã sắp theo b tăng dần, số dự án có b < a chính là
-     j = bisect_left(ends, a). Khi đó lấy dp[j] + p.
-- dp[i] = max(dp[i-1], dp[j] + p) với j = bisect_left(ends, a).
-  (bisect_left cho vị trí đầu tiên mà ends >= a, nên đếm đúng các dự án
-   có b < a, thỏa điều kiện a_next >= b + 1.)
+  2) Nhận dự án i: cần tìm dự án tương thích cuối cùng, tức dự án có
+     ngày kết thúc nhỏ hơn a. Vì đã sắp theo b tăng dần nên số dự án có
+     b < a chính là j = bisect_left(ends, a); khi đó lấy dp[j] + p.
+  Vậy dp[i] = max(dp[i-1], dp[j] + p).
+  (bisect_left trả về vị trí đầu tiên mà ends >= a, nên đếm đúng số dự
+  án có b < a, thỏa điều kiện a_sau >= b + 1.)
+- Đáp án: dp[n].
 
-Answer:
-- dp[n].
+Vì sao đúng: khi sắp theo b tăng dần, mọi dự án tương thích với dự án
+hiện tại đều nằm ở vị trí sớm hơn trong thứ tự, nên dp[j] đã chứa
+phương án tối ưu cho tập con đó. Quyết định nhận hay không nhận dự án
+có b lớn nhất trong tiền tố i là đầy đủ, đây là quy hoạch động chuẩn
+cho weighted interval scheduling.
 
-Vì sao đúng:
-- Khi sắp theo b tăng dần, mọi dự án tương thích (b < a của dự án hiện
-  tại) đều nằm ở vị trí sớm hơn trong thứ tự, nên dp[j] đã bao gồm
-  phương án tối ưu cho tập con đó. Quyết định "nhận / không nhận" dự án
-  có b lớn nhất trong tiền tố i là đầy đủ và không bỏ sót trường hợp,
-  đây là quy hoạch động chuẩn cho weighted interval scheduling.
-
-Độ phức tạp:
-- Sắp xếp O(n log n). Mỗi dự án một lần bisect O(log n). Tổng thời gian
-  O(n log n). Bộ nhớ O(n).
-- Với n <= 2*10^5 và dùng fast I/O, chạy tốt trong Python trên CSES.
+## Độ phức tạp
+- Thời gian: O(n log n) cho sắp xếp, cộng mỗi dự án một lần tìm kiếm
+  nhị phân O(log n), tổng cộng O(n log n).
+- Bộ nhớ: O(n).

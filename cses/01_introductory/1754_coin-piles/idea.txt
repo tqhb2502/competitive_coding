@@ -1,12 +1,15 @@
-Bài toán: Coin Piles (CSES 1754)
+Coin Piles - CSES 1754
+https://cses.fi/problemset/task/1754
 
-Đề bài:
-- Có hai đống xu với a và b đồng.
-- Mỗi bước: hoặc bỏ 1 xu từ đống trái và 2 xu từ đống phải,
-  hoặc bỏ 2 xu từ đống trái và 1 xu từ đống phải.
-- Hỏi có thể làm cả hai đống về rỗng (0, 0) hay không?
+## Đề bài
+- Có hai đống xu chứa lần lượt a và b đồng.
+- Mỗi bước ta được chọn một trong hai thao tác:
+  + Bỏ 1 xu ở đống trái và 2 xu ở đống phải, hoặc
+  + Bỏ 2 xu ở đống trái và 1 xu ở đống phải.
+- Hỏi có thể đưa cả hai đống về rỗng (0, 0) hay không?
+- Có t truy vấn độc lập, mỗi truy vấn in "YES" hoặc "NO".
 
-Ý tưởng:
+## Ý tưởng
 Gọi:
 - x = số bước kiểu "1 trái, 2 phải"
 - y = số bước kiểu "2 trái, 1 phải"
@@ -23,21 +26,22 @@ Giải hệ:
 1) x >= 0  <=>  2b >= a
 2) y >= 0  <=>  2a >= b
 3) x, y nguyên: (2b - a) và (2a - b) chia hết cho 3.
-   Vì 2b - a ≡ -(a+b) (mod 3) và 2a - b ≡ -(a+b) (mod 3),
+   Vì 2b - a ≡ -(a + b) (mod 3) và 2a - b ≡ -(a + b) (mod 3),
    nên cả hai chia hết cho 3 khi và chỉ khi (a + b) chia hết cho 3.
 
-Tóm lại, đáp án là YES khi và chỉ khi:
+Tóm lại, đáp án là "YES" khi và chỉ khi:
     (a + b) % 3 == 0   VÀ   2a >= b   VÀ   2b >= a
-Ngược lại là NO.
+Ngược lại là "NO".
 
 Kiểm tra ví dụ:
 - (2, 1): a+b=3 chia hết 3; 2*2=4>=1; 2*1=2>=2  -> YES
 - (2, 2): a+b=4 không chia hết 3               -> NO
 - (3, 3): a+b=6 chia hết 3; 2*3=6>=3; 2*3=6>=3  -> YES
 
-Độ phức tạp:
-- Thời gian: O(t) với t là số test case (mỗi test O(1)).
+## Độ phức tạp
+- Thời gian: O(t) với t là số truy vấn (mỗi truy vấn O(1)).
 - Bộ nhớ: O(1) ngoài bộ đệm đọc/ghi.
 
-Với t <= 1e5, giải pháp này rất nhanh. Đọc đầu vào bằng sys.stdin.buffer
-và gom kết quả rồi ghi một lần bằng "\n".join để tránh chậm I/O.
+LƯU Ý TLE:
+Với t <= 1e5, cần I/O nhanh. Đọc toàn bộ đầu vào bằng sys.stdin.buffer,
+gom kết quả rồi ghi một lần bằng "\n".join để tránh chậm I/O.

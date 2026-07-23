@@ -1,38 +1,32 @@
-Bài toán: Playlist (CSES 1141)
+Playlist - CSES 1141
+https://cses.fi/problemset/task/1141
 
-Đề bài:
-Cho một mảng gồm n bài hát, mỗi bài có một id kᵢ. Cần tìm độ dài dài nhất của
+## Đề bài
+Cho một mảng gồm n bài hát, mỗi bài có một id kᵢ. Cần tìm độ dài lớn nhất của
 một dãy con liên tiếp (subarray) mà trong đó tất cả các id đều đôi một khác nhau.
 
-Ý tưởng: two-pointer (sliding window)
-- Ta duy trì một cửa sổ [left, right] chứa các phần tử liên tiếp mà tất cả đều
-  khác nhau. Dùng một tập hợp/từ điển "last" (hash map) để lưu vị trí xuất hiện
-  gần nhất của mỗi id, hoặc một set các id đang nằm trong cửa sổ hiện tại.
-- Duyệt con trỏ phải right từ trái sang phải. Khi thêm phần tử a[right] vào cửa
-  sổ:
-    + Nếu a[right] đã tồn tại trong cửa sổ (đã có trong set), ta phải dịch con
-      trỏ trái left sang phải, đồng thời loại các phần tử ra khỏi set, cho tới
-      khi bản sao cũ của a[right] bị loại bỏ.
-    + Sau đó thêm a[right] vào set.
+## Ý tưởng
+Dùng kỹ thuật two-pointer (cửa sổ trượt):
+- Duy trì một cửa sổ [left, right] chứa các phần tử liên tiếp đều khác nhau. Ta
+  dùng một từ điển "last[id] = chỉ số xuất hiện gần nhất" của mỗi id.
+- Duyệt con trỏ phải right từ trái sang phải. Khi thêm phần tử a[right]:
+    + Nếu id này đã từng xuất hiện và vị trí cũ vẫn nằm trong cửa sổ hiện tại
+      (last[a[right]] >= left), ta nhảy biên trái: left = last[a[right]] + 1.
+    + Cập nhật last[a[right]] = right.
     + Cập nhật đáp án = max(đáp án, right - left + 1).
 
 Vì sao đúng:
 - Với mỗi vị trí right, thuật toán tìm được left nhỏ nhất sao cho subarray
-  [left, right] không có phần tử lặp. Do đó (right - left + 1) là độ dài lớn
-  nhất của một dãy hợp lệ kết thúc tại right. Lấy max trên mọi right sẽ cho đáp
-  án toàn cục.
-- Con trỏ left không bao giờ lùi lại (chỉ tiến), nên mỗi phần tử được thêm vào và
-  loại khỏi set tối đa một lần.
+  [left, right] không có phần tử lặp, nên (right - left + 1) là độ dài lớn nhất
+  của một dãy hợp lệ kết thúc tại right. Lấy max trên mọi right cho đáp án toàn
+  cục.
+- Con trỏ left chỉ tiến, không bao giờ lùi, nên mỗi phần tử được xử lý một lần.
 
-Độ phức tạp:
-- Thời gian: O(n) trung bình (mỗi phần tử vào/ra cửa sổ một lần, thao tác hash
-  set là O(1) trung bình).
-- Bộ nhớ: O(n) cho mảng và set.
-
-Cách cài đặt trong solution.py dùng một dictionary "last[id] = chỉ số cuối cùng"
-để nhảy con trỏ left một cách trực tiếp: khi gặp a[right] mà last[a[right]] >= left
-thì đặt left = last[a[right]] + 1. Cách này cũng O(n) và tránh vòng lặp loại bỏ.
+## Độ phức tạp
+- Thời gian: O(n) trung bình (mỗi phần tử được xét một lần, thao tác hash map là
+  O(1) trung bình).
+- Bộ nhớ: O(n) cho mảng và từ điển last.
 
 LƯU Ý TLE: Với n = 2·10⁵ thuật toán O(n) hoàn toàn an toàn ngay cả trong Python
-thuần khi dùng fast I/O (sys.stdin.buffer). Nếu vẫn lo về hằng số, bản C++ dùng
-unordered_map hoặc sắp xếp toạ độ + mảng int sẽ giảm overhead của hash map Python.
+thuần khi dùng fast I/O (sys.stdin.buffer). Bản C++ dùng unordered_map để giảm
+overhead của hash map.

@@ -1,36 +1,34 @@
-Bài toán: Permutations (CSES 1070)
+Permutations - CSES 1070
+https://cses.fi/problemset/task/1070
 
-Đề bài:
-- Cho số nguyên n. In ra một hoán vị của 1..n sao cho không có hai phần tử kề
-  nhau nào có hiệu tuyệt đối bằng 1 (gọi là hoán vị "đẹp").
-- Nếu không tồn tại thì in "NO SOLUTION".
+## Đề bài
+- Cho số nguyên n. Hãy in ra một hoán vị "đẹp" của các số 1..n, tức là hoán vị
+  mà không có hai phần tử kề nhau nào có hiệu tuyệt đối bằng 1.
+- Nếu không tồn tại hoán vị như vậy thì in "NO SOLUTION".
 
-Ý tưởng:
-- Các trường hợp đặc biệt:
+## Ý tưởng
+- Xử lý các trường hợp đặc biệt:
   + n = 1: chỉ có "1", không có cặp kề nhau nên luôn hợp lệ -> in "1".
   + n = 2: chỉ có "1 2" hoặc "2 1", cả hai đều có hiệu bằng 1 -> NO SOLUTION.
   + n = 3: mọi hoán vị đều có ít nhất một cặp liên tiếp (vì 2 luôn nằm cạnh 1
     hoặc 3) -> NO SOLUTION.
-- Với n >= 4: cách dựng đơn giản là in tất cả các số CHẴN trước (2,4,6,...),
-  rồi tất cả các số LẺ sau (1,3,5,...).
-  + Trong nhóm số chẵn, hai số liên tiếp hơn kém nhau 2 -> không sao.
-  + Trong nhóm số lẻ, hai số liên tiếp hơn kém nhau 2 -> không sao.
-  + Điểm nối giữa số chẵn lớn nhất và số lẻ nhỏ nhất: với n >= 4, số chẵn lớn
-    nhất >= 4 và số lẻ nhỏ nhất = 1, hiệu >= 3 (thực tế cách xếp đảm bảo điểm
-    nối là ... 4 và 1, hiệu 3), không bằng 1.
+- Với n >= 4: cách dựng đơn giản là in tất cả các số CHẴN trước (2, 4, 6, ...),
+  rồi tới tất cả các số LẺ sau (1, 3, 5, ...).
+  + Trong nhóm số chẵn, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
+  + Trong nhóm số lẻ, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
+  + Điểm nối giữa số chẵn lớn nhất và số lẻ nhỏ nhất: với n >= 4, điểm nối là
+    ... 4 và 1, hiệu bằng 3, không bằng 1.
   Vì vậy hoán vị tạo ra luôn "đẹp".
+- Tính đúng đắn: đề bài chấp nhận bất kỳ lời giải hợp lệ nào (checker chỉ kiểm
+  tra tính hợp lệ), nên chỉ cần bảo đảm không có cặp kề nhau hiệu 1. Cách xếp
+  chẵn-trước lẻ-sau thỏa mãn điều đó với mọi n >= 4; còn n = 2, 3 đã chứng minh
+  là vô nghiệm, n = 1 có nghiệm tầm thường.
 
-Tính đúng đắn:
-- Đề bài chấp nhận bất kỳ lời giải hợp lệ nào (checker kiểm tra tính hợp lệ),
-  nên chỉ cần đảm bảo không có cặp kề nhau hiệu 1. Cách xếp chẵn-trước lẻ-sau
-  thỏa mãn điều đó với mọi n >= 4, còn n = 2, 3 đã chứng minh là vô nghiệm,
-  n = 1 có nghiệm tầm thường.
-
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) để sinh và in dãy số.
 - Bộ nhớ: O(n) để lưu kết quả trước khi in.
 
 LƯU Ý TLE: Với n tới 10^6, việc tạo list chuỗi và join trong Python vẫn an toàn
 nếu dùng I/O nhanh (sys.stdin, sys.stdout.write, ' '.join). Nếu vẫn chậm, bản
 C++ sẽ nhanh hơn nhiều nhờ in trực tiếp bằng bộ đệm ký tự; nhưng ở đây giới hạn
-n = 10^6 O(n) nên khả năng TLE thấp.
+n = 10^6 và độ phức tạp O(n) nên khả năng TLE thấp.

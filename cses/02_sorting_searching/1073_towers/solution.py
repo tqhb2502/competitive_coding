@@ -1,5 +1,3 @@
-# Towers - https://cses.fi/problemset/task/1073
-# Greedy + binary search (patience sorting): duy trì tops của các tháp theo thứ tự tăng dần.
 import sys
 from bisect import bisect_right
 
@@ -7,17 +5,21 @@ from bisect import bisect_right
 def main():
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
-    tops = []  # danh sách các giá trị đỉnh tháp, luôn giữ sắp xếp tăng dần
+
+    # tops: giá trị đỉnh của các tháp, luôn giữ sắp xếp tăng dần (patience sorting)
+    tops = []
     for i in range(1, n + 1):
         k = int(data[i])
-        # tìm tháp có đỉnh nhỏ nhất nhưng STRICTLY lớn hơn k (upper bound)
+        # Tìm tháp có đỉnh nhỏ nhất nhưng lớn hơn THỰC SỰ k (upper bound)
         j = bisect_right(tops, k)
         if j == len(tops):
-            # không có tháp nào đạt được -> tạo tháp mới (k >= mọi đỉnh -> append giữ thứ tự)
+            # Không có tháp phù hợp -> tạo tháp mới; k >= mọi đỉnh nên append giữ thứ tự
             tops.append(k)
         else:
-            # đặt cube lên tháp đó; thay đỉnh cũ bằng k vẫn giữ tops sắp xếp
+            # Đặt khối lên tháp đó; thay đỉnh cũ bằng k vẫn giữ tops tăng dần
             tops[j] = k
+
+    # Đáp số: số tháp tối thiểu chính là số phần tử của tops
     sys.stdout.write(str(len(tops)) + "\n")
 
 

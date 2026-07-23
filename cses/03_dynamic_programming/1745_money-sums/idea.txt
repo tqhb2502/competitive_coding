@@ -1,38 +1,35 @@
-Bài toán: Money Sums (CSES 1745)
+Money Sums - CSES 1745
+https://cses.fi/problemset/task/1745
 
-Ý tưởng: đây là bài subset-sum (0/1 knapsack) cơ bản. Ta cần tìm TẤT CẢ các
-tổng tiền khác nhau có thể tạo ra bằng cách chọn một tập con bất kỳ của n đồng xu.
+## Đề bài
+Cho n đồng xu với các giá trị x[1], x[2], ..., x[n]. Hãy tìm tất cả các
+tổng tiền khác nhau có thể tạo ra bằng cách chọn một tập con bất kỳ của các
+đồng xu này. In ra số lượng tổng khác nhau, rồi liệt kê các tổng đó theo thứ
+tự tăng dần.
 
-DP state:
-- dp[s] = True nếu tổng s có thể tạo được từ một tập con các đồng xu đã xét,
-  ngược lại là False.
-- Tổng lớn nhất có thể là maxSum = tổng tất cả các đồng xu, tối đa 100 * 1000 = 100000.
+## Ý tưởng
+Đây là bài subset-sum (0/1 knapsack) cơ bản: cần tìm mọi tổng tập con khả thi.
 
-Base case:
-- dp[0] = True (chọn tập rỗng thì tổng bằng 0). Tất cả dp[s] khác ban đầu là False.
+- Trạng thái: dp[s] = True nếu tổng s có thể tạo được từ một tập con các đồng
+  xu đã xét, ngược lại là False.
+- Tổng lớn nhất là maxSum = tổng tất cả các đồng xu, tối đa 100 * 1000 = 100000.
+- Cơ sở: dp[0] = True (chọn tập rỗng thì tổng bằng 0), các dp[s] còn lại là False.
+- Chuyển trạng thái (0/1 knapsack, mỗi đồng xu xét đúng một lần): với mỗi đồng
+  xu giá trị c, duyệt s từ cao xuống thấp và cập nhật dp[s] = dp[s] OR dp[s - c]
+  với mọi s >= c. Duyệt giảm dần bảo đảm mỗi đồng xu chỉ được dùng một lần.
+- Đáp án: đếm số s trong [1, maxSum] có dp[s] = True, đó chính là k. In k rồi in
+  tất cả các s đó theo thứ tự tăng dần.
 
-Transition (0/1 knapsack, xét từng đồng xu một lần):
-- Với mỗi đồng xu có giá trị c, duyệt s từ cao xuống thấp và cập nhật:
-    dp[s] = dp[s] OR dp[s - c]  với mọi s >= c.
-  (Duyệt giảm dần để mỗi đồng xu chỉ dùng đúng một lần.)
+Tính đúng đắn: mỗi phép cập nhật dp[s] |= dp[s-c] tương ứng với việc thêm đồng
+xu c vào một tập con đã tạo ra tổng s-c. Sau khi xét hết mọi đồng xu, dp[s] phản
+ánh chính xác mọi tổng tập con khả thi.
 
-Answer:
-- Đếm số lượng s trong khoảng [1, maxSum] mà dp[s] = True, đó chính là k.
-- In ra k, rồi in tất cả các s đó theo thứ tự tăng dần.
+Cài đặt tăng tốc bằng bitmask (số nguyên lớn của Python): dùng một số nguyên
+lớn dp làm bitset, bit thứ i bật nghĩa là tổng i tạo được. Khởi tạo dp = 1 (chỉ
+bit 0 bật). Với mỗi đồng xu c: dp |= dp << c, một phép này cập nhật đồng thời
+toàn bộ các dp[s]. Cuối cùng các bit bật (trừ bit 0) chính là các tổng cần in.
 
-Tính đúng đắn:
-- dp[s] đúng vì mỗi phép cập nhật dp[s] |= dp[s-c] tương ứng với việc "thêm đồng xu c
-  vào một tập con đã tạo ra tổng s-c". Duyệt s giảm dần bảo đảm không dùng lại c
-  trong cùng một lần xét (mỗi đồng xu chỉ được chọn một lần). Sau khi xét hết tất cả
-  đồng xu, dp[s] phản ánh chính xác mọi tổng tập con khả thi.
-
-Cài đặt tăng tốc (bitmask bằng số nguyên lớn của Python):
-- Dùng một số nguyên lớn dp làm bitset: bit thứ i bật nghĩa là tổng i tạo được.
-- Khởi tạo dp = 1 (chỉ bit 0 bật, ứng với tổng 0).
-- Với mỗi đồng xu c: dp |= dp << c. Một phép này cập nhật đồng thời toàn bộ dp[s].
-- Cuối cùng, các bit bật (trừ bit 0) chính là các tổng cần in.
-
-Độ phức tạp:
-- Thời gian: O(n * maxSum / 64) nhờ phép dịch bit trên số nguyên lớn, với
-  n <= 100 và maxSum <= 100000 nên rất nhanh.
-- Bộ nhớ: O(maxSum) bit cho bitset và O(k) cho danh sách kết quả.
+## Độ phức tạp
+- Thời gian: O(n * maxSum) cho cài đặt mảng, hoặc O(n * maxSum / 64) nhờ phép
+  dịch bit trên số nguyên lớn; với n <= 100 và maxSum <= 100000 nên rất nhanh.
+- Bộ nhớ: O(maxSum) cho bitset và O(k) cho danh sách kết quả.

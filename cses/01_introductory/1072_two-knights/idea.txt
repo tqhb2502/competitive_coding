@@ -1,11 +1,13 @@
-Bài toán: Two Knights (CSES 1072)
+Two Knights - CSES 1072
+https://cses.fi/problemset/task/1072
 
-Đề bài:
+## Đề bài
 Với mỗi kích thước bàn cờ k x k (k chạy từ 1 đến n), đếm số cách đặt 2
 quân Mã (knight) lên bàn cờ sao cho chúng KHÔNG tấn công lẫn nhau.
 In ra n số, mỗi số ứng với một giá trị k.
 
-Ý tưởng (đếm bù trừ):
+## Ý tưởng
+Dùng đếm bù trừ:
 Số cách đặt 2 quân Mã không tấn công nhau
    = (Tổng số cách đặt 2 quân Mã bất kỳ)
    - (Số cách đặt 2 quân Mã đang TẤN CÔNG nhau)
@@ -36,12 +38,12 @@ Kiểm tra với ví dụ:
    k=4: 120 - 24 = 96
    ... khớp với output mẫu.
 
-Độ phức tạp:
+## Độ phức tạp
    - Thời gian: O(n) (một vòng lặp từ 1 đến n, mỗi bước tính số học O(1)).
    - Bộ nhớ: O(n) cho danh sách kết quả trước khi in (có thể coi là O(1)
      ngoài phần output).
 
-Các số có thể rất lớn (k=10000 => k^4 ~ 10^16) nên dùng số nguyên lớn của
-Python là an toàn, không tràn số.
-
-Không có rủi ro TLE: n <= 10000, thuật toán O(n) rất nhanh trong Python.
+LƯU Ý TLE:
+   Các số có thể rất lớn (k=10000 => k^4 ~ 10^16) nên dùng số nguyên lớn của
+   Python là an toàn, không tràn số.
+   Không có rủi ro TLE: n <= 10000, thuật toán O(n) rất nhanh trong Python.

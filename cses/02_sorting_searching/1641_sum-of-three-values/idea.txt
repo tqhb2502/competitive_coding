@@ -1,71 +1,64 @@
-Bài toán: Sum of Three Values (CSES 1641)
+Sum of Three Values - CSES 1641
+https://cses.fi/problemset/task/1641
 
-ĐỀ BÀI
-Cho mảng gồm n phần tử và một giá trị đích x. Cần tìm ba vị trí PHÂN BIỆT
-sao cho tổng ba giá trị tại các vị trí đó bằng đúng x. In ra ba vị trí
-(đánh số từ 1). Nếu có nhiều đáp án, in ra bất kỳ đáp án nào cũng được.
-Nếu không tồn tại, in ra "IMPOSSIBLE".
+## Đề bài
+Cho một mảng gồm n phần tử và một giá trị đích x. Cần tìm ba vị trí PHÂN BIỆT
+sao cho tổng ba giá trị tại các vị trí đó bằng đúng x. In ra ba vị trí (đánh số
+từ 1). Nếu có nhiều đáp án, in ra đáp án bất kỳ. Nếu không tồn tại, in ra
+"IMPOSSIBLE".
 
-RÀNG BUỘC
+Ràng buộc:
 - 1 <= n <= 5000
 - 1 <= x, a_i <= 10^9
 
-Ý TƯỞNG CHÍNH
-Đây là bài toán 3SUM kinh điển. Ta cố định phần tử thứ nhất rồi quy bài
-toán còn lại về 2SUM và giải bằng kỹ thuật two-pointer.
+## Ý tưởng
+Đây là bài toán 3SUM kinh điển. Ta cố định phần tử thứ nhất rồi quy phần còn
+lại về bài toán 2SUM và giải bằng kỹ thuật two-pointer.
 
 Các bước:
-1. Ghép mỗi giá trị a[i] với chỉ số gốc (i+1) rồi sort các cặp theo giá
-   trị tăng dần. Sau đó tách ra thành hai mảng số nguyên riêng: vals (giá
-   trị đã sort) và idxs (chỉ số gốc tương ứng). Việc lưu chỉ số gốc là bắt
-   buộc vì đáp án yêu cầu in ra vị trí ban đầu, không phải vị trí sau khi
-   sort. Việc tách thành hai mảng số nguyên giúp truy cập trong vòng lặp
-   nhanh hơn nhiều so với việc index vào tuple như arr[l][0].
-2. Duyệt i từ 0 tới n-3 (chỉ tới n-3 vì cần ít nhất hai phần tử phía sau i
-   để tạo cặp), coi vals[i] là phần tử đầu tiên. Khi đó cần tìm hai phần
-   tử trong đoạn [i+1, n-1] có tổng bằng need = x - vals[i].
+1. Ghép mỗi giá trị a[i] với chỉ số gốc (i+1) rồi sort các cặp theo giá trị
+   tăng dần. Sau đó tách thành hai mảng số nguyên riêng: vals (giá trị đã sort)
+   và idxs (chỉ số gốc tương ứng). Lưu chỉ số gốc là bắt buộc vì đáp án yêu cầu
+   in ra vị trí ban đầu, không phải vị trí sau khi sort. Việc tách thành hai
+   mảng số nguyên giúp truy cập trong vòng lặp nhanh hơn nhiều so với index vào
+   tuple như arr[l][0].
+2. Duyệt i từ 0 tới n-3 (chỉ tới n-3 vì cần ít nhất hai phần tử phía sau i để
+   tạo cặp), coi vals[i] là phần tử đầu tiên. Khi đó cần tìm hai phần tử trong
+   đoạn [i+1, n-1] có tổng bằng need = x - vals[i].
 3. Dùng two-pointer: đặt l = i+1, r = n-1.
-   - Nếu vals[l] + vals[r] == need  -> tìm được, in ra ba chỉ số gốc.
-   - Nếu vals[l] + vals[r] < need    -> tăng l (cần tổng lớn hơn).
-   - Nếu vals[l] + vals[r] > need    -> giảm r (cần tổng nhỏ hơn).
+   - Nếu vals[l] + vals[r] == need -> tìm được, in ra ba chỉ số gốc.
+   - Nếu vals[l] + vals[r] < need  -> tăng l (cần tổng lớn hơn).
+   - Nếu vals[l] + vals[r] > need  -> giảm r (cần tổng nhỏ hơn).
 4. Nếu duyệt hết mà không tìm được thì in "IMPOSSIBLE".
 
-CÁT TỈA (TĂNG TỐC)
-- hi = vals[n-1] + vals[n-2] là tổng cặp lớn nhất có thể có trong bất kỳ
-  hậu tố [i+1, n-1] nào (vì hai phần tử lớn nhất luôn nằm ở cuối). Nếu
-  need > hi thì không cặp nào trong hậu tố đạt tới need, bỏ qua i này.
-- Nếu need < vals[i+1] + vals[i+2] (tổng cặp nhỏ nhất trong hậu tố) thì i
-  này vô vọng; hơn nữa khi i tăng, need giảm dần còn tổng cặp nhỏ nhất
-  tăng dần, nên mọi i về sau cũng vô vọng -> có thể break luôn.
-- Hai phép cắt tỉa này giúp các bộ test thông thường chạy rất nhanh, nhưng
-  không cứu được trường hợp bệnh lý (xem phần ĐỘ PHỨC TẠP / TLE).
+Cắt tỉa (tăng tốc):
+- hi = vals[n-1] + vals[n-2] là tổng cặp lớn nhất có thể có trong bất kỳ hậu tố
+  [i+1, n-1] nào (vì hai phần tử lớn nhất luôn nằm ở cuối). Nếu need > hi thì
+  không cặp nào trong hậu tố đạt tới need, bỏ qua i này.
+- Nếu need < vals[i+1] + vals[i+2] (tổng cặp nhỏ nhất trong hậu tố) thì i này
+  vô vọng; hơn nữa khi i tăng, need giảm dần còn tổng cặp nhỏ nhất tăng dần, nên
+  mọi i về sau cũng vô vọng -> có thể break luôn.
 
-VÌ SAO ĐÚNG
+Vì sao đúng:
 - Sau khi sort, với mỗi i cố định, mảng con [i+1, n-1] đã được sắp tăng.
-  two-pointer trên mảng đã sort là cách chuẩn để tìm cặp có tổng cho
-  trước: nếu tổng hiện tại nhỏ hơn need, mọi cặp với r cố định và l nhỏ
-  hơn còn nhỏ hơn nữa, nên bắt buộc phải tăng l; lập luận đối xứng cho
-  trường hợp lớn hơn. Do đó không bỏ sót cặp thỏa mãn nào.
-- Hai phép cắt tỉa chỉ loại bỏ những i mà chắc chắn không thể có nghiệm,
-  nên không làm mất đáp án đúng.
-- Ba chỉ số i, l, r luôn phân biệt vì l = i+1 > i và r > l trong suốt
-  quá trình, đảm bảo ba vị trí khác nhau.
-- Vì ta thử mọi phần tử đầu tiên vals[i], nếu tồn tại bộ ba có tổng bằng x
-  thì chắc chắn sẽ được phát hiện.
-- Giá trị x, a_i tối đa 10^9, tổng ba số tối đa ~3*10^9 vượt 32-bit
-  nhưng Python dùng số nguyên lớn tùy ý nên không tràn số.
+  two-pointer trên mảng đã sort là cách chuẩn để tìm cặp có tổng cho trước, nên
+  không bỏ sót cặp thỏa mãn nào.
+- Hai phép cắt tỉa chỉ loại bỏ những i chắc chắn không thể có nghiệm, nên không
+  làm mất đáp án đúng.
+- Ba chỉ số i, l, r luôn phân biệt vì l = i+1 > i và r > l trong suốt quá trình.
+- Vì ta thử mọi phần tử đầu tiên vals[i], nếu tồn tại bộ ba có tổng bằng x thì
+  chắc chắn sẽ được phát hiện.
 
-ĐỘ PHỨC TẠP
-- Thời gian: O(n^2). Với mỗi i, two-pointer chạy O(n), tổng cộng O(n^2).
-  Với n <= 5000 thì tối đa khoảng 12.5 triệu bước.
-- Bộ nhớ: O(n) để lưu các mảng cặp, vals và idxs.
+## Độ phức tạp
+- Thời gian: O(n^2). Với mỗi i, two-pointer chạy O(n), tổng cộng O(n^2). Với
+  n <= 5000 thì tối đa khoảng 12.5 triệu bước.
+- Bộ nhớ: O(n) để lưu các mảng vals và idxs.
 
-LƯU Ý TLE: Với n = 5000, trong trường hợp bệnh lý (ví dụ mọi giá trị đều
-chẵn còn x lẻ, khi đó không bao giờ có nghiệm và hai con trỏ luôn quét hết
-hậu tố, đồng thời hai phép cắt tỉa đều không kích hoạt), vòng lặp thực sự
-chạy đủ ~12.5 triệu bước. Đo thực tế trên CPython mất khoảng 3.4 giây, vượt
-giới hạn 1 giây của CSES. Vì 3SUM không có thuật toán tốt hơn O(n^2) tổng
-quát, cách chắc chắn để AC bằng Python là nộp dưới ngôn ngữ PyPy3 (cùng mã
-nguồn này chạy dưới 0.3 giây trên PyPy3). Bản C++ với cùng thuật toán
-two-pointer cũng chạy dưới mốc thời gian dễ dàng nhờ vòng lặp biên dịch
-native.
+LƯU Ý TLE: Với n = 5000, trong trường hợp bệnh lý (ví dụ mọi giá trị đều chẵn
+còn x lẻ, khi đó không bao giờ có nghiệm và hai con trỏ luôn quét hết hậu tố,
+đồng thời hai phép cắt tỉa đều không kích hoạt), vòng lặp thực sự chạy đủ ~12.5
+triệu bước. Đo thực tế trên CPython mất khoảng 3.4 giây, vượt giới hạn 1 giây
+của CSES. Vì 3SUM không có thuật toán tốt hơn O(n^2) tổng quát, cách chắc chắn
+để AC bằng Python là nộp dưới ngôn ngữ PyPy3 (cùng mã nguồn này chạy dưới 0.3
+giây trên PyPy3). Bản C++ với cùng thuật toán two-pointer cũng chạy dưới mốc
+thời gian dễ dàng nhờ vòng lặp biên dịch native.

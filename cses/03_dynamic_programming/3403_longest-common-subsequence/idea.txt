@@ -1,52 +1,46 @@
-Bài toán: Longest Common Subsequence (CSES 3403)
+Longest Common Subsequence - CSES 3403
+https://cses.fi/problemset/task/3403
 
-Đề bài: Cho hai mảng số nguyên a (độ dài n) và b (độ dài m). Hãy tìm dãy con
-chung dài nhất (LCS) của chúng. In ra độ dài của LCS, sau đó in ra một dãy con
-chung bất kì có độ dài đó (đề chấp nhận mọi lời giải hợp lệ nhờ checker riêng).
-
+## Đề bài
+Cho hai mảng số nguyên a (độ dài n) và b (độ dài m). Hãy tìm dãy con chung dài
+nhất (LCS) của chúng: in ra độ dài của LCS, rồi in ra một dãy con chung bất kì
+đạt độ dài đó (đề có checker riêng nên chấp nhận mọi lời giải hợp lệ).
 Ràng buộc: 1 <= n, m <= 1000; 1 <= a_i, b_i <= 10^9. Không có modulo.
 
-1) Trạng thái DP:
-   dp[i][j] = độ dài của LCS giữa tiền tố a[0..i-1] và tiền tố b[0..j-1].
-   (i chạy từ 0..n, j chạy từ 0..m.)
+## Ý tưởng
+Quy hoạch động cổ điển trên hai tiền tố, có truy vết để dựng lại dãy con.
 
-2) Công thức chuyển (transition):
-   - Nếu a[i-1] == b[j-1]:
-        dp[i][j] = dp[i-1][j-1] + 1
-        (nối thêm phần tử chung này vào cuối LCS của hai tiền tố ngắn hơn).
-   - Nếu a[i-1] != b[j-1]:
-        dp[i][j] = max(dp[i-1][j], dp[i][j-1])
-        (bỏ đi phần tử cuối của a hoặc của b, lấy phương án tốt hơn).
+- Trạng thái: dp[i][j] = độ dài LCS giữa tiền tố a[0..i-1] và tiền tố b[0..j-1]
+  (i chạy 0..n, j chạy 0..m).
 
-3) Base case (cơ sở):
-   dp[0][j] = 0 với mọi j và dp[i][0] = 0 với mọi i, vì khi một tiền tố rỗng
-   thì không có phần tử chung nào.
+- Cơ sở: dp[0][j] = 0 và dp[i][0] = 0, vì khi một tiền tố rỗng thì không có
+  phần tử chung nào.
 
-4) Đáp án (answer):
-   Độ dài LCS = dp[n][m].
-   Để lấy ra một dãy con cụ thể, ta truy vết (backtracking) từ ô (n, m):
-   - Nếu a[i-1] == b[j-1]: phần tử này thuộc LCS, thêm vào kết quả rồi lùi
-     (i, j) -> (i-1, j-1).
-   - Ngược lại, đi về phía ô có giá trị dp lớn hơn: nếu dp[i-1][j] >= dp[i][j-1]
-     thì i -= 1, nếu không thì j -= 1.
-   Đảo ngược danh sách thu được để có thứ tự đúng từ trái sang phải.
+- Công thức chuyển:
+    + Nếu a[i-1] == b[j-1]: dp[i][j] = dp[i-1][j-1] + 1
+      (nối phần tử chung này vào cuối LCS của hai tiền tố ngắn hơn).
+    + Nếu a[i-1] != b[j-1]: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+      (bỏ phần tử cuối của a hoặc của b, lấy phương án tốt hơn).
 
-5) Vì sao đúng:
-   LCS có tính chất cấu trúc con tối ưu (optimal substructure): nếu hai phần tử
-   cuối bằng nhau thì tồn tại một LCS dùng cặp phần tử đó, nên bài toán quy về
-   hai tiền tố ngắn hơn cộng 1; nếu khác nhau thì ít nhất một trong hai phần tử
-   cuối không nằm trong LCS, nên ta thử bỏ từng bên và lấy max. Các bài toán con
-   gối nhau (overlapping subproblems) được lưu trong bảng dp nên mỗi trạng thái
-   chỉ tính một lần. Đường truy vết luôn đi theo hướng làm giảm dp một cách hợp
-   lệ nên tái tạo lại đúng một dãy con chung có độ dài dp[n][m].
+- Đáp án: độ dài LCS = dp[n][m]. Để lấy một dãy cụ thể, truy vết ngược từ ô
+  (n, m): nếu a[i-1] == b[j-1] thì phần tử này thuộc LCS, thêm vào kết quả rồi
+  lùi (i, j) -> (i-1, j-1); ngược lại đi về ô có dp lớn hơn (dp[i-1][j] >=
+  dp[i][j-1] thì i -= 1, không thì j -= 1). Cuối cùng đảo ngược danh sách để
+  có thứ tự đúng từ trái sang phải.
 
-6) Độ phức tạp:
-   - Thời gian: O(n * m) để điền bảng dp (tối đa ~10^6 phép tính) cộng O(n + m)
-     cho truy vết.
-   - Bộ nhớ: O(n * m) do phải giữ toàn bộ bảng dp để truy vết lại dãy con.
+- Vì sao đúng: LCS có tính cấu trúc con tối ưu (optimal substructure) và các bài
+  toán con gối nhau (overlapping subproblems) được lưu trong bảng dp nên mỗi
+  trạng thái chỉ tính một lần; đường truy vết luôn giảm dp một cách hợp lệ nên
+  tái tạo đúng một dãy con chung độ dài dp[n][m].
 
-Ghi chú cài đặt: so sánh phần tử dưới dạng chuỗi byte (không cần đổi sang int)
-để đọc vào nhanh; dùng sys.stdin.buffer đọc toàn bộ đầu vào một lần. Với
-n = m = 1000 (khoảng 10^6 phép tính), vòng lặp DP thuần Python chạy trong
-khoảng ~0.7s trên máy thử nghiệm; đây là cách làm O(n*m) chuẩn nên vẫn nằm
-trong giới hạn thời gian, tuy có phần sát ngưỡng.
+- Cài đặt: so sánh phần tử dưới dạng chuỗi byte (không cần đổi sang int) để đọc
+  vào nhanh; đọc toàn bộ đầu vào một lần bằng sys.stdin.buffer.
+
+## Độ phức tạp
+- Thời gian: O(n * m) để điền bảng dp (tối đa ~10^6 phép tính) cộng O(n + m)
+  cho truy vết.
+- Bộ nhớ: O(n * m) do phải giữ toàn bộ bảng dp để truy vết lại dãy con.
+
+LƯU Ý TLE: với n = m = 1000 (~10^6 phép tính), vòng lặp DP thuần Python chạy
+khoảng ~0.7s trên máy thử nghiệm; đây là cách O(n*m) chuẩn nên vẫn trong giới
+hạn thời gian nhưng khá sát ngưỡng.

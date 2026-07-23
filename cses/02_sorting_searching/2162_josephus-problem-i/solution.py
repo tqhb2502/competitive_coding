@@ -1,9 +1,3 @@
-# Josephus Problem I
-# https://cses.fi/problemset/task/2162
-#
-# Mô phỏng vòng tròn bằng deque: mỗi bước "bỏ qua" 1 đứa (đưa xuống cuối hàng)
-# rồi "loại" đứa tiếp theo (in ra). Độ phức tạp O(n) thời gian, O(n) bộ nhớ.
-
 import sys
 from collections import deque
 
@@ -12,14 +6,16 @@ def main():
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 
+    # Đưa tất cả n đứa trẻ vào deque theo thứ tự 1..n để mô phỏng vòng tròn.
     q = deque(range(1, n + 1))
     res = []
     while q:
-        # skip: đưa phần tử đầu xuống cuối hàng đợi
+        # Bỏ qua (skip): chuyển phần tử đầu xuống cuối hàng đợi.
         q.append(q.popleft())
-        # remove: loại phần tử đầu tiếp theo
+        # Loại (remove): phần tử đầu tiếp theo bị loại, ghi vào kết quả.
         res.append(q.popleft())
 
+    # Xuất một lần bằng bộ đệm để tăng tốc I/O.
     sys.stdout.write(' '.join(map(str, res)) + '\n')
 
 
