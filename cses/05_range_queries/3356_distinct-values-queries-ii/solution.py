@@ -1,25 +1,3 @@
-# Distinct Values Queries II — CSES 3356
-# https://cses.fi/problemset/task/3356
-#
-# For every position i keep prev[i] = the previous position (< i) that currently
-# holds the same value as position i (0 if none). A range [a, b] contains only
-# distinct values  <=>  max(prev[i] for i in [a, b]) < a.
-#
-# Range-max of prev is kept in an iterative (bottom-up) segment tree with point
-# assignment (Fenwick cannot do range-max under decreasing point updates).
-#
-# To recompute prev under point updates we need, for the value at a position,
-# its predecessor / successor position sharing the same value.  Every position
-# holds exactly one value at a time, so the multiset of (value, position) pairs
-# always has exactly n active members.  Compress every (value, position) pair
-# that can ever appear (initial array + all updates) into indices ordered by
-# (value, position); a pair's neighbours with the SAME value are exactly its
-# global neighbours in this order.  A Fenwick/BIT over these compressed indices
-# storing present/absent flags supports:
-#   - point add (activate / deactivate a pair)
-#   - prev_present / next_present via prefix-count + BIT "select" (binary lift).
-# All operations are O(log) so the whole thing is O((n + q) log).
-
 import sys
 
 
@@ -29,10 +7,12 @@ def main():
     n = int(data[pos]); pos += 1
     q = int(data[pos]); pos += 1
 
+    # Đọc mảng ban đầu (đánh chỉ số từ 1).
     x = [0] * (n + 1)
     for i in range(1, n + 1):
         x[i] = int(data[pos]); pos += 1
 
+    # Đọc trước toàn bộ truy vấn để nén tọa độ cho cả các update sau này.
     queries = []
     for _ in range(q):
         t = int(data[pos]); pos += 1
@@ -43,17 +23,18 @@ def main():
             a = int(data[pos]); b = int(data[pos + 1]); pos += 2
             queries.append((2, a, b))
 
-    # --- compress values (initial + all update targets) ---
+    # --- Nén giá trị (mảng ban đầu + mọi giá trị đích u của các update) ---
     vals = set()
     for i in range(1, n + 1):
         vals.add(x[i])
     for t, a, b in queries:
         if t == 1:
-            vals.add(b)          # b == u for update queries
+            vals.add(b)          # b chính là u trong truy vấn update
     value_rank = {v: r for r, v in enumerate(sorted(vals))}
 
-    # --- compress every (value, position) pair that can ever be active ---
-    N1 = n + 1                   # encode key = value_rank * N1 + position
+    # --- Nén MỌI cặp (value, position) có thể active, xếp theo (value_rank, position) ---
+    # Trong thứ tự này, hàng xóm cùng giá trị của một cặp là hàng xóm toàn cục liền kề.
+    N1 = n + 1                   # mã hoá khoá = value_rank * N1 + position
     cur_enc = [0] * (n + 1)
     encs = set()
     for i in range(1, n + 1):
@@ -64,30 +45,32 @@ def main():
         if t == 1:
             encs.add(value_rank[u] * N1 + k)
 
-    senc = sorted(encs)          # sorted by (value_rank, position)
+    senc = sorted(encs)          # đã sắp theo (value_rank, position)
     M = len(senc)
     key2idx = {}
-    k_pos = [0] * (M + 1)        # position stored at a compressed index
-    k_vid = [0] * (M + 1)        # value_rank stored at a compressed index
+    k_pos = [0] * (M + 1)        # vị trí lưu tại một chỉ số nén
+    k_vid = [0] * (M + 1)        # value_rank lưu tại một chỉ số nén
     for i, e in enumerate(senc):
         c = i + 1
         key2idx[e] = c
         k_pos[c] = e % N1
         k_vid[c] = e // N1
 
-    cur_idx = [0] * (n + 1)      # compressed index of the active pair per position
+    cur_idx = [0] * (n + 1)      # chỉ số nén của cặp đang active tại mỗi vị trí
     for i in range(1, n + 1):
         cur_idx[i] = key2idx[cur_enc[i]]
 
-    # --- Fenwick/BIT over compressed indices: present flags + select ---
+    # --- Fenwick/BIT trên các chỉ số nén: lưu cờ present + hỗ trợ select ---
     bit = [0] * (M + 1)
 
     def bit_add(i, d, bit=bit, M=M):
+        # Bật/tắt một cặp (activate / deactivate).
         while i <= M:
             bit[i] += d
             i += i & (-i)
 
     def bit_sum(i, bit=bit):
+        # Đếm số cặp active trong tiền tố [1..i].
         s = 0
         while i > 0:
             s += bit[i]
@@ -97,7 +80,7 @@ def main():
     LOGM = M.bit_length()
 
     def bit_select(rank, bit=bit, M=M, LOGM=LOGM):
-        # index of the rank-th (1-based) present element
+        # Binary lifting: chỉ số của phần tử active thứ "rank" (1-based).
         p = 0
         r = rank
         j = LOGM
@@ -113,7 +96,7 @@ def main():
         bit_add(cur_idx[i], 1)
 
     def in_val_pred(ix, vid):
-        # position of the same-value predecessor of compressed index ix, else 0
+        # Vị trí của predecessor cùng giá trị của chỉ số nén ix, hoặc 0 nếu không có.
         r = bit_sum(ix - 1)
         if r == 0:
             return 0
@@ -121,14 +104,14 @@ def main():
         return k_pos[j] if k_vid[j] == vid else 0
 
     def in_val_succ(ix, vid, tot):
-        # position of the same-value successor of compressed index ix, else 0
+        # Vị trí của successor cùng giá trị của chỉ số nén ix, hoặc 0 nếu không có.
         r = bit_sum(ix)
         if r >= tot:
             return 0
         j = bit_select(r + 1)
         return k_pos[j] if k_vid[j] == vid else 0
 
-    # --- initial prev[] ---
+    # --- prev[] ban đầu: last[v] = vị trí gần nhất mang giá trị v ---
     prev_arr = [0] * (n + 1)
     last = {}
     for i in range(1, n + 1):
@@ -136,7 +119,7 @@ def main():
         prev_arr[i] = last.get(v, 0)
         last[v] = i
 
-    # --- iterative segment tree for range max of prev[] ---
+    # --- Segment tree lặp cho range-max của prev[] (prev có thể giảm nên không dùng BIT) ---
     size = 1
     while size < n:
         size <<= 1
@@ -148,6 +131,7 @@ def main():
         seg[i] = a2 if a2 > b2 else b2
 
     def seg_update(p, val, seg=seg, size=size):
+        # Gán điểm: đặt prev[p] = val rồi cập nhật dọc lên gốc.
         i = size + p - 1
         seg[i] = val
         i >>= 1
@@ -157,6 +141,7 @@ def main():
             i >>= 1
 
     def seg_query(l, r, seg=seg, size=size):
+        # Max của prev[] trên đoạn [l, r].
         res = 0
         l0 = size + l - 1
         r0 = size + r
@@ -177,23 +162,25 @@ def main():
     YES = b"YES"
     NO = b"NO"
     for t, a, b in queries:
+        # Truy vấn "2 a b": đoạn phân biệt <=> max(prev trên [a, b]) < a.
         if t == 2:
             out.append(YES if seg_query(a, b) < a else NO)
         else:
+            # Update "1 k u": xác định cặp cũ (ov) và cặp mới (nv) của vị trí k.
             k = a
             u = b
             ov = cur_idx[k]
             nv = key2idx[value_rank[u] * N1 + k]
             if nv == ov:
-                continue
-            # remove position k from its current value group
+                continue         # giá trị mới trùng giá trị hiện tại: bỏ qua
+            # Gỡ k khỏi nhóm giá trị cũ: successor cũ nay trỏ prev về predecessor cũ.
             vid_o = k_vid[ov]
             bit_add(ov, -1)
             p_o = in_val_pred(ov, vid_o)
             s_o = in_val_succ(ov, vid_o, n - 1)
             if s_o:
                 seg_update(s_o, p_o)
-            # insert position k into the new value group
+            # Chèn k vào nhóm giá trị mới: prev[k] = predecessor mới; successor mới đổi prev sang k.
             bit_add(nv, 1)
             vid_n = k_vid[nv]
             p_n = in_val_pred(nv, vid_n)

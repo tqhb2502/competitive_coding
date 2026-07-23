@@ -1,7 +1,3 @@
-# Road Construction - https://cses.fi/problemset/task/1676
-# DSU (Union-Find) with path compression + union by size.
-# Sau mỗi con đường, in số thành phần liên thông và kích thước thành phần lớn nhất.
-
 import sys
 
 
@@ -11,14 +7,15 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
+    # DSU: parent lưu cha của mỗi đỉnh, size lưu kích thước mỗi tập.
     parent = list(range(n + 1))
     size = [1] * (n + 1)
 
-    components = n          # số thành phần liên thông hiện tại
-    max_size = 1 if n >= 1 else 0
+    components = n              # Số thành phần liên thông hiện tại.
+    max_size = 1 if n >= 1 else 0  # Kích thước thành phần lớn nhất.
 
     def find(x):
-        # path compression lặp (iterative) để tránh đệ quy sâu
+        # Tìm root của tập chứa x, nén đường đi kiểu lặp (tránh đệ quy sâu).
         root = x
         while parent[root] != root:
             root = parent[root]
@@ -32,8 +29,9 @@ def main():
         b = int(data[idx]); idx += 1
         ra = find(a)
         rb = find(b)
+        # Chỉ gộp khi a và b thuộc hai thành phần khác nhau.
         if ra != rb:
-            # union by size: gắn cây nhỏ vào cây lớn
+            # union by size: gắn cây nhỏ vào cây lớn.
             if size[ra] < size[rb]:
                 ra, rb = rb, ra
             parent[rb] = ra
@@ -41,6 +39,7 @@ def main():
             components -= 1
             if size[ra] > max_size:
                 max_size = size[ra]
+        # Ghi lại kết quả sau mỗi con đường được xây.
         out.append(f"{components} {max_size}")
 
     sys.stdout.write("\n".join(out))

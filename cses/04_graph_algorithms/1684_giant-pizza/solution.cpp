@@ -9,6 +9,8 @@ int main() {
     int clause_count, variable_count;
     std::cin >> clause_count >> variable_count;
 
+    // Xây dựng implication graph: mỗi biến có 2 node, 2*i = literal '+',
+    // 2*i+1 = literal '-'. Node phủ định của v là v ^ 1.
     const int node_count = 2 * variable_count;
     std::vector<std::vector<int>> adj(node_count);
     for (int i = 0; i < clause_count; ++i) {
@@ -22,13 +24,14 @@ int main() {
         const int second = 2 * (second_variable - 1) +
                            (second_sign == '+' ? 0 : 1);
 
-        // (first OR second) is equivalent to these two implications.
+        // Clause (first OR second) tương đương hai mệnh đề kéo theo:
+        // (NOT first => second) và (NOT second => first).
         adj[first ^ 1].push_back(second);
         adj[second ^ 1].push_back(first);
     }
 
-    // Iterative Tarjan. Components are numbered as they are popped, so sink
-    // SCCs receive smaller numbers (reverse topological order).
+    // Tarjan iterative tìm SCC. Component được đánh số khi SCC hoàn thành, nên
+    // SCC ở phía sink nhận số nhỏ hơn (reverse topological order).
     std::vector<int> index(node_count, -1);
     std::vector<int> low(node_count, 0);
     std::vector<int> component(node_count, -1);
@@ -67,6 +70,7 @@ int main() {
             }
 
             dfs_stack.pop_back();
+            // Xử lý xong node: nếu là gốc của một SCC thì pop toàn bộ SCC ra.
             if (low[node] == index[node]) {
                 while (true) {
                     const int member = scc_stack.back();
@@ -86,6 +90,7 @@ int main() {
         }
     }
 
+    // Kiểm tra khả thi: literal và phủ định của nó cùng SCC -> mâu thuẫn.
     for (int variable = 0; variable < variable_count; ++variable) {
         const int positive = 2 * variable;
         const int negative = positive + 1;
@@ -95,6 +100,7 @@ int main() {
         }
     }
 
+    // Suy ra đáp án: chọn literal có comp nhỏ hơn (gần sink) làm true.
     for (int variable = 0; variable < variable_count; ++variable) {
         if (variable != 0) {
             std::cout << ' ';

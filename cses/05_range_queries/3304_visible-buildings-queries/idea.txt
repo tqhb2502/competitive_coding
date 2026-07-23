@@ -1,45 +1,37 @@
-Bài toán: Visible Buildings Queries (CSES 3304)
+Visible Buildings Queries - CSES 3304
+https://cses.fi/problemset/task/3304
 
-Đề bài
-- Có n tòa nhà xếp hàng, chiều cao h[1..n]. Đứng ở bên trái nhìn sang phải.
-- Với mỗi truy vấn [a, b]: bắt đầu từ tòa a, một tòa nhà là "visible" nếu nó cao
-  hơn NGHIÊM NGẶT tất cả các tòa nằm bên trái nó trong phạm vi [a, b]. Đếm số tòa
-  visible trong [a, b].
+## Đề bài
+- Có n tòa nhà xếp thành hàng, chiều cao h[1..n]. Ta nhìn từ bên trái sang phải.
+- Với mỗi truy vấn [a, b]: chỉ xét đoạn từ tòa a đến tòa b. Một tòa được coi là
+  "visible" nếu nó cao hơn NGHIÊM NGẶT tất cả các tòa nằm bên trái nó trong đoạn
+  [a, b]. Hãy đếm số tòa visible trong mỗi truy vấn.
+- Giới hạn: n <= 1e5, q <= 2e5, chiều cao tới 1e9.
 
-Ý tưởng cốt lõi
-- Khi đi từ trái sang phải trong [a, b], mỗi tòa visible chính là một "prefix
-  maximum nghiêm ngặt" mới. Vì mỗi tòa visible đều là max của đoạn đã xét, nên
-  chuỗi các tòa visible là: xuất phát tại a, rồi nhảy tới tòa đầu tiên bên phải
-  có chiều cao LỚN HƠN NGHIÊM NGẶT tòa hiện tại, cứ thế tiếp tục.
+## Ý tưởng
+- Đi từ trái sang phải trong [a, b], mỗi tòa visible chính là một "prefix maximum
+  nghiêm ngặt" mới. Do đó chuỗi các tòa visible là: xuất phát tại a, rồi nhảy tới
+  tòa đầu tiên bên phải cao hơn NGHIÊM NGẶT tòa hiện tại, cứ thế tiếp tục.
 - Đây chính là "next greater element to the right" (gọi là nge). Với mỗi i,
-  nge[i] = chỉ số j > i nhỏ nhất sao cho h[j] > h[i], nếu không có thì INF = n+1.
-  Tính nge bằng một monotonic stack trong O(n) (duyệt i từ phải sang trái, pop
-  khi h[đỉnh stack] <= h[i]).
+  nge[i] = chỉ số j > i nhỏ nhất sao cho h[j] > h[i]; nếu không có thì bằng
+  sentinel INF = n+1. Tính nge bằng monotonic stack trong O(n) (duyệt i từ phải
+  sang trái, pop khi chiều cao đỉnh stack <= h[i]).
+- Dùng binary lifting trên con trỏ nge: up[k][i] = vị trí sau khi thực hiện 2^k
+  bước nhảy nge từ i. Xây dựng bằng up[k][i] = up[k-1][ up[k-1][i] ], với INF là
+  trạng thái hấp thụ (up[k][INF] = INF). Số tầng LOG ~ ceil(log2(n)); n <= 1e5
+  nên LOG = 17 là đủ.
+- Trả lời truy vấn [a, b]: đặt node = a, ans = 1 (tòa a luôn visible). Duyệt k từ
+  LOG-1 xuống 0; nếu up[k][node] <= b thì nhảy (node = up[k][node]) và cộng 2^k
+  vào ans. Vì các vị trí trên chuỗi tăng dần đơn điệu, nếu bước nhảy 2^k còn nằm
+  trong [a, b] thì mọi vị trí trung gian cũng nằm trong đó, nên phép cộng hợp lệ.
+- Sentinel INF = n+1 luôn > b (vì b <= n) nên không bao giờ bị đếm nhầm.
 
-Cấu trúc dữ liệu: binary lifting trên con trỏ nge
-- up[k][i] = vị trí sau khi thực hiện 2^k lần nhảy nge từ i. Xây dựng bằng
-  up[k][i] = up[k-1][ up[k-1][i] ], với INF là trạng thái hấp thụ (up[k][INF]=INF).
-- Số tầng LOG ~ ceil(log2(n)) (n <= 1e5 nên LOG = 17 là đủ).
-
-Trả lời truy vấn [a, b]
-- Đặt node = a, ans = 1 (tòa a luôn visible). Duyệt k từ LOG-1 xuống 0: nếu
-  up[k][node] <= b thì nhảy (node = up[k][node]) và cộng 2^k vào ans. Vì các vị
-  trí trên chuỗi tăng dần đơn điệu, nếu bước nhảy 2^k còn nằm trong [a, b] thì
-  mọi vị trí trung gian cũng nằm trong đó, nên phép cộng 2^k là hợp lệ.
-
-Tính đúng
-- Chuỗi nge tái tạo đúng thứ tự các tòa visible: tòa được nhảy tới luôn cao hơn
-  mọi tòa trước đó (vì nó cao hơn max hiện tại, mà max hiện tại = chiều cao tòa
-  visible gần nhất). Việc dùng "cao hơn nghiêm ngặt" khớp với định nghĩa đề bài
-  (các tòa bằng chiều cao không visible). Sentinel INF = n+1 luôn > b (do b <= n)
-  nên không bao giờ bị đếm nhầm.
-
-Độ phức tạp
+## Độ phức tạp
 - Tiền xử lý: O(n log n) thời gian và bộ nhớ cho bảng binary lifting.
 - Mỗi truy vấn: O(log n). Tổng: O((n + q) log n).
-- Bộ nhớ: O(n log n) số nguyên (n <= 1e5, LOG = 17 nên hoàn toàn nằm trong giới hạn).
+- Bộ nhớ: O(n log n) số nguyên (n <= 1e5, LOG = 17 nên nằm gọn trong giới hạn).
 
 LƯU Ý TLE: Với q lên tới 2e5 và LOG ~ 17, vòng lặp truy vấn khoảng 3.4e6 vòng
-thuần Python; trên CPython của CSES có thể chạm/vượt giới hạn thời gian. Thuật
-toán đã tối ưu (không thể giảm log n dễ dàng); nếu TLE nên nộp bằng C++/PyPy.
+thuần Python; trên CPython của CSES có thể chạm hoặc vượt giới hạn thời gian.
+Thuật toán đã tối ưu (khó giảm thêm log n); nếu TLE nên nộp bằng C++ hoặc PyPy.
 Tuyệt đối KHÔNG dùng numpy hay thư viện ngoài stdlib.

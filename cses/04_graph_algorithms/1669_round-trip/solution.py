@@ -1,19 +1,8 @@
-# Round Trip - CSES 1669
-# https://cses.fi/problemset/task/1669
-#
-# Tìm một chu trình (round trip) trong đồ thị vô hướng: xuất phát và kết thúc
-# tại cùng một đỉnh, đi qua ít nhất hai đỉnh khác. Do đồ thị không có cạnh bội
-# và không có self-loop nên chu trình ngắn nhất có độ dài 3 (tam giác).
-#
-# Ý tưởng: DFS lặp (iterative) trên đồ thị vô hướng, lưu mảng parent. Khi từ
-# đỉnh u ta gặp một đỉnh v đã thăm (visited) mà v != parent[u], thì u-v là một
-# back edge và v chắc chắn là tổ tiên của u trên cây DFS (đồ thị vô hướng không
-# có cross edge). Truy ngược theo parent từ u về v để dựng lại chu trình.
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần cho nhanh.
     data = sys.stdin.buffer.read().split()
     if not data:
         return
@@ -21,6 +10,7 @@ def main():
     n = int(data[pos]); pos += 1
     m = int(data[pos]); pos += 1
 
+    # Dựng danh sách kề cho đồ thị VÔ HƯỚNG (mỗi cạnh thêm hai chiều).
     adj = [[] for _ in range(n + 1)]
     for _ in range(m):
         a = int(data[pos]); b = int(data[pos + 1]); pos += 2
@@ -33,6 +23,7 @@ def main():
 
     result = None
 
+    # Duyệt từng thành phần liên thông bằng DFS lặp cho tới khi tìm được chu trình.
     for s in range(1, n + 1):
         if visited[s]:
             continue
@@ -49,24 +40,28 @@ def main():
                     # Bỏ qua đúng một cạnh quay lại parent (không có cạnh bội).
                     continue
                 if not visited[v]:
+                    # Cạnh cây: đi sâu xuống v.
                     visited[v] = 1
                     parent[v] = u
                     stack.append(v)
                 else:
-                    # Back edge u -> v, v là tổ tiên của u.
+                    # Back edge u -> v: v là tổ tiên của u. Truy ngược theo
+                    # parent từ u về v để dựng chu trình [u, ..., v, u].
                     cyc = [u]
                     x = u
                     while x != v:
                         x = parent[x]
                         cyc.append(x)
-                    cyc.append(u)  # đóng chu trình: [u, ..., v, u]
+                    cyc.append(u)
                     result = cyc
                     break
             else:
+                # Đã duyệt hết cạnh kề của u -> lấy u ra khỏi stack.
                 stack.pop()
         if result is not None:
             break
 
+    # Không tìm thấy chu trình nào -> in "IMPOSSIBLE".
     out = sys.stdout
     if result is None:
         out.write("IMPOSSIBLE\n")

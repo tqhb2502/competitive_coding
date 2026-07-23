@@ -1,7 +1,3 @@
-# Flight Routes Check - https://cses.fi/problemset/task/1682
-# Kiểm tra đồ thị có hướng có strongly connected (liên thông mạnh) hay không.
-# Ý tưởng: chọn đỉnh 1. Đồ thị liên thông mạnh <=> từ đỉnh 1 đi tới được mọi
-# đỉnh trong đồ thị gốc VÀ từ đỉnh 1 đi tới được mọi đỉnh trong đồ thị đảo chiều.
 import sys
 from collections import deque
 
@@ -12,6 +8,7 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
+    # Xây danh sách kề cho đồ thị gốc và đồ thị đảo chiều mọi cạnh
     adj = [[] for _ in range(n + 1)]   # đồ thị gốc
     radj = [[] for _ in range(n + 1)]  # đồ thị đảo chiều
     for _ in range(m):
@@ -20,6 +17,7 @@ def main():
         adj[a].append(b)
         radj[b].append(a)
 
+    # BFS trả về mảng đánh dấu và số đỉnh tới được từ start trên đồ thị graph
     def bfs(graph, start):
         visited = bytearray(n + 1)
         visited[start] = 1
@@ -36,27 +34,28 @@ def main():
 
     out = []
 
-    # (1) Từ đỉnh 1 có tới được mọi đỉnh trong đồ thị gốc?
+    # (1) Từ đỉnh 1 có tới được mọi đỉnh trong đồ thị gốc không?
     vis1, cnt1 = bfs(adj, 1)
     if cnt1 < n:
         for u in range(1, n + 1):
-            if not vis1[u]:
+            if not vis1[u]:  # không đi được từ 1 tới u -> phản ví dụ (1, u)
                 out.append("NO")
-                out.append("%d %d" % (1, u))  # không đi được từ 1 tới u
+                out.append("%d %d" % (1, u))
                 sys.stdout.write("\n".join(out) + "\n")
                 return
 
-    # (2) Từ đỉnh 1 có tới được mọi đỉnh trong đồ thị đảo chiều?
-    # Tương đương: mọi đỉnh đều tới được đỉnh 1 trong đồ thị gốc.
+    # (2) Từ đỉnh 1 có tới được mọi đỉnh trong đồ thị đảo chiều không?
+    #     Tương đương: mọi đỉnh đều tới được đỉnh 1 trong đồ thị gốc.
     vis2, cnt2 = bfs(radj, 1)
     if cnt2 < n:
         for u in range(1, n + 1):
-            if not vis2[u]:
+            if not vis2[u]:  # u không tới được đỉnh 1 -> phản ví dụ (u, 1)
                 out.append("NO")
-                out.append("%d %d" % (u, 1))  # u không tới được đỉnh 1
+                out.append("%d %d" % (u, 1))
                 sys.stdout.write("\n".join(out) + "\n")
                 return
 
+    # Cả hai lần BFS đều phủ hết n đỉnh -> đồ thị liên thông mạnh
     sys.stdout.write("YES\n")
 
 

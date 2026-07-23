@@ -1,32 +1,40 @@
-Bài toán: cho mảng x gồm n số nguyên, xử lý q truy vấn dạng: đếm số chỉ số i
-thỏa a ≤ i ≤ b và c ≤ x_i ≤ d (truy vấn 2 chiều trên cả chỉ số lẫn giá trị).
+Range Interval Queries - CSES 3163
+https://cses.fi/problemset/task/3163
 
-Ý tưởng: xử lý OFFLINE bằng Fenwick tree (BIT) kết hợp coordinate compression.
+## Đề bài
+Cho một mảng x gồm n số nguyên và q truy vấn. Mỗi truy vấn cho bốn số a, b, c, d;
+hãy đếm số chỉ số i thỏa đồng thời a ≤ i ≤ b và c ≤ x_i ≤ d. Nói cách khác, đây là
+truy vấn đếm hai chiều: một điều kiện trên khoảng chỉ số và một điều kiện trên
+khoảng giá trị.
 
-Định nghĩa f(i, v) = số chỉ số j với 1 ≤ j ≤ i và x_j ≤ v. Khi đó đáp án mỗi
-truy vấn được tính bằng nguyên lý bao hàm - loại trừ (inclusion-exclusion) trên
-hình chữ nhật 2D [a,b] × [c,d]:
+## Ý tưởng
+Xử lý OFFLINE bằng Fenwick tree (BIT) kết hợp nén tọa độ (coordinate compression).
+
+Định nghĩa f(i, v) = số chỉ số j thỏa 1 ≤ j ≤ i và x_j ≤ v. Khi đó đáp án mỗi truy
+vấn tính bằng nguyên lý bao hàm - loại trừ (inclusion-exclusion) trên hình chữ nhật
+hai chiều [a, b] × [c, d]:
 
     answer = f(b, d) - f(b, c-1) - f(a-1, d) + f(a-1, c-1)
 
-Coordinate compression: nén các giá trị x_i thành rank 1..m (m = số giá trị phân
-biệt), dùng sorted_vals = sorted(set(x)). Rank của x_i là bisect_left(sorted_vals, x_i)+1.
-Với một ngưỡng giá trị t bất kỳ, số giá trị ≤ t chính là bisect_right(sorted_vals, t)
-(đây cũng là chỉ số prefix cần hỏi trên BIT).
+Nén tọa độ: nén các giá trị x_i về rank 1..m (m là số giá trị phân biệt), dùng
+sorted_vals = sorted(set(x)). Rank của x_i là bisect_left(sorted_vals, x_i) + 1.
+Với một ngưỡng giá trị t bất kỳ, số giá trị ≤ t chính là bisect_right(sorted_vals, t),
+và đây cũng là chỉ số prefix cần hỏi trên BIT.
 
-Sweep line theo chỉ số: quét i từ 1 đến n. Tại bước i, thêm phần tử x_i vào BIT
-tại vị trí rank của nó (point update +1). Mỗi số hạng f(i, v) trở thành một sự kiện
+Quét theo chỉ số (sweep line): duyệt i từ 1 đến n. Tại bước i, thêm phần tử x_i vào
+BIT tại rank của nó (point update +1). Mỗi số hạng f(i, v) trở thành một sự kiện
 "tại chỉ số i, hỏi prefix sum của BIT đến rank ứng với v". Vì ta quét i tăng dần,
-khi xử lý sự kiện tại i thì đúng bằng tất cả phần tử có chỉ số ≤ i đã được thêm vào,
-nên prefix sum trả về đúng f(i, v). Mỗi truy vấn tách thành tối đa 4 sự kiện; ta gom
-sự kiện theo chỉ số i vào các bucket (events[i]) để khỏi phải sort.
+khi xử lý sự kiện tại i thì BIT đang chứa đúng mọi phần tử có chỉ số ≤ i, nên prefix
+sum trả về đúng f(i, v). Mỗi truy vấn tách thành tối đa bốn sự kiện; ta gom sự kiện
+theo chỉ số i vào các bucket (events[i]) để khỏi phải sắp xếp.
 
 Tính đúng đắn: BIT prefix sum đến rank(v) đếm đúng số phần tử đã thêm (chỉ số ≤ i)
 có giá trị ≤ v, tức là f(i, v). Công thức bao hàm - loại trừ cho ra đúng số phần tử
-nằm trong hình chữ nhật [a,b] × [c,d]. Các trường hợp biên (a-1 = 0 nghĩa là không có
-phần tử nào; ngưỡng nhỏ hơn mọi giá trị cho rank = 0) đều được xử lý cho kết quả 0.
+nằm trong hình chữ nhật [a, b] × [c, d]. Các trường hợp biên (a-1 = 0 nghĩa là không
+có phần tử nào; ngưỡng nhỏ hơn mọi giá trị cho rank = 0) đều được xử lý để trả về 0.
 
-Độ phức tạp: thời gian O((n + q) log n), bộ nhớ O(n + q).
+## Độ phức tạp
+Thời gian O((n + q) log n), bộ nhớ O(n + q).
 
 LƯU Ý TLE: với n, q ≈ 2·10^5, tổng số sự kiện lên tới ~8·10^5, mỗi thao tác BIT tốn
 O(log n). Trên CPython thuần hằng số lớn nên có nguy cơ TLE; thuật toán vẫn đúng và

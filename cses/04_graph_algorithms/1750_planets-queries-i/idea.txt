@@ -1,44 +1,47 @@
-Bài toán: Planets Queries I (CSES 1750)
+Planets Queries I - CSES 1750
+https://cses.fi/problemset/task/1750
 
-MÔ HÌNH ĐỒ THỊ
-- Có n hành tinh, mỗi hành tinh i có đúng MỘT teleporter đi tới hành tinh t[i].
-- Vì mỗi đỉnh có ra-degree đúng bằng 1 nên đây là một "functional graph"
-  (đồ thị hàm số): đi từ mỗi đỉnh chỉ có một đường duy nhất, cuối cùng sẽ
-  rơi vào một chu trình (cycle) sau một đoạn đường dẫn (tail).
-- Mỗi truy vấn (x, k): xuất phát từ x, đi qua đúng k teleporter, hỏi đang
-  đứng ở hành tinh nào.
+## Đề bài
+- Có n hành tinh, mỗi hành tinh i có đúng MỘT teleporter đưa tới hành tinh t[i].
+- Vì mỗi đỉnh có ra-degree đúng bằng 1 nên đây là một "functional graph" (đồ thị
+  hàm số): từ mỗi đỉnh chỉ có một đường duy nhất, cuối cùng rơi vào một chu trình
+  (cycle) sau một đoạn đường dẫn (tail).
+- Với mỗi truy vấn (x, k): xuất phát từ x, đi qua đúng k teleporter, hỏi khi đó
+  ta đang đứng ở hành tinh nào.
 
-THUẬT TOÁN: BINARY LIFTING (nhảy nhị phân)
+## Ý tưởng
 - k có thể lên tới 1e9 nên không thể mô phỏng từng bước cho mỗi truy vấn.
-- Ta xây dựng bảng up[j][v] = đỉnh đến được khi đi 2^j bước từ v.
-    up[0][v] = t[v]                       (đi 1 bước)
-    up[j][v] = up[j-1][ up[j-1][v] ]      (đi 2^j = 2^(j-1) + 2^(j-1) bước)
+- Dùng BINARY LIFTING (nhảy nhị phân): xây bảng up[j][v] = đỉnh đến được khi đi
+  2^j bước từ v.
+    up[0][v] = t[v]                    (đi 1 bước)
+    up[j][v] = up[j-1][ up[j-1][v] ]   (đi 2^j = 2^(j-1) + 2^(j-1) bước)
 - Cần LOG mức với 2^LOG > k_max = 1e9, tức LOG = 30 (2^30 > 1.07e9).
-- Trả lời truy vấn (x, k): phân tích k theo nhị phân. Với mỗi bit j bật trong k,
-  nhảy v = up[j][v]. Sau khi duyệt hết các bit, v chính là đáp án.
-- Cài đặt xử lý gộp (batch) toàn bộ truy vấn theo từng mức bit j: giữ một mảng
-  cur các vị trí hiện tại, rồi với mỗi j chỉ dịch những truy vấn có bit j bật
-  bằng cur[i] = up[j][cur[i]]. Cách này tương đương về mặt thuật toán nhưng dồn
-  phần việc nặng vào list comprehension (chạy ở tầng C) thay vì vòng while từng
-  truy vấn ở tầng Python, nên nhanh hơn về hằng số.
+- Trả lời truy vấn (x, k): phân tích k theo nhị phân; với mỗi bit j bật trong k,
+  nhảy v = up[j][v]. Duyệt hết các bit thì v chính là đáp án.
+- Cài đặt xử lý gộp (batch) toàn bộ truy vấn theo từng mức bit j: giữ mảng cur
+  các vị trí hiện tại, rồi với mỗi j chỉ dịch những truy vấn có bit j bật bằng
+  cur[i] = up[j][cur[i]]. Cách này tương đương về thuật toán nhưng dồn phần việc
+  nặng vào list comprehension (chạy ở tầng C) thay vì vòng while từng truy vấn ở
+  tầng Python, nên nhanh hơn về hằng số.
 
 VÌ SAO ĐÚNG
 - Mọi số bước k đều biểu diễn được thành tổng các luỹ thừa 2^j (biểu diễn nhị phân).
-- Do đồ thị là hàm số (deterministic), việc ghép các bước 2^j theo đúng thứ tự
-  cho ra chính xác vị trí sau k bước. up[j] được dựng đúng bằng quy nạp từ up[j-1].
-- Ta dùng chỉ số 0-based bên trong (t[i]-1) rồi cộng lại 1 khi in ra để khớp
-  định dạng 1-indexed của CSES.
+- Do đồ thị là hàm số (deterministic), ghép các bước 2^j theo đúng thứ tự cho ra
+  chính xác vị trí sau k bước; up[j] được dựng đúng bằng quy nạp từ up[j-1].
+- Dùng chỉ số 0-based bên trong (t[i]-1) rồi cộng lại 1 khi in ra để khớp định
+  dạng 1-indexed của CSES.
 
-ĐỘ PHỨC TẠP
-- Thời gian: O((n + q) * LOG) = O((n + q) * 30) ~ 1.2e7 phép toán, thừa sức trong giới hạn.
+## Độ phức tạp
+- Thời gian: O((n + q) * LOG) = O((n + q) * 30) ~ 1.2e7 phép toán, thừa sức
+  trong giới hạn.
 - Bộ nhớ: O(n * LOG) cho bảng up, với n <= 2e5 và LOG = 30 là ~6e6 số nguyên,
   chấp nhận được.
 
 LƯU Ý TLE: Với Python thuần, hằng số lớn của binary lifting (dựng bảng và duyệt
 bit cho từng truy vấn) có thể gần chạm giới hạn thời gian trên test nặng nhất. Đã
 tối ưu bằng: đọc input theo khối; dựng mỗi mức bảng bằng
-list(map(prev.__getitem__, prev)) (nhanh hơn hẳn vòng lặp Python vì tránh việc
-lập chỉ số hai lần ở tầng Python); xử lý gộp truy vấn theo từng mức bit; và gom
-output in một lần. Với giới hạn thời gian rất chặt (khoảng 1 giây) của CSES,
-Python thuần vẫn có rủi ro TLE thực sự trên bộ test nặng nhất; đây là hạn chế cố
-hữu của CPython cho bài này chứ không phải lỗi thuật toán.
+list(map(prev.__getitem__, prev)) (nhanh hơn hẳn vòng lặp Python vì tránh lập chỉ
+số hai lần ở tầng Python); xử lý gộp truy vấn theo từng mức bit; và gom output in
+một lần. Với giới hạn thời gian rất chặt (khoảng 1 giây) của CSES, Python thuần
+vẫn có rủi ro TLE thực sự trên bộ test nặng nhất; đây là hạn chế cố hữu của
+CPython cho bài này chứ không phải lỗi thuật toán.

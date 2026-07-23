@@ -1,40 +1,39 @@
-Bài toán: Round Trip (CSES 1669)
+Round Trip - CSES 1669
+https://cses.fi/problemset/task/1669
 
-Mô hình đồ thị:
-- Đồ thị VÔ HƯỚNG với n đỉnh (thành phố) và m cạnh (con đường).
-- Đề bài bảo đảm mỗi cạnh nối hai đỉnh khác nhau và giữa hai đỉnh có nhiều nhất
-  một cạnh -> không có self-loop, không có cạnh bội (multi-edge).
-- Yêu cầu: tìm một chu trình (round trip) xuất phát và kết thúc ở cùng một đỉnh,
-  đi qua ít nhất hai đỉnh khác. Vì không có self-loop / cạnh bội nên chu trình
-  ngắn nhất có độ dài 3 (tam giác).
+## Đề bài
+Cho đồ thị VÔ HƯỚNG gồm n đỉnh (thành phố) và m cạnh (con đường). Đề bài bảo đảm
+mỗi cạnh nối hai đỉnh khác nhau và giữa hai đỉnh có nhiều nhất một cạnh, tức là
+không có self-loop và không có cạnh bội (multi-edge).
 
-Thuật toán:
-- Dùng DFS để phát hiện chu trình trong đồ thị vô hướng. Vì n <= 1e5 và
-  m <= 2e5, ta dùng DFS LẶP (iterative) với stack tường minh để tránh lỗi
-  RecursionError / tràn stack.
+Hãy tìm một chu trình (round trip) xuất phát và kết thúc tại cùng một đỉnh, đi
+qua ít nhất hai đỉnh khác. Vì không có self-loop hay cạnh bội nên chu trình ngắn
+nhất có độ dài 3 (tam giác). Nếu không tồn tại chu trình nào thì in "IMPOSSIBLE".
+
+## Ý tưởng
+Dùng DFS để phát hiện chu trình trong đồ thị vô hướng. Vì n <= 1e5 và m <= 2e5,
+ta dùng DFS LẶP (iterative) với stack tường minh để tránh lỗi RecursionError hay
+tràn stack.
+
 - Lưu mảng parent[]: parent[v] là đỉnh mà từ đó ta đi đến v trên cây DFS.
-- Với mỗi đỉnh u đang xét, duyệt các đỉnh kề v:
-    + Nếu v == parent[u]: bỏ qua (do không có cạnh bội, chỉ có đúng một cạnh
-      nối u và parent[u], nên bỏ qua đúng cạnh này là an toàn).
-    + Nếu v chưa thăm: đẩy v vào stack, đặt parent[v] = u.
-    + Nếu v đã thăm và v != parent[u]: ta tìm thấy BACK EDGE u -> v.
-- Truy ngược: bắt đầu từ u, liên tục đi theo parent cho đến khi gặp v, thu được
+- Với mỗi đỉnh u đang xét, duyệt lần lượt các đỉnh kề v:
+    + Nếu v == parent[u]: bỏ qua (do không có cạnh bội, chỉ có đúng một cạnh nối
+      u và parent[u], nên bỏ qua đúng cạnh này là an toàn).
+    + Nếu v chưa thăm: đẩy v vào stack và đặt parent[v] = u.
+    + Nếu v đã thăm và v != parent[u]: ta tìm thấy một BACK EDGE u -> v.
+- Truy ngược: bắt đầu từ u, liên tục đi theo parent cho tới khi gặp v, thu được
   đường đi u -> parent[u] -> ... -> v trên cây DFS. Cộng thêm cạnh ngược v -> u
-  sẽ tạo thành chu trình. Kết quả in ra là [u, ..., v, u] (đỉnh đầu lặp lại ở
-  cuối), số lượng số in ra chính là k cần in.
+  tạo thành chu trình. Kết quả in ra là [u, ..., v, u] (đỉnh đầu lặp lại ở cuối),
+  số lượng số in ra chính là k cần in.
 
-Tính đúng:
-- Trong DFS trên đồ thị VÔ HƯỚNG chỉ có tree edge và back edge, KHÔNG có
-  cross edge hay forward edge. Do đó khi u nhìn thấy đỉnh v đã thăm mà v khác
-  parent[u], thì v chắc chắn là tổ tiên của u và còn nằm trên stack -> chuỗi
-  parent từ u luôn dẫn về tới v. Vì vậy việc truy ngược theo parent tạo ra đúng
-  một chu trình hợp lệ, mọi cạnh trong chu trình đều tồn tại.
-- Nếu duyệt hết tất cả thành phần liên thông mà không gặp back edge nào thì đồ
-  thị không có chu trình -> in "IMPOSSIBLE".
+Tính đúng đắn: trong DFS trên đồ thị VÔ HƯỚNG chỉ có tree edge và back edge,
+KHÔNG có cross edge hay forward edge. Do đó khi u nhìn thấy đỉnh v đã thăm mà v
+khác parent[u], thì v chắc chắn là tổ tiên của u và còn nằm trên stack, nên chuỗi
+parent từ u luôn dẫn về tới v. Việc truy ngược theo parent tạo ra đúng một chu
+trình hợp lệ, mọi cạnh trong chu trình đều tồn tại. Nếu duyệt hết mọi thành phần
+liên thông mà không gặp back edge nào thì đồ thị không có chu trình -> in
+"IMPOSSIBLE".
 
-Độ phức tạp:
-- Thời gian: O(n + m) cho việc đọc, dựng danh sách kề và DFS.
+## Độ phức tạp
+- Thời gian: O(n + m) cho việc đọc, dựng danh sách kề và chạy DFS.
 - Bộ nhớ: O(n + m) cho danh sách kề và các mảng parent/visited/ptr.
-
-Đọc input nhanh bằng sys.stdin.buffer.read().split() và ghi output một lần bằng
-sys.stdout.write để đảm bảo tốc độ.

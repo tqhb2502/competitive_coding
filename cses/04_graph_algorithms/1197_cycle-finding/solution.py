@@ -1,9 +1,3 @@
-# Cycle Finding - CSES 1197
-# https://cses.fi/problemset/task/1197
-#
-# Tìm một chu trình âm (negative cycle) trong đồ thị có hướng bằng thuật toán
-# Bellman-Ford. Nếu sau n vòng relax vẫn còn cạnh relax được thì tồn tại chu
-# trình âm; truy vết mảng parent để tái tạo chu trình.
 import sys
 
 
@@ -25,15 +19,16 @@ def main():
     dist = [0] * (n + 1)
     parent = [-1] * (n + 1)
 
+    # Bellman-Ford: lặp đúng n vòng, mỗi vòng relax toàn bộ m cạnh.
     x = -1
-    for _ in range(n):  # chạy đúng n vòng
+    for _ in range(n):
         x = -1
         for a, b, c in edges:
             if dist[a] + c < dist[b]:
                 dist[b] = dist[a] + c
                 parent[b] = a
-                x = b
-        if x == -1:  # đã hội tụ -> không có chu trình âm
+                x = b  # ghi lại đỉnh vừa được relax
+        if x == -1:  # không còn relax được -> đã hội tụ -> không có chu trình âm
             break
 
     if x == -1:

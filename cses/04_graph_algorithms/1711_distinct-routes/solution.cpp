@@ -8,11 +8,14 @@
 
 using namespace std;
 
+// Dinic cho mạng luồng đơn vị (mỗi cạnh forward có capacity = 1): dùng để tính
+// số đường đi edge-disjoint tối đa từ nguồn tới đích.
 class UnitDinic {
 public:
     explicit UnitDinic(int vertexCount)
         : graph(vertexCount + 1), level(vertexCount + 1), nextEdge(vertexCount + 1) {}
 
+    // Thêm cạnh có hướng from -> to: cạnh forward capacity 1, cạnh reverse capacity 0.
     int addEdge(int from, int to) {
         const int forward = static_cast<int>(destination.size());
         graph[from].push_back(forward);
@@ -24,11 +27,12 @@ public:
         return forward;
     }
 
+    // Max-flow = số đường đi edge-disjoint tối đa từ source tới sink.
     int maximumFlow(int source, int sink) {
         int result = 0;
-        while (buildLevels(source, sink)) {
+        while (buildLevels(source, sink)) {           // BFS phân tầng theo cạnh còn capacity
             fill(nextEdge.begin(), nextEdge.end(), 0);
-            while (sendFlow(source, sink)) {
+            while (sendFlow(source, sink)) {           // đẩy các luồng chặn trên đồ thị phân tầng
                 ++result;
             }
         }
@@ -43,6 +47,7 @@ private:
     vector<int> level;
     vector<size_t> nextEdge;
 
+    // BFS gán mức (level) cho các đỉnh, chỉ đi qua cạnh còn capacity > 0.
     bool buildLevels(int source, int sink) {
         fill(level.begin(), level.end(), -1);
         queue<int> pending;
@@ -62,6 +67,7 @@ private:
         return level[sink] != -1;
     }
 
+    // DFS đẩy một đơn vị luồng theo cạnh tăng mức; nextEdge là con trỏ bỏ qua cạnh chết.
     bool sendFlow(int vertex, int sink) {
         if (vertex == sink) {
             return true;
@@ -73,8 +79,8 @@ private:
                 continue;
             }
             if (sendFlow(next, sink)) {
-                --capacity[edge];
-                ++capacity[edge ^ 1];
+                --capacity[edge];         // tiêu thụ cạnh forward
+                ++capacity[edge ^ 1];     // trả capacity cho cạnh reverse
                 return true;
             }
         }
@@ -82,6 +88,7 @@ private:
     }
 };
 
+// Lưu thông tin cạnh gốc để sau khi chạy luồng có thể tái tạo các tuyến đường.
 struct OriginalEdge {
     int from;
     int to;
@@ -97,13 +104,17 @@ int main() {
     UnitDinic network(n);
     vector<OriginalEdge> originalEdges;
     originalEdges.reserve(m);
+    // Mỗi teleporter a -> b là một cạnh capacity 1 trong mạng luồng.
     for (int edge = 0; edge < m; ++edge) {
         int from, to;
         cin >> from >> to;
         originalEdges.push_back({from, to, network.addEdge(from, to)});
     }
 
+    // Số tuyến đường tối đa = max-flow từ phòng 1 tới phòng n.
     const int routeCount = network.maximumFlow(1, n);
+
+    // Chỉ giữ các cạnh thực sự mang luồng (forward còn capacity 0 nghĩa là net flow = 1).
     vector<vector<int>> flowEdges(n + 1);
     for (const OriginalEdge& edge : originalEdges) {
         if (network.capacity[edge.id] == 0) {
@@ -115,6 +126,8 @@ int main() {
     vector<vector<int>> routes;
     routes.reserve(routeCount);
 
+    // Bóc tách routeCount tuyến: mỗi lần BFS trên đồ thị luồng để tìm một đường đi
+    // 1 -> n rồi đánh dấu các cạnh đã dùng để tuyến sau không dùng lại.
     for (int routeIndex = 0; routeIndex < routeCount; ++routeIndex) {
         vector<int> parentVertex(n + 1, -1);
         vector<int> parentEdge(n + 1, -1);
@@ -138,6 +151,7 @@ int main() {
             }
         }
 
+        // Truy vết ngược từ n về 1, đồng thời đánh dấu các cạnh của tuyến là đã dùng.
         vector<int> route;
         int vertex = n;
         while (vertex != 1) {
@@ -151,6 +165,7 @@ int main() {
         routes.push_back(std::move(route));
     }
 
+    // In số tuyến, rồi với mỗi tuyến in số phòng và dãy phòng theo thứ tự đi.
     cout << routeCount << '\n';
     for (const vector<int>& route : routes) {
         cout << route.size() << '\n';

@@ -1,27 +1,25 @@
-Bài toán: Message Route (CSES 1667)
+Message Route - CSES 1667
+https://cses.fi/problemset/task/1667
 
-MÔ HÌNH ĐỒ THỊ
-- Có n máy tính (đỉnh) và m kết nối (cạnh) hai chiều (undirected).
-- Cần tìm đường đi ngắn nhất (ít máy tính nhất) từ máy 1 (Uolevi) đến máy n (Maija).
-- Đồ thị không có trọng số, mỗi cạnh coi như có trọng số 1.
+## Đề bài
+- Có n máy tính (đỉnh) và m kết nối (cạnh) hai chiều giữa chúng.
+- Hãy tìm một đường đi ngắn nhất (đi qua ít máy tính nhất) từ máy 1 (Uolevi)
+  đến máy n (Maija), rồi in ra số máy tính trên đường đi và trình tự các máy.
+- Nếu không tồn tại đường đi thì in "IMPOSSIBLE".
 
-THUẬT TOÁN
+## Ý tưởng
+- Mô hình đồ thị: đồ thị vô hướng, không trọng số (mỗi cạnh coi như trọng số 1).
 - Vì đồ thị không trọng số, đường đi ngắn nhất được tìm bằng BFS xuất phát từ đỉnh 1.
-- Trong lúc BFS, ta lưu mảng parent[v] = đỉnh liền trước v trên đường đi ngắn nhất.
-- Khi BFS đến đỉnh n, ta truy vết ngược từ n về 1 qua mảng parent để dựng lại đường đi,
+- Trong lúc BFS, lưu mảng parent[v] = đỉnh liền trước v trên đường đi ngắn nhất.
+- Khi chạm tới đỉnh n, truy vết ngược từ n về 1 qua mảng parent để dựng lại đường đi,
   sau đó đảo ngược danh sách để in theo thứ tự 1 -> ... -> n.
-- Nếu sau khi BFS mà đỉnh n chưa được thăm (parent[n] chưa gán và n != 1) thì in "IMPOSSIBLE".
+- Nếu sau khi BFS mà đỉnh n vẫn chưa được thăm thì in "IMPOSSIBLE".
+- Tính đúng đắn: BFS duyệt các đỉnh theo từng lớp khoảng cách tăng dần; do mọi cạnh
+  có trọng số bằng nhau, lần đầu tiên một đỉnh được thăm chính là lúc chạm tới nó
+  với số cạnh nhỏ nhất, tức là qua một đường đi ngắn nhất hợp lệ (bài toán chấp nhận
+  mọi đường đi ngắn nhất hợp lệ).
 
-TÍNH ĐÚNG ĐẮN
-- BFS duyệt các đỉnh theo từng lớp khoảng cách tăng dần. Do mọi cạnh có trọng số bằng nhau (= 1),
-  lần đầu tiên một đỉnh được thăm chính là lúc ta đạt tới nó với số cạnh nhỏ nhất, tức đường đi ngắn nhất.
-- Mảng parent ghi lại cạnh dùng để lần đầu chạm tới mỗi đỉnh, nên truy vết ngược cho ra đúng
-  một đường đi ngắn nhất hợp lệ (bài toán chấp nhận mọi đường đi ngắn nhất hợp lệ).
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n + m) cho BFS (mỗi đỉnh và mỗi cạnh xét O(1) lần).
 - Bộ nhớ: O(n + m) cho danh sách kề (adjacency list) và các mảng parent/visited.
 - Với n <= 1e5 và m <= 2e5, độ phức tạp này hoàn toàn đủ nhanh.
-
-Đọc input nhanh bằng sys.stdin.buffer.read().split() và in một lần bằng sys.stdout.write.
-Dùng collections.deque cho hàng đợi BFS.

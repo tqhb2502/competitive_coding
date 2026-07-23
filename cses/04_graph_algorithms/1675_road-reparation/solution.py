@@ -1,17 +1,14 @@
-# Road Reparation - https://cses.fi/problemset/task/1675
-# Minimum Spanning Tree via Kruskal + DSU.
-# If the graph is not connected -> print "IMPOSSIBLE".
-
 import sys
 
 
 def main():
     data = sys.stdin.buffer.read().split()
     idx = 0
+    # Đọc số thành phố n và số con đường m.
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
-    # Read edges: store as (c, a, b) so sorting is by cost.
+    # Lưu cạnh dưới dạng (c, a, b) để sort tự động theo chi phí tăng dần (Kruskal).
     edges = []
     for _ in range(m):
         a = int(data[idx]); idx += 1
@@ -21,12 +18,12 @@ def main():
 
     edges.sort()
 
-    # DSU with path compression + union by size (arrays, 1-indexed).
+    # DSU với path compression và union by size (mảng, đánh chỉ số từ 1).
     parent = list(range(n + 1))
     size = [1] * (n + 1)
 
     def find(x):
-        # Iterative path compression (avoids recursion).
+        # Tìm gốc rồi nén đường về gốc, thực hiện lặp để tránh đệ quy.
         root = x
         while parent[root] != root:
             root = parent[root]
@@ -34,22 +31,25 @@ def main():
             parent[x], x = root, parent[x]
         return root
 
+    # Duyệt cạnh từ rẻ nhất, gộp hai thành phần khác nhau để dựng MST.
     total = 0
     used = 0
     for c, a, b in edges:
         ra = find(a)
         rb = find(b)
         if ra != rb:
-            # Union by size.
+            # Gộp theo union by size.
             if size[ra] < size[rb]:
                 ra, rb = rb, ra
             parent[rb] = ra
             size[ra] += size[rb]
             total += c
             used += 1
+            # Đã đủ n-1 cạnh: cây khung hoàn chỉnh, dừng sớm.
             if used == n - 1:
                 break
 
+    # Chọn đủ n-1 cạnh nghĩa là đồ thị liên thông; ngược lại thì không thể nối.
     if used == n - 1:
         sys.stdout.write(str(total) + "\n")
     else:

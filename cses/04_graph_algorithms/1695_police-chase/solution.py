@@ -1,10 +1,3 @@
-# Police Chase - CSES 1695
-# https://cses.fi/problemset/task/1695
-#
-# Minimum edge cut on an undirected graph = max-flow (unit capacities) from
-# vertex 1 to vertex n, solved with Dinic. The cut edges are found via the
-# reachable set in the residual graph.
-
 import sys
 from collections import deque
 
@@ -15,19 +8,19 @@ def main():
     n = int(data[pos]); pos += 1
     m = int(data[pos]); pos += 1
 
-    # Edge lists for the flow network.
+    # Danh sách cung cho mạng luồng.
     to = []
     cap = []
     graph = [[] for _ in range(n + 1)]
-    edges = []  # original undirected edges (a, b)
+    edges = []  # các con đường vô hướng gốc (a, b)
 
     def add_edge(u, v, c):
-        # Undirected edge: both directions get capacity c, each being the
-        # reverse (residual) of the other. Their indices are consecutive so
-        # eid ^ 1 gives the reverse edge.
+        # Cạnh vô hướng: cả hai chiều đều có capacity c, mỗi chiều là reverse
+        # (residual) của chiều kia. Chỉ số liên tiếp nên eid ^ 1 là cung ngược.
         graph[u].append(len(to)); to.append(v); cap.append(c)
         graph[v].append(len(to)); to.append(u); cap.append(c)
 
+    # Đọc các con đường và dựng mạng luồng với capacity 1 cho mỗi cạnh.
     for _ in range(m):
         a = int(data[pos]); pos += 1
         b = int(data[pos]); pos += 1
@@ -39,6 +32,7 @@ def main():
     level = [-1] * (n + 1)
     it = [0] * (n + 1)
 
+    # BFS phân tầng: gán level theo khoảng cách từ s trong residual graph.
     def bfs():
         for i in range(n + 1):
             level[i] = -1
@@ -53,6 +47,7 @@ def main():
                     q.append(v)
         return level[t] >= 0
 
+    # DFS đẩy luồng theo blocking flow trên đồ thị phân tầng.
     def dfs(u, f):
         if u == t:
             return f
@@ -63,6 +58,7 @@ def main():
             if cap[eid] > 0 and level[v] == level[u] + 1:
                 d = dfs(v, f if f < cap[eid] else cap[eid])
                 if d > 0:
+                    # Cập nhật residual: giảm cung xuôi, tăng cung ngược.
                     cap[eid] -= d
                     cap[eid ^ 1] += d
                     return d
@@ -71,6 +67,7 @@ def main():
 
     sys.setrecursionlimit(10000)
 
+    # Chạy Dinic: lặp BFS phân tầng rồi đẩy blocking flow tới khi hết luồng.
     INF = float('inf')
     while bfs():
         for i in range(n + 1):
@@ -78,7 +75,7 @@ def main():
         while dfs(s, INF) > 0:
             pass
 
-    # Reachable set from s in the residual graph -> one side of the min cut.
+    # Tập đỉnh còn tới được từ s trong residual graph -> một phía của min cut.
     visited = [False] * (n + 1)
     visited[s] = True
     q = deque([s])
@@ -90,6 +87,7 @@ def main():
                 visited[v] = True
                 q.append(v)
 
+    # Con đường cần đóng: cạnh có đúng một đầu thuộc tập S (nằm trên lát cắt).
     cut = [(a, b) for (a, b) in edges if visited[a] != visited[b]]
 
     out = [str(len(cut))]

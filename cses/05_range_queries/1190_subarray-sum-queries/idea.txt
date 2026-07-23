@@ -1,36 +1,42 @@
-Bài toán: sau mỗi cập nhật một phần tử (point update), in ra tổng đoạn con (subarray)
-lớn nhất của mảng. Cho phép đoạn con rỗng nên đáp án luôn >= 0.
+Subarray Sum Queries - CSES 1190
+https://cses.fi/problemset/task/1190
 
-Cấu trúc dữ liệu: iterative segment tree (bottom-up), mỗi node lưu 4 giá trị:
+## Đề bài
+Cho một mảng gồm n số nguyên và m truy vấn. Mỗi truy vấn là một phép cập nhật một
+phần tử (point update): gán giá trị mới cho một vị trí. Sau mỗi lần cập nhật, in ra
+tổng của đoạn con (subarray) liên tiếp có tổng lớn nhất. Vì cho phép chọn đoạn con
+rỗng, đáp án luôn không âm (>= 0).
+
+## Ý tưởng
+Dùng cây phân đoạn lặp (iterative segment tree, dựng từ dưới lên). Mỗi node lưu bốn
+đại lượng cho đoạn mà nó quản lý:
   - tot : tổng của cả đoạn.
-  - pre : tổng tiền tố (prefix) lớn nhất, đã kẹp >= 0 (cho phép prefix rỗng).
-  - suf : tổng hậu tố (suffix) lớn nhất, đã kẹp >= 0 (cho phép suffix rỗng).
+  - pre : tổng tiền tố (prefix) lớn nhất, đã kẹp >= 0 (cho phép tiền tố rỗng).
+  - suf : tổng hậu tố (suffix) lớn nhất, đã kẹp >= 0 (cho phép hậu tố rỗng).
   - best: tổng đoạn con lớn nhất nằm trong đoạn, đã kẹp >= 0.
 
-Phép hợp (merge) node cha từ hai con L và R:
+Phép hợp (merge) node cha từ hai con trái L và phải R:
   - tot  = L.tot + R.tot
   - pre  = max(L.pre, L.tot + R.pre)
   - suf  = max(R.suf, R.tot + L.suf)
   - best = max(L.best, R.best, L.suf + R.pre)
-Trường hợp best xét đoạn con vắt qua ranh giới hai con: hậu tố tốt nhất của L nối
-tiền tố tốt nhất của R (L.suf + R.pre).
+Trường hợp đáng chú ý của best là đoạn con vắt qua ranh giới giữa hai con: hậu tố tốt
+nhất của L nối với tiền tố tốt nhất của R, tức L.suf + R.pre.
 
-Khởi tạo lá với giá trị v: tot = v, pre = suf = best = max(0, v).
-Phần tử trung hòa (identity) cho các lá đệm khi n không phải lũy thừa 2 là (0,0,0,0),
-tương ứng đoạn rỗng; merge với nó không làm thay đổi kết quả vì pre >= tot và best >= suf.
+Khởi tạo lá với giá trị v: tot = v, còn pre = suf = best = max(0, v). Phần tử trung
+hòa (identity) cho các lá đệm khi n không phải lũy thừa của 2 là (0, 0, 0, 0), tương
+ứng đoạn rỗng; merge với nó không làm đổi kết quả.
 
-Vì mỗi lần chỉ cần đáp án của TOÀN mảng (chính là node gốc), ta không cần range query:
-mỗi update chỉ sửa 1 lá rồi đi lên gốc cập nhật các node cha, sau đó đọc best[1].
+Vì mỗi truy vấn chỉ cần đáp án của TOÀN mảng (chính là node gốc), ta không cần range
+query: mỗi update chỉ sửa đúng 1 lá rồi đi ngược lên gốc cập nhật các node cha, sau đó
+đọc best tại gốc (best[1]).
 
-Tính đúng đắn: định nghĩa 4 đại lượng trên là bất biến quy nạp; phép merge tính lại
-chính xác 4 đại lượng cho đoạn ghép, nên gốc luôn giữ tổng đoạn con lớn nhất của cả mảng.
-
-Độ phức tạp:
+## Độ phức tạp
   - Xây dựng: O(n).
   - Mỗi update: O(log n) do đi từ lá lên gốc.
   - Tổng: O((n + m) log n) thời gian, O(n) bộ nhớ.
 
-LƯU Ý TLE: n, m tối đa 2*10^5 với hệ số log; giới hạn 1.00s của CSES nhắm cho C++.
-Bản pure Python (CPython) có thể chạm hoặc vượt giới hạn thời gian ở test xấu nhất;
-đã tối ưu bằng cách bind biến ra local và inline merge trong vòng lặp update. Nếu vẫn
-TLE, cần PyPy hoặc hằng số nhỏ hơn, nhưng thuật toán là tối ưu về mặt độ phức tạp.
+LƯU Ý TLE: n, m tối đa 2*10^5 kèm hệ số log; giới hạn 1.00s của CSES nhắm cho C++. Bản
+pure Python (CPython) có thể chạm hoặc vượt giới hạn thời gian ở test xấu nhất; đã tối
+ưu bằng cách bind biến ra local và inline phép merge trong vòng lặp update. Nếu vẫn TLE
+thì cần PyPy hoặc hằng số nhỏ hơn, nhưng thuật toán đã tối ưu về mặt độ phức tạp.

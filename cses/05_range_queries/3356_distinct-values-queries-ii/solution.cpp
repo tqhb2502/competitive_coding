@@ -8,16 +8,20 @@ struct Query {
     int second;
 };
 
+// Fenwick/BIT lưu cờ present/absent của các cặp (value, position) đã nén.
+// Ngoài add/prefix_sum còn hỗ trợ select: tìm chỉ số của phần tử active thứ k.
 class FenwickTree {
 public:
     explicit FenwickTree(const int size)
         : size_(size), tree_(size + 1, 0) {
+        // highest_power_ = luỹ thừa 2 lớn nhất <= size_, phục vụ binary lifting.
         highest_power_ = 1;
         while (highest_power_ <= size_ / 2) {
             highest_power_ *= 2;
         }
     }
 
+    // Bật/tắt một cặp (activate / deactivate): cộng value vào vị trí index.
     void add(int index, const int value) {
         while (index <= size_) {
             tree_[index] += value;
@@ -25,6 +29,7 @@ public:
         }
     }
 
+    // Đếm số cặp active trong tiền tố [1..index].
     int prefix_sum(int index) const {
         int result = 0;
         while (index > 0) {
@@ -34,6 +39,7 @@ public:
         return result;
     }
 
+    // Binary lifting: trả về chỉ số của phần tử active thứ "order" (1-based).
     int select(const int order) const {
         int index = 0;
         int remaining = order;
@@ -53,15 +59,19 @@ private:
     std::vector<int> tree_;
 };
 
+// Segment tree lặp (bottom-up) cho range-max của prev[], hỗ trợ gán điểm.
+// Không dùng Fenwick vì prev[i] có thể GIẢM khi cập nhật.
 class MaximumSegmentTree {
 public:
     explicit MaximumSegmentTree(const std::vector<int>& values) {
+        // values được đánh chỉ số từ 1; count là số phần tử thực.
         const int count = static_cast<int>(values.size()) - 1;
         size_ = 1;
         while (size_ < count) {
             size_ *= 2;
         }
         tree_.assign(2 * size_, 0);
+        // Nạp lá rồi dựng ngược lên gốc bằng max của hai con.
         for (int position = 1; position <= count; ++position) {
             tree_[size_ + position - 1] = values[position];
         }
@@ -70,6 +80,7 @@ public:
         }
     }
 
+    // Gán điểm: đặt prev[position] = value rồi cập nhật dọc lên gốc.
     void assign(const int position, const int value) {
         int index = size_ + position - 1;
         tree_[index] = value;
@@ -78,6 +89,7 @@ public:
         }
     }
 
+    // Truy vấn max trên đoạn [left, right].
     int query(int left, const int right) const {
         int result = 0;
         left += size_ - 1;
@@ -100,6 +112,8 @@ private:
     std::vector<int> tree_;
 };
 
+// Mã hoá một cặp (value_rank, position) thành một khoá số nguyên duy nhất
+// để có thể sắp xếp theo thứ tự (value, position).
 long long pair_key(const int value_rank, const int position, const int stride) {
     return static_cast<long long>(value_rank) * stride + position;
 }
@@ -111,6 +125,7 @@ int main() {
     int n, q;
     std::cin >> n >> q;
 
+    // Đọc mảng ban đầu, đồng thời thu thập mọi giá trị để nén tọa độ.
     std::vector<int> values(n + 1);
     std::vector<int> all_values;
     all_values.reserve(n + q);
@@ -119,6 +134,7 @@ int main() {
         all_values.push_back(values[position]);
     }
 
+    // Đọc các truy vấn; giá trị đích u của mỗi update cũng phải được nén.
     std::vector<Query> queries;
     queries.reserve(q);
     for (int query_index = 0; query_index < q; ++query_index) {
@@ -130,6 +146,7 @@ int main() {
         }
     }
 
+    // Nén giá trị: đổi mỗi giá trị thành thứ hạng (value_rank).
     std::sort(all_values.begin(), all_values.end());
     all_values.erase(
         std::unique(all_values.begin(), all_values.end()), all_values.end()
@@ -141,6 +158,9 @@ int main() {
         );
     };
 
+    // Nén MỌI cặp (value, position) có thể xuất hiện (mảng ban đầu + các update),
+    // sắp theo thứ tự (value_rank, position). Hàng xóm cùng giá trị của một cặp
+    // chính là hàng xóm toàn cục liền kề trong thứ tự này.
     const int stride = n + 1;
     std::vector<long long> possible_pairs;
     possible_pairs.reserve(n + q);
@@ -162,6 +182,7 @@ int main() {
         possible_pairs.end()
     );
 
+    // Giải mã lại vị trí và value_rank cho từng chỉ số nén (1-based).
     const int pair_count = static_cast<int>(possible_pairs.size());
     std::vector<int> pair_position(pair_count + 1, 0);
     std::vector<int> pair_value_rank(pair_count + 1, 0);
@@ -178,6 +199,7 @@ int main() {
         ) + 1;
     };
 
+    // Kích hoạt cặp active hiện tại của từng vị trí trong BIT.
     std::vector<int> current_pair(n + 1, 0);
     FenwickTree active_pairs(pair_count);
     for (int position = 1; position <= n; ++position) {
@@ -187,6 +209,7 @@ int main() {
         active_pairs.add(current_pair[position], 1);
     }
 
+    // Tính prev[] ban đầu: last_position lưu vị trí gần nhất mang mỗi value_rank.
     std::vector<int> previous(n + 1, 0);
     std::vector<int> last_position(all_values.size(), 0);
     for (int position = 1; position <= n; ++position) {
@@ -196,6 +219,8 @@ int main() {
     }
     MaximumSegmentTree maximum_previous(previous);
 
+    // Tìm predecessor cùng giá trị của một cặp: lấy phần tử active liền trước,
+    // trả về vị trí của nó nếu cùng value_rank, ngược lại 0.
     const auto same_value_predecessor = [
         &active_pairs, &pair_position, &pair_value_rank
     ](const int pair_index, const int rank) {
@@ -209,6 +234,8 @@ int main() {
                    : 0;
     };
 
+    // Tìm successor cùng giá trị của một cặp: lấy phần tử active liền sau,
+    // trả về vị trí của nó nếu cùng value_rank, ngược lại 0.
     const auto same_value_successor = [
         &active_pairs, &pair_position, &pair_value_rank
     ](const int pair_index, const int rank, const int active_count) {
@@ -223,6 +250,7 @@ int main() {
     };
 
     for (const Query& query : queries) {
+        // Truy vấn "2 a b": đoạn phân biệt <=> max(prev trên [a, b]) < a.
         if (query.type == 2) {
             std::cout << (
                 maximum_previous.query(query.first, query.second) < query.first
@@ -232,15 +260,18 @@ int main() {
             continue;
         }
 
+        // Update "1 k u": xác định cặp cũ và cặp mới của vị trí k.
         const int position = query.first;
         const int old_pair = current_pair[position];
         const int new_pair = compressed_pair(
             pair_key(value_rank(query.second), position, stride)
         );
         if (old_pair == new_pair) {
+            // Giá trị mới trùng giá trị hiện tại: không thay đổi gì.
             continue;
         }
 
+        // Gỡ k khỏi nhóm giá trị cũ: successor cũ nay trỏ prev về predecessor cũ.
         const int old_rank = pair_value_rank[old_pair];
         active_pairs.add(old_pair, -1);
         const int old_predecessor =
@@ -251,6 +282,8 @@ int main() {
             maximum_previous.assign(old_successor, old_predecessor);
         }
 
+        // Chèn k vào nhóm giá trị mới: prev[k] = predecessor mới; successor mới
+        // (nếu có) đổi prev sang k.
         active_pairs.add(new_pair, 1);
         const int new_rank = pair_value_rank[new_pair];
         const int new_predecessor =

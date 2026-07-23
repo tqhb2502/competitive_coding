@@ -1,32 +1,30 @@
-Bài toán: Download Speed (CSES 1694)
+Download Speed - CSES 1694
+https://cses.fi/problemset/task/1694
 
-MÔ HÌNH HÓA
-- Có n máy tính và m kết nối có hướng, mỗi kết nối a -> b có dung lượng (capacity) c.
-- Máy 1 là server (source), máy n là đích (sink). Cần tìm tốc độ truyền dữ liệu lớn nhất
-  từ máy 1 tới máy n.
+## Đề bài
+- Có n máy tính và m kết nối có hướng. Mỗi kết nối a -> b có dung lượng (capacity) c.
+- Máy 1 là server (source), máy n là đích (sink).
+- Cần tìm tốc độ truyền dữ liệu lớn nhất có thể từ máy 1 tới máy n.
+
+## Ý tưởng
 - Đây chính xác là bài toán Maximum Flow (luồng cực đại) trên đồ thị có hướng với
-  source = 1, sink = n. Tốc độ tải tối đa = giá trị luồng cực đại (theo định lý max-flow min-cut).
+  source = 1 và sink = n. Tốc độ tải tối đa bằng giá trị luồng cực đại (theo định lý
+  max-flow min-cut).
+- Dùng thuật toán Dinic để tìm max-flow:
+  - Mỗi kết nối a -> b với capacity c được biểu diễn bằng một cạnh thuận (capacity c)
+    và một cạnh nghịch (residual, capacity 0). Cặp cạnh lưu ở chỉ số chẵn/lẻ liên tiếp
+    nên cạnh đối của eid là eid ^ 1.
+  - Nếu có nhiều kết nối song song (kể cả hai chiều a -> b và b -> a) thì cứ thêm từng
+    cạnh riêng biệt; điều này hoàn toàn đúng đắn với residual graph.
+  - Lặp lại: dựng level graph bằng BFS từ source; nếu tới được sink thì tìm nhiều
+    blocking flow bằng DFS (dùng mảng iterator để bỏ qua các cạnh đã bão hòa). Lặp cho
+    tới khi BFS không còn tìm được đường tăng luồng.
+- Tính đúng đắn: Dinic kết thúc khi không còn augmenting path trong residual graph, khi
+  đó luồng đã đạt cực đại. Vì c có thể tới 1e9 nên giá trị luồng có thể lớn; C++ dùng
+  long long, còn Python dùng số nguyên lớn (big int) tự nhiên nên không tràn số.
 
-THUẬT TOÁN
-- Dùng thuật toán Dinic để tìm max-flow.
-- Mỗi kết nối a -> b với capacity c được biểu diễn bằng một cạnh thuận (capacity c) và
-  một cạnh nghịch (residual, capacity 0). Cặp cạnh lưu ở chỉ số chẵn/lẻ liên tiếp nên
-  cạnh đối của eid là eid^1.
-- Nếu có nhiều kết nối song song (kể cả hai chiều a->b và b->a) thì cứ thêm từng cạnh
-  riêng biệt; điều này hoàn toàn đúng đắn với residual graph.
-- Dinic lặp lại: dựng level graph bằng BFS từ source; nếu tới được sink thì tìm nhiều
-  blocking flow bằng DFS (có mảng iterator it[] để bỏ qua các cạnh đã bão hòa). Lặp cho
-  tới khi BFS không còn đường tăng luồng.
-
-TÍNH ĐÚNG ĐẮN
-- Dinic là thuật toán chuẩn cho max-flow, kết thúc khi không còn augmenting path trong
-  residual graph, khi đó luồng đạt cực đại (max-flow min-cut theorem).
-- Vì c có thể tới 1e9 và m tới 1000 nên giá trị luồng có thể lớn; Python dùng số nguyên
-  lớn (big int) tự nhiên nên không tràn số.
-
-ĐỘ PHỨC TẠP
-- Dinic tổng quát: O(V^2 * E). Với n <= 500 và m <= 1000 (số cạnh kể cả residual ~ 2m),
-  chi phí này rất nhỏ so với giới hạn, chạy nhanh.
+## Độ phức tạp
+- Thời gian: Dinic tổng quát O(V^2 * E). Với n <= 500 và m <= 1000 (số cạnh kể cả
+  residual khoảng 2m), chi phí rất nhỏ so với giới hạn nên chạy nhanh.
 - Bộ nhớ: O(V + E) cho danh sách kề và các mảng to[], cap[].
-
-Không có rủi ro TLE với ràng buộc nhỏ này trong pure Python.
+- Không có rủi ro TLE với ràng buộc nhỏ này, kể cả trong pure Python.

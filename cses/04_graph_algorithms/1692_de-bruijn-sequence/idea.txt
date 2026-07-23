@@ -1,47 +1,39 @@
-Bài toán: De Bruijn Sequence (CSES 1692)
+De Bruijn Sequence - CSES 1692
+https://cses.fi/problemset/task/1692
 
-Yêu cầu: cho số nguyên n (1 <= n <= 15), xây dựng một xâu bit có độ dài
-nhỏ nhất sao cho nó chứa tất cả 2^n xâu con nhị phân độ dài n.
+## Đề bài
+Cho số nguyên n (1 <= n <= 15). Hãy xây dựng một xâu bit có độ dài nhỏ nhất
+sao cho nó chứa tất cả 2^n xâu con nhị phân độ dài n (mỗi xâu con xuất hiện
+đúng một lần khi trượt cửa sổ độ dài n dọc theo xâu kết quả).
 
-1. Nhận xét về độ dài tối thiểu
-   - Có tất cả 2^n xâu con phân biệt độ dài n cần xuất hiện.
-   - Mỗi vị trí bắt đầu trong xâu kết quả cho đúng một xâu con độ dài n. Nếu
-     xâu kết quả dài L thì có L - n + 1 xâu con. Muốn phủ hết 2^n xâu con thì
-     cần L - n + 1 >= 2^n, tức L >= 2^n + n - 1.
-   - Cận này đạt được bằng dãy De Bruijn, nên đáp án tối thiểu có độ dài
-     (n - 1) + 2^n.
+## Ý tưởng
+Độ dài tối thiểu:
+- Có tất cả 2^n xâu con phân biệt độ dài n cần xuất hiện. Một xâu kết quả dài L
+  cho L - n + 1 xâu con, nên cần L - n + 1 >= 2^n, tức L >= 2^n + n - 1.
+- Cận này đạt được bởi dãy De Bruijn, nên đáp án tối thiểu có độ dài (n-1) + 2^n.
 
-2. Mô hình hóa bằng đồ thị De Bruijn
-   - Mỗi đỉnh (node) là một xâu bit độ dài n-1. Số đỉnh là 2^(n-1). Ta biểu
-     diễn đỉnh bằng số nguyên (n-1) bit.
-   - Từ đỉnh u, thêm một bit b thuộc {0,1} tạo ra một cạnh (edge) tương ứng
-     với xâu con u+b có độ dài n. Cạnh này đi tới đỉnh gồm n-1 bit cuối của
-     u+b, tính bằng ((u << 1) | b) & mask với mask = 2^(n-1) - 1.
-   - Như vậy mỗi cạnh tương ứng một-một với một xâu con độ dài n, và có đúng
-     2^n cạnh.
+Mô hình hóa bằng đồ thị De Bruijn:
+- Mỗi đỉnh là một xâu bit độ dài n-1 (có 2^(n-1) đỉnh), biểu diễn bằng số nguyên
+  (n-1) bit.
+- Từ đỉnh u, thêm một bit b thuộc {0,1} tạo ra một cạnh ứng với xâu con u+b độ
+  dài n; cạnh đi tới đỉnh gồm n-1 bit cuối của u+b, tính bằng ((u<<1)|b) & mask
+  với mask = 2^(n-1) - 1.
+- Như vậy mỗi cạnh ứng một-một với một xâu con độ dài n, và có đúng 2^n cạnh.
 
-3. Vì sao tồn tại lời giải và cách xây dựng
-   - Mỗi đỉnh có out-degree = 2 (thêm bit 0 hoặc 1) và in-degree = 2, nên đồ
-     thị cân bằng. Đồ thị cũng liên thông (mọi đỉnh đều tới được nhau). Do đó
-     tồn tại một Eulerian circuit (chu trình Euler) đi qua mỗi cạnh đúng một
-     lần.
-   - Đi theo Eulerian circuit và ghi lại bit b của từng cạnh. Xâu kết quả là
-     tiền tố (n-1) bit của đỉnh xuất phát nối với dãy 2^n bit của các cạnh.
-     Khi trượt cửa sổ độ dài n dọc theo xâu này, mỗi cạnh của chu trình cho
-     đúng một xâu con, nên toàn bộ 2^n xâu con đều xuất hiện đúng một lần.
-   - Ta dùng thuật toán Hierholzer để tìm Eulerian circuit. Cài đặt lặp (dùng
-     stack tường minh) để tránh đệ quy sâu.
+Vì sao tồn tại và cách xây dựng:
+- Mỗi đỉnh có in-degree = out-degree = 2 nên đồ thị cân bằng; đồ thị cũng liên
+  thông. Do đó tồn tại một Eulerian circuit đi qua mỗi cạnh đúng một lần.
+- Dùng thuật toán Hierholzer (cài đặt lặp bằng stack tường minh để tránh đệ quy
+  sâu) để tìm Eulerian circuit, ghi lại bit b của từng cạnh. Kết quả là tiền tố
+  (n-1) bit của đỉnh xuất phát nối với dãy 2^n bit của các cạnh. Khi trượt cửa
+  sổ độ dài n, mỗi cạnh cho đúng một xâu con nên toàn bộ 2^n xâu con đều xuất
+  hiện đúng một lần.
 
-4. Trường hợp đặc biệt n = 1
-   - mask = 0, chỉ có một đỉnh (xâu rỗng) với hai self-loop ứng với bit 0 và
-     bit 1. Kết quả là "01" (hoặc "10"), độ dài 2 = 2^1 + 1 - 1. Đúng.
+Trường hợp đặc biệt n = 1:
+- mask = 0, chỉ có một đỉnh (xâu rỗng) với hai self-loop ứng với bit 0 và bit 1.
+  Kết quả là "01" (hoặc "10"), độ dài 2 = 2^1 + 1 - 1.
 
-5. Kiểm chứng ví dụ n = 2
-   - Đỉnh "0" và "1". Eulerian circuit cho tiền tố "0" nối "0110" thành
-     "00110", đúng với đáp án mẫu.
-
-6. Độ phức tạp
-   - Số đỉnh 2^(n-1), số cạnh 2^n. Với n = 15 thì có 16384 đỉnh và 32768
-     cạnh. Hierholzer chạy O(số cạnh) = O(2^n).
-   - Thời gian và bộ nhớ đều là O(2^n), rất nhỏ. Không có nguy cơ TLE trong
-     Python thuần.
+## Độ phức tạp
+- Số đỉnh 2^(n-1), số cạnh 2^n. Với n = 15 có 16384 đỉnh và 32768 cạnh.
+- Hierholzer chạy O(số cạnh) = O(2^n) thời gian, bộ nhớ O(2^n). Rất nhỏ, không
+  có nguy cơ TLE kể cả với Python thuần.

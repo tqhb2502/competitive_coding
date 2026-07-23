@@ -1,41 +1,40 @@
-Bài toán: Dynamic Range Minimum Queries (CSES 1649)
+Dynamic Range Minimum Queries - CSES 1649
+https://cses.fi/problemset/task/1649
 
-Yêu cầu: cho mảng n phần tử, xử lý q truy vấn gồm hai loại:
-  - "1 k u": gán giá trị phần tử tại vị trí k thành u (point update).
-  - "2 a b": tìm giá trị nhỏ nhất trong đoạn [a, b] (range minimum query).
+## Đề bài
+Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
+  - "1 k u": gán giá trị của phần tử tại vị trí k (đánh số từ 1) bằng u.
+  - "2 a b": tìm giá trị nhỏ nhất trong đoạn đóng [a, b].
 
-Cấu trúc dữ liệu: iterative segment tree (segment tree lặp, xây dựng bottom-up).
+## Ý tưởng
+Dùng iterative segment tree (segment tree lặp, xây dựng bottom-up) cho phép
+min. Không dùng Fenwick/BIT vì phép min không có phần tử nghịch đảo (không thể
+"trừ" ngược như phép tổng), nên không thể suy ra min một đoạn từ các tiền tố.
 
-Vì phép min KHÔNG có phần tử nghịch đảo (không thể "trừ" ra như tổng),
-nên Fenwick/BIT chuẩn không dùng trực tiếp cho range-min với point update.
-Ta dùng segment tree thay vì BIT.
+Cài đặt:
+  - Chọn size là lũy thừa của 2 nhỏ nhất mà >= n. Cây lưu trong mảng tree có
+    2*size phần tử; lá thứ i (0-indexed) nằm tại tree[size + i].
+  - Xây dựng: đặt các lá, rồi duyệt node cha p từ size-1 về 1 và gán
+    tree[p] = min(tree[2p], tree[2p+1]).
+  - Point update vị trí k: đặt lại giá trị tại lá, rồi đi ngược từ lá lên gốc,
+    cập nhật lại mỗi node cha bằng min của hai con.
+  - Range-min query trên đoạn nửa mở [l, r): dịch l += size, r += size rồi lặp:
+    nếu l lẻ thì gộp tree[l] và tăng l; nếu r lẻ thì giảm r rồi gộp tree[r];
+    sau đó l >>= 1, r >>= 1 cho tới khi l >= r. Truy vấn "2 a b" là đoạn đóng
+    [a, b] nên gọi query(a-1, b).
 
-Cài đặt iterative segment tree:
-  - Chọn kích thước size là lũy thừa 2 nhỏ nhất >= n. Cây lưu trong mảng
-    tree có 2*size phần tử; lá thứ i nằm ở tree[size + i].
-  - Xây dựng: đặt các lá, rồi với mỗi node cha p (từ size-1 về 1):
-        tree[p] = min(tree[2p], tree[2p+1]).
-  - Point update vị trí k (0-indexed): đặt tree[size + k] = u, rồi đi ngược
-    lên gốc, cập nhật lại các node cha bằng min của hai con.
-  - Range-min query [l, r) (nửa mở, 0-indexed): dùng hai con trỏ l += size,
-    r += size, lặp: nếu l lẻ thì gộp tree[l] rồi l += 1; nếu r lẻ thì
-    r -= 1 rồi gộp tree[r]; sau đó l >>= 1, r >>= 1 cho tới khi l >= r.
-    Trong bài này truy vấn "2 a b" là đoạn đóng [a, b], nên gọi query(a-1, b).
+Tính đúng đắn: segment tree phân rã mọi đoạn thành O(log n) đoạn cơ sở tương
+ứng các node; min của các min từng đoạn chính là min toàn đoạn. Point update
+chỉ ảnh hưởng các node trên đường từ lá tới gốc nên O(log n) node là đủ.
 
-Tính đúng đắn: segment tree phân rã mọi đoạn thành O(log n) đoạn cơ sở
-(canonical segments) tương ứng các node; min của tập hợp các min từng đoạn
-chính là min toàn đoạn. Point update chỉ ảnh hưởng các node trên đường từ
-lá tới gốc nên cập nhật O(log n) node là đủ và luôn giữ bất biến
-tree[p] = min(hai con).
+Đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split() cho nhanh, ghi
+kết quả một lần bằng sys.stdout.buffer.write để đảm bảo xuống dòng LF.
 
-Độ phức tạp:
-  - Xây dựng: O(n) (hoặc O(size)).
+## Độ phức tạp
+  - Xây dựng: O(n).
   - Mỗi update và mỗi query: O(log n).
   - Tổng thời gian: O((n + q) log n).
   - Bộ nhớ: O(size) ~ O(n) cho mảng tree.
-
-Đọc toàn bộ input bằng sys.stdin.buffer.read().split() cho nhanh, ghi kết
-quả một lần bằng sys.stdout.buffer.write để đảm bảo xuống dòng LF.
 
 LƯU Ý TLE: giới hạn thời gian CSES là 1.00s và nhắm cho C++. Với n, q tới
 2*10^5 và hằng số của Python cho segment tree, bản CPython thuần có thể chạm

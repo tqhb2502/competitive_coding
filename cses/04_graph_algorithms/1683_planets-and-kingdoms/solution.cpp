@@ -9,6 +9,7 @@ int main() {
     int n, m;
     std::cin >> n >> m;
 
+    // adj: đồ thị gốc; reverse_adj: đồ thị đảo chiều mọi cạnh (dùng cho Kosaraju).
     std::vector<std::vector<int>> adj(n + 1);
     std::vector<std::vector<int>> reverse_adj(n + 1);
     for (int i = 0; i < m; ++i) {
@@ -18,7 +19,8 @@ int main() {
         reverse_adj[b].push_back(a);
     }
 
-    // First Kosaraju pass: iterative DFS postorder on the original graph.
+    // Bước 1: DFS lặp trên đồ thị gốc, ghi lại thứ tự kết thúc (post-order) vào order.
+    // Con trỏ next_edge lưu cạnh kế tiếp cần xét của mỗi đỉnh để tránh tràn stack.
     std::vector<char> visited(n + 1, false);
     std::vector<std::size_t> next_edge(n + 1, 0);
     std::vector<int> order;
@@ -40,13 +42,15 @@ int main() {
                     stack.push_back(next);
                 }
             } else {
+                // Đỉnh đã duyệt hết cạnh: chốt finish order rồi lấy ra khỏi stack.
                 order.push_back(node);
                 stack.pop_back();
             }
         }
     }
 
-    // Second pass: each traversal in reverse finish order is exactly one SCC.
+    // Bước 2: duyệt các đỉnh theo thứ tự NGƯỢC của order; mỗi lần DFS trên đồ thị
+    // đảo chiều xuất phát từ đỉnh chưa gán nhãn sẽ phủ trọn đúng một SCC (kingdom).
     std::vector<int> component(n + 1, 0);
     int component_count = 0;
     for (auto it = order.rbegin(); it != order.rend(); ++it) {
@@ -55,7 +59,7 @@ int main() {
             continue;
         }
 
-        ++component_count;
+        ++component_count;  // Mở một vương quốc (SCC) mới.
         component[start] = component_count;
         std::vector<int> stack{start};
         while (!stack.empty()) {
@@ -70,6 +74,7 @@ int main() {
         }
     }
 
+    // In số vương quốc k rồi in nhãn SCC của từng hành tinh 1..n.
     std::cout << component_count << '\n';
     for (int planet = 1; planet <= n; ++planet) {
         if (planet != 1) {

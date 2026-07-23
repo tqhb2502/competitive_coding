@@ -1,55 +1,26 @@
-Bài toán: Forest Queries II (CSES 1739)
+Forest Queries II - CSES 1739
+https://cses.fi/problemset/task/1739
 
-Cho lưới n x n, mỗi ô là cây ('*') hoặc trống ('.'). Xử lý q truy vấn:
-  - Loại 1 "1 y x": đổi trạng thái (toggle) ô (y, x) giữa cây và trống.
-  - Loại 2 "2 y1 x1 y2 x2": đếm số cây trong hình chữ nhật [y1..y2] x [x1..x2].
+## Đề bài
+Cho lưới kích thước n x n, mỗi ô là cây ('*') hoặc trống ('.'). Cần xử lý q truy vấn thuộc hai loại:
+- Loại 1 "1 y x": đảo trạng thái (toggle) ô (y, x) giữa cây và trống.
+- Loại 2 "2 y1 x1 y2 x2": đếm số cây nằm trong hình chữ nhật có góc trên-trái (y1, x1) và góc dưới-phải (y2, x2).
 Ràng buộc: 1 <= n <= 1000, 1 <= q <= 2*10^5.
 
-Cấu trúc dữ liệu: Fenwick tree 2 chiều (2D BIT)
------------------------------------------------
-Vì đây là bài point-update (toggle một ô) + rectangle-sum (tổng trên hình chữ
-nhật), ta dùng Fenwick tree 2 chiều (2D BIT). Fenwick nhanh hơn segment tree rất
-nhiều trong Python (hằng số nhỏ), và nó vừa khít với dạng truy vấn này.
+## Ý tưởng
+Đây là bài point-update (đảo một ô) kết hợp rectangle-sum (tổng trên hình chữ nhật), nên ta dùng Fenwick tree 2 chiều (2D BIT). Fenwick có hằng số nhỏ, nhanh hơn segment tree nhiều trong Python và rất hợp với dạng truy vấn này.
 
-Lưu trữ: một mảng phẳng 'bit' kích thước (n+1)*(n+1), chỉ số ô (i, j) là i*W + j
-với W = n+1, dùng 1-indexed. Ngoài ra có mảng 'cur' (bytearray) lưu trạng thái
-0/1 hiện tại của từng ô để biết mỗi lần toggle cần cộng +1 hay -1.
+Lưu trữ:
+- Một mảng phẳng 'bit' kích thước (n+1)*(n+1), ô (i, j) ánh xạ tới chỉ số i*W + j với W = n+1, dùng 1-indexed.
+- Một mảng 'cur' (bytearray) lưu trạng thái 0/1 hiện tại của từng ô, để mỗi lần toggle biết cần cộng +1 hay -1.
 
-Các phép toán
--------------
-1) Xây dựng (build) O(n^2):
-   - Nạp giá trị 0/1 của lưới vào bit (dùng bytes.maketrans + gán slice, chạy ở
-     tốc độ C).
-   - Biến mảng thành Fenwick "tại chỗ": trước tiên propagate từng hàng (mỗi hàng
-     là một Fenwick 1 chiều), sau đó propagate theo cột. Cách này O(n^2), nhanh
-     hơn nhiều so với build bằng n^2 lần update riêng lẻ (sẽ là O(n^2 log^2 n)).
+Các phép toán:
+1) Xây dựng (build) O(n^2): nạp giá trị 0/1 của lưới vào 'bit', rồi biến mảng thành Fenwick "tại chỗ" bằng cách propagate lần lượt theo hàng (mỗi hàng là một Fenwick 1 chiều) rồi theo cột. Cách này O(n^2), nhanh hơn nhiều so với build bằng n^2 lần update riêng lẻ (sẽ là O(n^2 log^2 n)).
+2) Update (toggle) O(log^2 n): nếu ô đang là cây thì delta = -1, ngược lại delta = +1; cập nhật 'cur' rồi chạy hai vòng lặp Fenwick lồng nhau (theo hàng, theo cột).
+3) Rectangle sum O(log^2 n): tổng hình chữ nhật = Q(y2,x2) - Q(y1-1,x2) - Q(y2,x1-1) + Q(y1-1,x1-1) theo công thức bao-trừ (inclusion-exclusion) 4 góc, với Q(y,x) là tổng tiền tố của hình chữ nhật (1,1)..(y,x). Tối ưu: phân tích bit của cột (x2 và x1-1) chỉ làm một lần thành hai danh sách chỉ số; sau đó với mỗi chỉ số hàng trong phân tích của y2 và y1-1 chỉ việc cộng/trừ các phần tử đã biết, tránh tính lại phân tích cột nhiều lần.
 
-2) Update (toggle) - O(log^2 n):
-   Nếu ô đang là cây thì delta = -1, ngược lại delta = +1; cập nhật 'cur' rồi
-   chạy hai vòng lặp Fenwick lồng nhau (theo hàng i, theo cột j).
-
-3) Rectangle sum - O(log^2 n):
-   Tổng hình chữ nhật = Q(y2,x2) - Q(y1-1,x2) - Q(y2,x1-1) + Q(y1-1,x1-1),
-   với Q(y,x) là tổng tiền tố (prefix) của hình chữ nhật (1,1)..(y,x).
-   Tối ưu: phân tích bit của cột (x2 và x1-1) chỉ làm một lần ra hai danh sách
-   chỉ số c2, c1; sau đó với mỗi chỉ số hàng trong phân tích của y2 và y1-1 chỉ
-   việc cộng/trừ các phần tử bit đã biết, tránh tính lại phân tích cột nhiều lần.
-
-Tính đúng
----------
-Fenwick tree cho phép tổng tiền tố 2 chiều đúng trên bất kỳ hình chữ nhật góc
-(1,1). Công thức bao-trừ (inclusion-exclusion) 4 góc cho tổng hình chữ nhật bất
-kỳ là chính xác. Toggle chỉ thay đổi một ô và cập nhật đúng +/-1 nên tổng luôn
-phản ánh số cây hiện tại.
-
-Độ phức tạp
------------
-- Bộ nhớ: O(n^2) cho mảng bit (~10^6 số nguyên) và cur (~10^6 byte).
+## Độ phức tạp
 - Thời gian: build O(n^2); mỗi truy vấn O(log^2 n). Tổng O(n^2 + q log^2 n).
+- Bộ nhớ: O(n^2) cho mảng 'bit' (~10^6 số nguyên) và 'cur' (~10^6 byte).
 
-LƯU Ý TLE: Với n = 1000 và q = 2*10^5 truy vấn loại 2, phần build O(n^2) và mỗi
-truy vấn ~ (đến 15*15) phép toán trên vòng lặp Python thuần có thể vượt giới hạn
-thời gian của CSES (giới hạn nhắm cho C++); trên CPython đo được ~22s ở trường
-hợp xấu nhất (rect [512..1000] cả hai chiều). Thuật toán vẫn đúng và đã tối ưu
-hết mức bằng mảng phẳng, gán biến local và phân tích cột một lần; nên nộp bằng
-PyPy3 trên CSES để kịp thời gian.
+LƯU Ý TLE: Với n = 1000 và q = 2*10^5 truy vấn loại 2, phần build O(n^2) cùng mỗi truy vấn tới ~15*15 phép toán trên vòng lặp Python thuần có thể vượt giới hạn thời gian của CSES (giới hạn nhắm cho C++); trên CPython đo được ~22s ở trường hợp xấu nhất (hình chữ nhật [512..1000] cả hai chiều). Thuật toán vẫn đúng và đã tối ưu hết mức bằng mảng phẳng, gán biến local và phân tích cột một lần; nên nộp bằng PyPy3 trên CSES để kịp thời gian.

@@ -1,12 +1,3 @@
-# Pizzeria Queries — CSES 2206
-# https://cses.fi/problemset/task/2206
-#
-# Chi phí từ tòa a đến tòa k = p_a + |a - k|.
-#   a <= k: (p_a - a) + k  -> prefix-min của L[a] = p_a - a trên [1, k]
-#   a >= k: (p_a + a) - k  -> suffix-min của R[a] = p_a + a trên [k, n]
-# Dùng hai iterative segment tree (range-min, point update). Fenwick min không
-# dùng được vì cập nhật gán giá trị bất kỳ (có thể tăng lẫn giảm).
-
 import sys
 
 
@@ -18,16 +9,19 @@ def main():
 
     INF = float('inf')
     N = n
-    # Iterative segment tree với 2*N nút; lá ở vị trí [N, 2N).
+    # Hai iterative segment tree với 2*N nút; lá nằm ở vị trí [N, 2N).
+    # Tách trị tuyệt đối: L lưu p_a - a (dùng prefix-min), R lưu p_a + a (dùng suffix-min).
     L = [INF] * (2 * N)  # lưu p_a - a
     R = [INF] * (2 * N)  # lưu p_a + a
 
+    # Nạp giá vào các lá theo chỉ số 1-indexed.
     for i in range(N):
         p = int(data[idx]); idx += 1
         a = i + 1  # 1-indexed
         L[N + i] = p - a
         R[N + i] = p + a
 
+    # Dựng min ngược lên gốc cho cả hai cây.
     for i in range(N - 1, 0, -1):
         li = 2 * i
         L[i] = L[li] if L[li] < L[li + 1] else L[li + 1]
@@ -39,9 +33,10 @@ def main():
     for _ in range(q):
         t = data[idx]; idx += 1
         if t == b'2':
+            # Truy vấn: chi phí nhỏ nhất khi đứng ở tòa k.
             k = int(data[idx]); idx += 1
 
-            # prefix-min L trên [1, k] -> nửa khoảng 0-indexed [0, k)
+            # prefix-min L trên [1, k] -> nửa khoảng 0-indexed [0, k), rồi cộng k.
             res = INF
             l = N
             r = k + N
@@ -60,7 +55,7 @@ def main():
                 r >>= 1
             ans1 = res + k
 
-            # suffix-min R trên [k, n] -> nửa khoảng 0-indexed [k-1, n)
+            # suffix-min R trên [k, n] -> nửa khoảng 0-indexed [k-1, n), rồi trừ k.
             res = INF
             l = (k - 1) + N
             r = n + N
@@ -79,12 +74,15 @@ def main():
                 r >>= 1
             ans2 = res - k
 
+            # Đáp án là min của hai hướng trái/phải.
             out_append(ans1 if ans1 < ans2 else ans2)
         else:
+            # Cập nhật: gán p_k = x, cập nhật cả hai cây rồi đẩy min lên gốc.
             k = int(data[idx]); idx += 1
             x = int(data[idx]); idx += 1
             i = k - 1
 
+            # Cập nhật cây L với giá trị mới x - k.
             p = N + i
             L[p] = x - k
             p >>= 1
@@ -94,6 +92,7 @@ def main():
                 L[p] = a if a < b else b
                 p >>= 1
 
+            # Cập nhật cây R với giá trị mới x + k.
             p = N + i
             R[p] = x + k
             p >>= 1

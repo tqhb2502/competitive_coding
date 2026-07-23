@@ -1,19 +1,18 @@
-# Giant Pizza - https://cses.fi/problemset/task/1684
-# 2-SAT: mỗi topping là một biến boolean, mỗi thành viên là một clause (a OR b).
-# Xây dựng implication graph, tìm SCC bằng Tarjan (iterative), suy ra đáp án.
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần để giảm overhead I/O của Python.
     data = sys.stdin.buffer.read().split()
     pos = 0
     n = int(data[pos]); m = int(data[pos + 1]); pos += 2
 
-    N = 2 * m  # 2 node cho mỗi biến: 2*i = "topping i+1 được chọn", 2*i+1 = "không chọn"
+    # Xây dựng implication graph: 2 node cho mỗi biến, 2*i = topping i được chọn
+    # (true), 2*i+1 = không chọn (false). Node phủ định của v là v ^ 1.
+    N = 2 * m
     adj = [[] for _ in range(N)]
 
-    # node của literal (sign, x): 2*(x-1) nếu '+', 2*(x-1)+1 nếu '-'.
-    # phủ định của một node là node ^ 1.
+    # Node của literal (sign, x): 2*(x-1) nếu '+', ngược lại 2*(x-1)+1.
     plus = ord('+')
     for _ in range(n):
         s1 = data[pos]; x1 = int(data[pos + 1])
@@ -21,12 +20,12 @@ def main():
         pos += 4
         a = 2 * (x1 - 1) + (0 if s1[0] == plus else 1)
         b = 2 * (x2 - 1) + (0 if s2[0] == plus else 1)
-        # clause (a OR b): (¬a => b) và (¬b => a)
+        # Clause (a OR b) tương đương (NOT a => b) và (NOT b => a).
         adj[a ^ 1].append(b)
         adj[b ^ 1].append(a)
 
-    # Tarjan SCC iterative. comp được đánh số theo thứ tự hoàn thành SCC
-    # (sink trước): SCC càng gần sink thì comp càng nhỏ -> reverse topo order.
+    # Tarjan SCC iterative. comp được đánh số theo thứ tự hoàn thành SCC (SCC ở
+    # phía sink trước): SCC càng gần sink thì comp càng nhỏ -> reverse topo order.
     indices = [-1] * N
     low = [0] * N
     on_stack = bytearray(N)
@@ -83,14 +82,16 @@ def main():
                 if low[v] < low[u]:
                     low[u] = low[v]
 
+    # Suy ra đáp án cho từng biến.
     out = []
     for i in range(m):
         a = 2 * i
         b = a + 1
+        # Literal và phủ định của nó cùng SCC -> công thức mâu thuẫn.
         if comp[a] == comp[b]:
             sys.stdout.write("IMPOSSIBLE\n")
             return
-        # literal có comp nhỏ hơn (gần sink) được chọn = true
+        # Literal có comp nhỏ hơn (gần sink) được chọn = true.
         out.append('+' if comp[a] < comp[b] else '-')
 
     sys.stdout.write(' '.join(out) + '\n')

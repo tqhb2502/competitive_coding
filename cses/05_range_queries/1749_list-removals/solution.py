@@ -1,11 +1,3 @@
-# List Removals - CSES task 1749
-# https://cses.fi/problemset/task/1749
-# Fenwick tree (BIT) với kỹ thuật "find k-th" bằng binary lifting:
-#   - tree[i] = 1 nếu phần tử ở vị trí i còn tồn tại, 0 nếu đã bị xóa.
-#   - Với mỗi truy vấn p, tìm vị trí của phần tử còn tồn tại thứ p
-#     (tức là vị trí nhỏ nhất có prefix sum == p) trong O(log n),
-#     rồi cập nhật vị trí đó về 0 (point update) trong O(log n).
-
 import sys
 
 
@@ -14,11 +6,12 @@ def main():
     idx = 0
     n = int(data[idx]); idx += 1
 
-    # Giá trị gốc của danh sách (1-indexed).
+    # Giá trị gốc của danh sách (đánh số 1..n).
     vals = [0] * (n + 1)
+    # Fenwick tree (BIT) lưu prefix sum của mảng đánh dấu "còn sống".
     tree = [0] * (n + 1)
 
-    # Build BIT: mỗi vị trí bắt đầu với giá trị 1 (còn tồn tại) trong O(n).
+    # Build BIT trong O(n): mỗi vị trí bắt đầu với giá trị 1 (phần tử còn sống).
     for i in range(1, n + 1):
         vals[i] = int(data[idx]); idx += 1
         tree[i] += 1
@@ -26,14 +19,15 @@ def main():
         if j <= n:
             tree[j] += tree[i]
 
-    # LOG = số mũ cao nhất sao cho 1 << LOG <= n.
+    # LOG = số mũ cao nhất sao cho 1 << LOG <= n (dùng cho binary lifting).
     LOG = n.bit_length() - 1
 
     out = []
     for _ in range(n):
+        # k = vị trí trong danh sách hiện tại.
         k = int(data[idx]); idx += 1
 
-        # find k-th: tìm vị trí còn tồn tại thứ k bằng binary lifting.
+        # find k-th: tìm phần tử còn sống thứ k bằng binary lifting trên Fenwick.
         pos = 0
         r = LOG
         while r >= 0:
@@ -42,11 +36,11 @@ def main():
                 pos = nxt
                 k -= tree[pos]
             r -= 1
-        pos += 1  # vị trí cần xóa
+        pos += 1  # vị trí nhỏ nhất có prefix sum bằng k -> phần tử cần xóa
 
         out.append(vals[pos])
 
-        # Xóa phần tử tại pos: point update -1.
+        # Xóa phần tử tại pos: point update -1 dọc theo BIT.
         i = pos
         while i <= n:
             tree[i] -= 1

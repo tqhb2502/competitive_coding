@@ -1,41 +1,46 @@
-Bài toán: với mỗi truy vấn [a, b], tìm tổng đoạn con (subarray) lớn nhất nằm
-hoàn toàn trong đoạn [a, b]. Cho phép chọn đoạn con rỗng (tổng bằng 0), nên đáp
-án luôn >= 0. Không có cập nhật phần tử, chỉ có truy vấn theo khoảng.
+Subarray Sum Queries II - CSES 3226
+https://cses.fi/problemset/task/3226
 
-CẤU TRÚC DỮ LIỆU: iterative segment tree (dạng bottom-up, mảng kích thước 2*n).
-Mỗi node quản lý một đoạn và lưu 4 giá trị:
+## Đề bài
+Cho một mảng gồm n số nguyên. Với mỗi truy vấn [a, b], hãy tìm tổng đoạn con
+(subarray) lớn nhất nằm hoàn toàn bên trong đoạn [a, b]. Được phép chọn đoạn con
+rỗng có tổng bằng 0, nên đáp án luôn lớn hơn hoặc bằng 0. Mảng không bị cập nhật,
+chỉ có các truy vấn theo khoảng.
+
+## Ý tưởng
+Dùng iterative segment tree (dạng bottom-up). Mỗi node quản lý một đoạn và lưu 4
+giá trị:
   - sum : tổng của cả đoạn.
-  - pre : max prefix sum (tổng tiền tố lớn nhất, clamp về >= 0 vì cho phép rỗng).
+  - pre : max prefix sum (tổng tiền tố lớn nhất, được clamp về >= 0 vì cho rỗng).
   - suf : max suffix sum (tổng hậu tố lớn nhất, >= 0).
   - best: tổng đoạn con lớn nhất bên trong đoạn (>= 0).
 
-PHÉP MERGE hai node con L (trái) và R (phải) — KHÔNG giao hoán, thứ tự quan trọng:
+Phép MERGE hai node con L (trái) và R (phải) KHÔNG giao hoán, thứ tự quan trọng:
   sum  = L.sum + R.sum
   pre  = max(L.pre, L.sum + R.pre)
   suf  = max(R.suf, R.sum + L.suf)
   best = max(L.best, R.best, L.suf + R.pre)
-Ý tưởng: đoạn con tối ưu hoặc nằm hẳn trong L, hoặc nằm hẳn trong R, hoặc bắc
-cầu qua điểm nối = hậu tố tốt nhất của L cộng tiền tố tốt nhất của R. pre và suf
-được cập nhật để dùng cho các lần merge ở tầng trên.
+Đoạn con tối ưu hoặc nằm hẳn trong L, hoặc nằm hẳn trong R, hoặc bắc cầu qua điểm
+nối (bằng hậu tố tốt nhất của L cộng tiền tố tốt nhất của R). Hai giá trị pre và
+suf được cập nhật để phục vụ các lần merge ở tầng trên.
 
-LÁ CÂY: với phần tử x, đặt p = max(x, 0), gán sum = x và pre = suf = best = p.
+Lá cây: với phần tử x, đặt p = max(x, 0) rồi gán sum = x và pre = suf = best = p.
 
-TRUY VẤN [a, b]: do phép merge không giao hoán nên khi gộp theo kiểu iterative
-phải giữ hai bộ tích lũy riêng: một bộ gộp các mảnh phía TRÁI (theo đúng thứ tự
-từ trái sang), một bộ gộp các mảnh phía PHẢI (từ phải sang). Phần tử đơn vị
-(identity) là (sum=0, pre=0, suf=0, best=0); merge với identity giữ nguyên node
-nhờ các giá trị đã clamp >= 0. Cuối cùng gộp (L_acc, R_acc) và lấy trường best
-làm đáp án.
+Truy vấn [a, b]: vì phép merge không giao hoán nên khi gộp kiểu iterative phải giữ
+hai bộ tích lũy riêng, một bộ gộp các mảnh phía TRÁI theo đúng thứ tự từ trái sang,
+một bộ gộp các mảnh phía PHẢI từ phải sang. Phần tử đơn vị (identity) là
+(sum=0, pre=0, suf=0, best=0); merge với identity giữ nguyên node nhờ các giá trị
+đã clamp >= 0. Cuối cùng gộp (L_acc, R_acc) và lấy trường best làm đáp án. Phép
+merge có tính kết hợp (associative) nên gộp các mảnh theo đúng thứ tự cho ra kết
+quả bằng đúng đoạn [a, b].
 
-TÍNH ĐÚNG: phép merge đúng theo định nghĩa max subarray (Kadane trên cây), và
-được chứng minh có tính kết hợp (associative) nên gộp các mảnh của segment tree
-theo đúng thứ tự trái→phải cho kết quả bằng đúng đoạn [a, b]. Việc clamp về 0 xử
-lý đúng trường hợp đoạn con rỗng.
+## Độ phức tạp
+Build O(n). Mỗi truy vấn O(log n) lần merge. Tổng thời gian O((n + q) log n), bộ
+nhớ O(n) (4 mảng độ dài 2*n).
 
-ĐỘ PHỨC TẠP: build O(n). Mỗi truy vấn O(log n) lần merge. Tổng O((n + q) log n)
-thời gian, O(n) bộ nhớ (4 mảng độ dài 2*n).
-
-LƯU Ý TLE: với n, q tới 2*10^5 và hằng số của Python, khoảng q*log n phép merge
-(~ vài triệu, mỗi merge hàng chục thao tác Python) rất có thể vượt giới hạn thời
-gian trên CSES (giới hạn đặt theo C++). Thuật toán ĐÚNG; nếu cần vượt, chạy bằng
-PyPy hoặc viết lại bằng C++.
+LƯU Ý TLE: với n, q tới 2*10^5 và hằng số lớn của Python, khoảng q*log n phép merge
+(vài triệu lần, mỗi lần hàng chục thao tác Python) rất có thể vượt giới hạn thời
+gian trên CSES (giới hạn đặt theo C++). Thuật toán ĐÚNG; nếu cần vượt, hãy chạy
+bằng PyPy hoặc viết lại bằng C++.
+</content>
+</invoke>

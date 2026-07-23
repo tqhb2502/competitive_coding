@@ -1,38 +1,42 @@
-Bài toán: Kiểm tra xem đồ thị có hướng với n thành phố và m chuyến bay có
-strongly connected (liên thông mạnh) hay không, tức là từ bất kỳ thành phố
-nào cũng có thể bay tới bất kỳ thành phố nào khác. Nếu không, in "NO" cùng
-một cặp (a, b) mà không thể đi từ a tới b.
+Flight Routes Check - CSES 1682
+https://cses.fi/problemset/task/1682
 
-MÔ HÌNH ĐỒ THỊ:
+## Đề bài
+Cho đồ thị có hướng gồm n thành phố và m chuyến bay (mỗi chuyến bay là một
+cạnh có hướng a -> b). Hãy kiểm tra xem đồ thị có liên thông mạnh (strongly
+connected) hay không, tức là từ bất kỳ thành phố nào cũng có thể bay tới bất
+kỳ thành phố nào khác. Nếu có, in "YES". Nếu không, in "NO" kèm một cặp (a, b)
+mà không thể đi từ a tới b.
+
+## Ý tưởng
+Mô hình đồ thị:
 - Mỗi thành phố là một đỉnh, mỗi chuyến bay a -> b là một cạnh có hướng.
-- Ta xây dựng adjacency list cho đồ thị gốc (adj) và cho đồ thị đảo chiều
-  mọi cạnh (radj, reverse graph).
+- Xây dựng danh sách kề cho đồ thị gốc (adj) và cho đồ thị đảo chiều mọi cạnh
+  (radj, reverse graph).
 
-THUẬT TOÁN:
-Một đồ thị có hướng là strongly connected khi và chỉ khi, chọn một đỉnh bất
-kỳ (ở đây là đỉnh 1), thỏa mãn đồng thời hai điều kiện:
-  1) Từ đỉnh 1 có thể đi tới TẤT CẢ các đỉnh khác trong đồ thị gốc.
-  2) Từ đỉnh 1 có thể đi tới TẤT CẢ các đỉnh khác trong đồ thị đảo chiều
-     (điều này tương đương: mọi đỉnh đều có thể đi tới đỉnh 1 trong đồ thị gốc).
+Nhận xét: đồ thị liên thông mạnh khi và chỉ khi, với một đỉnh cố định bất kỳ
+(chọn đỉnh 1), thỏa mãn đồng thời hai điều kiện:
+  1) Từ đỉnh 1 đi tới được TẤT CẢ các đỉnh khác trong đồ thị gốc.
+  2) Từ đỉnh 1 đi tới được TẤT CẢ các đỉnh khác trong đồ thị đảo chiều
+     (tương đương: trong đồ thị gốc, mọi đỉnh đều đi tới được đỉnh 1).
 
 Cách làm:
-- Chạy BFS (dùng collections.deque) từ đỉnh 1 trên đồ thị gốc adj.
-  Nếu có đỉnh u không tới được -> không đi được từ 1 tới u -> in "NO" và "1 u".
-- Chạy BFS từ đỉnh 1 trên đồ thị đảo chiều radj.
-  Nếu có đỉnh u không tới được trong đồ thị đảo -> trong đồ thị gốc u không
-  thể tới được đỉnh 1 -> in "NO" và "u 1".
-- Nếu cả hai lần BFS đều phủ hết n đỉnh -> đồ thị strongly connected -> in "YES".
+- Chạy BFS từ đỉnh 1 trên đồ thị gốc adj. Nếu tồn tại đỉnh u không tới được
+  thì không đi được từ 1 tới u -> in "NO" và "1 u".
+- Chạy BFS từ đỉnh 1 trên đồ thị đảo chiều radj. Nếu tồn tại đỉnh u không tới
+  được thì trong đồ thị gốc u không đi tới được đỉnh 1 -> in "NO" và "u 1".
+- Nếu cả hai lần BFS đều phủ hết n đỉnh -> đồ thị liên thông mạnh -> in "YES".
 
-TẠI SAO ĐÚNG:
-- Nếu cả (1) và (2) đúng: với hai đỉnh bất kỳ x, y ta có đường đi x -> 1
-  (do (2)) rồi 1 -> y (do (1)), nên đi được từ x tới y. Vậy đồ thị liên
-  thông mạnh.
+Vì sao đúng:
+- Nếu cả (1) và (2) đều đúng: với hai đỉnh bất kỳ x, y luôn có đường đi
+  x -> 1 (do (2)) rồi 1 -> y (do (1)), nên đi được từ x tới y. Vậy đồ thị
+  liên thông mạnh.
 - Nếu (1) sai, tồn tại u mà 1 không tới được u, cặp (1, u) là phản ví dụ.
 - Nếu (2) sai, tồn tại u mà u không tới được 1, cặp (u, 1) là phản ví dụ.
-Đây chính là cấu trúc của một strongly connected component chứa đỉnh 1: đồ
+Đây chính là cách xác định thành phần liên thông mạnh (SCC) chứa đỉnh 1: đồ
 thị liên thông mạnh khi và chỉ khi SCC của đỉnh 1 là toàn bộ đồ thị.
 
-ĐỘ PHỨC TẠP:
-- Thời gian: O(n + m) cho việc đọc dữ liệu, xây adjacency list và hai lần BFS.
-- Bộ nhớ: O(n + m) để lưu hai adjacency list và mảng visited.
+## Độ phức tạp
+- Thời gian: O(n + m) cho việc đọc dữ liệu, xây danh sách kề và hai lần BFS.
+- Bộ nhớ: O(n + m) để lưu hai danh sách kề và mảng đánh dấu visited.
 Với n <= 1e5 và m <= 2e5, thuật toán chạy rất nhanh và an toàn về thời gian.

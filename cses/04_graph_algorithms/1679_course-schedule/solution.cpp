@@ -9,6 +9,8 @@ int main() {
     int n, m;
     std::cin >> n >> m;
 
+    // Xây dựng danh sách kề adj và mảng bậc vào indegree cho từng đỉnh.
+    // Ràng buộc "a trước b" tương ứng với cạnh có hướng a -> b.
     std::vector<std::vector<int>> adj(n + 1);
     std::vector<int> indegree(n + 1, 0);
     for (int i = 0; i < m; ++i) {
@@ -18,6 +20,7 @@ int main() {
         ++indegree[b];
     }
 
+    // Kahn: khởi tạo hàng đợi với mọi đỉnh có indegree = 0 (không có tiên quyết).
     std::queue<int> ready;
     for (int course = 1; course <= n; ++course) {
         if (indegree[course] == 0) {
@@ -25,6 +28,7 @@ int main() {
         }
     }
 
+    // Lấy dần từng đỉnh ra, giảm bậc vào của các đỉnh kề; đỉnh nào về 0 thì thêm vào.
     std::vector<int> order;
     order.reserve(n);
     while (!ready.empty()) {
@@ -40,11 +44,13 @@ int main() {
         }
     }
 
+    // Không lấy đủ n đỉnh nghĩa là còn chu trình -> không có thứ tự hợp lệ.
     if (static_cast<int>(order.size()) != n) {
         std::cout << "IMPOSSIBLE\n";
         return 0;
     }
 
+    // In ra một thứ tự topo hợp lệ.
     for (int i = 0; i < n; ++i) {
         if (i != 0) {
             std::cout << ' ';

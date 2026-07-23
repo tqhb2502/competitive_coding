@@ -1,11 +1,3 @@
-# Forest Queries II - CSES 1739
-# https://cses.fi/problemset/task/1739
-#
-# Grid n x n, each cell is a tree ('*') or empty ('.').
-#   - Query type 1 "1 y x": toggle cell (y, x).
-#   - Query type 2 "2 y1 x1 y2 x2": count trees inside a rectangle.
-# Structure: 2D Fenwick tree (BIT) for point-update + rectangle prefix-sum.
-
 import sys
 
 
@@ -16,18 +8,18 @@ def main():
     W = n + 1
     size = W * W
 
-    bit = [0] * size          # 2D Fenwick, flat index i*W + j (1-indexed)
-    cur = bytearray(size)     # current state of each cell (0/1) to know toggle direction
+    bit = [0] * size          # Fenwick 2 chiều, chỉ số phẳng i*W + j (1-indexed)
+    cur = bytearray(size)     # trạng thái 0/1 hiện tại của từng ô, để biết chiều toggle
     trans = bytes.maketrans(b'.*', bytes((0, 1)))
 
-    # Load the initial grid (slice assignment runs at C speed).
+    # Nạp lưới ban đầu; gán slice chạy ở tốc độ C.
     for i in range(1, n + 1):
         base = i * W
-        seg = data[1 + i].translate(trans)   # data[2] is row 1 -> data[1 + i] is row i
+        seg = data[1 + i].translate(trans)   # data[2] là hàng 1 -> data[1 + i] là hàng i
         bit[base + 1: base + 1 + n] = seg
         cur[base + 1: base + 1 + n] = seg
 
-    # Build the Fenwick tree in place in O(n^2): propagate along rows, then columns.
+    # Xây Fenwick "tại chỗ" trong O(n^2): propagate theo hàng, rồi theo cột.
     for i in range(1, n + 1):
         base = i * W
         for j in range(1, n + 1):
@@ -40,6 +32,7 @@ def main():
             if k <= n:
                 bit[k * W + j] += bit[i * W + j]
 
+    # Gán biến local để tăng tốc truy cập trong vòng lặp xử lý truy vấn.
     b = bit
     data_local = data
     L = len(data_local)
@@ -50,6 +43,7 @@ def main():
     while idx < L:
         t = data_local[idx]
         if t == b'1':
+            # Toggle ô (y, x): xác định delta rồi point-update trên 2D BIT, O(log^2 n).
             y = int(data_local[idx + 1])
             x = int(data_local[idx + 2])
             idx += 3
@@ -60,7 +54,6 @@ def main():
             else:
                 cur[p] = 1
                 delta = 1
-            # point update on the 2D BIT: O(log^2 n)
             ii = y
             while ii <= n:
                 base = ii * W
@@ -70,12 +63,13 @@ def main():
                     jj += jj & -jj
                 ii += ii & -ii
         else:
+            # Đếm cây trong hình chữ nhật qua bao-trừ 4 góc: Q(y2,x2)-Q(y1-1,x2)-Q(y2,x1-1)+Q(y1-1,x1-1).
             y1 = int(data_local[idx + 1])
             x1 = int(data_local[idx + 2])
             y2 = int(data_local[idx + 3])
             x2 = int(data_local[idx + 4])
             idx += 5
-            # Decompose the columns once, reuse for every row in the y-decomposition.
+            # Phân tích bit của cột một lần, dùng lại cho mọi hàng trong phân tích của y.
             c2 = []
             jj = x2
             while jj > 0:
@@ -88,6 +82,7 @@ def main():
                 jj -= jj & -jj
 
             res = 0
+            # Cộng phần tiền tố tới hàng y2.
             ii = y2
             while ii > 0:
                 base = ii * W
@@ -98,6 +93,7 @@ def main():
                     s -= b[base + j]
                 res += s
                 ii -= ii & -ii
+            # Trừ phần tiền tố tới hàng y1-1.
             ii = y1 - 1
             while ii > 0:
                 base = ii * W

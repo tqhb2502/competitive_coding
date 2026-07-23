@@ -1,40 +1,36 @@
-Bài toán: Planets Cycles (CSES 1751)
+Planets Cycles - CSES 1751
+https://cses.fi/problemset/task/1751
 
-MÔ HÌNH ĐỒ THỊ
-- Mỗi hành tinh i có đúng một cổng dịch chuyển tới t[i]. Vậy đây là một
-  functional graph (đồ thị hàm): mỗi đỉnh có out-degree đúng bằng 1.
-- Xuất phát từ i và đi mãi theo cổng dịch chuyển, vì số đỉnh hữu hạn và mỗi
-  đỉnh chỉ có một cạnh ra nên chắc chắn ta sẽ lặp lại một đỉnh đã thăm. Đường
-  đi luôn có dạng: một "đuôi" (tail) dẫn vào một chu trình (cycle).
-- Cần tính, với mỗi i, số bước dịch chuyển cho tới khi gặp lại một đỉnh đã đi qua.
+## Đề bài
+- Có n hành tinh, mỗi hành tinh i có đúng một cổng dịch chuyển tới hành tinh t[i].
+- Xuất phát từ một hành tinh rồi liên tục đi theo cổng dịch chuyển cho tới khi gặp
+  lại một hành tinh đã thăm.
+- Với mỗi hành tinh i, hãy tính số bước dịch chuyển thực hiện cho tới thời điểm đó.
 
-NHẬN XÉT
-- Nếu i nằm trên chu trình độ dài L thì đáp án là L (đi đúng một vòng rồi quay
-  lại chính đỉnh xuất phát).
-- Nếu i nằm trên đuôi và cách đỉnh vào chu trình d bước thì đáp án là d + L:
-  đi d bước để vào chu trình, rồi đi thêm L bước để quay lại đỉnh vào chu trình
-  (đỉnh vào chu trình chính là đỉnh đã thăm đầu tiên bị gặp lại).
+## Ý tưởng
+- Mô hình đồ thị: vì mỗi đỉnh có out-degree đúng bằng 1 nên đây là một functional
+  graph (đồ thị hàm). Đi mãi theo cổng dịch chuyển từ một đỉnh, do số đỉnh hữu hạn
+  nên chắc chắn sẽ lặp lại một đỉnh: đường đi luôn có dạng một "đuôi" (tail) dẫn
+  vào một chu trình (cycle).
+- Nhận xét đáp án:
+  + Nếu i nằm trên chu trình độ dài L thì đáp án là L (đi đúng một vòng quay lại
+    chính đỉnh xuất phát).
+  + Nếu i nằm trên đuôi và cách đỉnh vào chu trình d bước thì đáp án là d + L: đi
+    d bước để vào chu trình rồi đi thêm L bước để gặp lại đỉnh vào chu trình.
+- Thuật toán O(n), lặp không đệ quy, dùng mảng state: 0 = chưa thăm, 1 = đang nằm
+  trong chuỗi (chain) hiện tại, 2 = đã tính xong đáp án.
+  + Duyệt lần lượt mỗi đỉnh s chưa thăm. Từ s đi theo t[], đẩy các đỉnh vào danh
+    sách chain, đánh dấu state = 1 và ghi lại vị trí order[] của đỉnh trong chain,
+    cho tới khi gặp một đỉnh biên node có state != 0.
+  + Nếu state[node] == 1: vừa phát hiện một chu trình mới. order[node] là điểm bắt
+    đầu chu trình trong chain; độ dài chu trình cyc_len = len(chain) - order[node].
+    Gán mọi đỉnh trên chu trình đáp án = cyc_len; các đỉnh đuôi phía trước gán tăng
+    dần cyc_len+1, cyc_len+2, ... khi đi ngược lại.
+  + Nếu state[node] == 2: node đã có đáp án từ trước, toàn bộ chain là đuôi dẫn vào
+    phần đã xử lý; gán đáp án lùi dần ans[node]+1, ans[node]+2, ...
+- Mỗi đỉnh được đưa vào chain đúng một lần và xử lý đúng một lần.
 
-THUẬT TOÁN (O(n), lặp không đệ quy)
-- Dùng mảng state: 0 = chưa thăm, 1 = đang nằm trong chuỗi hiện tại, 2 = đã xong.
-- Duyệt lần lượt mỗi đỉnh s chưa thăm. Từ s đi theo t[] và đẩy các đỉnh vào một
-  danh sách chain, đánh dấu state=1 và ghi vị trí order[] của đỉnh trong chain,
-  cho tới khi gặp một đỉnh "biên" node:
-    + Nếu state[node] == 1: ta vừa phát hiện một chu trình mới. Vị trí order[node]
-      là điểm bắt đầu chu trình trong chain; độ dài chu trình cyc_len = len(chain)
-      - order[node]. Gán tất cả đỉnh trên chu trình đáp án = cyc_len. Các đỉnh
-      đuôi trước đó gán đáp án tăng dần: cyc_len+1, cyc_len+2, ... (đi ngược lại).
-    + Nếu state[node] == 2: node đã có đáp án từ trước. Toàn bộ chain là đuôi dẫn
-      vào phần đã xử lý; gán đáp án lùi dần: ans[node]+1, ans[node]+2, ...
-- Mỗi đỉnh được đưa vào chain đúng một lần và xử lý đúng một lần nên tổng thời
-  gian là O(n).
-
-TÍNH ĐÚNG ĐẮN
-- Vì out-degree = 1, mỗi thành phần liên thông yếu đúng là một chu trình cùng
-  các cây đuôi chảy vào nó. Cách gán ở trên phản ánh chính xác đáp án d + L cho
-  đỉnh đuôi và L cho đỉnh chu trình, đã kiểm chứng bằng ví dụ mẫu.
-
-ĐỘ PHỨC TẠP
-- Thời gian: O(n). Bộ nhớ: O(n) cho các mảng t, state, order, ans.
-- Với n <= 2*10^5 thuật toán O(n) không đệ quy chạy thoải mái, không lo TLE hay
-  tràn stack.
+## Độ phức tạp
+- Thời gian: O(n). Bộ nhớ: O(n) cho các mảng t, state, order (position), ans.
+- Với n <= 2*10^5, thuật toán O(n) lặp không đệ quy chạy thoải mái, không lo TLE
+  hay tràn stack.

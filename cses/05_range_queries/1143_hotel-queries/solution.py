@@ -1,10 +1,3 @@
-# Hotel Queries - CSES 1143
-# https://cses.fi/problemset/task/1143
-#
-# Max segment tree trên mảng số phòng trống. Với mỗi nhóm khách ta đi xuống
-# (descent) tìm khách sạn trái nhất có số phòng trống >= r, rồi trừ r vào lá
-# đó và cập nhật lại các tổ tiên. Mỗi truy vấn O(log n).
-
 import sys
 
 
@@ -18,6 +11,7 @@ def main():
     while size < n:
         size <<= 1
 
+    # Max segment tree: mỗi node lưu số phòng trống lớn nhất của đoạn nó quản lí
     tree = [0] * (2 * size)
 
     # nạp giá trị phòng trống vào các lá
@@ -37,10 +31,11 @@ def main():
 
     for j in range(m):
         r = int(data[idx + j])
+        # max toàn mảng (gốc) < r thì không khách sạn nào đủ phòng -> in 0
         if tree_local[1] < r:
             out.append(b'0')
             continue
-        # descent tìm lá trái nhất có giá trị >= r
+        # đi xuống (descent) tìm lá trái nhất có giá trị >= r, ưu tiên con trái
         pos = 1
         while pos < size:
             left = 2 * pos

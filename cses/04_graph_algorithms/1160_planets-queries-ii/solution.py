@@ -1,16 +1,3 @@
-# Planets Queries II - CSES 1160
-# https://cses.fi/problemset/task/1160
-#
-# Functional graph (mỗi đỉnh out-degree = 1). Với mỗi truy vấn (a, b) tìm số bước
-# teleport tối thiểu từ a tới b, hoặc -1 nếu không tới được.
-#
-# - Tìm cycle của từng thành phần, gán vị trí trên cycle.
-# - Bỏ cạnh cycle -> rừng cây gốc là các đỉnh cycle. DFS iterative để tính
-#   depth (khoảng cách tới đỉnh vào cycle), root (đỉnh vào cycle) và in/out time
-#   (Euler tour) để kiểm tra quan hệ ancestor.
-# - b trên cycle: đáp án = depth[a] + khoảng cách vòng quanh cycle (nếu cùng component).
-# - b trong cây: đáp án = depth[a] - depth[b] nếu b là ancestor của a, ngược lại -1.
-
 import sys
 
 

@@ -9,7 +9,8 @@ int main() {
     int n, m;
     std::cin >> n >> m;
 
-    // Keeping multiplicities also handles repeated flight connections.
+    // edge_count[a][b] = số cạnh có hướng a -> b. Giữ bội số để xử lý luôn các
+    // chuyến bay lặp lại giữa cùng một cặp thành phố.
     std::vector<std::vector<int>> edge_count(n, std::vector<int>(n, 0));
     for (int i = 0; i < m; ++i) {
         int a, b;
@@ -18,24 +19,31 @@ int main() {
     }
 
     constexpr int MOD = 1'000'000'007;
+
+    // Điểm xuất phát (thành phố 1) và điểm đích (thành phố n) là cố định, nên
+    // bitmask chỉ cần lưu n-2 thành phố trung gian. Trường hợp n == 2 không có
+    // đỉnh trung gian: đáp án chính là số cạnh trực tiếp từ 1 đến n.
     const int internal_count = n - 2;
     if (internal_count == 0) {
         std::cout << edge_count[0][n - 1] % MOD << '\n';
         return 0;
     }
 
-    // The start and destination are fixed. A mask only stores the n-2 internal
-    // cities. dp[mask][last] counts paths from city 1 that visit exactly mask
-    // and currently end at internal city last.
+    // dp[mask][last] = số đường đi Hamilton xuất phát từ thành phố 1, đã thăm
+    // đúng tập thành phố trung gian `mask`, và hiện đang kết thúc tại thành phố
+    // trung gian `last`.
     const int mask_count = 1 << internal_count;
     std::vector<int> dp(
         static_cast<std::size_t>(mask_count) * internal_count,
         0
     );
 
+    // Duyệt mask tăng dần: previous_mask = mask bỏ bit last luôn nhỏ hơn mask nên
+    // đã được tính trước, bảo đảm không phụ thuộc vòng.
     for (int mask = 1; mask < mask_count; ++mask) {
         int possible_last = mask;
         while (possible_last != 0) {
+            // Lấy ra một đỉnh trung gian `last` làm điểm kết thúc của trạng thái.
             const int last_bit = possible_last & -possible_last;
             possible_last ^= last_bit;
             const int last = __builtin_ctz(static_cast<unsigned>(last_bit));
@@ -43,8 +51,11 @@ int main() {
 
             long long ways = 0;
             if (previous_mask == 0) {
+                // `last` là thành phố trung gian đầu tiên: đi thẳng từ thành phố 1.
                 ways = edge_count[0][last + 1];
             } else {
+                // Cộng dồn từ mọi đỉnh liền trước `previous` trong previous_mask
+                // có cạnh previous -> last.
                 int previous_cities = previous_mask;
                 while (previous_cities != 0) {
                     const int previous_bit =
@@ -65,6 +76,8 @@ int main() {
         }
     }
 
+    // Kết thúc: từ trạng thái đã thăm hết mọi thành phố trung gian, đi cạnh cuối
+    // last -> thành phố đích n.
     const int full_mask = mask_count - 1;
     long long answer = 0;
     for (int last = 0; last < internal_count; ++last) {

@@ -1,17 +1,14 @@
-# Dynamic Range Minimum Queries - https://cses.fi/problemset/task/1649
-# Point update + range minimum query using an iterative (bottom-up) segment tree.
-# Pure Python standard library only.
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần cho nhanh.
     data = sys.stdin.buffer.read().split()
     idx = 0
     n = int(data[idx]); idx += 1
     q = int(data[idx]); idx += 1
 
-    # segment tree size = next power of two >= n
+    # Kích thước cây: lũy thừa của 2 nhỏ nhất mà >= n.
     size = 1
     while size < n:
         size <<= 1
@@ -19,12 +16,12 @@ def main():
     INF = 1 << 62
     tree = [INF] * (2 * size)
 
-    # place leaves
+    # Đặt các lá: lá thứ i nằm tại tree[size + i].
     base = size
     for i in range(n):
         tree[base + i] = int(data[idx]); idx += 1
 
-    # build internal nodes
+    # Xây dựng bottom-up: mỗi node cha = min của hai con.
     for p in range(size - 1, 0, -1):
         l = tree[2 * p]
         r = tree[2 * p + 1]
@@ -38,7 +35,8 @@ def main():
         if t == b'1':
             k = int(data[idx]); idx += 1
             u = int(data[idx]); idx += 1
-            # point update: position k (1-indexed) -> u
+            # Point update: gán lại lá tại vị trí k (1-indexed) rồi đi từ lá
+            # lên gốc, cập nhật lại các node cha bằng min hai con.
             pos = size + k - 1
             tree[pos] = u
             pos >>= 1
@@ -50,16 +48,18 @@ def main():
         else:
             a = int(data[idx]); idx += 1
             b = int(data[idx]); idx += 1
-            # range min over closed interval [a, b] (1-indexed) -> half-open [a-1, b)
+            # Range-min trên đoạn đóng [a, b] (1-indexed) -> nửa mở [a-1, b).
             lo = a - 1 + size
             hi = b + size
             res = INF
             while lo < hi:
+                # Biên trái lẻ: gộp node rồi tiến lên.
                 if lo & 1:
                     v = tree[lo]
                     if v < res:
                         res = v
                     lo += 1
+                # Biên phải lẻ: lùi lại rồi gộp node trong đoạn.
                 if hi & 1:
                     hi -= 1
                     v = tree[hi]
@@ -69,6 +69,7 @@ def main():
                 hi >>= 1
             out_append(res)
 
+    # Ghi kết quả một lần, dùng LF để xuống dòng.
     sys.stdout.buffer.write(b'\n'.join(str(x).encode() for x in out))
     if out:
         sys.stdout.buffer.write(b'\n')

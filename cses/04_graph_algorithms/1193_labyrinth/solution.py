@@ -1,7 +1,3 @@
-# Labyrinth - CSES 1193
-# https://cses.fi/problemset/task/1193
-# BFS trên lưới (grid) để tìm đường đi ngắn nhất từ A đến B, kèm truy vết đường đi.
-
 import sys
 from collections import deque
 
@@ -15,6 +11,7 @@ def main():
     # Bản đồ phẳng để truy cập O(1): flat[r*m + c] là ký tự của ô (r, c).
     flat = b"".join(grid)
 
+    # Xác định chỉ số phẳng của ô xuất phát 'A' và ô đích 'B'.
     start = -1
     end = -1
     for r in range(n):
@@ -28,7 +25,8 @@ def main():
 
     WALL = 35  # ord('#')
 
-    # visited: 0 = chưa thăm, 1=U, 2=D, 3=L, 4=R, 5 = ô xuất phát A.
+    # visited vừa đánh dấu đã thăm vừa lưu hướng để truy vết:
+    # 0 = chưa thăm, 1=U, 2=D, 3=L, 4=R, 5 = ô xuất phát A.
     visited = bytearray(n * m)
     visited[start] = 5
 
@@ -37,6 +35,7 @@ def main():
     append = dq.append
     popleft = dq.popleft
 
+    # BFS từ 'A': mọi cạnh trọng số 1 nên đường đi tìm được là ngắn nhất theo số bước.
     while dq:
         cur = popleft()
         if cur == end:
@@ -44,6 +43,7 @@ def main():
         r = cur // m
         c = cur - r * m
 
+        # Xét 4 ô kề cạnh; ô nào trong lưới, không phải tường và chưa thăm thì thăm.
         if c > 0:
             nb = cur - 1
             if not visited[nb] and flat[nb] != WALL:
@@ -65,14 +65,16 @@ def main():
                 visited[nb] = 2  # D
                 append(nb)
 
+    # Nếu 'B' chưa được thăm thì không tồn tại đường đi.
     if not visited[end]:
         sys.stdout.buffer.write(b"NO\n")
         return
 
     letters = {1: b"U", 2: b"D", 3: b"L", 4: b"R"}
-    # Offset để lùi về ô trước đó tùy theo hướng đã đi.
+    # Offset để lùi về ô liền trước tùy theo hướng đã đi.
     back = {1: m, 2: -m, 3: 1, 4: -1}
 
+    # Truy vết ngược từ 'B' về 'A' rồi đảo lại để có thứ tự từ 'A' tới 'B'.
     path = []
     cur = end
     while cur != start:

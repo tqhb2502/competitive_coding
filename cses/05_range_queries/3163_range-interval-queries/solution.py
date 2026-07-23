@@ -1,9 +1,3 @@
-# Range Interval Queries - https://cses.fi/problemset/task/3163
-# Đếm 2D offline: số chỉ số i thỏa a<=i<=b và c<=x_i<=d.
-# Fenwick tree (BIT) + nén tọa độ (coordinate compression) + sweep line theo chỉ số.
-# answer = f(b,d) - f(b,c-1) - f(a-1,d) + f(a-1,c-1),
-#   với f(i,v) = số j<=i có x_j<=v.
-
 import sys
 from bisect import bisect_left, bisect_right
 
@@ -17,26 +11,31 @@ def main():
     x = nums[pos:pos + n]
     pos += n
 
+    # Nén tọa độ: tập giá trị phân biệt đã sắp xếp
     sorted_vals = sorted(set(x))
     m = len(sorted_vals)
 
-    # rank (1-indexed) của từng phần tử để point-update trên BIT
+    # Rank (1-indexed) của từng phần tử để point update trên BIT
     ranks = [bisect_left(sorted_vals, v) + 1 for v in x]
 
-    # gom sự kiện theo chỉ số i (bucket) để khỏi phải sort
+    # events[i]: gom sự kiện theo chỉ số i (bucket) để khỏi phải sắp xếp
     events = [[] for _ in range(n + 1)]
     ans = [0] * q
 
+    # Tách mỗi truy vấn [a, b] × [c, d] theo bao hàm - loại trừ:
+    #   f(b, d) - f(b, c-1) - f(a-1, d) + f(a-1, c-1)
     for qi in range(q):
         a = nums[pos]; b = nums[pos + 1]; c = nums[pos + 2]; d = nums[pos + 3]
         pos += 4
-        rd = bisect_right(sorted_vals, d)       # số giá trị <= d
-        rc = bisect_right(sorted_vals, c - 1)   # số giá trị <= c-1
+        rd = bisect_right(sorted_vals, d)       # số giá trị ≤ d, tức prefix cần hỏi
+        rc = bisect_right(sorted_vals, c - 1)   # số giá trị ≤ c-1
+        # Hai số hạng tại chỉ số b
         eb = events[b]
         if rd:
             eb.append((rd, 1, qi))
         if rc:
             eb.append((rc, -1, qi))
+        # Hai số hạng tại chỉ số a-1 (bỏ qua khi a-1 = 0 vì f = 0)
         am1 = a - 1
         if am1 >= 1:
             ea = events[am1]
@@ -45,16 +44,17 @@ def main():
             if rc:
                 ea.append((rc, 1, qi))
 
-    # Fenwick tree (BIT)
+    # Fenwick tree (BIT) trên rank giá trị đã nén
     tree = [0] * (m + 1)
 
+    # Quét chỉ số i tăng dần
     for i in range(1, n + 1):
-        # point update +1 tại rank của x_i
+        # Point update +1 tại rank của x_i
         r = ranks[i - 1]
         while r <= m:
             tree[r] += 1
             r += r & (-r)
-        # xử lý các sự kiện tại chỉ số i
+        # BIT đã chứa mọi phần tử chỉ số ≤ i nên prefix sum = f(i, rv)
         ev = events[i]
         if ev:
             for rv, sign, qi in ev:

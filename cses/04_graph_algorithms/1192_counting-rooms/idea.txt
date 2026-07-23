@@ -1,36 +1,32 @@
-Bài toán: Counting Rooms (CSES 1192)
+Counting Rooms - CSES 1192
+https://cses.fi/problemset/task/1192
 
-1. Mô hình hóa đồ thị
-- Bản đồ là lưới n x m, mỗi ô là sàn ('.') hoặc tường ('#').
-- Coi mỗi ô sàn là một đỉnh của đồ thị. Hai ô sàn kề nhau theo 4 hướng
-  (trái, phải, lên, xuống) được nối bằng một cạnh.
-- Số "phòng" (rooms) chính là số thành phần liên thông (connected components)
-  của đồ thị gồm các ô sàn.
+## Đề bài
+Cho bản đồ tòa nhà dạng lưới n x m, mỗi ô là sàn ('.') hoặc tường ('#').
+Hai ô sàn thuộc cùng một phòng nếu có thể đi từ ô này sang ô kia bằng các bước
+di chuyển theo 4 hướng (trái, phải, lên, xuống) mà chỉ đi qua các ô sàn.
+Yêu cầu: đếm tổng số phòng trong tòa nhà.
 
-2. Thuật toán
-- Duyệt qua toàn bộ lưới. Mỗi khi gặp một ô sàn chưa được thăm, ta tăng
-  biến đếm count lên 1 rồi thực hiện flood fill (DFS/BFS) để đánh dấu toàn bộ
-  các ô sàn cùng thành phần liên thông đó là đã thăm.
-- Ở đây dùng DFS lặp (iterative) với một stack các chỉ số phẳng (flat index)
-  để tránh lỗi tràn stack đệ quy khi lưới lớn (tối đa 1000 x 1000 = 10^6 ô).
-- Kỹ thuật tối ưu: đệm (padding) một viền tường xung quanh lưới, tạo mảng
-  kích thước (n+2) x (m+2). Nhờ viền tường, khi mở rộng sang 4 ô lân cận
-  cur+1, cur-1, cur-W, cur+W (với W = m+2) ta không cần kiểm tra biên,
-  giúp vòng lặp gọn và nhanh hơn. Mỗi ô sàn khi được thăm sẽ được đặt lại
-  thành 0 (tường) để đóng vai trò mảng visited luôn.
-- Đọc dữ liệu nhanh bằng sys.stdin.buffer.read().split(); chuyển mỗi dòng
-  ('.'/'#') sang 1/0 bằng bytes.translate (chạy ở tốc độ C).
+## Ý tưởng
+- Mô hình hóa đồ thị: coi mỗi ô sàn là một đỉnh; hai ô sàn kề nhau theo 4 hướng
+  được nối bằng một cạnh. Số phòng chính là số thành phần liên thông
+  (connected components) của đồ thị các ô sàn.
+- Duyệt toàn bộ lưới. Mỗi khi gặp một ô sàn chưa được thăm, tăng biến đếm lên 1
+  rồi chạy flood fill (DFS lặp bằng stack) để đánh dấu toàn bộ ô sàn cùng thành
+  phần liên thông đó là đã thăm. Dùng DFS lặp (thay vì đệ quy) để tránh tràn
+  stack khi lưới lớn (tối đa 1000 x 1000 = 10^6 ô).
+- Tối ưu: đệm (padding) một viền tường quanh lưới, tạo mảng (n+2) x (m+2). Nhờ
+  viền, khi mở rộng sang 4 ô lân cận cur-1, cur+1, cur-W, cur+W (với W = m+2)
+  ta không cần kiểm tra biên. Mỗi ô sàn khi được thăm sẽ được đặt lại thành 0
+  (tường), qua đó đóng luôn vai trò mảng visited.
+- Đọc dữ liệu nhanh; chuyển mỗi dòng ('.'/'#') sang 1/0 bằng bytes.translate
+  (chạy ở tốc độ C) ở bản Python.
+- Tính đúng đắn: mỗi lần khởi động flood fill từ một ô sàn mới ứng với đúng một
+  phòng mới; viền tường không chứa ô sàn nên không tạo phòng giả.
 
-3. Tính đúng đắn
-- Flood fill duyệt hết đúng một thành phần liên thông rồi dừng, nên mỗi lần
-  bắt đầu flood fill từ một ô sàn mới (chưa thăm) tương ứng chính xác với một
-  phòng mới. Do đó count bằng số thành phần liên thông = số phòng.
-- Viền tường không chứa ô sàn nên không bao giờ khởi tạo phòng giả; nó chỉ
-  chặn việc "tràn" ra ngoài lưới.
-
-4. Độ phức tạp
-- Thời gian: O(n*m). Mỗi ô được đưa vào stack và lấy ra tối đa một lần,
-  mỗi lần xét 4 lân cận => O(n*m).
+## Độ phức tạp
+- Thời gian: O(n*m). Mỗi ô được đưa vào và lấy ra khỏi stack tối đa một lần,
+  mỗi lần xét 4 lân cận.
 - Bộ nhớ: O(n*m) cho mảng lưới đã đệm và stack.
 
 LƯU Ý TLE: Với trường hợp xấu nhất (toàn bộ 1000x1000 = 10^6 ô đều là sàn),

@@ -11,6 +11,7 @@ int main() {
     int n, m;
     std::cin >> n >> m;
 
+    // Đọc lưới và xác định chỉ số phẳng của ô xuất phát 'A' và ô đích 'B'.
     std::vector<std::string> grid(n);
     int start = -1;
     int target = -1;
@@ -25,7 +26,8 @@ int main() {
         }
     }
 
-    // previous_move[cell] is the move used to enter that cell.
+    // previous_move[cell]: hướng đã dùng để đi vào ô đó, đồng thời đánh dấu đã thăm
+    // (0 = chưa thăm, 'S' = ô xuất phát).
     std::vector<char> previous_move(n * m, 0);
     previous_move[start] = 'S';
     std::queue<int> queue;
@@ -35,12 +37,14 @@ int main() {
     constexpr int DC[4] = {0, 0, -1, 1};
     constexpr char MOVE[4] = {'U', 'D', 'L', 'R'};
 
+    // BFS từ 'A': mọi cạnh trọng số 1 nên đường đi tìm được là ngắn nhất theo số bước.
     while (!queue.empty() && previous_move[target] == 0) {
         const int cell = queue.front();
         queue.pop();
         const int row = cell / m;
         const int column = cell % m;
 
+        // Xét 4 ô kề cạnh; ô nào trong lưới, không phải tường và chưa thăm thì thăm.
         for (int direction = 0; direction < 4; ++direction) {
             const int nr = row + DR[direction];
             const int nc = column + DC[direction];
@@ -56,11 +60,13 @@ int main() {
         }
     }
 
+    // Nếu 'B' chưa được thăm thì không tồn tại đường đi.
     if (previous_move[target] == 0) {
         std::cout << "NO\n";
         return 0;
     }
 
+    // Truy vết ngược từ 'B' về 'A': đọc hướng đã lưu và lùi về ô liền trước.
     std::string path;
     for (int cell = target; cell != start;) {
         const char move = previous_move[cell];
@@ -75,6 +81,7 @@ int main() {
             --cell;
         }
     }
+    // Đảo ngược để có thứ tự đúng từ 'A' tới 'B'.
     std::reverse(path.begin(), path.end());
 
     std::cout << "YES\n" << path.size() << '\n' << path << '\n';

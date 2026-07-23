@@ -1,17 +1,14 @@
-# Teleporters Path - CSES 1693
-# https://cses.fi/problemset/task/1693
-# Directed Eulerian path from node 1 to node n, using every edge exactly once.
-# Hierholzer's algorithm (iterative) in O(n + m).
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần để tránh chậm do I/O trên CPython.
     data = sys.stdin.buffer.read().split()
     idx = 0
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
+    # Xây adjacency list cho đồ thị có hướng và đếm bậc vào/ra mỗi đỉnh.
     adj = [[] for _ in range(n + 1)]
     outdeg = [0] * (n + 1)
     indeg = [0] * (n + 1)
@@ -23,8 +20,9 @@ def main():
         outdeg[a] += 1
         indeg[b] += 1
 
-    # Degree conditions for a directed Eulerian path from node 1 to node n.
-    # (n >= 2 so 1 != n always.)
+    # Điều kiện bậc cho đường đi Euler có hướng từ đỉnh 1 tới đỉnh n:
+    #   đỉnh 1 dư đúng một cạnh ra (+1), đỉnh n dư đúng một cạnh vào (-1),
+    #   mọi đỉnh khác cân bằng bậc vào/ra (0). (n >= 2 nên 1 != n.)
     ok = True
     for v in range(1, n + 1):
         d = outdeg[v] - indeg[v]
@@ -45,7 +43,8 @@ def main():
         sys.stdout.write("IMPOSSIBLE\n")
         return
 
-    # Iterative Hierholzer starting at node 1.
+    # Hierholzer kiểu iterative xuất phát từ đỉnh 1; ptr[v] là con trỏ tới cạnh
+    # chưa dùng kế tiếp của v nên mỗi cạnh chỉ được xét đúng một lần.
     ptr = [0] * (n + 1)
     stack = [1]
     path = []
@@ -53,18 +52,21 @@ def main():
         v = stack[-1]
         p = ptr[v]
         if p < len(adj[v]):
+            # Còn cạnh chưa dùng: đi theo cạnh đó, đẩy đỉnh kề vào stack.
             ptr[v] = p + 1
             stack.append(adj[v][p])
         else:
+            # Hết cạnh: pop đỉnh và thêm vào path (thứ tự ngược).
             path.append(v)
             stack.pop()
 
-    # Must use every edge exactly once -> path has m + 1 vertices.
-    # This also enforces the connectivity requirement.
+    # Phải dùng hết mọi cạnh => path có m + 1 đỉnh; đây cũng bao trọn điều kiện
+    # liên thông. Nếu không đủ thì IMPOSSIBLE.
     if len(path) != m + 1:
         sys.stdout.write("IMPOSSIBLE\n")
         return
 
+    # Đảo ngược để có thứ tự đi thực sự rồi ghi output một lần.
     path.reverse()
     sys.stdout.write(' '.join(map(str, path)))
     sys.stdout.write('\n')

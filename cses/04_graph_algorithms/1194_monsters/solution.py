@@ -1,10 +1,3 @@
-# Monsters - CSES 1194
-# https://cses.fi/problemset/task/1194
-#
-# Multi-source BFS từ tất cả quái vật -> mon[ô] = thời điểm sớm nhất quái vật tới.
-# BFS từ 'A': chỉ vào ô nb nếu dist[cur]+1 < mon[nb] (tới trước hẳn mọi quái vật).
-# Chạm ô biên => truy vết đường đi U/D/L/R.
-
 import sys
 from collections import deque
 
@@ -23,10 +16,11 @@ def main():
     BIG = size + 5
 
     wall = bytearray(size)          # 1 nếu là tường
-    mon = [BIG] * size              # khoảng cách BFS từ quái vật
+    mon = [BIG] * size              # thời điểm sớm nhất quái vật tới mỗi ô (BFS)
     dq = deque()
     start = -1
 
+    # Đọc lưới; đánh dấu tường, nạp nguồn multi-source (ô 'M') và vị trí 'A'
     for r in range(n):
         row = rows[r]
         base = r * m
@@ -40,7 +34,7 @@ def main():
             elif ch == A:
                 start = base + c
 
-    # Multi-source BFS cho quái vật
+    # Lượt 1: multi-source BFS từ tất cả quái vật -> thời điểm sớm nhất mỗi ô bị chiếm
     while dq:
         cur = dq.popleft()
         d = mon[cur] + 1
@@ -67,7 +61,7 @@ def main():
                 mon[nb] = d
                 dq.append(nb)
 
-    # BFS cho người chơi
+    # Lượt 2: BFS người chơi, chỉ đi vào ô tới được TRƯỚC HẲN mọi quái vật
     dist = [BIG] * size
     par = [-1] * size
     mv = bytearray(size)            # ký tự di chuyển để tới ô này
@@ -79,7 +73,7 @@ def main():
     ans_cell = -1
     q = deque()
 
-    # Xuất phát: cần tới trước quái vật (0 < mon[start])
+    # Xuất phát chỉ hợp lệ khi người chơi tới trước quái vật (0 < mon[start])
     if mon[start] > 0:
         dist[start] = 0
         sr = start // m

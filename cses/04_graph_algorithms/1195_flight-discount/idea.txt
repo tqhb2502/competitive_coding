@@ -1,45 +1,39 @@
-Bài toán: Flight Discount (CSES 1195)
+Flight Discount - CSES 1195
+https://cses.fi/problemset/task/1195
 
-Mô hình hóa đồ thị
-------------------
-Ta có đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ với n đỉnh (thành phố) và m cạnh
-(chuyến bay). Mỗi cạnh a -> b có giá c. Cần tìm đường đi rẻ nhất từ
-thành phố 1 đến thành phố n, trong đó được phép dùng ĐÚNG MỘT phiếu
-giảm giá làm giảm giá của một chuyến bay bất kỳ xuống floor(c/2).
+## Đề bài
+Cho đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n thành phố và m chuyến bay. Mỗi
+chuyến bay a -> b có giá c. Ta cần đi từ thành phố 1 đến thành phố n với
+tổng chi phí nhỏ nhất, trong đó được phép dùng ĐÚNG MỘT phiếu giảm giá
+để hạ giá của một chuyến bay bất kỳ xuống còn floor(c/2). Đề bảo đảm
+luôn tồn tại đường đi từ 1 đến n.
 
-Ý tưởng thuật toán
-------------------
-Ta nhân đôi số trạng thái: mỗi đỉnh v có hai trạng thái
-  (v, 0): đã đến v mà CHƯA dùng phiếu giảm giá.
-  (v, 1): đã đến v và ĐÃ dùng phiếu giảm giá.
+## Ý tưởng
+Nhân đôi số trạng thái: mỗi đỉnh v ứng với hai trạng thái
+  (v, 0): đã tới v mà CHƯA dùng phiếu giảm giá.
+  (v, 1): đã tới v và ĐÃ dùng phiếu giảm giá.
 
-Với mỗi cạnh (u, v, w) ta tạo các dịch chuyển:
+Với mỗi cạnh (u, v, w) sinh ra ba dịch chuyển:
   (u, 0) --w--> (v, 0)      : đi bình thường, chưa dùng phiếu.
-  (u, 0) --w//2--> (v, 1)   : dùng phiếu ngay trên cạnh này.
+  (u, 0) --w/2--> (v, 1)    : dùng phiếu ngay trên cạnh này.
   (u, 1) --w--> (v, 1)      : đã dùng phiếu rồi, đi bình thường.
 
 Chạy Dijkstra một lần trên đồ thị trạng thái (2*n đỉnh) xuất phát từ
-(1, 0) với khoảng cách 0. Đáp án là dist[(n, 1)] (và có thể so với
-dist[(n, 0)] cho an toàn). Vì c >= 1 nên floor(c/2) <= c, dùng phiếu
-không bao giờ làm tệ hơn, nên dist[(n,1)] luôn <= dist[(n,0)].
+(1, 0) với khoảng cách 0. Mọi trọng số (w hoặc w/2) đều không âm nên
+Dijkstra cho kết quả tối ưu. Đáp án là min(dist[(n, 0)], dist[(n, 1)]).
 
-Vì sao đúng
------------
-Đồ thị trạng thái mã hóa chính xác "đã dùng phiếu hay chưa". Một đường
-đi hợp lệ dùng tối đa một phiếu tương ứng 1-1 với một đường đi trong đồ
-thị trạng thái từ (1,0). Dijkstra cho đường đi ngắn nhất trên đồ thị có
-trọng số không âm (mọi trọng số w hoặc w//2 đều >= 0), nên kết quả là
-tối ưu. Đề bảo đảm luôn tồn tại đường đi từ 1 đến n.
+Đồ thị trạng thái mã hóa chính xác việc "đã dùng phiếu hay chưa", nên
+mỗi đường đi hợp lệ dùng tối đa một phiếu tương ứng 1-1 với một đường đi
+trong đồ thị trạng thái từ (1, 0), bảo đảm tính đúng đắn.
 
-Độ phức tạp
------------
-Số đỉnh trạng thái: 2n <= 2e5. Số cạnh trạng thái: 3m <= 6e5.
-Thời gian Dijkstra dùng heap: O((V + E) log V) = O((n + m) log n).
+## Độ phức tạp
+Số đỉnh trạng thái 2n <= 2e5, số cạnh trạng thái 3m <= 6e5.
+Thời gian: Dijkstra dùng heap O((V + E) log V) = O((n + m) log n).
 Bộ nhớ: O(n + m) cho danh sách kề và mảng dist.
 
 LƯU Ý TLE: Với n <= 1e5, m <= 2e5, Dijkstra thuần Python có thể chạm
 giới hạn thời gian trên CSES (vốn đặt cho C++). Đã tối ưu bằng cách đọc
 input qua sys.stdin.buffer, gộp trạng thái vào một mảng dist phẳng
-(index = node*2 + used), dùng heapq với kiểm tra "lazy deletion".
-Trong phần lớn trường hợp lời giải này vượt qua được, nhưng vẫn có rủi
-ro TLE ở test xấu nhất.
+(index = node*2 + used) và dùng heapq với kiểm tra "lazy deletion".
+Phần lớn trường hợp lời giải vượt qua được, nhưng vẫn có rủi ro TLE ở
+test xấu nhất.

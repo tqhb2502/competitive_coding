@@ -1,8 +1,3 @@
-# High Score - CSES 1673
-# https://cses.fi/problemset/task/1673
-# Tìm đường đi có tổng trọng số lớn nhất từ 1 -> n bằng Bellman-Ford (tối đa hóa).
-# In -1 nếu có chu trình dương nằm trên một đường đi hợp lệ 1 -> n.
-
 import sys
 from collections import deque
 
@@ -13,6 +8,7 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
+    # Lưu cạnh dạng mảng song song và dựng đồ thị xuôi/đảo để cắt tỉa
     A = [0] * m
     B = [0] * m
     X = [0] * m
@@ -46,6 +42,7 @@ def main():
                 R2[v] = 1
                 dq.append(v)
 
+    # good = R1 giao R2: chỉ những đỉnh này mới ảnh hưởng tới kết quả
     good = bytearray(n + 1)
     cntgood = 0
     for i in range(1, n + 1):
@@ -63,12 +60,13 @@ def main():
             edges.append((a, b, x))
             out_adj[a].append((b, x))
 
+    # Bellman-Ford tối đa hóa: dist[1] = 0, các đỉnh khác = -vô cực
     NEG = -(1 << 60)
     dist = [NEG] * (n + 1)
     dist[1] = 0
 
-    # Bellman-Ford theo vòng, nhưng mỗi vòng chỉ duyệt các đỉnh vừa được cập nhật
-    # ở vòng trước (active set). Vẫn giữ chặn O(V*E) nhưng nhanh hơn nhiều trên
+    # Chạy Bellman-Ford theo vòng, nhưng mỗi vòng chỉ duyệt các đỉnh vừa được cập
+    # nhật ở vòng trước (active set). Vẫn giữ chặn O(V*E) nhưng nhanh hơn nhiều trên
     # thực tế vì tránh quét lại toàn bộ cạnh khi phần lớn đỉnh đã ổn định.
     active = [1]
     inq = bytearray(n + 1)

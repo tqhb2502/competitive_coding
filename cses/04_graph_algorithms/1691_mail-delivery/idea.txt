@@ -1,38 +1,44 @@
-Bài toán: Mail Delivery (CSES 1691)
+Mail Delivery - CSES 1691
+https://cses.fi/problemset/task/1691
 
-MÔ HÌNH HÓA:
-- Coi các giao lộ là các đỉnh (vertex), các con đường hai chiều là các cạnh (edge)
-  của một đồ thị vô hướng (undirected graph). Yêu cầu là tìm một lộ trình xuất phát
-  và kết thúc tại đỉnh 1, đi qua mỗi cạnh đúng MỘT lần. Đây chính là bài toán tìm
-  chu trình Euler (Eulerian circuit) trên đồ thị vô hướng.
+## Đề bài
+Cho một thành phố có n giao lộ và m con đường hai chiều nối giữa các giao lộ.
+Người đưa thư xuất phát từ giao lộ 1, cần đi qua MỖI con đường đúng MỘT lần rồi
+quay trở về giao lộ 1. Hãy in ra một lộ trình thỏa mãn (dãy các giao lộ theo thứ
+tự đi qua), hoặc in "IMPOSSIBLE" nếu không tồn tại lộ trình như vậy.
 
-ĐIỀU KIỆN TỒN TẠI CHU TRÌNH EULER (đồ thị vô hướng):
+## Ý tưởng
+Mô hình hóa: giao lộ là đỉnh (vertex), con đường hai chiều là cạnh (edge) của một
+đồ thị vô hướng (undirected graph). Yêu cầu tìm lộ trình bắt đầu và kết thúc tại
+đỉnh 1, đi qua mỗi cạnh đúng một lần chính là bài toán tìm chu trình Euler
+(Eulerian circuit).
+
+Điều kiện tồn tại chu trình Euler trên đồ thị vô hướng:
 1. Mọi đỉnh đều có bậc (degree) chẵn.
 2. Tất cả các cạnh nằm trong cùng một thành phần liên thông (connected component),
-   tức là có thể đi đến tất cả các cạnh xuất phát từ đỉnh 1.
-Nếu một trong hai điều kiện trên không thỏa mãn thì in "IMPOSSIBLE".
+   tức là từ đỉnh 1 có thể đi tới mọi cạnh.
+Nếu một trong hai điều kiện không thỏa mãn thì in "IMPOSSIBLE".
 
-THUẬT TOÁN:
+Thuật toán:
 - Dùng thuật toán Hierholzer để dựng chu trình Euler.
-- Lưu adjacency list, mỗi phần tử là cặp (đỉnh_kề, edge_id). Vì là đồ thị vô hướng,
-  mỗi cạnh xuất hiện ở cả hai đỉnh nhưng dùng chung một edge_id, và có mảng used[]
-  đánh dấu cạnh đã đi qua để không dùng lại cạnh đó lần thứ hai.
-- Cài đặt Hierholzer bằng stack (iterative), không dùng đệ quy, để tránh RecursionError
-  / tràn stack khi n, m lớn. Mỗi đỉnh giữ một con trỏ ptr để duyệt adjacency, nhờ đó
+- Lưu adjacency list, mỗi phần tử là cặp (đỉnh_kề, edge_id). Vì đồ thị vô hướng nên
+  mỗi cạnh xuất hiện ở cả hai đỉnh nhưng dùng chung một edge_id; mảng used[] đánh dấu
+  cạnh đã đi qua để không dùng lại cạnh đó lần thứ hai.
+- Cài đặt Hierholzer bằng stack (iterative), không đệ quy, nhằm tránh RecursionError /
+  tràn stack khi n, m lớn. Mỗi đỉnh giữ một con trỏ ptr để duyệt adjacency, nhờ đó
   toàn bộ thuật toán chạy trong O(n + m).
-- Sau khi chạy, đảo ngược mảng circuit thu được để ra thứ tự di chuyển đúng.
+- Sau khi chạy, đảo ngược mảng circuit thu được để có thứ tự di chuyển đúng.
 
-KIỂM TRA TÍNH ĐÚNG ĐẮN:
+Kiểm tra tính đúng đắn:
 - Kiểm tra bậc chẵn của mỗi đỉnh trong O(n).
-- Sau khi chạy Hierholzer từ đỉnh 1, nếu đồ thị liên thông (trên tập cạnh) thì chu trình
-  sẽ đi qua đủ m cạnh và có đúng m+1 đỉnh. Nếu số đỉnh trong circuit khác m+1, nghĩa là
-  còn cạnh ở thành phần liên thông khác chưa được đi -> in "IMPOSSIBLE". Cách kiểm tra
-  này đồng thời xử lý cả trường hợp đỉnh 1 có bậc 0 nhưng đồ thị vẫn còn cạnh khác.
-- Hierholzer được chứng minh là luôn tạo ra chu trình Euler khi hai điều kiện trên đúng.
+- Sau khi chạy Hierholzer từ đỉnh 1, nếu đồ thị liên thông (trên tập cạnh) thì chu
+  trình đi qua đủ m cạnh và có đúng m + 1 đỉnh. Nếu số đỉnh trong circuit khác m + 1,
+  nghĩa là còn cạnh ở thành phần liên thông khác chưa được đi -> in "IMPOSSIBLE".
+  Cách kiểm tra này cũng xử lý luôn trường hợp đỉnh 1 có bậc 0 nhưng đồ thị vẫn còn
+  cạnh khác.
 
-ĐỘ PHỨC TẠP:
-- Thời gian: O(n + m) - mỗi cạnh được xử lý một số lần hằng số, mỗi đỉnh duyệt adjacency
-  một lần nhờ con trỏ ptr.
+## Độ phức tạp
+- Thời gian: O(n + m) - mỗi cạnh được xử lý một số lần hằng số, mỗi đỉnh duyệt
+  adjacency đúng một lần nhờ con trỏ ptr.
 - Bộ nhớ: O(n + m) cho adjacency list, mảng used và stack/circuit.
-
 Với n <= 1e5 và m <= 2e5, độ phức tạp O(n + m) là đủ nhanh.

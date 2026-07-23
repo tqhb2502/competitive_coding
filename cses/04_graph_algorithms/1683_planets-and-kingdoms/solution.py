@@ -1,9 +1,3 @@
-# Planets and Kingdoms - CSES 1683
-# https://cses.fi/problemset/task/1683
-#
-# Tìm các Strongly Connected Component (SCC) bằng thuật toán Kosaraju.
-# Mỗi SCC là một "kingdom"; hai planet cùng SCC được gán cùng nhãn.
-
 import sys
 
 
@@ -13,16 +7,18 @@ def main():
     n = int(data[pos]); pos += 1
     m = int(data[pos]); pos += 1
 
-    adj = [[] for _ in range(n + 1)]   # đồ thị gốc
-    radj = [[] for _ in range(n + 1)]  # đồ thị đảo chiều
+    # adj: đồ thị gốc; radj: đồ thị đảo chiều mọi cạnh (dùng cho Kosaraju).
+    adj = [[] for _ in range(n + 1)]
+    radj = [[] for _ in range(n + 1)]
     for _ in range(m):
         a = int(data[pos]); b = int(data[pos + 1]); pos += 2
         adj[a].append(b)
         radj[b].append(a)
 
-    # --- Bước 1: DFS lặp trên đồ thị gốc, ghi finish order (post-order) ---
+    # --- Bước 1: DFS lặp trên đồ thị gốc, ghi thứ tự kết thúc (post-order) vào order ---
+    # ptr[node] là con trỏ chỉ số cạnh kế tiếp cần xét của mỗi đỉnh, tránh tràn stack.
     visited = bytearray(n + 1)
-    ptr = [0] * (n + 1)   # con trỏ chỉ số cạnh đang xét của mỗi đỉnh
+    ptr = [0] * (n + 1)
     order = []
     for s in range(1, n + 1):
         if visited[s]:
@@ -40,16 +36,18 @@ def main():
                     visited[nxt] = 1
                     stack.append(nxt)
             else:
+                # Đỉnh đã duyệt hết cạnh: chốt finish order rồi lấy ra khỏi stack.
                 order.append(node)
                 stack.pop()
 
-    # --- Bước 2: DFS trên đồ thị đảo chiều theo thứ tự ngược của order ---
+    # --- Bước 2: DFS trên đồ thị đảo chiều theo thứ tự NGƯỢC của order ---
+    # Mỗi lần xuất phát từ đỉnh chưa gán nhãn sẽ phủ trọn đúng một SCC (kingdom).
     comp = [0] * (n + 1)
     label = 0
     for s in reversed(order):
         if comp[s]:
             continue
-        label += 1
+        label += 1  # Mở một vương quốc (SCC) mới.
         comp[s] = label
         stack = [s]
         while stack:
@@ -59,6 +57,7 @@ def main():
                     comp[nxt] = label
                     stack.append(nxt)
 
+    # In số vương quốc k rồi in nhãn SCC của từng hành tinh 1..n.
     out = [str(label), ' '.join(map(str, comp[1:]))]
     sys.stdout.write('\n'.join(out) + '\n')
 

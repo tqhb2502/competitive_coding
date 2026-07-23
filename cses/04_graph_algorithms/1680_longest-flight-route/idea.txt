@@ -1,40 +1,36 @@
-Bài toán: Longest Flight Route (CSES 1680)
+Longest Flight Route - CSES 1680
+https://cses.fi/problemset/task/1680
 
-MÔ HÌNH ĐỒ THỊ
-- Có n thành phố và m chuyến bay một chiều (cạnh có hướng a -> b).
+## Đề bài
+- Có n thành phố và m chuyến bay một chiều, mỗi chuyến bay là một cạnh có hướng a -> b.
 - Đồ thị được bảo đảm là DAG (đồ thị có hướng không chu trình).
-- Cần tìm đường đi có nhiều thành phố nhất từ thành phố 1 đến thành phố n,
-  in ra số lượng thành phố trên đường đi và danh sách các thành phố theo thứ tự.
-  Nếu không có đường đi nào thì in ra "IMPOSSIBLE".
+- Hãy tìm đường đi có nhiều thành phố nhất đi từ thành phố 1 đến thành phố n.
+- In ra số lượng thành phố trên đường đi và danh sách các thành phố theo thứ tự.
+  Nếu không tồn tại đường đi nào thì in ra "IMPOSSIBLE".
 
-THUẬT TOÁN
+## Ý tưởng
 - Vì đồ thị là DAG nên ta dùng topological sort (sắp xếp topo) kết hợp
   dynamic programming (DP) để tìm đường đi dài nhất (longest path).
 - Dùng thuật toán Kahn (BFS trên indegree) để lấy thứ tự topo. Cách này lặp
-  bằng collections.deque, không đệ quy nên tránh được lỗi tràn stack khi n lớn.
-- Gọi dist[v] = số thành phố nhiều nhất trên một đường đi từ 1 đến v.
-  Khởi tạo dist[1] = 1, các đỉnh khác = -1 (nghĩa là chưa tới được từ đỉnh 1).
+  bằng hàng đợi, không đệ quy nên tránh được lỗi tràn stack khi n lớn.
+- Gọi dist[v] là số thành phố nhiều nhất trên một đường đi từ 1 đến v.
+  Khởi tạo dist[1] = 1, các đỉnh khác bằng -1 (nghĩa là chưa tới được từ đỉnh 1).
   parent[v] lưu đỉnh liền trước trên đường đi tối ưu để truy vết (path reconstruction).
 - Duyệt các đỉnh u theo thứ tự topo. Khi lấy u ra thì mọi đỉnh đứng trước u đã
-  được xử lý nên dist[u] đã là giá trị cuối cùng. Với mỗi cạnh u -> v:
-    + giảm indegree[v] (phục vụ Kahn), nếu về 0 thì đẩy v vào hàng đợi.
-    + nếu dist[u] != -1 và dist[u] + 1 > dist[v] thì
+  được xử lý xong nên dist[u] đã là giá trị cuối cùng. Với mỗi cạnh u -> v:
+    + giảm indegree[v] (phục vụ thuật toán Kahn), nếu về 0 thì đẩy v vào hàng đợi.
+    + nếu dist[u] khác -1 và dist[u] + 1 > dist[v] thì
       cập nhật dist[v] = dist[u] + 1 và parent[v] = u.
+- Truy vết kết quả: nếu dist[n] bằng -1 thì không tới được n từ 1, in "IMPOSSIBLE".
+  Ngược lại, bắt đầu từ n đi ngược theo parent về tới 1, thu được danh sách các
+  thành phố, đảo ngược lại rồi in ra. Số thành phố bằng dist[n] (cũng bằng độ
+  dài của danh sách).
+- Tính đúng đắn: trong DAG, khi xử lý u theo thứ tự topo thì mọi đường đi tới u
+  đã được xét xong, do đó dist[u] chính xác. Việc relax cạnh u -> v bảo đảm
+  dist[v] là số thành phố lớn nhất trên đường đi từ 1 tới v. Vì không có chu
+  trình nên longest path là hữu hạn và DP hội tụ.
 
-TRUY VẾT KẾT QUẢ
-- Nếu dist[n] == -1 thì không tới được n từ 1 => in "IMPOSSIBLE".
-- Ngược lại, bắt đầu từ n đi ngược theo parent về tới 1, thu được danh sách các
-  thành phố, đảo ngược lại rồi in ra. Số thành phố bằng dist[n] (cũng bằng độ dài
-  danh sách).
-
-TÍNH ĐÚNG ĐẮN
-- Trong DAG, khi xử lý u theo thứ tự topo thì mọi đường đi tới u đã được xét xong,
-  do đó dist[u] chính xác. Việc relax cạnh u -> v (giống Bellman/DAG longest path)
-  bảo đảm dist[v] là số thành phố lớn nhất trên đường đi từ 1 tới v. Vì không có
-  chu trình nên longest path là hữu hạn và DP hội tụ. parent cho phép dựng lại
-  đúng một đường đi đạt cực đại.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n + m) cho cả topo sort lẫn DP.
-- Bộ nhớ: O(n + m) cho adjacency list, các mảng dist, parent, indegree.
+- Bộ nhớ: O(n + m) cho adjacency list và các mảng dist, parent, indegree.
 - Với n <= 1e5 và m <= 2e5 thì độ phức tạp tuyến tính này chạy tốt.

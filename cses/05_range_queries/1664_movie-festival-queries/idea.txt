@@ -1,51 +1,53 @@
-Bài toán: Movie Festival Queries (CSES 1664)
+Movie Festival Queries - CSES 1664
+https://cses.fi/problemset/task/1664
 
-Cho n phim, mỗi phim có khoảng thời gian [start, end]. Với mỗi trong q truy vấn
-(a, b), cần tìm số lượng phim tối đa có thể xem, sao cho mỗi phim được chọn có
-start >= a và end <= b, và các phim không chồng lên nhau (một phim có thể bắt
-đầu đúng ngay lúc phim trước kết thúc).
+## Đề bài
+Cho n bộ phim, mỗi phim chiếu trong khoảng thời gian [start, end]. Với mỗi
+trong q truy vấn (a, b), hãy tìm số lượng phim tối đa có thể xem sao cho mọi
+phim được chọn đều thỏa start >= a và end <= b, đồng thời các phim không được
+chồng lên nhau (một phim có thể bắt đầu đúng ngay lúc phim trước kết thúc).
 
+## Ý tưởng
 1) Nền tảng greedy (interval scheduling)
 Nếu thời điểm sớm nhất có thể bắt đầu phim tiếp theo là t, thì lựa chọn tối ưu
 là chọn phim có start >= t và có end nhỏ nhất. Đặt:
     f(t) = min { end : phim có start >= t }.
-Sau khi xem phim đó ta chuyển sang trạng thái t' = f(t). Cụ thể greedy này là
+Sau khi xem phim đó ta chuyển sang trạng thái t' = f(t). Đây chính là greedy
 tối ưu cho bài toán chọn nhiều khoảng không giao nhau nhất.
 
-Tính f(t): sắp xếp phim theo start tăng dần, tính suffix-min của end. Với một
-giá trị t, dùng bisect_left trên mảng start để tìm phim đầu tiên có start >= t,
-rồi lấy suffMin tại vị trí đó. Vì end > start >= t nên f(t) > t, đảm bảo quá
-trình luôn tiến lên (không lặp vô hạn).
+Tính f(t): sắp xếp phim theo start tăng dần rồi tính suffix-min của end. Với
+một giá trị t, dùng bisect_left trên mảng start để tìm phim đầu tiên có
+start >= t, sau đó lấy suffix-min tại vị trí đó. Vì end > start >= t nên
+f(t) > t, đảm bảo quá trình luôn tiến lên (không lặp vô hạn).
 
 2) Binary lifting
-Mỗi lần nhảy f đích đến luôn là một giá trị end nào đó, nên ta node hóa tập
-các giá trị end phân biệt (kích thước m <= n). Với mỗi node value v:
+Mỗi lần nhảy f, đích đến luôn là một giá trị end nào đó, nên ta node hóa tập
+các giá trị end phân biệt (kích thước m <= n). Với mỗi node giá trị v:
     up0[node(v)] = node( f(v) )   (hoặc sentinel nếu không còn phim).
 Dùng binary lifting: up[k][i] = trạng thái sau 2^k bước nhảy, tính bằng
-    up[k][i] = up[k-1][ up[k-1][i] ]
-(trong Python: up[k] = [up[k-1][e] for e in up[k-1]]).
+    up[k][i] = up[k-1][ up[k-1][i] ].
 
 3) Trả lời truy vấn (a, b)
 - Phim đầu tiên: fe = f(a). Nếu fe > b thì không xem được phim nào -> 0.
 - Ngược lại count = 1, đặt cur = node(fe). Sau đó dùng binary lifting từ k lớn
-  về k = 0: nếu nodeVal[ up[k][cur] ] <= b thì nhảy 2^k bước (tất cả hợp lệ vì
-  giá trị end tăng dần dọc theo các bước nhảy), cộng 2^k vào count và cập nhật
-  cur. Kết quả là tổng số phim xem được.
+  về k = 0: nếu nodeVal[ up[k][cur] ] <= b thì nhảy 2^k bước (mọi bước đều hợp
+  lệ vì giá trị end tăng dần dọc theo các bước nhảy), cộng 2^k vào count và cập
+  nhật cur. Kết quả là tổng số phim xem được.
 Do đáp án <= n <= 2e5 < 2^18 nên LOG = 18 là đủ.
 
 4) Tính đúng đắn
 Greedy chọn phim kết thúc sớm nhất là tối ưu cho số khoảng không giao nhau.
 Ràng buộc start >= a được bảo đảm bởi phim đầu tiên bắt đầu từ a và tính chất
 bắc cầu (start phim sau >= end phim trước >= a). Ràng buộc end <= b được kiểm
-tra trực tiếp bằng điều kiện nodeVal <= b; nếu min end đã > b thì không còn
-phim nào thỏa nên dừng lại là đúng.
+tra trực tiếp bằng điều kiện nodeVal <= b; nếu min end đã > b thì không còn phim
+nào thỏa nên dừng lại là đúng.
 
-5) Độ phức tạp
+## Độ phức tạp
 - Tiền xử lý: O(n log n) sắp xếp + O(m log m) node hóa; xây bảng binary lifting
   O(m log A) với A là cận trên của đáp án (LOG = 18).
 - Mỗi truy vấn: O(log A). Tổng: O((n + q) log A).
 - Bộ nhớ: O(m log A) cho bảng binary lifting (m <= 2e5, LOG = 18).
 
 LƯU Ý TLE: Với n, q ~ 2e5, các vòng lặp Python cho binary lifting (xây bảng và
-duyệt q truy vấn mỗi truy vấn O(LOG)) có thể chậm; giới hạn CSES nhắm vào C++
+duyệt q truy vấn, mỗi truy vấn O(LOG)) có thể chậm; giới hạn CSES nhắm vào C++
 nên bản Python thuần có thể sát giới hạn thời gian trên test xấu nhất.

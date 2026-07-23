@@ -1,31 +1,35 @@
-Bài toán: Course Schedule (CSES 1679)
+Course Schedule - CSES 1679
+https://cses.fi/problemset/task/1679
 
+## Đề bài
+Có n khóa học và m ràng buộc. Mỗi ràng buộc dạng "a phải hoàn thành trước b".
+Hãy tìm một thứ tự học tất cả các khóa sao cho mọi ràng buộc đều được thỏa mãn,
+hoặc in ra "IMPOSSIBLE" nếu không tồn tại thứ tự hợp lệ nào.
+
+## Ý tưởng
 Mô hình đồ thị:
-- Có n khóa học (đỉnh) và m ràng buộc (cạnh có hướng).
-- Mỗi ràng buộc "a phải hoàn thành trước b" được biểu diễn bằng một cạnh có hướng a -> b.
-- Ta cần tìm một thứ tự học tất cả các khóa sao cho mọi ràng buộc đều được thỏa mãn.
-  Đây chính là bài toán sắp xếp topo (topological sort) trên đồ thị có hướng.
+- Mỗi khóa học là một đỉnh, mỗi ràng buộc "a trước b" là một cạnh có hướng a -> b.
+- Việc tìm thứ tự học hợp lệ chính là bài toán sắp xếp topo (topological sort)
+  trên đồ thị có hướng.
 
-Thuật toán (Kahn's algorithm / topo sort bằng BFS):
+Thuật toán Kahn (topo sort bằng BFS trên bậc vào):
 1. Xây dựng danh sách kề adj và mảng bậc vào indeg (in-degree) cho từng đỉnh.
-2. Đưa tất cả các đỉnh có indeg = 0 (không có khóa học tiên quyết) vào một hàng đợi (deque).
-3. Lặp: lấy một đỉnh u ra khỏi hàng đợi, thêm u vào thứ tự kết quả. Với mỗi cạnh u -> v,
+2. Đưa mọi đỉnh có indeg = 0 (không có khóa tiên quyết) vào một hàng đợi (deque).
+3. Lặp: lấy đỉnh u ra khỏi hàng đợi, thêm u vào kết quả. Với mỗi cạnh u -> v,
    giảm indeg[v] đi 1; nếu indeg[v] về 0 thì đưa v vào hàng đợi.
-4. Sau khi xử lý xong: nếu thứ tự kết quả chứa đủ n đỉnh thì in ra thứ tự đó; ngược lại
-   (còn đỉnh chưa được lấy ra do bị kẹt trong một chu trình) thì in "IMPOSSIBLE".
+4. Nếu kết quả chứa đủ n đỉnh thì in ra thứ tự đó; ngược lại (còn đỉnh bị kẹt
+   trong một chu trình) thì in "IMPOSSIBLE".
 
 Vì sao đúng:
-- Một đỉnh chỉ được thêm vào kết quả khi mọi khóa tiên quyết của nó đã được xử lý (indeg = 0),
-  do đó mọi ràng buộc a -> b luôn được bảo đảm: a xuất hiện trước b.
-- Đồ thị có sắp xếp topo hợp lệ khi và chỉ khi nó là DAG (không có chu trình). Nếu có chu trình,
-  các đỉnh trong chu trình sẽ không bao giờ có indeg = 0 nên không được lấy ra, khiến số đỉnh
-  trong kết quả nhỏ hơn n -> ta kết luận IMPOSSIBLE. Điều này chính xác vì một chu trình khiến
-  các khóa phụ thuộc lẫn nhau, không thể tồn tại thứ tự hoàn thành.
-- Bài toán chấp nhận bất kỳ thứ tự topo hợp lệ nào, nên dùng deque (không cần ưu tiên) là đủ.
+- Một đỉnh chỉ được thêm vào kết quả khi mọi khóa tiên quyết của nó đã được xử lý,
+  nên mọi ràng buộc a -> b luôn được bảo đảm: a xuất hiện trước b.
+- Đồ thị có sắp xếp topo hợp lệ khi và chỉ khi nó là DAG (không có chu trình).
+  Nếu có chu trình, các đỉnh trong chu trình không bao giờ đạt indeg = 0 nên không
+  được lấy ra, khiến số đỉnh kết quả nhỏ hơn n -> kết luận IMPOSSIBLE.
+- Bài toán chấp nhận bất kỳ thứ tự topo hợp lệ nào, nên dùng deque là đủ.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh được duyệt đúng một lần.
 - Bộ nhớ: O(n + m) cho danh sách kề và mảng bậc vào.
-
-Với n <= 1e5 và m <= 2e5, thuật toán O(n + m) chạy rất nhẹ. Dùng BFS (deque) nên không có
-nguy cơ tràn stack như DFS đệ quy.
+- Với n <= 1e5 và m <= 2e5, thuật toán chạy rất nhẹ. Dùng BFS (deque) nên
+  không có nguy cơ tràn stack như DFS đệ quy.

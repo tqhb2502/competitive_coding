@@ -1,12 +1,3 @@
-# Salary Queries - CSES 1144
-# https://cses.fi/problemset/task/1144
-#
-# Fenwick/BIT trên chỉ số đã coordinate compression (offline).
-# - cnt[v] = số nhân viên có lương bằng v; "? a b" = tổng cnt trên [a, b];
-#   "! k x" = point-update: giảm 1 ở lương cũ, tăng 1 ở lương mới.
-# - Nén mọi lương có thể xuất hiện: p_i ban đầu + mọi x của truy vấn "!".
-# - Truy vấn range-count qua hiệu hai prefix-sum bằng bisect.
-
 import sys
 from bisect import bisect_left, bisect_right
 
@@ -21,7 +12,8 @@ def main():
     for i in range(n):
         p[i] = int(data[idx]); idx += 1
 
-    # Đọc offline toàn bộ truy vấn, gom mọi giá trị lương có thể xuất hiện.
+    # Đọc offline toàn bộ truy vấn, gom mọi lương có thể xuất hiện để nén tọa độ:
+    # gồm lương ban đầu p_i và mọi lương mới x của các truy vấn cập nhật "!".
     qtype = [0] * q     # 1 = update "!", 0 = query "?"
     qa = [0] * q
     qb = [0] * q
@@ -38,19 +30,21 @@ def main():
         else:
             qtype[j] = 0        # aa = a, bb = b (khoảng truy vấn)
 
+    # Coordinate compression: tập giá trị duy nhất đã sắp xếp.
     vals = sorted(set(all_vals))
     m = len(vals)
 
+    # Fenwick tree (BIT) đếm tần suất lương theo vị trí nén.
     tree = [0] * (m + 1)
 
     # cur[k] = vị trí nén (1-indexed) của lương hiện tại của nhân viên k.
     cur = [0] * (n + 1)
 
-    # Khởi tạo: cộng 1 vào vị trí nén của lương ban đầu.
+    # Khởi tạo BIT: cộng 1 vào vị trí nén của lương ban đầu từng nhân viên.
     for i in range(n):
         pos = bisect_left(vals, p[i]) + 1
         cur[i + 1] = pos
-        # update(pos, +1)
+        # update(pos, +1): lan lên các nút cha theo j & -j.
         j = pos
         while j <= m:
             tree[j] += 1
@@ -62,6 +56,7 @@ def main():
         a = qa[jq]
         b = qb[jq]
         if qtype[jq] == 1:
+            # "! k x": rút 1 khỏi vị trí lương cũ rồi cộng 1 vào vị trí lương mới.
             k = a
             x = b
             # update(cur[k], -1)
@@ -77,7 +72,7 @@ def main():
                 tree[j] += 1
                 j += j & (-j)
         else:
-            # đáp án = prefix(hi) - prefix(lo)
+            # "? a b": đáp án = prefix(hi) - prefix(lo).
             hi = bisect_right(vals, b)   # số lương <= b
             lo = bisect_left(vals, a)    # số lương < a
             s = 0

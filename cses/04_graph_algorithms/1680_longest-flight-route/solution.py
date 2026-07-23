@@ -1,7 +1,3 @@
-# Longest Flight Route - CSES 1680
-# https://cses.fi/problemset/task/1680
-# Longest path in a DAG from node 1 to node n via topological sort (Kahn) + DP.
-
 import sys
 from collections import deque
 
@@ -12,7 +8,7 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
-    # adjacency list + indegree for Kahn's topological sort
+    # Danh sách kề và indegree phục vụ thuật toán Kahn (topo sort).
     adj = [[] for _ in range(n + 1)]
     indeg = [0] * (n + 1)
     for _ in range(m):
@@ -21,30 +17,34 @@ def main():
         adj[a].append(b)
         indeg[b] += 1
 
-    # dist[v] = max number of cities on a path from 1 to v (-1 = unreachable)
+    # dist[v] = số thành phố nhiều nhất trên đường đi từ 1 tới v (-1 = chưa tới được).
+    # parent[v] = đỉnh liền trước trên đường đi tối ưu, dùng để truy vết.
     dist = [-1] * (n + 1)
     parent = [0] * (n + 1)
     dist[1] = 1
 
-    # Kahn's algorithm: process nodes in topological order
+    # Khởi tạo hàng đợi bằng các đỉnh có indegree 0, rồi duyệt theo thứ tự topo.
     dq = deque(v for v in range(1, n + 1) if indeg[v] == 0)
     while dq:
         u = dq.popleft()
         du = dist[u]
         for v in adj[u]:
+            # Relax cạnh u -> v khi u tới được từ 1 và cho đường đi dài hơn.
             if du != -1 and du + 1 > dist[v]:
                 dist[v] = du + 1
                 parent[v] = u
+            # Giảm indegree cho Kahn, về 0 thì đẩy v vào hàng đợi.
             indeg[v] -= 1
             if indeg[v] == 0:
                 dq.append(v)
 
     out = sys.stdout
+    # Không tới được n từ 1 nên không tồn tại đường đi.
     if dist[n] == -1:
         out.write("IMPOSSIBLE\n")
         return
 
-    # reconstruct path from n back to 1
+    # Truy vết đường đi: đi ngược theo parent từ n về 1 rồi đảo lại.
     path = []
     cur = n
     while cur != 0:

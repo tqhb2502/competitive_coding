@@ -1,34 +1,31 @@
-# School Dance - CSES 1696
-# https://cses.fi/problemset/task/1696
-# Maximum bipartite matching using Kuhn's augmenting-path algorithm.
-
 import sys
 
 
 def main():
     data = sys.stdin.buffer.read().split()
     idx = 0
-    n = int(data[idx]); idx += 1   # number of boys (1..n)
-    m = int(data[idx]); idx += 1   # number of girls (1..m)
-    k = int(data[idx]); idx += 1   # number of potential pairs
+    n = int(data[idx]); idx += 1   # số bạn nam (1..n)
+    m = int(data[idx]); idx += 1   # số bạn nữ (1..m)
+    k = int(data[idx]); idx += 1   # số cặp tiềm năng
 
-    # adjacency list: for each boy, the girls he can dance with
+    # Danh sách kề: với mỗi nam, các nữ mà nam đó có thể nhảy cùng.
     adj = [[] for _ in range(n + 1)]
     for _ in range(k):
         a = int(data[idx]); idx += 1
         b = int(data[idx]); idx += 1
         adj[a].append(b)
 
-    matchL = [-1] * (n + 1)   # matchL[boy]  = girl or -1
-    matchR = [-1] * (m + 1)   # matchR[girl] = boy  or -1
+    matchL = [-1] * (n + 1)   # matchL[nam] = nữ đang ghép, hoặc -1
+    matchR = [-1] * (m + 1)   # matchR[nữ]  = nam đang ghép, hoặc -1
 
-    # Iterative DFS to find an augmenting path starting from boy `start`.
-    # visited[] marks girls seen during the current search.
+    # DFS dạng lặp tìm augmenting path bắt đầu từ bạn nam `start`.
+    # visited[] đánh dấu (theo token) các nữ đã thăm trong lần tìm kiếm hiện tại;
+    # it[] là con trỏ duyệt qua adj[nam] trong một lần tìm kiếm.
     visited = [0] * (m + 1)
-    it = [0] * (n + 1)  # iterator pointer over adj[boy] within one search
+    it = [0] * (n + 1)
 
     def try_augment(start, token):
-        # Explicit stack of boys forming the alternating path.
+        # Ngăn xếp tường minh gồm các nam tạo thành đường xen kẽ (alternating path).
         stack = [start]
         it[start] = 0
         while stack:
@@ -42,8 +39,8 @@ def main():
                 visited[v] = token
                 w = matchR[v]
                 if w == -1:
-                    # Free girl: augment along the whole stack.
-                    # v is matched to u; propagate back up the chain.
+                    # Gặp nữ còn trống: tăng luồng dọc theo cả ngăn xếp,
+                    # lần ngược lên chuỗi để cập nhật lại từng cặp ghép.
                     cur_v = v
                     for boy in reversed(stack):
                         prev = matchL[boy]
@@ -52,7 +49,7 @@ def main():
                         cur_v = prev
                     return True
                 else:
-                    # Girl v is taken by boy w; try to re-route w.
+                    # Nữ v đang bị nam w giữ; thử đẩy w sang nữ khác.
                     stack.append(w)
                     it[w] = 0
                     advanced = True
@@ -61,9 +58,11 @@ def main():
                 stack.pop()
         return False
 
+    # Lần lượt thử tăng matching cho từng bạn nam.
     for boy in range(1, n + 1):
         try_augment(boy, boy)
 
+    # Đếm số cặp cực đại và xuất danh sách các cặp đã ghép.
     out = []
     r = 0
     for boy in range(1, n + 1):

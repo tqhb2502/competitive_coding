@@ -13,7 +13,8 @@ int main() {
         std::cin >> next[v];
     }
 
-    // Find every cycle with iterative walks in the functional graph.
+    // Bước 1: tìm mọi cycle bằng cách duyệt functional graph theo kiểu iterative.
+    // state: 0 = chưa thăm, 1 = đang trên đường đi hiện tại, 2 = đã xong.
     std::vector<int> state(n + 1, 0);
     std::vector<int> path_index(n + 1, 0);
     std::vector<char> on_cycle(n + 1, false);
@@ -32,6 +33,7 @@ int main() {
             v = next[v];
         }
 
+        // Gặp lại một đỉnh đang trên đường đi hiện tại -> phát hiện cycle mới.
         if (state[v] == 1) {
             for (int i = path_index[v]; i < static_cast<int>(path.size()); ++i) {
                 on_cycle[path[i]] = true;
@@ -42,7 +44,7 @@ int main() {
         }
     }
 
-    // Number the cycles and record positions in their directed order.
+    // Bước 2: đánh số các cycle và ghi lại vị trí của từng đỉnh theo thứ tự đi vòng.
     std::vector<int> cycle_id(n + 1, -1);
     std::vector<int> cycle_position(n + 1, 0);
     std::vector<int> cycle_length;
@@ -63,7 +65,8 @@ int main() {
         cycle_length.push_back(position);
     }
 
-    // Removing cycle edges leaves trees rooted at cycle vertices.
+    // Bước 3: bỏ các cạnh cycle -> rừng cây với gốc là các đỉnh cycle.
+    // Xây danh sách con theo cạnh ngược: u là con của next[u] nếu u không nằm trên cycle.
     std::vector<std::vector<int>> children(n + 1);
     for (int v = 1; v <= n; ++v) {
         if (!on_cycle[v]) {
@@ -71,6 +74,7 @@ int main() {
         }
     }
 
+    // DFS iterative từ mỗi đỉnh cycle để tính depth, root và Euler tour (tin/tout).
     std::vector<int> depth(n + 1, 0);
     std::vector<int> root(n + 1, 0);
     std::vector<int> tin(n + 1, 0);
@@ -102,22 +106,26 @@ int main() {
         }
     }
 
+    // Bước 4: trả lời từng truy vấn (a, b).
     while (q-- > 0) {
         int a, b;
         std::cin >> a >> b;
 
         if (on_cycle[b]) {
+            // b nằm trên cycle: chỉ tới được nếu a và b cùng component.
             const int entry = root[a];
             if (cycle_id[entry] != cycle_id[b]) {
                 std::cout << -1 << '\n';
                 continue;
             }
 
+            // depth[a] bước tới đỉnh vào cycle, cộng khoảng cách đi vòng tới b.
             const int length = cycle_length[cycle_id[b]];
             const int around =
                 (cycle_position[b] - cycle_position[entry] + length) % length;
             std::cout << depth[a] + around << '\n';
         } else if (tin[b] <= tin[a] && tin[a] <= tout[b]) {
+            // b nằm trong cây và là tổ tiên của a: đáp án là hiệu độ sâu.
             std::cout << depth[a] - depth[b] << '\n';
         } else {
             std::cout << -1 << '\n';

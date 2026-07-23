@@ -1,7 +1,3 @@
-# Distinct Routes - https://cses.fi/problemset/task/1711
-# Bài toán: tìm số đường đi edge-disjoint tối đa từ phòng 1 đến phòng n,
-# mỗi teleporter (cạnh) chỉ được dùng nhiều nhất 1 lần.
-# => max-flow với mỗi cạnh có capacity = 1, sau đó decompose thành các đường đi.
 import sys
 from collections import deque
 
@@ -13,7 +9,7 @@ def main():
     n = int(data[idx]); idx += 1
     m = int(data[idx]); idx += 1
 
-    # Dinic's max flow. Các cạnh lưu theo cặp (e, e^1): forward và reverse.
+    # Mạng luồng Dinic: các cạnh lưu theo cặp (e, e^1) gồm forward và reverse.
     to = []
     cap = []
     graph = [[] for _ in range(n + 1)]
@@ -28,13 +24,14 @@ def main():
         a = int(data[idx]); idx += 1
         b = int(data[idx]); idx += 1
         eidx = len(to)
-        add_edge(a, b, 1)
+        add_edge(a, b, 1)   # mỗi teleporter a -> b có capacity = 1
         edge_ab.append((a, b, eidx))
 
     s, t = 1, n
     level = [-1] * (n + 1)
     it = [0] * (n + 1)
 
+    # BFS phân tầng: gán mức cho các đỉnh theo cạnh còn capacity.
     def bfs():
         for i in range(n + 1):
             level[i] = -1
@@ -49,6 +46,7 @@ def main():
                     q.append(v)
         return level[t] >= 0
 
+    # DFS đẩy luồng chặn theo cạnh tăng mức; it[u] là con trỏ bỏ qua cạnh chết.
     def dfs(u, f):
         if u == t:
             return f
@@ -64,6 +62,7 @@ def main():
             it[u] += 1
         return 0
 
+    # Vòng lặp Dinic: mỗi pha BFS phân tầng rồi đẩy tối đa luồng chặn.
     INF = float('inf')
     flow = 0
     while bfs():
@@ -74,13 +73,13 @@ def main():
             flow += f
             f = dfs(s, INF)
 
-    # Tái tạo các đường đi: xây dựng đồ thị chỉ gồm các cạnh mang luồng (net flow = 1).
+    # Tái tạo tuyến: chỉ giữ các cạnh mang luồng (forward còn capacity 0 => net flow = 1).
     flowadj = [[] for _ in range(n + 1)]
     for a, b, eidx in edge_ab:
-        # capacity ban đầu = 1, nếu còn lại 0 nghĩa là có 1 đơn vị luồng chạy qua.
         if cap[eidx] == 0:
             flowadj[a].append(b)
 
+    # Bóc tách đúng flow tuyến đường, mỗi tuyến là một đường đi từ s đến t.
     ptr = [0] * (n + 1)
     out = [str(flow)]
     for _ in range(flow):
@@ -88,10 +87,10 @@ def main():
         pos = {s: 0}          # node -> vị trí trong path (để cắt bỏ chu trình)
         node = s
         while node != t:
-            nxt = flowadj[node][ptr[node]]
+            nxt = flowadj[node][ptr[node]]   # đi theo một cạnh luồng chưa dùng của node
             ptr[node] += 1
             if nxt in pos:
-                # Gặp lại node đã có trên path => có chu trình, cắt bỏ phần chu trình.
+                # Gặp lại đỉnh đã nằm trên path => có chu trình, cắt bỏ đoạn chu trình.
                 i = pos[nxt]
                 for nd in path[i + 1:]:
                     del pos[nd]

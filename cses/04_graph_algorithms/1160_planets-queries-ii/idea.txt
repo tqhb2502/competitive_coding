@@ -1,20 +1,25 @@
 Planets Queries II - CSES 1160
+https://cses.fi/problemset/task/1160
 
-MÔ HÌNH ĐỒ THỊ
-Mỗi hành tinh có đúng một teleporter đi tới một hành tinh khác (hoặc chính nó), nên
-đồ thị là một functional graph: mỗi đỉnh có out-degree đúng bằng 1. Cấu trúc của
-functional graph gồm nhiều thành phần; mỗi thành phần liên thông yếu chứa đúng một
-chu trình (cycle), và các cây (tree) treo vào chu trình đó với tất cả các cạnh hướng
-về phía chu trình.
+## Đề bài
+Có n hành tinh, mỗi hành tinh có đúng một teleporter đưa tới một hành tinh nào đó
+(có thể là chính nó). Với mỗi truy vấn (a, b), hãy tìm số bước teleport tối thiểu để
+đi từ a tới b, hoặc in ra -1 nếu không thể tới được. Có tất cả q truy vấn.
 
-Ý TƯỞNG THUẬT TOÁN
+## Ý tưởng
+Vì mỗi đỉnh có out-degree đúng bằng 1 nên đồ thị là một functional graph: mỗi thành
+phần liên thông yếu chứa đúng một chu trình (cycle), và các cây (tree) treo vào chu
+trình đó với mọi cạnh đều hướng về phía chu trình.
+
 1. Tìm các đỉnh nằm trên cycle bằng cách duyệt functional graph theo kiểu iterative:
    đi theo con trỏ t[] và đánh dấu trạng thái mỗi đỉnh (0 = chưa thăm, 1 = đang nằm
-   trên đường đi hiện tại, 2 = đã xong). Khi gặp lại một đỉnh có trạng thái 1 (đang
-   trên đường đi hiện tại) thì phát hiện một cycle mới và đánh dấu on_cycle cho các
-   đỉnh của nó. Mỗi đỉnh chỉ được đẩy vào đường đi đúng một lần nên tổng chi phí O(n).
+   trên đường đi hiện tại, 2 = đã xong). Khi gặp lại một đỉnh có trạng thái 1 thì phát
+   hiện một cycle mới và đánh dấu on_cycle cho các đỉnh của nó. Mỗi đỉnh chỉ được đẩy
+   vào đường đi đúng một lần nên tổng chi phí O(n).
+
 2. Với mỗi cycle, gán cho các đỉnh của nó một cycle_id (chính là component id), vị trí
    pos_in_cycle theo thứ tự đi vòng, và độ dài cyclen của cycle.
+
 3. Bỏ các cạnh của cycle, phần còn lại là một rừng (forest) với gốc là các đỉnh nằm
    trên cycle. Xây danh sách con theo cạnh ngược (u là con của t[u] nếu u KHÔNG nằm
    trên cycle) rồi DFS iterative từ mỗi đỉnh cycle để tính:
@@ -23,7 +28,7 @@ về phía chu trình.
      - in_t[v], out_t[v] = thời điểm vào/ra theo Euler tour để kiểm tra quan hệ tổ tiên
        (ancestor) trong cây bằng bất đẳng thức lồng nhau.
 
-TRẢ LỜI TRUY VẤN (a, b)
+Trả lời truy vấn (a, b):
 - Nếu b nằm trên cycle: a tới được b khi và chỉ khi hai đỉnh cùng component, tức là
   cycle_id[root[a]] == cycle_id[b]. Khi đó đi từ a tới đỉnh vào cycle ea = root[a] mất
   depth[a] bước, rồi đi vòng trên cycle từ ea tới b mất (pos_in_cycle[b] -
@@ -33,14 +38,13 @@ TRẢ LỜI TRUY VẤN (a, b)
   trong cây (đường đi từ a hướng về cycle phải đi qua b), kiểm tra bằng
   in_t[b] <= in_t[a] <= out_t[b]. Khi đó đáp án = depth[a] - depth[b]. Ngược lại là -1.
 
-TÍNH ĐÚNG ĐẮN
-Trong functional graph, đường đi vô hạn xuất phát từ a là a, t[a], t^2[a], ... sẽ đi
-hết phần cây (nếu a nằm trong cây) rồi tiến vào cycle và lặp vô hạn quanh cycle. Vì
-vậy b đạt được từ a chỉ trong đúng hai trường hợp trên; công thức khoảng cách phản
-ánh chính xác số bước teleport tối thiểu. Khi đã vào cycle thì không bao giờ rời cycle
-để quay lại một đỉnh cây, nên đỉnh cây b chỉ đạt được khi nó là tổ tiên của a.
+Tính đúng đắn: trong functional graph, đường đi vô hạn xuất phát từ a là a, t[a],
+t^2[a], ... sẽ đi hết phần cây (nếu a nằm trong cây) rồi tiến vào cycle và lặp vô hạn
+quanh cycle. Vì vậy b đạt được từ a chỉ trong đúng hai trường hợp trên; khi đã vào
+cycle thì không bao giờ rời cycle để quay lại một đỉnh cây, nên đỉnh cây b chỉ đạt được
+khi nó là tổ tiên của a.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 Thời gian O(n + q), bộ nhớ O(n). Mọi bước duyệt (tìm cycle, gán cycle, DFS tính
 depth/Euler tour) đều iterative nên không lo tràn đệ quy (RecursionError) với n tới 2e5.
 

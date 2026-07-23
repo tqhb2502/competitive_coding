@@ -1,42 +1,43 @@
-Bài toán: Missing Coin Sum Queries (CSES 2184)
+Missing Coin Sum Queries - CSES 2184
+https://cses.fi/problemset/task/2184
 
-Với mỗi truy vấn [a, b] cần tìm tổng dương nhỏ nhất KHÔNG thể tạo ra bằng một tập
-con các đồng xu ở vị trí a..b.
+## Đề bài
+Cho một dãy n đồng xu với các giá trị x_1..x_n. Có q truy vấn, mỗi truy vấn cho
+một đoạn [a, b]. Với mỗi truy vấn hãy tìm tổng dương nhỏ nhất KHÔNG thể tạo ra
+bằng một tập con các đồng xu nằm ở các vị trí a..b.
 
-1. Thuật toán greedy nền tảng (một mảng tĩnh)
-   Sắp xếp các giá trị tăng dần. Giữ biến R = "reach": mọi tổng trong đoạn [0, R]
-   đều tạo được. Ban đầu R = 0. Duyệt các giá trị tăng dần:
-     - nếu giá trị hiện tại v > R + 1: dừng, đáp án là R + 1 (vì không thể tạo R+1);
-     - ngược lại R += (tổng tiền của tất cả đồng xu có giá trị v).
-   Khi hết coin, đáp án là R + 1 (tức tổng tất cả + 1).
-   Tính đúng đắn: nếu tạo được mọi tổng [0, R] và có một đồng giá trị v <= R + 1 thì
-   thêm nó ta tạo được mọi tổng [0, R + v]; nếu đồng nhỏ nhất chưa dùng lớn hơn R + 1
-   thì R + 1 vĩnh viễn không tạo được.
+## Ý tưởng
+Nền tảng là thuật toán greedy cho một tập tĩnh. Xét các giá trị theo thứ tự tăng
+dần và giữ biến R = "reach" nghĩa là mọi tổng trong đoạn [0, R] đều tạo được. Ban
+đầu R = 0. Với mỗi giá trị v (đã gộp tổng tiền của mọi đồng cùng giá trị):
+  - nếu v > R + 1: dừng lại, đáp án là R + 1 (không thể tạo ra R + 1);
+  - ngược lại R += (tổng tiền của tất cả đồng xu có giá trị v).
+Khi duyệt hết mà không dừng, đáp án là R + 1. Tính đúng đắn: nếu đã tạo được mọi
+tổng [0, R] và có một đồng v <= R + 1 thì thêm nó ta tạo được mọi tổng [0, R + v];
+còn nếu đồng nhỏ nhất chưa dùng lớn hơn R + 1 thì R + 1 vĩnh viễn không tạo được.
 
-2. Mở rộng cho truy vấn đoạn bất kỳ bằng persistent segment tree
-   Dựng persistent segment tree trên trục GIÁ TRỊ đã nén tọa độ (coordinate
-   compression). Version i = đã chèn x_1..x_i (prefix theo vị trí). Mỗi lá lưu tổng
-   TIỀN của các đồng xu mang giá trị đó. Với truy vấn (a, b) ta dùng hai root:
-   root[b] và root[a-1]; tổng tiền của các đồng xu có giá trị thuộc một khoảng =
-   SUM[nb] - SUM[na].
+Để trả lời truy vấn trên đoạn vị trí bất kỳ ta dùng persistent segment tree dựng
+trên trục GIÁ TRỊ đã nén tọa độ. Version i tương ứng với đã chèn x_1..x_i (prefix
+theo vị trí), mỗi lá lưu tổng TIỀN của các đồng xu mang giá trị đó. Với truy vấn
+(a, b) ta dùng hai root là root[b] và root[a-1]; tổng tiền của các đồng có giá trị
+thuộc một khoảng chính là SUM[node_b] - SUM[node_a].
 
-3. Chạy greedy bằng MỘT lần DFS in-order trên cây (dùng stack tường minh)
-   Xét node phủ khoảng giá trị [lo, hi], gọi s = SUM[nb] - SUM[na]:
-     - nếu s == 0: bỏ qua (không có coin);
-     - nếu vals[lo] > R + 1: dừng toàn bộ, đáp án = R + 1;
-     - nếu vals[hi] <= R + 1: cộng hết một lần (R += s), tỉa cả cây con;
-     - ngược lại (node bắc cầu qua R+1): đệ quy trái rồi phải.
-   Vì DFS duyệt theo thứ tự giá trị tăng dần và R chỉ tăng, khi gặp một node có
-   giá trị nhỏ nhất > R + 1 thì mọi giá trị còn lại chắc chắn lớn hơn nên dừng ngay.
+Chạy greedy bằng MỘT lần DFS in-order trên cây (dùng stack tường minh). Với node
+phủ khoảng giá trị [lo, hi], đặt s = SUM[node_b] - SUM[node_a]:
+  - nếu s == 0: bỏ qua (đoạn này không có đồng nào);
+  - nếu vals[lo] > R + 1: dừng toàn bộ, đáp án = R + 1;
+  - nếu vals[hi] <= R + 1: cộng hết một lần (R += s) và tỉa cả cây con;
+  - ngược lại (node bắc cầu qua ngưỡng R+1): đệ quy xuống con trái rồi con phải.
+Vì DFS duyệt theo thứ tự giá trị tăng dần và R chỉ tăng, khi gặp một node có giá
+trị nhỏ nhất > R + 1 thì mọi giá trị còn lại chắc chắn lớn hơn nên dừng được ngay.
 
-4. Độ phức tạp
-   - Xây dựng: O(n log m) thời gian, O(n log m) bộ nhớ (m = số giá trị phân biệt),
-     mỗi lần chèn tạo O(log m) node mới.
-   - Số vòng lặp greedy mỗi truy vấn là O(log(tổng tiền)) vì R tăng ít nhất theo cấp
-     Fibonacci (mỗi bước dùng thêm đồng có giá trị lớn hơn ngưỡng bước trước). Mỗi
-     truy vấn duyệt O(log m) node phụ trội cho mỗi mức ngưỡng, tổng cỡ
-     O(log m * log(tổng)). Toàn cục xấp xỉ O((n + q) log m * hằng số nhỏ).
-   - Bộ nhớ: các mảng LC, RC, SUM kích thước ~ n*(log m + 2); SUM dùng int64.
+## Độ phức tạp
+- Xây dựng: O(n log m) thời gian và O(n log m) bộ nhớ (m = số giá trị phân biệt),
+  mỗi lần chèn tạo O(log m) node mới.
+- Số bước greedy mỗi truy vấn là O(log(tổng tiền)) vì R tăng ít nhất theo cấp
+  Fibonacci; mỗi ngưỡng duyệt thêm O(log m) node, tổng cỡ O(log m * log(tổng)).
+  Toàn cục xấp xỉ O((n + q) log m) với hằng số nhỏ.
+- Bộ nhớ: các mảng LC, RC, SUM kích thước ~ n*(log m + 2); SUM dùng int64.
 
 LƯU Ý TLE: giới hạn n, q ≤ 2·10^5 và time limit của CSES nhắm C++. Bản Python
 thuần này (persistent segment tree + DFS trên từng truy vấn) có hằng số lớn nên rất

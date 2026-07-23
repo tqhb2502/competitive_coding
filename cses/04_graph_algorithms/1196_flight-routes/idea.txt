@@ -1,40 +1,47 @@
-Bài toán: Tìm k đường đi rẻ nhất (theo tổng giá vé) từ thành phố 1 đến thành phố n
-trong một đồ thị có hướng, có trọng số dương. Các đường đi được phép đi lại qua các
-đỉnh/cạnh đã đi, và hai đường đi có cùng giá vẫn được coi là khác nhau.
+Flight Routes - CSES 1196
+https://cses.fi/problemset/task/1196
 
+## Đề bài
+Cho một đồ thị có hướng gồm n thành phố và m chuyến bay, mỗi chuyến bay a -> b
+có giá vé c > 0. Hãy tìm k đường đi rẻ nhất (theo tổng giá vé) từ thành phố 1
+đến thành phố n, in ra k tổng giá theo thứ tự không giảm. Đường đi được phép đi
+lại qua các đỉnh/cạnh đã đi, và hai đường đi có cùng tổng giá vẫn được coi là
+khác nhau.
+
+## Ý tưởng
 Mô hình đồ thị:
 - Đỉnh = thành phố (1..n), cạnh có hướng a -> b với trọng số c (giá vé).
-- Trọng số c >= 1 nên tất cả cạnh đều dương, phù hợp với Dijkstra.
+- Trọng số c >= 1 nên mọi cạnh đều dương, phù hợp với Dijkstra.
 
 Thuật toán (K shortest paths bằng Dijkstra mở rộng):
-- Ý tưởng chính: chạy Dijkstra bằng min-heap nhưng cho phép mỗi đỉnh được "lấy ra"
-  (pop khỏi heap và finalize) tối đa k lần thay vì 1 lần.
+- Ý tưởng chính: chạy Dijkstra bằng min-heap nhưng cho phép mỗi đỉnh được "lấy
+  ra" (pop khỏi heap và finalize) tối đa k lần thay vì đúng 1 lần.
 - Duy trì mảng cnt[u] = số lần đỉnh u đã được pop và xử lý.
-- Bắt đầu bằng đẩy (0, 1) vào heap.
+- Bắt đầu bằng cách đẩy (0, 1) vào heap.
 - Mỗi lần pop (d, u):
-    + Nếu cnt[u] >= k thì bỏ qua (đỉnh này đã có đủ k khoảng cách tốt nhất, không cần
-      thêm).
-    + Ngược lại tăng cnt[u]. Vì heap luôn lấy ra khoảng cách nhỏ nhất trước, nên lần
-      pop thứ i của đỉnh u chính là độ dài đường đi ngắn thứ i tới u.
-    + Nếu u == n thì d là một trong các giá trị đáp án; ghi lại. Khi đã thu đủ k giá
-      trị thì dừng.
+    + Nếu cnt[u] >= k thì bỏ qua (đỉnh này đã có đủ k khoảng cách tốt nhất).
+    + Ngược lại tăng cnt[u]. Vì heap luôn lấy ra khoảng cách nhỏ nhất trước, nên
+      lần pop thứ i của đỉnh u chính là độ dài đường đi ngắn thứ i tới u.
+    + Nếu u == n thì d là một trong các giá trị đáp án; ghi lại. Khi đã thu đủ k
+      giá trị thì dừng.
     + Với mỗi cạnh u -> v trọng số w: nếu cnt[v] < k thì đẩy (d + w, v) vào heap
       (nếu cnt[v] đã bằng k thì đẩy vào cũng vô ích vì v sẽ bị bỏ qua).
 
 Vì sao đúng:
 - Heap đảm bảo các khoảng cách tới mỗi đỉnh được finalize theo thứ tự không giảm.
   Lần pop hợp lệ thứ i tới đỉnh n cho đúng đường đi rẻ thứ i (không cần phân biệt
-  đường đi cụ thể, vì các đường cùng giá vẫn tính riêng lẻ và thứ tự giá không đổi).
-- Việc chặn cnt[u] <= k giữ cho mỗi đỉnh chỉ sinh ra tối đa k trạng thái được mở rộng,
-  đủ để tạo ra k đường ngắn nhất tới n mà không cần khám phá vô hạn (dù đồ thị có chu
-  trình, chu trình chỉ làm tăng giá nên không lọt vào top-k khi đã đủ).
+  đường đi cụ thể, vì các đường cùng giá vẫn được tính riêng lẻ và thứ tự giá
+  không đổi).
+- Việc chặn cnt[u] <= k giữ cho mỗi đỉnh chỉ sinh ra tối đa k trạng thái được mở
+  rộng, đủ để tạo ra k đường ngắn nhất tới n mà không cần khám phá vô hạn (dù đồ
+  thị có chu trình, chu trình chỉ làm tăng giá nên không lọt vào top-k khi đã đủ).
 
-Độ phức tạp:
-- Mỗi đỉnh được mở rộng tối đa k lần, mỗi lần đẩy tối đa deg(u) phần tử vào heap, nên
-  tổng số phần tử trong heap là O(k * m). Thời gian: O(k * m * log(k * m)).
+## Độ phức tạp
+- Mỗi đỉnh được mở rộng tối đa k lần, mỗi lần đẩy tối đa deg(u) phần tử vào heap,
+  nên tổng số phần tử trong heap là O(k * m). Thời gian: O(k * m * log(k * m)).
 - Với n <= 1e5, m <= 2e5, k <= 10: khoảng vài triệu thao tác heap, chấp nhận được.
 - Bộ nhớ: adjacency list O(n + m), heap O(k * m).
 
 LƯU Ý TLE: Trong Python thuần, hằng số của heapq với tới ~2-4 triệu phần tử có thể
 nặng; giải pháp vẫn đúng nhưng có nguy cơ chậm ở test xấu nhất. Đã tối ưu bằng đọc
-input theo buffer, dùng adjacency list dạng mảng phẳng và giữ vòng lặp gọn nhất có thể.
+input theo buffer và giữ vòng lặp gọn nhất có thể.

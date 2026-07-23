@@ -1,20 +1,3 @@
-# Polynomial Queries - https://cses.fi/problemset/task/1736
-#
-# Update loại 1 (a b): cộng 1 vào vị trí a, 2 vào a+1, 3 vào a+2, ... (một cấp số cộng).
-# Update loại 2 (a b): trả về tổng các giá trị trong [a, b].
-#
-# Ý tưởng: giá trị cộng thêm tại vị trí i (với một update [l, r]) là inc(i) = i - l + 1.
-# Lấy sai phân bậc hai f của hàm inc thì f chỉ khác 0 tại 3 điểm:
-#     f[l]   += 1
-#     f[r+1] += -(r - l + 2)
-#     f[r+2] += (r - l + 1)
-# Khi đó d[i] = sum_{j<=i} f[j]*(i - j + 1), và prefix sum của delta:
-#     PS(x) = sum_{i<=x} d[i]
-#           = (1/2) * [ (x^2+3x+2)*A0(x) - (2x+3)*A1(x) + A2(x) ]
-# với A0(x)=sum_{j<=x} f[j], A1(x)=sum_{j<=x} j*f[j], A2(x)=sum_{j<=x} j^2*f[j].
-# Dùng 3 Fenwick/BIT cho A0, A1, A2 (point update, prefix query). Giá trị ban đầu
-# được cộng riêng qua prefix sum tĩnh (pre[]). Độ phức tạp O((n+q) log n).
-
 import sys
 
 
@@ -43,13 +26,15 @@ def main():
     for _ in range(q):
         t = data[pos]; a = int(data[pos + 1]); b = int(data[pos + 2]); pos += 3
         if t == b'1':
+            # Update loại 1: cộng cấp số cộng trên [l, r] bằng ba point update sai
+            # phân bậc hai vào cả ba BIT (đã inline vòng lặp BIT cho nhanh).
             l = a; r = b
-            # Điểm l: (v0,v1,v2) = (1, l, l*l)
+            # Điểm l: hệ số (1, l, l*l) cho (a0, a1, a2).
             i = l; v1 = l; v2 = l * l
             while i <= n:
                 a0[i] += 1; a1[i] += v1; a2[i] += v2
                 i += i & (-i)
-            # Điểm r+1: c1 = -(r-l+2)
+            # Điểm r+1: hệ số c1 = -(r-l+2).
             p = r + 1
             if p <= n:
                 c1 = -(r - l + 2); w1 = p * c1; w2 = p * p * c1
@@ -57,7 +42,7 @@ def main():
                 while i <= n:
                     a0[i] += c1; a1[i] += w1; a2[i] += w2
                     i += i & (-i)
-            # Điểm r+2: c2 = (r-l+1)
+            # Điểm r+2: hệ số c2 = (r-l+1).
             p = r + 2
             if p <= n:
                 c2 = r - l + 1; w1 = p * c2; w2 = p * p * c2
@@ -66,14 +51,15 @@ def main():
                     a0[i] += c2; a1[i] += w1; a2[i] += w2
                     i += i & (-i)
         else:
+            # Query loại 2: tổng đoạn [l, r] = (PS(r) - PS(l-1)) + phần ban đầu.
             l = a; r = b
-            # PS(r)
+            # PS(r): ba prefix query trên BIT rồi ghép theo đa thức bậc hai.
             x = r; s0 = 0; s1 = 0; s2 = 0; i = x
             while i > 0:
                 s0 += a0[i]; s1 += a1[i]; s2 += a2[i]
                 i -= i & (-i)
             psr = ((x * x + 3 * x + 2) * s0 - (2 * x + 3) * s1 + s2) // 2
-            # PS(l-1)
+            # PS(l-1): tương tự, bằng 0 nếu l-1 <= 0.
             x = l - 1
             if x > 0:
                 s0 = 0; s1 = 0; s2 = 0; i = x

@@ -1,49 +1,58 @@
-Bài toán: High Score (CSES 1673)
+High Score - CSES 1673
+https://cses.fi/problemset/task/1673
 
-1. Mô hình hóa đồ thị
-- Đồ thị có hướng, có trọng số (trọng số x có thể âm hoặc dương).
-- Ta cần tìm ĐƯỜNG ĐI CÓ TỔNG TRỌNG SỐ LỚN NHẤT (longest path) từ đỉnh 1 đến đỉnh n.
-- Nếu tồn tại một chu trình DƯƠNG (positive cycle) nằm trên một đường đi hợp lệ từ 1 đến n
-  thì có thể lặp vô hạn để tăng điểm không giới hạn, khi đó in ra -1.
+## Đề bài
+Cho một đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n đỉnh và m cạnh; trọng số mỗi cạnh có thể
+âm hoặc dương. Bắt đầu ở đỉnh 1 và cần đi tới đỉnh n. Mỗi khi đi qua một cạnh, điểm số
+được cộng thêm trọng số của cạnh đó. Hãy tìm SỐ ĐIỂM LỚN NHẤT có thể đạt được khi đi từ
+đỉnh 1 đến đỉnh n. Nếu có thể thu được điểm lớn vô hạn thì in ra -1.
+
+## Ý tưởng
+1. Mô hình hóa
+- Bài toán tương đương tìm ĐƯỜNG ĐI CÓ TỔNG TRỌNG SỐ LỚN NHẤT (longest path) từ đỉnh 1
+  đến đỉnh n.
+- Nếu tồn tại một chu trình DƯƠNG (positive cycle) nằm trên một đường đi hợp lệ từ 1 tới
+  n thì có thể lặp vô hạn để tăng điểm không giới hạn, khi đó đáp án là -1.
 
 2. Thuật toán: Bellman-Ford cho longest path
-- Vì có thể có chu trình dương, không dùng được Dijkstra. Ta dùng Bellman-Ford (biến thể
-  tối đa hóa). Đặt dist[1] = 0, các đỉnh khác = -vô cực.
+- Vì có thể có chu trình dương nên không dùng được Dijkstra. Ta dùng Bellman-Ford (biến
+  thể tối đa hóa): đặt dist[1] = 0, các đỉnh khác = -vô cực.
 - Điều kiện relax: nếu dist[a] hữu hạn và dist[a] + x > dist[b] thì cập nhật dist[b].
 
-3. Cắt tỉa (pruning) để giảm kích thước bài toán:
+3. Cắt tỉa (pruning) để giảm kích thước bài toán
 - R1 = tập đỉnh REACHABLE từ đỉnh 1 (BFS trên đồ thị xuôi).
 - R2 = tập đỉnh CÓ THỂ ĐI TỚI đỉnh n (BFS trên đồ thị đảo ngược - reverse graph).
-- good = R1 giao R2. Chỉ những đỉnh vừa tới được từ 1 vừa đi được tới n mới ảnh hưởng đến
-  kết quả. Chỉ giữ lại các cạnh có cả hai đầu mút thuộc good.
-- Nhận xét quan trọng: mọi đỉnh nằm trên một đường đi từ 1 tới một đỉnh good cũng là good,
-  nên đồ thị con good bảo toàn tính liên thông từ đỉnh 1 -> tính đúng đắn được giữ nguyên.
+- good = R1 giao R2. Chỉ những đỉnh vừa tới được từ 1 vừa đi được tới n mới ảnh hưởng
+  đến kết quả, nên chỉ giữ lại các cạnh có cả hai đầu mút thuộc good.
+- Nhận xét quan trọng: mọi đỉnh nằm trên một đường đi từ 1 tới một đỉnh good cũng là
+  good, nên đồ thị con good bảo toàn tính liên thông từ đỉnh 1 và giữ nguyên tính đúng
+  đắn.
 
 4. Phát hiện chu trình dương và tính đúng đắn
-- Nếu đồ thị con good KHÔNG có chu trình dương thì đường đi dài nhất là đường đi đơn, có tối đa
-  (cntgood - 1) cạnh (cntgood = số đỉnh good). Do đó chạy (cntgood - 1) vòng relax là đủ để
-  mọi dist đạt giá trị cuối cùng.
-- Chạy thêm 1 vòng relax nữa (detection round). Nếu vẫn còn cạnh có thể relax, nghĩa là có
-  chu trình dương ảnh hưởng tới đường đi. Vì mọi đỉnh good đều đi tới được n, chu trình này
-  chắc chắn nằm trên một đường đi 1 -> n, nên đáp án là -1.
+- Nếu đồ thị con good KHÔNG có chu trình dương thì đường đi dài nhất là đường đi đơn, có
+  tối đa (cntgood - 1) cạnh (cntgood = số đỉnh good). Do đó chạy (cntgood - 1) vòng relax
+  là đủ để mọi dist đạt giá trị cuối cùng.
+- Chạy thêm 1 vòng relax nữa (detection round): nếu vẫn còn cạnh có thể relax nghĩa là có
+  chu trình dương ảnh hưởng tới đường đi. Vì mọi đỉnh good đều đi tới được n nên chu trình
+  này chắc chắn nằm trên một đường đi 1 -> n, do đó đáp án là -1.
 - Ngược lại, đáp án là dist[n].
-- Tối ưu (active set): mỗi vòng chỉ duyệt các đỉnh vừa được cập nhật ở vòng trước thay vì quét
-  lại toàn bộ cạnh. Nếu tập active rỗng thì đã đạt điểm dừng cố định, dừng sớm -> chắc chắn
-  không có chu trình dương, in dist[n]. Riêng vòng kiểm tra (detection) vẫn quét toàn bộ cạnh
-  good một lần (chi phí O(E)) để kết luận chính xác có hay không chu trình dương.
+- Tối ưu (active set): mỗi vòng chỉ duyệt các đỉnh vừa được cập nhật ở vòng trước thay vì
+  quét lại toàn bộ cạnh. Nếu tập active rỗng thì đã đạt điểm dừng cố định, dừng sớm và
+  chắc chắn không có chu trình dương, in dist[n]. Riêng vòng kiểm tra vẫn quét toàn bộ
+  cạnh good một lần (chi phí O(E)) để kết luận chính xác.
 
-5. Độ phức tạp
+## Độ phức tạp
 - BFS cắt tỉa: O(n + m).
-- Bellman-Ford (active set): tệ nhất vẫn O(V * E) = O(n * m) = 2500 * 5000 = 1.25 * 10^7 phép
-  relax, nhưng trên thực tế nhanh hơn nhiều vì chỉ duyệt các đỉnh vừa thay đổi. Ví dụ với đồ
-  thị dạng chuỗi dài (worst case của Bellman-Ford quét toàn bộ cạnh) thì active set chỉ tốn
-  O(n + m).
+- Bellman-Ford (active set): tệ nhất vẫn O(V * E) = O(n * m) = 2500 * 5000 = 1.25 * 10^7
+  phép relax, nhưng thực tế nhanh hơn nhiều vì chỉ duyệt các đỉnh vừa thay đổi. Ví dụ với
+  đồ thị dạng chuỗi dài (worst case của Bellman-Ford quét toàn bộ cạnh) thì active set
+  chỉ tốn O(n + m).
 - Bộ nhớ: O(n + m).
 
-LƯU Ý TLE: Đây là bài O(V*E) vốn nhắm tới C++; trong Python thuần vẫn có nguy cơ TLE trên test
-cực đoan. Đã giảm mạnh thời gian bằng cách cắt tỉa đồ thị (R1 giao R2) và Bellman-Ford theo
-active set (thay vì quét lại toàn bộ cạnh mỗi vòng như bản O(n*m) ngây thơ). Với input dạng
-chuỗi thời gian chạy còn ~0.02s; tuy nhiên một số input đối nghịch được dựng riêng (hub tỏa
-rộng, mọi đích đều tới được n nên không bị cắt tỉa) vẫn có thể lên tới ~3*10^6 phép relax và
-mất khoảng 1.5s. Muốn triệt để nhanh hơn cần numpy (không phải thư viện chuẩn) hoặc phân rã
-SCC phức tạp mà bản thân vẫn còn worst case O(V*E) khi đồ thị là một SCC lớn.
+LƯU Ý TLE: Đây là bài O(V*E) vốn nhắm tới C++; trong Python thuần vẫn có nguy cơ TLE trên
+test cực đoan. Đã giảm mạnh thời gian bằng cách cắt tỉa đồ thị (R1 giao R2) và Bellman-Ford
+theo active set (thay vì quét lại toàn bộ cạnh mỗi vòng như bản O(n*m) ngây thơ). Với input
+dạng chuỗi thời gian chạy còn ~0.02s; tuy nhiên một số input đối nghịch được dựng riêng (hub
+tỏa rộng, mọi đích đều tới được n nên không bị cắt tỉa) vẫn có thể lên tới ~3*10^6 phép relax
+và mất khoảng 1.5s. Muốn triệt để nhanh hơn cần numpy (không phải thư viện chuẩn) hoặc phân
+rã SCC phức tạp mà bản thân vẫn còn worst case O(V*E) khi đồ thị là một SCC lớn.

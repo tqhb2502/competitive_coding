@@ -1,8 +1,3 @@
-# Distinct Values Queries — CSES 1734
-# https://cses.fi/problemset/task/1734
-# Offline + Fenwick tree (BIT): sort queries by right endpoint, keep only the
-# last occurrence of each value marked with 1, answer range-sum on [a, b].
-
 import sys
 
 
@@ -15,14 +10,14 @@ def main():
     arr = data[idx:idx + n]
     idx += n
 
-    # Queries: store (b, a, original_index), sort by b ascending.
+    # Đọc truy vấn dưới dạng (b, a, k) rồi SẮP XẾP theo đầu mút phải b tăng dần.
     queries = []
     for k in range(q):
         a = int(data[idx]); b = int(data[idx + 1]); idx += 2
         queries.append((b, a, k))
     queries.sort()
 
-    # Fenwick tree (1-indexed) over positions 1..n.
+    # Fenwick tree (BIT) 1-indexed trên các vị trí 1..n.
     tree = [0] * (n + 1)
 
     def update(i, delta):
@@ -38,19 +33,20 @@ def main():
         return s
 
     ans = [0] * q
-    last = {}          # value (as bytes) -> last position seen
-    pos = 1            # next array position to add (1-indexed)
+    last = {}          # giá trị (dạng bytes) -> vị trí xuất hiện gần nhất
+    pos = 1            # vị trí tiếp theo cần thêm vào BIT (1-indexed)
 
     for b, a, k in queries:
-        # Add all positions up to b that are not yet added.
+        # Mở rộng tiền tố tới b, chỉ giữ dấu 1 tại lần xuất hiện cuối của mỗi giá trị.
         while pos <= b:
             v = arr[pos - 1]
             prev = last.get(v)
             if prev is not None:
-                update(prev, -1)
-            update(pos, 1)
+                update(prev, -1)   # gỡ đánh dấu cũ
+            update(pos, 1)         # đánh dấu vị trí mới
             last[v] = pos
             pos += 1
+        # Số giá trị phân biệt trong [a, b] = tổng đoạn BIT.
         ans[k] = prefix(b) - prefix(a - 1)
 
     out = b"\n".join(str(x).encode() for x in ans)

@@ -1,33 +1,34 @@
-Pizzeria Queries — CSES 2206
+Pizzeria Queries - CSES 2206
+https://cses.fi/problemset/task/2206
 
-Bài toán:
-- Có n tòa nhà, tòa a có giá pizza p_a.
-- Truy vấn "2 k": đang ở tòa k, cần tìm chi phí nhỏ nhất để đặt pizza từ một
+## Đề bài
+- Có n tòa nhà xếp thành hàng; tòa a có giá pizza p_a.
+- Truy vấn "2 k": đang đứng ở tòa k, tìm chi phí nhỏ nhất để đặt pizza từ một
   tòa a bất kỳ, với chi phí = p_a + |a - k|.
-- Cập nhật "1 k x": đặt p_k = x.
+- Cập nhật "1 k x": gán p_k = x.
 
-Ý tưởng chính (tách trị tuyệt đối |a - k|):
-Xét hai trường hợp theo vị trí của a so với k.
+## Ý tưởng
+Tách trị tuyệt đối |a - k| theo vị trí của a so với k để bỏ dấu giá trị tuyệt đối:
   1) a <= k:  p_a + (k - a) = (p_a - a) + k.
      Với k cố định, cần cực tiểu của L[a] = p_a - a trên đoạn a thuộc [1, k]
-     (prefix min), rồi cộng thêm k.
+     (prefix-min), rồi cộng thêm k.
   2) a >= k:  p_a + (a - k) = (p_a + a) - k.
      Cần cực tiểu của R[a] = p_a + a trên đoạn a thuộc [k, n]
-     (suffix min), rồi trừ đi k.
-Đáp án = min( (min L trên [1,k]) + k , (min R trên [k,n]) - k ).
+     (suffix-min), rồi trừ đi k.
+Đáp án = min( (min L trên [1, k]) + k , (min R trên [k, n]) - k ).
 Trường hợp a = k xuất hiện ở cả hai vế nhưng đều cho giá trị p_k nên nhất quán.
 
 Cấu trúc dữ liệu:
-- Dùng HAI iterative segment tree (bottom-up) cho phép RANGE-MIN với POINT UPDATE:
-    * Cây segL lưu L[a] = p_a - a, hỗ trợ truy vấn min trên [1, k] (prefix).
-    * Cây segR lưu R[a] = p_a + a, hỗ trợ truy vấn min trên [k, n] (suffix).
+- Dùng HAI iterative segment tree (bottom-up) hỗ trợ RANGE-MIN với POINT UPDATE:
+    * Cây segL lưu L[a] = p_a - a, truy vấn min trên [1, k] (prefix).
+    * Cây segR lưu R[a] = p_a + a, truy vấn min trên [k, n] (suffix).
 - KHÔNG dùng Fenwick/BIT min được vì cập nhật gán giá trị mới bất kỳ (giá có thể
   TĂNG lẫn giảm); Fenwick min chỉ đúng khi giá trị chỉ giảm dần. Do đó bắt buộc
   segment tree.
 
 Các thao tác:
-- Cập nhật "1 k x": gán L[k] = x - k, R[k] = x + k rồi cập nhật ngược lên gốc
-  ở cả hai cây (mỗi cây O(log n)).
+- Cập nhật "1 k x": gán L[k] = x - k, R[k] = x + k rồi cập nhật ngược lên gốc ở
+  cả hai cây (mỗi cây O(log n)).
 - Truy vấn "2 k": lấy prefix-min của L trên [1, k] cộng k, và suffix-min của R
   trên [k, n] trừ k, lấy min hai giá trị (O(log n)).
 
@@ -36,7 +37,7 @@ Việc bỏ trị tuyệt đối bằng cách chia theo a <= k và a >= k phủ 
 mỗi biểu thức trở thành (hằng theo k) cộng/trừ một số chỉ phụ thuộc a, nên bài
 toán quy về range-min cổ điển mà segment tree giải chính xác.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O((n + q) log n).
 - Bộ nhớ: O(n) cho mỗi cây (tổng O(n)).
 
