@@ -1,16 +1,3 @@
-// Sliding Window Advertisement (CSES 3227)
-// https://cses.fi/problemset/task/3227
-//
-// Với mỗi cửa sổ k tấm ván liên tiếp, đáp án là largest rectangle in histogram
-// của đoạn đó. Dùng monotonic stack tính đoạn cực đại (L[j], R[j]) mà a[j] là min,
-// rồi công thức:
-//     g(s) = max_{j in [s, e]} a[j] * (min(R[j], e) - max(L[j], s) + 1),  e = s+k-1.
-// Coi g(s) là hàm theo s: mỗi cột j sinh (tối đa) 4 đoạn-đường thẳng theo s tùy
-// biên trái/phải có bị clip hay không. Chèn vào Li Chao tree (segment insert),
-// sau đó truy vấn max tại từng s.
-//
-// Độ phức tạp: O(n log^2 n) thời gian, O(n) bộ nhớ.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -36,7 +23,7 @@ void add(int node, int lo, int hi, Line nw){
     else             add(2*node+1, mid+1, hi,  nw);
 }
 
-// chèn đường ln chỉ trên đoạn s in [ql, qr]
+// chèn đường ln chỉ trên đoạn s in [ql, qr] (segment insert)
 void insert_seg(int node, int lo, int hi, int ql, int qr, const Line& ln){
     if (qr < lo || hi < ql) return;
     if (ql <= lo && hi <= qr){ add(node, lo, hi, ln); return; }
@@ -63,30 +50,31 @@ int main(){
     vector<long long> a(n + 1);
     for (int i = 1; i <= n; i++) cin >> a[i];
 
-    // previous / next strictly smaller element -> đoạn cực đại [L, R] mà a[j] là min
+    // Bước 1: previous / next strictly smaller element -> đoạn cực đại [L, R] mà a[j] là min
     vector<int> L(n + 1), R(n + 1);
     vector<int> st;
     st.reserve(n + 1);
     for (int i = 1; i <= n; i++){
         while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();
-        L[i] = (st.empty() ? 0 : st.back()) + 1;
+        L[i] = (st.empty() ? 0 : st.back()) + 1;   // biên trái đoạn cực đại
         st.push_back(i);
     }
     st.clear();
     for (int i = n; i >= 1; i--){
         while (!st.empty() && a[st.back()] >= a[i]) st.pop_back();
-        R[i] = (st.empty() ? (n + 1) : st.back()) - 1;
+        R[i] = (st.empty() ? (n + 1) : st.back()) - 1;   // biên phải đoạn cực đại
         st.push_back(i);
     }
 
     m = n - k + 1;
     tr.assign(4 * m, Line{0, NEG});
 
+    // Bước 3: mỗi cột j tách thành (tối đa) 4 đoạn-đường theo s rồi chèn vào Li Chao
     for (int j = 1; j <= n; j++){
         long long aj = a[j];
         int Lj = L[j], Rj = R[j];
-        int smin = max(1, j - k + 1);
-        int smax = min(j, m);
+        int smin = max(1, j - k + 1);   // cửa sổ trái nhất còn chứa cột j
+        int smax = min(j, m);           // cửa sổ phải nhất còn chứa cột j
         if (smin > smax) continue;
 
         // (1) không clip cả hai: hằng aj*(Rj-Lj+1), s in [Rj-k+1, Lj]
@@ -127,6 +115,7 @@ int main(){
         }
     }
 
+    // đáp án mỗi cửa sổ = truy vấn max tại điểm s
     string out;
     out.reserve((size_t)m * 7);
     for (int s = 1; s <= m; s++){

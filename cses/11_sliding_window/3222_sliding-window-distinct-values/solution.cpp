@@ -1,12 +1,3 @@
-// Sliding Window Distinct Values
-// https://cses.fi/problemset/task/3222
-//
-// Với mỗi cửa sổ k phần tử liên tiếp, đếm số giá trị phân biệt (distinct).
-// Kỹ thuật: sliding window + hashmap counts, duy trì biến distinct.
-// Khi thêm x: nếu cnt[x]==0 thì distinct++, rồi cnt[x]++.
-// Khi bỏ y: cnt[y]-- ; nếu cnt[y]==0 thì distinct--.
-// Thời gian O(n) trung bình, bộ nhớ O(n).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,13 +11,15 @@ int main() {
     vector<int> a(n);
     for (int i = 0; i < n; ++i) cin >> a[i];
 
+    // cnt[value] = tần suất của value trong cửa sổ hiện tại; distinct = số giá trị
+    // đang có tần suất lớn hơn 0. Reserve để giảm số lần rehash của hash map.
     unordered_map<int, int> cnt;
     cnt.reserve(n * 2);
     cnt.max_load_factor(0.7f);
 
     int distinct = 0;
 
-    // Khởi tạo cửa sổ đầu tiên [0, k-1].
+    // Khởi tạo cửa sổ đầu tiên [0, k-1]: mỗi giá trị lần đầu xuất hiện làm distinct tăng 1.
     for (int i = 0; i < k; ++i) {
         if (cnt[a[i]]++ == 0) ++distinct;
     }
@@ -34,6 +27,7 @@ int main() {
     string out;
     out.reserve((size_t)(n - k + 1) * 7);
 
+    // Ghi nhanh một số nguyên vào chuỗi kết quả (tránh chi phí của luồng xuất chuẩn).
     auto append_int = [&](int v) {
         if (v == 0) { out.push_back('0'); return; }
         char buf[12];
@@ -44,10 +38,11 @@ int main() {
 
     append_int(distinct);
 
+    // Trượt cửa sổ từ trái sang phải, mỗi bước cập nhật rồi ghi lại distinct.
     for (int i = k; i < n; ++i) {
-        // Thêm a[i].
+        // Thêm phần tử a[i] vào cửa sổ: nếu giá trị này chưa có thì distinct tăng 1.
         if (cnt[a[i]]++ == 0) ++distinct;
-        // Bỏ a[i-k].
+        // Bỏ phần tử bên trái a[i-k]: nếu tần suất về 0 thì distinct giảm 1 và xóa khỏi map.
         int y = a[i - k];
         if (--cnt[y] == 0) {
             --distinct;

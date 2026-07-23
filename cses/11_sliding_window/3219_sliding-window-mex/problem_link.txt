@@ -1,2 +1,0 @@
-Sliding Window Mex
-https://cses.fi/problemset/task/3219

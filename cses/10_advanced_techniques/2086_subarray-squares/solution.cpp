@@ -1,13 +1,3 @@
-// Subarray Squares — CSES 2086
-// https://cses.fi/problemset/task/2086
-//
-// Chia mảng n phần tử dương thành đúng k đoạn con liên tiếp; chi phí mỗi đoạn là
-// bình phương tổng của đoạn. Tối thiểu hoá tổng chi phí.
-//
-// dp[i][j] = min_{m in [i-1, j-1]} dp[i-1][m] + (pre[j]-pre[m])^2
-// Hàm chi phí thoả điều kiện Monge (vì pre tăng ngặt) => opt[i][j] không giảm
-// theo j => dùng Divide and Conquer DP optimization: O(k * n log n).
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
@@ -15,19 +5,22 @@ typedef long long ll;
 const ll INF = LLONG_MAX / 4;
 
 int n, k;
-vector<ll> pre;      // prefix sums, size n+1
+vector<ll> pre;      // tổng tiền tố (prefix sum), kích thước n+1
 vector<ll> dpPrev;   // lớp i-1
 vector<ll> dpCur;    // lớp i
 
+// Chi phí của đoạn (m, j]: bình phương tổng các phần tử trong đoạn.
 static inline ll cost(int m, int j) {
     ll d = pre[j] - pre[m];
     return d * d;
 }
 
-// Tính dpCur[j] cho j in [jl, jr], biết opt-m nằm trong [ml, mr].
+// Divide and conquer DP optimization cho một lớp i cố định:
+// tính dpCur[j] cho j thuộc [jl, jr], biết điểm cắt tối ưu m nằm trong [ml, mr].
 void solve(int jl, int jr, int ml, int mr) {
     if (jl > jr) return;
     int jm = (jl + jr) / 2;
+    // Quét mọi m hợp lệ để tìm dpCur[jm] và vị trí tối ưu bestM.
     ll best = INF;
     int bestM = ml;
     int hi = min(jm - 1, mr);   // yêu cầu m < jm
@@ -37,6 +30,7 @@ void solve(int jl, int jr, int ml, int mr) {
         if (val < best) { best = val; bestM = m; }
     }
     dpCur[jm] = best;
+    // Đệ quy: nửa trái dùng opt trong [ml, bestM], nửa phải trong [bestM, mr].
     solve(jl, jm - 1, ml, bestM);
     solve(jm + 1, jr, bestM, mr);
 }
@@ -53,14 +47,15 @@ int main() {
         pre[i] = pre[i - 1] + x;
     }
 
-    // dp[0]: chỉ dp[0][0] = 0, còn lại = INF
+    // Cơ sở lớp 0: chỉ dp[0][0] = 0, còn lại = INF.
     dpPrev.assign(n + 1, INF);
     dpPrev[0] = 0;
     dpCur.assign(n + 1, INF);
 
+    // Xây từng lớp i (số đoạn) từ lớp i-1, chỉ giữ hai hàng để tiết kiệm bộ nhớ.
     for (int i = 1; i <= k; ++i) {
         fill(dpCur.begin(), dpCur.end(), INF);
-        // j chạy trong [i, n]; m tối ưu trong [i-1, n-1]
+        // j chạy trong [i, n]; m tối ưu trong [i-1, n-1].
         solve(i, n, i - 1, n - 1);
         swap(dpPrev, dpCur);
     }

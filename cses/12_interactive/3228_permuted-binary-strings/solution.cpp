@@ -1,14 +1,3 @@
-// Permuted Binary Strings — CSES 3228
-// https://cses.fi/problemset/task/3228
-//
-// Interactive: hidden permutation a[1..n]. A query "? b_1..b_n" returns
-// "b_{a_1}..b_{a_n}", i.e. response position i is the bit of the sent string
-// at index a_i. Limit: 10 queries; 1 <= n <= 1000.
-//
-// Strategy: since n <= 1000 < 2^10, encode each a_i by its bits. For query j,
-// set b_k = bit j of k. Response position i then reveals bit j of a_i.
-// After B = ceil(log2(n+1)) <= 10 queries we reconstruct every a_i.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -16,29 +5,32 @@ int main() {
     int n;
     if (!(cin >> n)) return 0;
 
-    // Smallest B with 2^B > n  ->  B bits can represent every value in [1..n].
+    // Số bit B nhỏ nhất sao cho 2^B > n -> đủ để biểu diễn mọi giá trị trong [1..n].
     int B = 0;
-    while ((1 << B) <= n) B++;   // for n <= 1000, B <= 10
+    while ((1 << B) <= n) B++;   // với n <= 1000 thì B <= 10
 
-    vector<int> a(n + 1, 0);     // 1-indexed hidden permutation
+    vector<int> a(n + 1, 0);     // hoán vị ẩn, đánh chỉ số từ 1
 
+    // Mỗi truy vấn j xác định bit thứ j của tất cả a_i cùng một lúc.
     for (int j = 0; j < B; j++) {
-        // Build query: b_k = bit j of k, for k = 1..n
+        // Dựng truy vấn: b_k = bit thứ j của chỉ số k, với k = 1..n.
         string query;
         query.reserve(n);
         for (int k = 1; k <= n; k++)
             query.push_back(((k >> j) & 1) ? '1' : '0');
 
-        cout << "? " << query << endl;   // endl flushes stdout
+        cout << "? " << query << endl;   // endl flush stdout, bắt buộc với bài tương tác
 
+        // Vị trí i của xâu trả lời chính là bit thứ j của a_i.
         string resp;
-        cin >> resp;                     // resp[i-1] = bit j of a_i
+        cin >> resp;
         for (int i = 1; i <= n; i++)
             if (resp[i - 1] == '1') a[i] |= (1 << j);
     }
 
+    // Ghép đủ các bit lại thành từng a_i rồi in đáp án cuối.
     cout << "!";
     for (int i = 1; i <= n; i++) cout << ' ' << a[i];
-    cout << endl;                        // flush final answer
+    cout << endl;                        // flush đáp án cuối
     return 0;
 }

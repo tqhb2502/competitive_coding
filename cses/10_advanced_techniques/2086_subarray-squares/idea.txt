@@ -1,31 +1,29 @@
-Subarray Squares — CSES 2086
+Subarray Squares - CSES 2086
+https://cses.fi/problemset/task/2086
 
-BÀI TOÁN
---------
+## Đề bài
 Cho mảng gồm n số nguyên dương, chia mảng thành đúng k đoạn con liên tiếp
 (subarray) không rỗng. Chi phí của mỗi đoạn con bằng bình phương tổng các phần
 tử trong đoạn đó. Cần tìm tổng chi phí nhỏ nhất khi chia tối ưu.
 Ràng buộc: 1 <= k <= n <= 3000, mỗi phần tử 1 <= x_i <= 10^5.
 
-CÔNG THỨC QUY HOẠCH ĐỘNG
-------------------------
+## Ý tưởng
 Gọi pre[j] là tổng tiền tố (prefix sum) của j phần tử đầu tiên, pre[0] = 0.
 Đặt dp[i][j] = tổng chi phí nhỏ nhất để chia j phần tử đầu tiên thành i đoạn.
 Chuyển trạng thái:
     dp[i][j] = min với m thuộc [i-1, j-1] của { dp[i-1][m] + (pre[j] - pre[m])^2 }
-Cơ sở: dp[0][0] = 0, các trạng thái còn lại của dp[0][*] = +vô cực.
+Cơ sở: dp[0][0] = 0, các trạng thái còn lại của dp[0][*] = cộng vô cực.
 Kết quả cần tìm là dp[k][n].
 
 Nếu tính trực tiếp thì độ phức tạp là O(k * n^2) ~ 3000^3, quá lớn.
 
-TỐI ƯU BẰNG DIVIDE AND CONQUER DP OPTIMIZATION
------------------------------------------------
-Hàm chi phí C(m, j) = (pre[j] - pre[m])^2. Vì các phần tử dương nên pre là dãy
-tăng ngặt, do đó C(m, j) thỏa mãn bất đẳng thức tứ giác (quadrangle inequality /
-điều kiện Monge):
+Tối ưu bằng divide and conquer DP optimization: hàm chi phí
+C(m, j) = (pre[j] - pre[m])^2. Vì các phần tử dương nên pre là dãy tăng ngặt, do
+đó C(m, j) thỏa mãn bất đẳng thức tứ giác (quadrangle inequality / điều kiện
+Monge):
     C(a, c) + C(b, d) <= C(a, d) + C(b, c)  với a <= b <= c <= d.
 Từ đó, nếu gọi opt[i][j] là vị trí m tối ưu để tính dp[i][j], thì opt là hàm
-KHÔNG GIẢM theo j: opt[i][j] <= opt[i][j+1].
+không giảm theo j: opt[i][j] <= opt[i][j+1].
 
 Tính chất đơn điệu này cho phép dùng chia để trị (divide and conquer) cho mỗi
 lớp i: để tính dp[i][j] cho j thuộc [jl, jr] biết rằng m tối ưu nằm trong
@@ -36,20 +34,17 @@ tìm dp[i][jm] và vị trí tối ưu bestM. Sau đó đệ quy:
 Mỗi lớp i tốn O(n log n) vì tổng độ dài các đoạn m được quét ở mỗi mức đệ quy là
 O(n), và có O(log n) mức. Với k lớp, tổng chi phí là O(k * n log n).
 
-Độ phức tạp thời gian: O(k * n * log n) ~ 3000 * 3000 * 12 ~ 10^8, chạy tốt
-trong giới hạn thời gian của CSES với C++ và -O2.
-Độ phức tạp bộ nhớ: O(n) vì chỉ giữ hai hàng dp (lớp i-1 và lớp i).
-
-TÍNH ĐÚNG ĐẮN
--------------
-Công thức dp là vét cạn mọi cách đặt điểm cắt cuối cùng nên đúng theo định nghĩa.
-Điều kiện Monge của C(m, j) bảo đảm opt đơn điệu, do đó thủ tục divide and
-conquer không bỏ sót vị trí tối ưu nào: khi thu hẹp khoảng [ml, mr] theo bestM
-của điểm giữa, mọi j ở nửa trái có opt <= bestM và mọi j ở nửa phải có
-opt >= bestM. Vì luôn tồn tại m = i-1 hợp lệ và hữu hạn (dp[i-1][i-1] hữu hạn)
+Tính đúng đắn: công thức dp vét cạn mọi cách đặt điểm cắt cuối cùng nên đúng theo
+định nghĩa. Điều kiện Monge của C(m, j) bảo đảm opt đơn điệu, do đó thủ tục
+divide and conquer không bỏ sót vị trí tối ưu nào: khi thu hẹp khoảng [ml, mr]
+theo bestM của điểm giữa, mọi j ở nửa trái có opt <= bestM và mọi j ở nửa phải
+có opt >= bestM. Vì luôn tồn tại m = i-1 hợp lệ và hữu hạn (dp[i-1][i-1] hữu hạn)
 nên mỗi dp[i][j] với j >= i luôn được xác định.
 
-TRÀN SỐ
--------
-Tổng lớn nhất là 3000 * 10^5 = 3*10^8, bình phương ~ 9*10^16, vẫn nằm trong
-phạm vi long long (~9.2*10^18). Dùng long long cho pre và dp.
+Tràn số: tổng lớn nhất là 3000 * 10^5 = 3*10^8, bình phương ~ 9*10^16, vẫn nằm
+trong phạm vi long long (~9.2*10^18). Dùng long long cho pre và dp.
+
+## Độ phức tạp
+Thời gian: O(k * n * log n) ~ 3000 * 3000 * 12 ~ 10^8, chạy tốt trong giới hạn
+thời gian của CSES với C++ và -O2.
+Bộ nhớ: O(n) vì chỉ giữ hai hàng dp (lớp i-1 và lớp i).

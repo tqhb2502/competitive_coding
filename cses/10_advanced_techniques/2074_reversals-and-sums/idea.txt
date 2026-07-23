@@ -1,17 +1,19 @@
-Bài toán: Reversals and Sums (CSES 2074)
+Reversals and Sums - CSES 2074
+https://cses.fi/problemset/task/2074
 
-Yêu cầu: cho mảng n phần tử, xử lý m truy vấn trên đoạn [a, b]:
-  - type 1: đảo ngược (reverse) các phần tử trong đoạn [a, b].
-  - type 2: tính tổng các phần tử trong đoạn [a, b].
-Ràng buộc: n <= 2*10^5, m <= 10^5, 0 <= x_i <= 10^9.
-Vì tổng có thể lên tới 2*10^5 * 10^9 = 2*10^14 nên phải dùng long long.
+## Đề bài
+Cho mảng gồm n phần tử, xử lý m truy vấn trên đoạn [a, b]:
+  - Loại 1: đảo ngược (reverse) các phần tử trong đoạn [a, b].
+  - Loại 2: tính tổng các phần tử trong đoạn [a, b].
+Ràng buộc: n <= 2*10^5, m <= 10^5, 0 <= x_i <= 10^9. Vì tổng có thể lên tới
+2*10^5 * 10^9 = 2*10^14 nên bắt buộc phải dùng long long.
 
-Kỹ thuật: IMPLICIT TREAP (Cartesian tree) với LAZY REVERSAL.
+## Ý tưởng
+Kỹ thuật: implicit treap (Cartesian tree) với lazy reversal.
 
-Ý tưởng chính:
-- Dùng một balanced BST kiểu treap mà "khóa" (key) không lưu tường minh mà là VỊ TRÍ
-  hiện tại của phần tử trong mảng (implicit key). Vị trí của một node được suy ra từ
-  kích thước subtree bên trái. Duyệt in-order của treap chính là thứ tự mảng hiện tại.
+- Dùng một balanced BST kiểu treap mà "khóa" (key) không lưu tường minh mà chính là
+  vị trí hiện tại của phần tử trong mảng (implicit key). Vị trí của một node được suy ra
+  từ kích thước subtree bên trái. Duyệt in-order của treap chính là thứ tự mảng hiện tại.
 - Mỗi node lưu: giá trị val, kích thước subtree sz, tổng subtree sm (long long),
   priority ngẫu nhiên prio, và một lazy flag rev.
 - Hai thao tác cơ bản:
@@ -26,7 +28,7 @@ Kỹ thuật: IMPLICIT TREAP (Cartesian tree) với LAZY REVERSAL.
   đảo ngược chỉ tốn O(1) tại gốc đoạn, chỉ thực sự áp dụng khi ta đi qua node đó trong
   split/merge sau này.
 - Tính tổng đoạn [a, b]: split ra ba phần như trên, đọc sm của gốc B (tổng đoạn), sau đó
-  merge lại. Tổng sm là BẤT BIẾN với phép đảo ngược (đảo thứ tự không đổi tổng), nên truy
+  merge lại. Tổng sm là bất biến với phép đảo ngược (đảo thứ tự không đổi tổng), nên truy
   vấn sum luôn đúng dù đoạn đã bị reverse.
 
 Tại sao đúng:
@@ -43,8 +45,8 @@ Chi tiết cài đặt để tăng tốc (C++):
 - Lưu trữ node bằng các mảng song song (lc, rc, sz, prio, val, sm, rev) thay vì con trỏ,
   node 0 đóng vai trò null.
 - Xây dựng treap ban đầu bằng cách merge từng phần tử (O(n log n)) - đủ nhanh với n=2*10^5.
-- Đọc/ghi bằng scanf/printf (hoặc fast IO) để đảm bảo tốc độ.
+- Đọc/ghi bằng fast IO để đảm bảo tốc độ.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O((n + m) log n).
 - Bộ nhớ: O(n).

@@ -1,2 +1,0 @@
-Permuted Binary Strings
-https://cses.fi/problemset/task/3228

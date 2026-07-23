@@ -16,25 +16,25 @@ int main() {
     for (int& coin : coins) {
         std::cin >> coin;
     }
-    // Sap xep tang dan de vong trong co the break som khi coin > sum.
+    // Sắp xếp tăng dần để vòng trong có thể break sớm khi coin > sum.
     std::sort(coins.begin(), coins.end());
 
-    // dp[s] = so cach CO THU TU tao ra tong dung bang s; co so dp[0] = 1.
+    // dp[s] = số cách CÓ THỨ TỰ tạo ra tổng đúng bằng s; cơ sở dp[0] = 1.
     std::vector<int> dp(target + 1, 0);
     dp[0] = 1;
 
-    // Vong ngoai duyet tong s, vong trong co dinh dong xu DUNG CUOI cua day la
-    // coin -> dp[s] = tong dp[s - coin]. Nho vong ngoai theo s ma cac day khac
-    // thu tu duoc dem tach biet (thu tu quan trong).
+    // Vòng ngoài duyệt tổng s, vòng trong cố định đồng xu ĐỨNG CUỐI của dãy là
+    // coin -> dp[s] = tổng dp[s - coin]. Nhờ vòng ngoài theo s mà các dãy khác
+    // thứ tự được đếm tách biệt (thứ tự quan trọng).
     for (int sum = 1; sum <= target; ++sum) {
         int ways = 0;
         for (const int coin : coins) {
-            // coins da sap xep tang dan nen gap coin > sum la break som.
+            // coins đã sắp xếp tăng dần nên gặp coin > sum là break sớm.
             if (coin > sum) {
                 break;
             }
             ways += dp[sum - coin];
-            // Tru MOD thay cho phep chia lay du de giu ways trong [0, MOD).
+            // Trừ MOD thay cho phép chia lấy dư để giữ ways trong [0, MOD).
             if (ways >= MOD) {
                 ways -= MOD;
             }

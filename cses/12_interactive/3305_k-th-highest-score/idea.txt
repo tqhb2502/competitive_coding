@@ -1,77 +1,61 @@
-K-th Highest Score — CSES 3305 (Interactive)
+K-th Highest Score - CSES 3305
 https://cses.fi/problemset/task/3305
 
-────────────────────────────────────────────────────────
-1. GIAO THỨC TƯƠNG TÁC (interaction protocol)
-────────────────────────────────────────────────────────
-- Đầu vào ban đầu: một dòng gồm hai số nguyên n và k.
-  Có 2n coder: n người Phần Lan (Finland) và n người Thụy Điển (Sweden).
-  Tất cả điểm số đều PHÂN BIỆT, nằm trong [1, 1e9].
-  Gọi F[1..n] là điểm của Finland xếp GIẢM DẦN (F[i] = điểm cao thứ i của Finland),
-  S[1..n] là điểm của Sweden xếp GIẢM DẦN.
-  Cần tìm điểm cao thứ k trên tổng thể 2n điểm.
+## Đề bài
+Bài toán tương tác (interactive). Ban đầu đọc một dòng gồm hai số nguyên n và k.
+Có 2n coder: n người Phần Lan (Finland) và n người Thụy Điển (Sweden), mọi điểm số
+đều phân biệt và nằm trong [1, 1e9]. Gọi F[1..n] là điểm của Finland xếp giảm dần
+(F[i] là điểm cao thứ i của Finland), S[1..n] là điểm của Sweden xếp giảm dần.
+Cần tìm điểm cao thứ k trên tổng thể 2n điểm.
 
-- Truy vấn (query):
-    "F i"  -> judge trả về F[i]  (điểm cao thứ i của Finland),  1 <= i <= n
-    "S i"  -> judge trả về S[i]  (điểm cao thứ i của Sweden),   1 <= i <= n
-  Sau mỗi truy vấn PHẢI flush stdout (dùng endl) rồi đọc một số nguyên trả về.
+Giao thức truy vấn (query):
+- "F i" -> judge trả về F[i] (điểm cao thứ i của Finland), với 1 <= i <= n.
+- "S i" -> judge trả về S[i] (điểm cao thứ i của Sweden), với 1 <= i <= n.
+Sau mỗi truy vấn phải flush stdout (dùng endl) rồi đọc một số nguyên trả về.
+Trả lời cuối cùng: "! s" báo rằng s là điểm cao thứ k, rồi kết thúc chương trình.
 
-- Trả lời cuối cùng:
-    "! s"  -> báo rằng s là điểm cao thứ k, rồi kết thúc chương trình.
+Giới hạn truy vấn: tối đa 100 query. Ràng buộc: 1 <= n <= 1e5, 1 <= k <= 2n.
+Ví dụ: n=3, k=1, F=[9,4,3], S=[8,6,1]. Điểm cao nhất toàn cục là 9 nên trả lời "! 9".
 
-- GIỚI HẠN TRUY VẤN: tối đa 100 query.
-- Ràng buộc: 1 <= n <= 1e5, 1 <= k <= 2n.
-
-Ví dụ: n=3, k=1, F=[9,4,3], S=[8,6,1]. Điểm cao nhất toàn cục là 9 -> "! 9".
-
-────────────────────────────────────────────────────────
-2. CHIẾN LƯỢC (strategy)
-────────────────────────────────────────────────────────
-Đây chính là bài toán "tìm phần tử lớn thứ k trong hợp của hai mảng đã sắp xếp",
-với truy cập ngẫu nhiên tốn kém (mỗi lần đọc một phần tử tốn 1 query).
+## Ý tưởng
+Đây chính là bài toán tìm phần tử lớn thứ k trong hợp của hai mảng đã sắp xếp giảm
+dần, nhưng truy cập ngẫu nhiên tốn kém vì mỗi lần đọc một phần tử tốn một query.
 
 Ý tưởng partition: chọn i phần tử lớn nhất từ F và j = k - i phần tử lớn nhất từ S
-(với 0 <= i <= n, 0 <= j <= n). Đặt biên ảo:
-    F[0] = S[0] = +INF   (lấy 0 phần tử),
-    F[n+1] = S[n+1] = -INF (vượt quá mảng).
-
+(với 0 <= i <= n và 0 <= j <= n). Đặt biên ảo:
+    F[0] = S[0] = +INF   (khi lấy 0 phần tử),
+    F[n+1] = S[n+1] = -INF (khi vượt quá mảng).
 Tập gồm top-i của F và top-j của S có đúng k phần tử. Nó trùng với top-k toàn cục
-KHI VÀ CHỈ KHI:
-    F[i]  >  S[j+1]   (phần tử nhỏ nhất được chọn của F vẫn lớn hơn phần tử lớn nhất bị loại của S)
-    S[j]  >  F[i+1]
-Khi đó đáp án (điểm cao thứ k) = min(F[i], S[j]).
+khi và chỉ khi:
+    F[i] > S[j+1]  (phần tử nhỏ nhất được chọn của F vẫn lớn hơn phần tử lớn nhất bị loại của S),
+    S[j] > F[i+1].
+Khi đó đáp án (điểm cao thứ k) bằng min(F[i], S[j]).
 
 Tính đơn điệu để binary search theo i:
-- Khi i tăng: F[i] giảm, còn S[j+1] = S[k-i+1] có chỉ số giảm nên GIÁ TRỊ tăng
-  => điều kiện A: "F[i] > S[j+1]" đúng với i nhỏ, sai với i lớn.
-- Khi i tăng: S[j] = S[k-i] có chỉ số giảm nên giá trị tăng, còn F[i+1] giảm
-  => điều kiện B: "S[j] > F[i+1]" sai với i nhỏ, đúng với i lớn.
-Vì A đúng khi i <= i*, B đúng khi i >= i*, tồn tại DUY NHẤT điểm cắt i* mà cả hai đúng.
-Không thể đồng thời A sai và B sai (sẽ dẫn tới F[i] < F[i], mâu thuẫn) nên mỗi bước
+- Khi i tăng: F[i] giảm, còn S[j+1] = S[k-i+1] có chỉ số giảm nên giá trị tăng,
+  nên điều kiện A "F[i] > S[j+1]" đúng với i nhỏ, sai với i lớn.
+- Khi i tăng: S[j] = S[k-i] có chỉ số giảm nên giá trị tăng, còn F[i+1] giảm,
+  nên điều kiện B "S[j] > F[i+1]" sai với i nhỏ, đúng với i lớn.
+Vì A đúng khi i <= i*, B đúng khi i >= i*, tồn tại duy nhất điểm cắt i* mà cả hai đúng.
+Không thể đồng thời A sai và B sai (sẽ dẫn tới mâu thuẫn F[i] < F[i]) nên mỗi bước
 binary search rẽ đúng một hướng:
-    - Nếu A sai (F[i] <= S[j+1]): lấy quá nhiều từ F  -> hi = i - 1.
-    - Nếu B sai (S[j] <= F[i+1]): cần lấy thêm từ F  -> lo = i + 1.
+    - Nếu A sai (F[i] <= S[j+1]): lấy quá nhiều từ F, thu hẹp hi = i - 1.
+    - Nếu B sai (S[j] <= F[i+1]): cần lấy thêm từ F, thu hẹp lo = i + 1.
     - Nếu cả A và B đúng: tìm thấy, đáp án = min(F[i], S[j]).
-
 Khoảng tìm kiếm: i thuộc [max(0, k-n), min(k, n)].
 
-────────────────────────────────────────────────────────
-3. SỐ QUERY vs GIỚI HẠN
-────────────────────────────────────────────────────────
-Binary search trên đoạn độ dài <= n <= 1e5 nên có <= ~17 vòng lặp
-(ceil(log2(1e5)) = 17). Mỗi vòng cần tối đa 4 giá trị F[i], F[i+1], S[j], S[j+1].
-=> tối đa ~68 query, an toàn dưới giới hạn 100.
-Ngoài ra ta CACHE lại mọi giá trị đã hỏi (mảng đánh dấu), nên các chỉ số trùng
-không bị hỏi lại — thực tế số query còn thấp hơn nhiều.
-Các biên F[0], S[0] (=+INF) và F[n+1], S[n+1] (=-INF) KHÔNG tốn query.
+## Độ phức tạp
+Binary search trên đoạn độ dài <= n <= 1e5 nên có <= khoảng 17 vòng lặp
+(ceil(log2(1e5)) = 17). Mỗi vòng cần tối đa 4 giá trị F[i], F[i+1], S[j], S[j+1],
+tức tối đa khoảng 68 query, an toàn dưới giới hạn 100. Ngoài ra ta cache lại mọi giá
+trị đã hỏi (mảng đánh dấu), nên các chỉ số trùng không bị hỏi lại, thực tế số query
+còn thấp hơn nhiều. Các biên F[0], S[0] (+INF) và F[n+1], S[n+1] (-INF) không tốn query.
 
-────────────────────────────────────────────────────────
-4. TÍNH ĐÚNG ĐẮN (correctness)
-────────────────────────────────────────────────────────
+Ghi chú về tính đúng đắn:
 - Vì mọi điểm phân biệt nên có thể dùng so sánh nghiêm ngặt (>) an toàn.
 - Điểm cắt i* thỏa cả hai điều kiện tương ứng với partition đúng: mọi phần tử được
-  chọn đều >= mọi phần tử bị loại kề biên, do đó tập chọn chính là top-k toàn cục,
-  và phần tử nhỏ nhất trong tập = min(F[i*], S[j*]) chính là điểm cao thứ k.
-- Binary search luôn hội tụ vào i* vì hướng rẽ được xác định đơn trị bởi A/B.
+  chọn đều lớn hơn mọi phần tử bị loại kề biên, do đó tập chọn chính là top-k toàn
+  cục, và phần tử nhỏ nhất trong tập = min(F[i*], S[j*]) chính là điểm cao thứ k.
+- Binary search luôn hội tụ vào i* vì hướng rẽ được xác định đơn trị bởi A và B.
 - Các trường hợp biên (i=0 lấy hết từ S; i=k hoặc j=0 lấy hết từ F; k=2n lấy toàn bộ)
-  đều được xử lý nhờ giá trị ảo +INF / -INF.
+  đều được xử lý nhờ giá trị ảo +INF và -INF.

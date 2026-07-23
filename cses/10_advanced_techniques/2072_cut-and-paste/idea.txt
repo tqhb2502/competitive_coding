@@ -1,50 +1,47 @@
-Bài: Cut and Paste (CSES 2072)
+Cut and Paste - CSES 2072
+https://cses.fi/problemset/task/2072
 
-Đề bài
+## Đề bài
 - Cho xâu độ dài n gồm các ký tự A-Z và m thao tác.
-- Mỗi thao tác (a, b): cắt đoạn con [a, b] (1-indexed) ra khỏi xâu rồi dán
-  vào cuối xâu. Vì cắt rồi dán lại nên độ dài xâu LUÔN = n.
-- In ra xâu cuối cùng sau tất cả m thao tác.
+- Mỗi thao tác (a, b): cắt đoạn con [a, b] (đánh số từ 1) ra khỏi xâu rồi dán
+  vào cuối xâu. Vì cắt rồi dán lại nên độ dài xâu LUÔN bằng n.
+- In ra xâu cuối cùng sau khi thực hiện tất cả m thao tác.
 - Ràng buộc: 1 <= n, m <= 2*10^5; 1 <= a <= b <= n.
 
-Kỹ thuật: implicit treap (rope)
-- Coi xâu như một dãy. Ta cần cấu trúc hỗ trợ tách (split) và nối (merge) một
-  dãy theo VỊ TRÍ (rank) trong O(log n). Đó là implicit treap = Cartesian tree
-  mà khóa BST là "thứ tự vị trí" (không lưu tường minh, suy ra từ size subtree),
-  còn priority là số ngẫu nhiên để giữ cây cân bằng (max-heap theo priority).
-- split(t, k): tách cây t thành (L, R) với L là k phần tử đầu theo in-order,
-  R là phần còn lại. Tại node t, đặt ls = size(con trái): nếu ls < k thì cả t
-  và cây con trái đều thuộc L (đi tiếp sang con phải với k' = k - ls - 1),
-  ngược lại t thuộc R (đi tiếp sang con trái). O(chiều cao) = O(log n) kỳ vọng.
+## Ý tưởng
+- Kỹ thuật: implicit treap (rope). Coi xâu như một dãy và cần cấu trúc hỗ trợ
+  tách (split) cùng nối (merge) một dãy theo VỊ TRÍ (rank) trong O(log n).
+- Implicit treap là Cartesian tree mà khóa BST chính là "thứ tự vị trí" (không
+  lưu tường minh, suy ra từ size của cây con), còn priority là số ngẫu nhiên để
+  giữ cây cân bằng theo dạng max-heap trên priority.
+- split(t, k): tách cây t thành (L, R) với L là k phần tử đầu theo in-order, R
+  là phần còn lại. Tại node t, đặt ls = size(con trái): nếu ls < k thì cả t và
+  cây con trái đều thuộc L (đi tiếp sang con phải với k' = k - ls - 1), ngược
+  lại t thuộc R (đi tiếp sang con trái). Chi phí O(chiều cao) = O(log n) kỳ vọng.
 - merge(a, b): nối cây a đứng trước cây b (mỗi phần tử của a có vị trí trước mỗi
   phần tử của b). Chọn làm gốc node có priority lớn hơn để giữ max-heap. Chỉ hợp
-  lệ khi in-order của a nằm trước in-order của b. O(log n) kỳ vọng.
+  lệ khi in-order của a nằm trước in-order của b. Chi phí O(log n) kỳ vọng.
+- Xử lý một thao tác (a, b):
+  + split(root, b) -> (T1, R): T1 = [1..b], R = [b+1..n].
+  + split(T1, a-1) -> (A, M): A = [1..a-1], M = [a..b] (đoạn bị cắt).
+  + Xâu mới = A + R + M = merge(merge(A, R), M).
+  + Mỗi thao tác chỉ 2 split và 2 merge, mỗi cái O(log n), không phụ thuộc độ
+    dài đoạn cắt (di chuyển cả subtree, không copy từng ký tự).
+- Vì sao đúng: treap luôn bảo toàn hai bất biến là in-order = dãy hiện tại và
+  max-heap theo priority. split chỉ cắt dọc theo một đường nên giữ nguyên thứ tự
+  in-order của hai phần; merge đặt lại node theo priority nên phục hồi max-heap.
+  Do đó dãy được biến đổi chính xác như thao tác cắt-dán trên xâu. Cuối cùng
+  duyệt in-order để lấy xâu kết quả.
+- Cài đặt:
+  + Dùng các mảng song song lc, rc, sz, pri, val thay cho struct/con trỏ để giảm
+    hằng số và tăng tính cache-friendly. Node 0 đóng vai trò NULL (sz[0] = 0).
+  + Priority lấy từ mt19937_64 để gần như không trùng, tránh cây bị lệch.
+  + Xây cây ban đầu bằng cách merge từng ký tự vào cuối: root = merge(root,
+    node). Chi phí O(n log n), không đáng kể.
+  + split/merge cài đệ quy; độ sâu bằng chiều cao cây = O(log n) kỳ vọng nên an toàn.
+  + In kết quả bằng duyệt in-order lặp (dùng stack thủ công) để tránh rủi ro tràn
+    stack và tăng tốc.
 
-Xử lý một thao tác (a, b)
-- split(root, b) -> (T1, R): T1 = [1..b], R = [b+1..n].
-- split(T1, a-1) -> (A, M): A = [1..a-1], M = [a..b] (đoạn bị cắt).
-- Xâu mới = A + R + M = merge(merge(A, R), M).
-- Mỗi thao tác chỉ 2 split + 2 merge, mỗi cái O(log n), không phụ thuộc độ dài
-  đoạn cắt (di chuyển cả subtree, không copy từng ký tự).
-
-Vì sao đúng
-- Treap luôn bảo toàn hai bất biến: in-order = dãy hiện tại, và max-heap theo
-  priority. split chỉ cắt dọc theo một đường nên giữ nguyên thứ tự in-order của
-  hai phần; merge đặt lại node theo priority nên phục hồi max-heap. Vì vậy dãy
-  được biến đổi chính xác như thao tác cắt-dán trên xâu. Cuối cùng duyệt in-order
-  lấy xâu kết quả.
-
-Cài đặt
-- Dùng các mảng song song lc, rc, sz, pri, val thay cho struct/con trỏ để giảm
-  hằng số và tăng tính cache-friendly. Node 0 đóng vai trò NULL (sz[0] = 0).
-- Priority lấy từ mt19937_64 để gần như không trùng, tránh cây bị lệch.
-- Xây cây ban đầu bằng cách merge từng ký tự vào cuối: root = merge(root, node).
-  Chi phí O(n log n), không đáng kể.
-- split/merge cài đệ quy; độ sâu = chiều cao cây = O(log n) kỳ vọng nên an toàn.
-- In kết quả bằng duyệt in-order iterative (dùng stack thủ công) để tránh mọi rủi
-  ro tràn stack và tăng tốc.
-
-Độ phức tạp
-- Thời gian: O((n + m) log n) ~ vài chục triệu thao tác cơ bản, thỏa mãn giới
-  hạn thời gian của CSES với C++.
+## Độ phức tạp
+- Thời gian: O((n + m) log n), thỏa mãn giới hạn thời gian của CSES với C++.
 - Bộ nhớ: O(n).

@@ -1,11 +1,3 @@
-// Reachable Nodes — CSES 2138
-// https://cses.fi/problemset/task/2138
-//
-// Bitset + reverse topological order on a DAG.
-// reach[u] = {u} | (union of reach[v] over edges u->v).
-// Process nodes in reverse topo order so every successor is finished first,
-// then answer[u] = popcount(reach[u]).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -15,13 +7,14 @@ int n, m;
 vector<int> adj[MAXN + 1];
 int indeg[MAXN + 1];
 
-// One bitset per node (index i-1 represents node i). ~313 MB for n = 50000.
+// Mỗi đỉnh giữ một bitset (bit i-1 ứng với đỉnh i). ~313 MB khi n = 50000.
 vector<bitset<MAXN>> reach;
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
+    // Đọc đồ thị và đếm bậc vào của từng đỉnh.
     cin >> n >> m;
     for (int i = 0; i < m; ++i) {
         int a, b;
@@ -30,11 +23,11 @@ int main() {
         indeg[b]++;
     }
 
-    // Kahn's algorithm -> topological order (sources first).
+    // Thuật toán Kahn (lặp, không đệ quy) -> lấy một thứ tự topo, các đỉnh nguồn trước.
     vector<int> topo;
     topo.reserve(n);
-    // local copy of indegrees so we can reuse structure if needed
-    vector<int> deg(indeg + 1, indeg + n + 1); // deg[i] = indeg of node (i+1)
+    // Bản sao bậc vào để có thể giảm dần mà không phá dữ liệu gốc.
+    vector<int> deg(indeg + 1, indeg + n + 1); // deg[i] = bậc vào của đỉnh (i+1)
     queue<int> q;
     for (int i = 1; i <= n; ++i)
         if (deg[i - 1] == 0) q.push(i);
@@ -50,7 +43,8 @@ int main() {
 
     reach.assign(n + 1, bitset<MAXN>());
 
-    // Process in reverse topological order: successors are computed first.
+    // Duyệt ngược thứ tự topo: mọi đỉnh kề sau đã được tính xong trước u.
+    // reach[u] = {u} hợp (hợp reach[v] với mọi cạnh u -> v).
     for (int idx = (int)topo.size() - 1; idx >= 0; --idx) {
         int u = topo[idx];
         reach[u].set(u - 1);
@@ -59,7 +53,7 @@ int main() {
         }
     }
 
-    // Output the reachable counts, space separated.
+    // Đáp án mỗi đỉnh là số bit đang bật (popcount), in ra cách nhau bởi dấu cách.
     string out;
     out.reserve(n * 7);
     for (int i = 1; i <= n; ++i) {

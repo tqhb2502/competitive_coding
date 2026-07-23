@@ -1,17 +1,7 @@
-// Reversals and Sums - CSES 2074
-// https://cses.fi/problemset/task/2074
-//
-// Implicit treap (Cartesian tree) voi lazy reversal.
-// Moi node luu: con trai/phai, priority, gia tri, kich thuoc subtree,
-// tong subtree (long long) va mot lazy flag rev.
-// split(theo so phan tu) + merge chay O(log n) ky vong.
-// Reverse [a,b]: split ra ba phan, applyRev cho phan giua, merge lai.
-// Sum [a,b]: split ra ba phan, doc sm cua phan giua, merge lai.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// -------- Fast IO --------
+// -------- Fast IO: đọc/ghi trực tiếp trên buffer để đảm bảo tốc độ --------
 static char ibuf[1 << 25];
 static int ipos = 0, ilen = 0;
 
@@ -55,6 +45,9 @@ inline void writeLL(long long x) {
 
 const int MAXN = 200005;
 
+// Implicit treap lưu bằng các mảng song song thay vì con trỏ; node 0 đóng vai trò null.
+// lc/rc: con trái/phải; sz: kích thước subtree; prio: priority ngẫu nhiên;
+// val: giá trị node; sm: tổng subtree (long long); rev_: lazy flag đảo ngược.
 int lc[MAXN], rc[MAXN], sz[MAXN];
 unsigned int prio[MAXN];
 long long val[MAXN], sm[MAXN];
@@ -65,6 +58,7 @@ int root = 0;
 static mt19937 rng(
     (unsigned int)chrono::steady_clock::now().time_since_epoch().count());
 
+// Tạo node mới cho một phần tử có giá trị v.
 inline int newNode(long long v) {
     int x = ++tot;
     lc[x] = rc[x] = 0;
@@ -76,18 +70,20 @@ inline int newNode(long long v) {
     return x;
 }
 
+// Cập nhật lại sz và sm của node x từ hai con (node 0 có sz=0, sm=0 do mảng global khởi tạo 0).
 inline void pull(int x) {
-    // node 0 co sz=0, sm=0 (cac mang global khoi tao ve 0)
     sz[x] = sz[lc[x]] + sz[rc[x]] + 1;
     sm[x] = sm[lc[x]] + sm[rc[x]] + val[x];
 }
 
+// Áp phép đảo ngược lên node x: hoán đổi con trái/phải và lật lazy flag rev.
 inline void applyRev(int x) {
     if (!x) return;
     swap(lc[x], rc[x]);
     rev_[x] ^= 1;
 }
 
+// Đẩy lazy flag rev xuống hai con trước khi rẽ qua node x.
 inline void pushDown(int x) {
     if (rev_[x]) {
         applyRev(lc[x]);
@@ -96,13 +92,14 @@ inline void pushDown(int x) {
     }
 }
 
-// Tach x thanh (l, r): l gom k phan tu dau tien, r gom phan con lai.
+// Tách x thành (l, r): l gồm k phần tử đầu tiên, r gồm phần còn lại.
 void split(int x, int k, int &l, int &r) {
     if (!x) {
         l = r = 0;
         return;
     }
     pushDown(x);
+    // implicit key = số phần tử bên trái + 1; quyết định x thuộc phần trái hay phải.
     if (sz[lc[x]] + 1 <= k) {
         l = x;
         split(rc[x], k - sz[lc[x]] - 1, rc[x], r);
@@ -114,7 +111,7 @@ void split(int x, int k, int &l, int &r) {
     }
 }
 
-// Ghep hai treap: a dung truoc, b dung sau.
+// Ghép hai treap: a đứng trước, b đứng sau; ưu tiên priority lớn hơn làm gốc.
 int merge(int a, int b) {
     if (!a) return b;
     if (!b) return a;
@@ -135,6 +132,7 @@ int main() {
     int n = (int)readLL();
     int m = (int)readLL();
 
+    // Xây dựng treap ban đầu bằng cách merge lần lượt từng phần tử (O(n log n)).
     for (int i = 0; i < n; i++) {
         long long v = readLL();
         root = merge(root, newNode(v));
@@ -145,14 +143,17 @@ int main() {
         int a = (int)readLL();
         int b = (int)readLL();
         int L, M, R;
-        // L = [1, a-1], M = [a, b], R = [b+1, n]
+        // Tách ba phần: L = [1, a-1], M = [a, b], R = [b+1, n].
         split(root, a - 1, L, M);
         split(M, b - a + 1, M, R);
         if (t == 1) {
+            // Loại 1: đảo ngược đoạn -> chỉ cần lazy applyRev tại gốc đoạn M.
             applyRev(M);
         } else {
+            // Loại 2: tổng đoạn chính là sm của gốc M (bất biến với phép đảo ngược).
             writeLL(sm[M]);
         }
+        // Ghép lại ba phần theo đúng thứ tự.
         root = merge(merge(L, M), R);
     }
     flushOut();

@@ -1,39 +1,43 @@
-Sliding Window Mode (CSES 3224)
+Sliding Window Mode - CSES 3224
+https://cses.fi/problemset/task/3224
 
-Kỹ thuật: sliding window (cửa sổ trượt) kích thước cố định k, kết hợp cấu trúc
-"count-of-counts" (đếm theo tần suất) dùng mảng các std::set.
+## Đề bài
+Cho một mảng gồm n số nguyên và một số k. Với mỗi cửa sổ gồm k phần tử liên tiếp
+(trượt từ trái sang phải), hãy in ra mode của cửa sổ đó, tức phần tử xuất hiện
+nhiều nhất. Nếu có nhiều giá trị cùng đạt tần suất lớn nhất thì chọn giá trị nhỏ
+nhất.
 
-Yêu cầu: với mỗi cửa sổ gồm k phần tử liên tiếp, in ra mode (phần tử xuất hiện
-nhiều nhất). Nếu có nhiều phần tử cùng tần suất lớn nhất thì chọn giá trị nhỏ nhất.
+## Ý tưởng
+Dùng kỹ thuật sliding window (cửa sổ trượt) kích thước cố định k, kết hợp cấu
+trúc "count-of-counts" (đếm theo tần suất) bằng một mảng các std::set.
 
-Ý tưởng chính:
-- Nén tọa độ (coordinate compression) các giá trị vì x_i tới 10^9, nhưng chỉ có
-  tối đa n giá trị phân biệt. Vì phép nén giữ nguyên thứ tự nên id nén nhỏ hơn
-  tương ứng với giá trị gốc nhỏ hơn -> tie-break "giá trị nhỏ nhất" trở thành
-  "id nén nhỏ nhất".
+- Nén tọa độ (coordinate compression) các giá trị vì x_i lớn tới 10^9 nhưng chỉ
+  có tối đa n giá trị phân biệt. Phép nén giữ nguyên thứ tự nên id nén nhỏ hơn
+  tương ứng với giá trị gốc nhỏ hơn; nhờ đó tie-break "giá trị nhỏ nhất" trở
+  thành "id nén nhỏ nhất".
 - cnt[v]: tần suất của giá trị v trong cửa sổ hiện tại.
-- freqSet[f]: một std::set chứa tất cả id nén đang có tần suất đúng bằng f.
-  Nhờ set nên phần tử nhỏ nhất có tần suất f luôn là *freqSet[f].begin().
-- maxFreq: tần suất lớn nhất hiện tại. Đáp án của cửa sổ là
-  *freqSet[maxFreq].begin() (giá trị gốc tương ứng).
+- freqSet[f]: một std::set chứa mọi id nén đang có tần suất đúng bằng f. Nhờ set
+  nên phần tử nhỏ nhất có tần suất f luôn là *freqSet[f].begin().
+- maxFreq: tần suất lớn nhất hiện tại. Đáp án của cửa sổ là giá trị gốc ứng với
+  *freqSet[maxFreq].begin().
 
-Cập nhật khi thêm/bớt một phần tử x (mỗi thao tác chỉ đổi tần suất của x đi 1):
-- addElem(x): lấy c = cnt[x]; nếu c>0 xóa x khỏi freqSet[c]; c++; ghi lại cnt[x];
-  chèn x vào freqSet[c]; nếu c > maxFreq thì maxFreq = c.
-- removeElem(x): lấy c = cnt[x]; xóa x khỏi freqSet[c]; c--; nếu c>0 chèn x vào
-  freqSet[c]; nếu freqSet[maxFreq] rỗng thì maxFreq-- (giảm nhiều nhất 1 đơn vị).
+Cập nhật khi thêm hoặc bớt một phần tử x (mỗi thao tác chỉ đổi tần suất của x đi 1):
+- addElem(x): lấy c = cnt[x]; nếu c > 0 thì xóa x khỏi freqSet[c]; tăng c; ghi
+  lại cnt[x]; chèn x vào freqSet[c]; nếu c > maxFreq thì maxFreq = c.
+- removeElem(x): lấy c = cnt[x]; xóa x khỏi freqSet[c]; giảm c; nếu c > 0 thì chèn
+  x vào freqSet[c]; nếu freqSet[maxFreq] rỗng thì maxFreq giảm 1.
 
-Tính đúng đắn:
-- Mỗi lần trượt cửa sổ chỉ bỏ 1 phần tử bên trái và thêm 1 phần tử bên phải, nên
-  tần suất của một giá trị thay đổi đúng 1 mỗi thao tác. Do đó maxFreq tăng nhiều
-  nhất 1 khi thêm, và giảm nhiều nhất 1 khi bớt (phần tử vừa bị giảm sẽ rơi xuống
-  mức maxFreq-1 nên mức đó chắc chắn không rỗng, trừ khi cửa sổ trống). Vì vậy chỉ
-  cần một phép kiểm tra "freqSet[maxFreq] rỗng?" là đủ.
-- Vì freqSet[f] luôn chứa chính xác các id có tần suất f, phần tử nhỏ nhất của
-  freqSet[maxFreq] chính là mode với tie-break đúng.
+Tính đúng đắn: mỗi lần trượt cửa sổ chỉ bỏ 1 phần tử bên trái và thêm 1 phần tử
+bên phải nên tần suất của một giá trị thay đổi đúng 1 mỗi thao tác. Do đó maxFreq
+tăng nhiều nhất 1 khi thêm và giảm nhiều nhất 1 khi bớt (phần tử vừa bị giảm rơi
+xuống mức maxFreq-1 nên mức đó chắc chắn không rỗng, trừ khi cửa sổ trống); vì
+vậy chỉ cần một phép kiểm tra "freqSet[maxFreq] rỗng?" là đủ. Vì freqSet[f] luôn
+chứa chính xác các id có tần suất f, phần tử nhỏ nhất của freqSet[maxFreq] chính
+là mode với tie-break đúng.
 
-Độ phức tạp:
-- Thời gian: O(n log n). Có ~2n thao tác thêm/bớt, mỗi thao tác vài phép trên set
-  tốn O(log n). Nén tọa độ O(n log n).
-- Bộ nhớ: O(n) cho mảng cnt, id, vals và tổng số phần tử trong các freqSet; thêm
-  O(k) cho vector các set (đa số rỗng). Với n <= 2*10^5 hoàn toàn trong giới hạn.
+## Độ phức tạp
+- Thời gian: O(n log n). Có khoảng 2n thao tác thêm/bớt, mỗi thao tác vài phép
+  trên set tốn O(log n); nén tọa độ tốn O(n log n).
+- Bộ nhớ: O(n) cho các mảng cnt, id, vals và tổng số phần tử trong các freqSet,
+  thêm O(k) cho vector các set (đa số rỗng). Với n <= 2*10^5 hoàn toàn trong giới
+  hạn.

@@ -1,38 +1,42 @@
-New Roads Queries — CSES 2101
+New Roads Queries - CSES 2101
+https://cses.fi/problemset/task/2101
 
-Ý tưởng chính: Kruskal Reconstruction Tree (cây tái tạo Kruskal) + LCA bằng binary lifting.
+## Đề bài
+Có n thành phố. Mỗi ngày d (từ 1 tới m) người ta xây thêm một con đường nối hai
+thành phố (a, b). Với mỗi truy vấn (a, b), hãy tìm ngày sớm nhất mà a và b thuộc
+cùng một thành phần liên thông, hoặc in -1 nếu chúng không bao giờ nối được với nhau.
 
-Bài toán: có n thành phố, mỗi ngày d (từ 1 tới m) xây thêm một con đường nối (a, b).
-Với mỗi truy vấn (a, b) cần tìm ngày sớm nhất mà a và b thuộc cùng một thành phần
-liên thông, hoặc -1 nếu không bao giờ nối được.
+## Ý tưởng
+Sử dụng Kruskal Reconstruction Tree (cây tái tạo Kruskal) kết hợp LCA bằng binary lifting.
 
-1) Kruskal Reconstruction Tree
-- Ta duyệt các cạnh theo đúng thứ tự thời gian (ngày 1..m).
+1) Dựng cây tái tạo Kruskal
+- Duyệt các cạnh theo đúng thứ tự thời gian (ngày 1..m).
 - Dùng một DSU (Union-Find) để biết đại diện (root) hiện tại của mỗi thành phần.
-- Khi xử lý cạnh ngày d nối hai đại diện ra != rb, ta TẠO MỘT NÚT TRONG (internal node)
+- Khi xử lý cạnh ngày d nối hai đại diện ra != rb, ta tạo một nút trong (internal node)
   mới w, gán giá trị val[w] = d, rồi cho par[ra] = w và par[rb] = w (w trở thành cha
   của hai gốc cũ). Trong DSU ta hợp nhất ra, rb vào w để w là đại diện mới.
-- Các lá 1..n là các thành phố ban đầu; mỗi lần hợp nhất tạo thêm 1 nút trong, nên tổng
-  số nút <= 2n - 1. Chỉ số nút trong luôn LỚN HƠN chỉ số các con của nó (vì được tạo sau),
-  điều này giúp tính depth dễ dàng.
+- Các lá 1..n là các thành phố ban đầu; mỗi lần hợp nhất tạo thêm một nút trong, nên
+  tổng số nút không vượt quá 2n - 1. Chỉ số nút trong luôn lớn hơn chỉ số các con của
+  nó (vì được tạo sau), điều này giúp tính depth dễ dàng.
 
 2) Tính chất mấu chốt (correctness)
-- Trên đường đi từ một lá lên gốc, giá trị val của các nút trong TĂNG DẦN theo độ cao
+- Trên đường đi từ một lá lên gốc, giá trị val của các nút trong tăng dần theo độ cao
   (nút gần gốc được tạo muộn hơn nên ngày lớn hơn).
 - Hai lá a và b lần đầu liên thông đúng vào lúc chúng có chung tổ tiên. Tổ tiên chung
-  thấp nhất chính là LCA(a, b). Do đó đáp án = val[LCA(a, b)] — chính là ngày diễn ra
-  phép hợp nhất đầu tiên gộp hai thành phần chứa a và b.
+  thấp nhất chính là LCA(a, b). Do đó đáp án bằng val[LCA(a, b)] — chính là ngày diễn
+  ra phép hợp nhất đầu tiên gộp hai thành phần chứa a và b.
 - Nếu a và b nằm ở hai cây khác nhau (khác gốc trong rừng tái tạo) thì chúng không bao
-  giờ liên thông => in -1. Ta kiểm tra bằng find(a) != find(b) trên DSU sau khi dựng xong.
+  giờ liên thông, ta in -1. Kiểm tra bằng find(a) != find(b) trên DSU sau khi dựng xong.
 
 3) LCA bằng binary lifting
-- up[k][v] = tổ tiên thứ 2^k của v; up[0][v] = par[v] (par[root] = 0 là nút giả).
-- depth tính bằng cách duyệt các nút theo chỉ số giảm dần: cha luôn có chỉ số lớn hơn con
-  nên depth[par[v]] đã sẵn khi xét v.
-- Truy vấn LCA chuẩn: đưa hai nút về cùng depth rồi nhảy đồng thời.
+- up[k][v] là tổ tiên thứ 2^k của v; up[0][v] = par[v] (với par[root] = 0 là nút giả).
+- depth tính bằng cách duyệt các nút theo chỉ số giảm dần: cha luôn có chỉ số lớn hơn
+  con nên depth[par[v]] đã sẵn sàng khi xét v.
+- Truy vấn LCA chuẩn: đưa hai nút về cùng depth rồi nhảy đồng thời lên trên.
 
-Độ phức tạp:
-- Dựng cây: O((n + m) alpha(n)) với DSU nén đường + hợp nhất.
-- Bảng binary lifting: O(N log N) với N <= 2n.
-- Mỗi truy vấn LCA: O(log N). Tổng: O((n + m + q) log n).
-- Bộ nhớ: O(N log N) cho bảng up (N <= 2n), khoảng 2n * 20 số nguyên, đủ trong giới hạn.
+## Độ phức tạp
+- Dựng cây: O((n + m) alpha(n)) với DSU nén đường và hợp nhất.
+- Bảng binary lifting: O(N log N) với N không vượt quá 2n.
+- Mỗi truy vấn LCA: O(log N). Tổng thời gian: O((n + m + q) log n).
+- Bộ nhớ: O(N log N) cho bảng up (N không vượt quá 2n), khoảng 2n * 20 số nguyên, đủ
+  trong giới hạn.

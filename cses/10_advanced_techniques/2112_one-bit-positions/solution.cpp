@@ -1,16 +1,10 @@
-// One Bit Positions -- CSES 2112
-// https://cses.fi/problemset/task/2112
-//
-// A[k] = số cặp vị trí (i, j) với i - j = k và s[i] = s[j] = '1'.
-// Đây chính là autocorrelation của dãy bit -> tích chập của s với bản đảo ngược.
-// Dùng NTT (mod 998244353) cho kết quả nguyên chính xác vì A[k] <= n < mod.
-
 #include <bits/stdc++.h>
 using namespace std;
 
 const long long MOD = 998244353;
-const long long G = 3; // primitive root của 998244353
+const long long G = 3; // căn nguyên thủy của 998244353
 
+// Lũy thừa nhanh theo modulo, dùng cho căn đơn vị và nghịch đảo trong NTT
 long long power_mod(long long a, long long b, long long m) {
     long long r = 1 % m;
     a %= m;
@@ -22,15 +16,19 @@ long long power_mod(long long a, long long b, long long m) {
     return r;
 }
 
+// Biến đổi NTT tại chỗ (mod 998244353); invert = true để lấy biến đổi ngược
 void ntt(vector<long long> &a, bool invert) {
     int n = (int)a.size();
+    // Sắp xếp lại các phần tử theo thứ tự bit-reversal
     for (int i = 1, j = 0; i < n; i++) {
         int bit = n >> 1;
         for (; j & bit; bit >>= 1) j ^= bit;
         j ^= bit;
         if (i < j) swap(a[i], a[j]);
     }
+    // Gộp các đoạn tăng dần theo phép biến đổi butterfly
     for (int len = 2; len <= n; len <<= 1) {
+        // w là căn bậc len của đơn vị (hoặc nghịch đảo của nó khi biến đổi ngược)
         long long w = invert ? power_mod(G, MOD - 1 - (MOD - 1) / len, MOD)
                              : power_mod(G, (MOD - 1) / len, MOD);
         for (int i = 0; i < n; i += len) {
@@ -45,6 +43,7 @@ void ntt(vector<long long> &a, bool invert) {
             }
         }
     }
+    // Biến đổi ngược cần chia toàn bộ mảng cho n (nhân nghịch đảo của n)
     if (invert) {
         long long ninv = power_mod(n, MOD - 2, MOD);
         for (auto &x : a) x = x * ninv % MOD;
@@ -60,15 +59,18 @@ int main() {
     int n = (int)s.size();
     if (n <= 1) return 0; // theo ràng buộc n >= 2; nếu n <= 1 thì không in gì
 
+    // Chọn kích thước sz là lũy thừa của 2 và >= 2n để tránh wrap-around
     int sz = 1;
     while (sz < 2 * n) sz <<= 1;
 
+    // a là dãy bit s, b là bản đảo ngược của s; tích chập của chúng cho tự tương quan
     vector<long long> a(sz, 0), b(sz, 0);
     for (int i = 0; i < n; i++) {
         a[i] = (s[i] == '1') ? 1 : 0;
         b[i] = (s[n - 1 - i] == '1') ? 1 : 0; // bản đảo ngược của s
     }
 
+    // Tính tích chập: NTT thuận hai dãy, nhân điểm-điểm, rồi NTT ngược
     ntt(a, false);
     ntt(b, false);
     for (int i = 0; i < sz; i++) a[i] = a[i] * b[i] % MOD;

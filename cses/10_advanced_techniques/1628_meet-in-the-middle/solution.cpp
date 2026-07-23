@@ -1,15 +1,8 @@
-// Meet in the Middle - CSES 1628
-// https://cses.fi/problemset/task/1628
-//
-// Dem so tap con cua mang n phan tu (n <= 40) co tong bang x.
-// Ky thuat: meet in the middle. Chia mang thanh hai nua, sinh tat ca subset sums
-// cua moi nua, roi voi moi tong sL cua nua trai dem so tong sR = x - sL o nua phai
-// bang binary search tren mang tong da sap xep.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// Sinh tat ca subset sums cua doan a[l..r) vao vector res.
+// Sinh tất cả subset sums (tổng các tập con) của đoạn a[l..r) vào vector kết quả.
+// Nhân đôi dần: bắt đầu từ {0}, mỗi phần tử mới cộng vào toàn bộ các tổng đã có.
 static vector<long long> subsetSums(const vector<long long>& a, int l, int r) {
     int k = r - l;
     vector<long long> res;
@@ -34,16 +27,18 @@ int main() {
     vector<long long> a(n);
     for (int i = 0; i < n; ++i) cin >> a[i];
 
+    // Chia mảng thành hai nửa và sinh subset sums cho từng nửa.
     int mid = n / 2;
-    vector<long long> L = subsetSums(a, 0, mid);   // nua trai
-    vector<long long> R = subsetSums(a, mid, n);   // nua phai
+    vector<long long> L = subsetSums(a, 0, mid);   // nửa trái
+    vector<long long> R = subsetSums(a, mid, n);   // nửa phải
 
+    // Sắp xếp nửa phải để tra cứu nhanh bằng binary search.
     sort(R.begin(), R.end());
 
+    // Với mỗi tổng sL của nửa trái, đếm số tổng sR = x - sL trong nửa phải.
     long long ans = 0;
     for (long long sL : L) {
         long long need = x - sL;
-        // Dem so phan tu cua R bang dung need.
         auto range = equal_range(R.begin(), R.end(), need);
         ans += (long long)(range.second - range.first);
     }

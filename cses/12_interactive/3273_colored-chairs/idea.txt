@@ -1,54 +1,56 @@
-Colored Chairs (CSES 3273)
+Colored Chairs - CSES 3273
 https://cses.fi/problemset/task/3273
 
-== Bài toán ==
-Có n chiếc ghế xếp thành một vòng tròn (ghế n kề ghế 1), n LẺ, 3 <= n <= 2*10^5.
+## Đề bài
+Có n chiếc ghế xếp thành một vòng tròn (ghế n kề ghế 1), với n LẺ và 3 <= n <= 2*10^5.
 Mỗi ghế được tô màu đỏ (R) hoặc xanh (B). Cần tìm HAI ghế KỀ NHAU có CÙNG màu.
 
-== Interaction protocol ==
+Giao thức tương tác (interaction protocol):
 - Đầu tiên đọc n từ judge.
-- Query màu: in "? i" (1 <= i <= n), judge trả về 'R' hoặc 'B' là màu của ghế i.
-- Trả lời cuối: in "! i" nghĩa là ghế i và ghế i+1 (với n+1 = 1) cùng màu, rồi kết thúc.
+- Query màu: in "? i" (1 <= i <= n), judge trả về ký tự 'R' hoặc 'B' là màu của ghế i.
+- Trả lời cuối: in "! i" nghĩa là ghế i và ghế i+1 (với quy ước n+1 = 1) cùng màu, rồi kết thúc.
 - GIỚI HẠN: tối đa 20 query loại "?".
-- PHẢI flush stdout sau MỖI query (dùng endl) nếu không judge sẽ treo (deadlock).
+- PHẢI flush stdout sau MỖI query (dùng endl), nếu không judge sẽ treo (deadlock).
 
-== Vì sao luôn tồn tại cặp kề cùng màu ==
-Vòng tròn có đúng n cạnh (n lẻ). Nếu MỌI cặp kề đều khác màu thì màu sẽ xen kẽ
-R,B,R,B,... đó chính là một tô màu hợp lệ 2 màu (proper 2-coloring) của chu trình.
-Nhưng chu trình độ dài lẻ KHÔNG thể tô hợp lệ bằng 2 màu (odd cycle không phải
-bipartite). Mâu thuẫn => phải tồn tại ít nhất một cạnh có hai đầu cùng màu.
+Vì sao luôn tồn tại cặp kề cùng màu: Vòng tròn có đúng n cạnh (n lẻ). Nếu MỌI cặp kề
+đều khác màu thì màu sẽ xen kẽ R,B,R,B,..., đó chính là một cách tô hợp lệ bằng 2 màu
+(proper 2-coloring) của chu trình. Nhưng chu trình độ dài lẻ KHÔNG thể tô hợp lệ bằng 2
+màu (odd cycle không phải bipartite). Mâu thuẫn, nên phải tồn tại ít nhất một cạnh có
+hai đầu cùng màu.
 
-== Ý tưởng (bất biến "tính nhất quán với xen kẽ") ==
-Xét đường thẳng (không dùng cạnh vòng) 1,2,...,n. Với hai vị trí a < b, một cách tô
-xen kẽ hoàn hảo sẽ dự đoán: color(a) == color(b) khi và chỉ khi (b - a) chẵn.
-Định nghĩa đoạn [a,b] là "nhất quán" (consistent) nếu quan sát khớp dự đoán:
-   consistent(a,b) := ( color(a)==color(b) ) == ( (b-a) chẵn )
-Nếu một đoạn [a,b] KHÔNG nhất quán (inconsistent) thì bên trong [a,b] CHẮC CHẮN có
-một cặp kề cùng màu (vì nếu không có, cả đoạn sẽ xen kẽ hoàn hảo => nhất quán).
+## Ý tưởng
+Ý tưởng chính là bất biến "tính nhất quán với cách tô xen kẽ".
+
+Xét đường thẳng (không dùng cạnh vòng) 1,2,...,n. Với hai vị trí a < b, một cách tô xen
+kẽ hoàn hảo sẽ dự đoán: color(a) == color(b) khi và chỉ khi (b - a) chẵn. Định nghĩa
+đoạn [a,b] là "nhất quán" (consistent) nếu quan sát khớp với dự đoán:
+   consistent(a,b) := ( color(a) == color(b) ) == ( (b - a) chẵn )
+Nếu một đoạn [a,b] KHÔNG nhất quán (inconsistent) thì bên trong [a,b] CHẮC CHẮN có một
+cặp kề cùng màu (vì nếu không có, cả đoạn sẽ xen kẽ hoàn hảo, tức là nhất quán).
 
 Tính chất cộng (additivity): với a < m < b, nếu cả [a,m] và [m,b] đều nhất quán thì
 [a,b] cũng nhất quán (vì tính chẵn lẻ cộng dồn). Do đó nếu [a,b] inconsistent thì ít
-nhất một trong hai nửa [a,m], [m,b] là inconsistent => luôn thu hẹp được.
+nhất một trong hai nửa [a,m], [m,b] là inconsistent, nên luôn thu hẹp được.
 
-== Thuật toán ==
+Thuật toán:
 1) Query color(1) = c1 và color(n) = cn.
-   - (n-1) chẵn (do n lẻ) nên xen kẽ dự đoán color(1)==color(n).
-   - Nếu c1 == cn: ghế 1 và ghế n (kề nhau qua cạnh vòng) cùng màu => in "! n".
-   - Nếu c1 != cn: đoạn [1,n] inconsistent => binary search.
+   - (n-1) chẵn (do n lẻ) nên xen kẽ dự đoán color(1) == color(n).
+   - Nếu c1 == cn: ghế 1 và ghế n (kề nhau qua cạnh vòng) cùng màu, in "! n".
+   - Nếu c1 != cn: đoạn [1,n] inconsistent, chuyển sang binary search.
 2) Giữ [lo,hi] với màu clo, chi và bất biến [lo,hi] inconsistent.
    while hi - lo > 1:
         mid = (lo+hi)/2; query cm = color(mid)
         nếu [lo,mid] inconsistent  -> hi = mid, chi = cm
         ngược lại (=> [mid,hi] inconsistent) -> lo = mid, clo = cm
-3) Khi hi - lo == 1: đoạn dài 1 (lẻ) mà inconsistent => color(lo)==color(hi)
+3) Khi hi - lo == 1: đoạn dài 1 (lẻ) mà inconsistent => color(lo) == color(hi)
    => ghế lo và lo+1 cùng màu => in "! lo".
 
-== Số query so với giới hạn ==
-2 query đầu (ghế 1 và ghế n) + binary search thu hẹp độ dài từ (n-1) xuống 1.
-Số bước binary search = ceil(log2(n-1)). Với n <= 2*10^5, n-1 <= 199998,
-ceil(log2(199998)) = 18. Tổng tối đa = 2 + 18 = 20 <= 20. Đạt đúng giới hạn.
+Vì sao đúng: Bất biến "[lo,hi] inconsistent" được duy trì (nhờ additivity), nên trong
+[lo,hi] luôn tồn tại cặp kề cùng màu. Khi thu về độ dài 1 thì chính hai đầu là cặp đó.
+Trường hợp c1 == cn xử lý cạnh vòng. Do đó câu trả lời luôn hợp lệ.
 
-== Vì sao đúng ==
-Bất biến "[lo,hi] inconsistent" được duy trì (nhờ additivity), nên trong [lo,hi] luôn
-tồn tại cặp kề cùng màu. Khi thu về độ dài 1 thì chính hai đầu là cặp đó. Trường hợp
-c1==cn xử lý cạnh vòng. Do đó câu trả lời luôn hợp lệ.
+## Độ phức tạp
+2 query đầu (ghế 1 và ghế n) cộng với binary search thu hẹp độ dài từ (n-1) xuống 1.
+Số bước binary search = ceil(log2(n-1)). Với n <= 2*10^5, ta có n-1 <= 199998 và
+ceil(log2(199998)) = 18. Tổng tối đa = 2 + 18 = 20 <= 20, đạt đúng giới hạn query.
+Thời gian và bộ nhớ: O(log n) mỗi test, không dùng mảng phụ.

@@ -1,21 +1,15 @@
-// Sliding Window Inversions - CSES 3223
-// https://cses.fi/problemset/task/3223
-//
-// Duy trì số nghịch thế (inversion) của cửa sổ kích thước k khi trượt bằng
-// Fenwick tree (BIT) trên giá trị đã nén tọa độ. Khi bỏ phần tử trái nhất x,
-// trừ đi số phần tử < x; khi thêm phần tử phải mới y, cộng thêm số phần tử > y.
-// Độ phức tạp O(n log n).
-
 #include <bits/stdc++.h>
 using namespace std;
 
-int m;                 // số giá trị phân biệt sau khi nén
-vector<int> bit;       // Fenwick tree lưu số lượng từng giá trị trong cửa sổ
+int m;                 // số giá trị phân biệt sau khi nén tọa độ
+vector<int> bit;       // Fenwick tree (BIT) lưu số lượng từng giá trị trong cửa sổ
 
+// Cộng delta vào vị trí i của Fenwick tree
 void update(int i, int delta) {
     for (; i <= m; i += i & (-i)) bit[i] += delta;
 }
-long long query(int i) {           // số phần tử có chỉ số nén <= i
+// Trả về số phần tử có chỉ số nén <= i đang nằm trong cửa sổ
+long long query(int i) {
     long long s = 0;
     for (; i > 0; i -= i & (-i)) s += bit[i];
     return s;
@@ -35,7 +29,7 @@ int main() {
         vals[i] = a[i];
     }
 
-    // Nén tọa độ
+    // Nén tọa độ các giá trị về khoảng 1..m
     sort(vals.begin(), vals.end());
     vals.erase(unique(vals.begin(), vals.end()), vals.end());
     m = (int)vals.size();
@@ -51,28 +45,29 @@ int main() {
 
     long long inv = 0;
 
-    // Xây cửa sổ đầu tiên [0, k-1]
+    // Xây cửa sổ đầu tiên [0, k-1] bằng cách thêm dần từng phần tử vào bên phải
     for (int i = 0; i < k; i++) {
-        // số phần tử đã có mà LỚN HƠN c[i] = (số phần tử hiện có) - (số <= c[i])
+        // Số phần tử đã có mà LỚN HƠN c[i] = (số phần tử hiện có) - (số <= c[i])
         inv += (long long)i - query(c[i]);
         update(c[i], 1);
     }
     ans.push_back(inv);
 
-    // Trượt cửa sổ
+    // Trượt cửa sổ sang phải từng bước
     for (int i = k; i < n; i++) {
-        int L = i - k;                       // phần tử trái nhất bị bỏ
-        inv -= query(c[L] - 1);              // số phần tử < c[L] trong cửa sổ
+        int L = i - k;                       // phần tử trái nhất bị bỏ khỏi cửa sổ
+        // Bỏ phần tử trái: trừ đi số phần tử nhỏ hơn nó trong cửa sổ
+        inv -= query(c[L] - 1);
         update(c[L], -1);
 
-        // Bây giờ BIT còn k-1 phần tử; số phần tử > c[i]
+        // Thêm phần tử phải: BIT còn k-1 phần tử, cộng số phần tử lớn hơn c[i]
         inv += (long long)(k - 1) - query(c[i]);
         update(c[i], 1);
 
         ans.push_back(inv);
     }
 
-    // Xuất kết quả trên một dòng, cách nhau bởi dấu cách
+    // Xuất kết quả trên một dòng, các giá trị cách nhau bởi dấu cách
     string out;
     out.reserve(ans.size() * 6);
     for (size_t i = 0; i < ans.size(); i++) {

@@ -1,23 +1,11 @@
-// Colored Chairs - CSES 3273
-// https://cses.fi/problemset/task/3273
-//
-// Interactive: n ghe (n LE) xep thanh vong tron, moi ghe mau R hoac B.
-// Tim hai ghe ke nhau cung mau. Query "? i" -> judge tra 'R'/'B'.
-// Tra loi "! i" nghia la ghe i va i+1 (n+1 = 1) cung mau. Toi da 20 query.
-//
-// Chien luoc: query mau ghe 1 va ghe n. Neu bang nhau -> canh vong (n,1) => "! n".
-// Nguoc lai binary search tren duong thang [1,n] voi bat bien "inconsistent voi
-// cach to xen ke" (chac chan chua mot cap ke cung mau ben trong).
-// Chi phi: 2 + ceil(log2(n-1)) <= 2 + 18 = 20 query.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// Query mau cua ghe i; endl flush stdout sau moi query.
+// Query màu của ghế i; endl flush stdout sau mỗi query (bắt buộc cho interactive).
 char ask(int i) {
-    cout << "? " << i << endl;   // endl -> flush, bat buoc cho interactive
+    cout << "? " << i << endl;   // endl -> flush stdout
     char c;
-    cin >> c;                    // doc 'R' hoac 'B' (cin bo qua khoang trang)
+    cin >> c;                    // đọc 'R' hoặc 'B' (cin bỏ qua khoảng trắng)
     return c;
 }
 
@@ -25,39 +13,41 @@ int main() {
     int n;
     cin >> n;
 
+    // Hỏi màu hai đầu của đường thẳng 1..n (không dùng cạnh vòng).
     char c1 = ask(1);
     char cn = ask(n);
 
-    // (n-1) chan (n le) => xen ke du doan color(1)==color(n).
-    // Neu that su bang nhau => ghe 1 va ghe n ke qua canh vong, cung mau.
+    // (n-1) chẵn (n lẻ) => xen kẽ dự đoán color(1) == color(n).
+    // Nếu thật sự bằng nhau => ghế 1 và ghế n kề qua cạnh vòng và cùng màu.
     if (c1 == cn) {
         cout << "! " << n << endl;
         return 0;
     }
 
-    // c1 != cn => doan [1,n] inconsistent => binary search tim cap ke cung mau.
+    // c1 != cn => đoạn [1,n] inconsistent => binary search tìm cặp kề cùng màu.
+    // Bất biến: đoạn [lo,hi] luôn inconsistent nên chứa ít nhất một cặp kề cùng màu.
     int lo = 1, hi = n;
     char clo = c1, chi = cn;
-    (void)chi; // chi khong bat buoc dung, giu lai cho ro rang
+    (void)chi; // chi không bắt buộc dùng, giữ lại cho rõ ràng
 
     while (hi - lo > 1) {
         int mid = (lo + hi) / 2;
         char cm = ask(mid);
-        // [lo,mid] nhat quan (consistent) khi: (clo==cm) == ((mid-lo) chan)
+        // [lo,mid] nhất quán (consistent) khi: (clo==cm) == ((mid-lo) chẵn).
         bool consistentLeft = ((clo == cm) == (((mid - lo) % 2) == 0));
         if (!consistentLeft) {
-            // nua trai inconsistent -> thu hep ve [lo,mid]
+            // Nửa trái inconsistent -> thu hẹp về [lo,mid].
             hi = mid;
             chi = cm;
         } else {
-            // nua trai consistent -> nua phai [mid,hi] chac chan inconsistent
+            // Nửa trái consistent -> nửa phải [mid,hi] chắc chắn inconsistent.
             lo = mid;
             clo = cm;
         }
     }
 
-    // hi - lo == 1 va [lo,hi] inconsistent => color(lo)==color(hi)
-    // => ghe lo va lo+1 cung mau.
+    // hi - lo == 1 và [lo,hi] inconsistent => color(lo) == color(hi)
+    // => ghế lo và lo+1 cùng màu.
     cout << "! " << lo << endl;
     return 0;
 }

@@ -1,18 +1,17 @@
-Knuth Division (CSES 2088)
+Knuth Division - CSES 2088
+https://cses.fi/problemset/task/2088
 
-Bài toán
---------
-Cho mảng n phần tử dương. Ta phải tách mảng thành n phần tử riêng lẻ bằng các
+## Đề bài
+Cho mảng gồm n phần tử dương. Ta phải tách mảng thành n phần tử riêng lẻ bằng các
 lần cắt. Mỗi lần cắt chia một đoạn con liên tục thành hai phần liên tục, chi phí
 bằng tổng các phần tử của đoạn con đó. Hãy tối thiểu hoá tổng chi phí của tất cả
 các lần cắt.
 
 Ràng buộc: 1 <= n <= 5000, 1 <= x_i <= 10^9.
 
-Ý tưởng chính (interval DP + Knuth optimization)
-------------------------------------------------
-Gọi w(i, j) = x_i + ... + x_j (dùng prefix sum để tính O(1)). Đặt dp[i][j] là
-chi phí nhỏ nhất để tách đoạn [i..j] thành các phần tử đơn lẻ:
+## Ý tưởng
+Gọi w(i, j) = x_i + ... + x_j (dùng prefix sum để tính trong O(1)). Đặt dp[i][j]
+là chi phí nhỏ nhất để tách đoạn [i..j] thành các phần tử đơn lẻ:
 
     dp[i][i] = 0
     dp[i][j] = w(i, j) + min_{i <= k < j} ( dp[i][k] + dp[k+1][j] )
@@ -33,28 +32,25 @@ Khi duyệt theo độ dài đoạn L tăng dần, mỗi ô [i][j] chỉ duyệt
 [opt[i][j-1], opt[i+1][j]]. Tổng số bước của vòng trong triệt tiêu (telescoping)
 còn O(n^2) thay vì O(n^3).
 
-Vì sao đúng
------------
-Knuth optimization đúng khi hàm chi phí thoả quadrangle inequality và trọng số
-đơn điệu; với w là tổng đoạn của các số dương thì cả hai điều kiện đều thoả (thực
-tế w thoả QI dạng đẳng thức). Khi đó dp cũng thoả QI và điểm cắt tối ưu đơn điệu
-theo cả hai chỉ số, nên khoảng tìm kiếm [opt[i][j-1], opt[i+1][j]] chắc chắn chứa
-điểm cắt tối ưu. Với L = 2 (trường hợp cơ sở, đoạn con độ dài 1 quy ước opt = i)
-ta chặn trên hi = j-1 để không vượt ra ngoài các điểm cắt hợp lệ.
+Vì sao đúng: Knuth optimization đúng khi hàm chi phí thoả quadrangle inequality và
+trọng số đơn điệu; với w là tổng đoạn của các số dương thì cả hai điều kiện đều
+thoả (thực tế w thoả dạng đẳng thức). Khi đó dp cũng thoả quadrangle inequality và
+điểm cắt tối ưu đơn điệu theo cả hai chỉ số, nên khoảng tìm kiếm [opt[i][j-1],
+opt[i+1][j]] chắc chắn chứa điểm cắt tối ưu. Với L = 2 (trường hợp cơ sở, đoạn con
+độ dài 1 quy ước opt = i) ta chặn trên hi = j-1 để không vượt ra ngoài các điểm
+cắt hợp lệ.
 
-Chi tiết cài đặt (C++17)
-------------------------
+Chi tiết cài đặt:
 - prefix sum pre[] (int64) để lấy w(i, j) = pre[j] - pre[i-1] trong O(1).
-- Bảng dp là mảng tĩnh 2 chiều long long dp[MAXN][MAXN] (~191 MB với n=5000);
+- Bảng dp là mảng tĩnh hai chiều long long dp[MAXN][MAXN] (~191 MB với n = 5000);
   cần đầy đủ vì khi tính dp[i][j] ta truy cập mọi độ dài nhỏ hơn.
 - Chỉ cần đường chéo opt của độ dài L-1 để tính độ dài L, nên lưu opt bằng hai
-  mảng 1 chiều optPrev/optCur theo chỉ số đầu đoạn (rolling, bộ nhớ O(n)):
+  mảng một chiều optPrev/optCur theo chỉ số đầu đoạn (rolling, bộ nhớ O(n)):
   optPrev[i] = opt của [i, j-1], optPrev[i+1] = opt của [i+1, j].
 - Đáp án tối đa ~ n * tổng mảng ≈ 5000 * 5e12 = 2.5e16, nằm gọn trong int64.
 - Đọc/ghi bằng scanf/printf cho nhanh.
 
-Độ phức tạp
------------
+## Độ phức tạp
 Thời gian: O(n^2) nhờ Knuth optimization (~25 triệu bước với n = 5000, rất nhanh
            trong C++, dưới giới hạn thời gian).
 Bộ nhớ:    O(n^2) cho bảng dp (~191 MB int64 với n = 5000, dưới 512 MB).

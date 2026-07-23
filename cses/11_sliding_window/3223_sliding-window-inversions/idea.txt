@@ -1,43 +1,45 @@
-Bài toán: Sliding Window Inversions (CSES 3223)
+Sliding Window Inversions - CSES 3223
+https://cses.fi/problemset/task/3223
 
-Đề bài: Cho mảng n phần tử và cửa sổ kích thước k. Với mỗi vị trí của cửa sổ
-trượt từ trái sang phải, đếm số nghịch thế (inversion) bên trong cửa sổ đó,
-tức số cặp (i, j) với i < j nhưng a[i] > a[j]. In ra n-k+1 giá trị.
+## Đề bài
+Cho mảng gồm n phần tử và một cửa sổ kích thước k. Với mỗi vị trí của cửa sổ khi
+trượt từ trái sang phải, hãy đếm số nghịch thế (inversion) bên trong cửa sổ đó,
+tức số cặp (i, j) thỏa i < j nhưng a[i] > a[j]. In ra n-k+1 giá trị tương ứng.
 
-Kỹ thuật: Sliding window kết hợp Fenwick tree (BIT) trên giá trị đã được nén
-tọa độ (coordinate compression), duy trì tăng dần (incremental) số nghịch thế
+## Ý tưởng
+Kết hợp sliding window với Fenwick tree (BIT) trên các giá trị đã được nén tọa độ
+(coordinate compression), duy trì số nghịch thế một cách tăng dần (incremental)
 khi cửa sổ trượt.
 
-Ý tưởng chính:
-- Nén tọa độ các giá trị (do a[i] tới 10^9) về khoảng 1..m.
+- Nén tọa độ các giá trị (vì a[i] có thể lên tới 10^9) về khoảng 1..m.
 - Fenwick tree lưu số lượng (count) của từng giá trị đang có trong cửa sổ hiện tại.
 - Giữ một biến inv là số nghịch thế của cửa sổ hiện tại.
 
-Xây cửa sổ đầu tiên [0, k-1]: thêm lần lượt từng phần tử vào bên phải. Khi thêm
-phần tử thứ i, số nghịch thế mới sinh ra bằng số phần tử ĐÃ có trong cửa sổ mà
-LỚN HƠN nó (chúng đứng trước, giá trị lớn hơn -> tạo inversion). Số này bằng
-(số phần tử hiện có) - query(c[i]) với query(c[i]) là số phần tử <= c[i].
+Xây cửa sổ đầu tiên [0, k-1] bằng cách thêm lần lượt từng phần tử vào bên phải.
+Khi thêm phần tử thứ i, số nghịch thế mới sinh ra bằng số phần tử ĐÃ có trong cửa
+sổ mà LỚN HƠN nó (chúng đứng trước, giá trị lớn hơn nên tạo inversion). Số này
+bằng (số phần tử hiện có) - query(c[i]), với query(c[i]) là số phần tử <= c[i].
 
 Khi trượt cửa sổ sang phải một bước (bỏ phần tử trái nhất, thêm phần tử phải mới):
 - Bỏ phần tử trái nhất x: vì x là phần tử sớm nhất, mọi nghịch thế mà x tham gia
-  đều có dạng (x, phần tử nhỏ hơn đứng sau). Do đó inv trừ đi số phần tử trong
-  cửa sổ có giá trị < x, tức query(c[x] - 1). Sau đó xóa x khỏi BIT.
+  đều có dạng (x, phần tử nhỏ hơn đứng sau). Do đó inv trừ đi số phần tử trong cửa
+  sổ có giá trị < x, tức query(c[x] - 1). Sau đó xóa x khỏi BIT.
 - Thêm phần tử phải mới y: vì y là phần tử muộn nhất, mọi nghịch thế mà y tham gia
   đều có dạng (phần tử lớn hơn đứng trước, y). Do đó inv cộng thêm số phần tử trong
-  cửa sổ có giá trị > y, tức (k-1) - query(c[y]) (lúc này BIT còn k-1 phần tử).
-  Sau đó thêm y vào BIT.
+  cửa sổ có giá trị > y, tức (k-1) - query(c[y]) (lúc này BIT còn k-1 phần tử). Sau
+  đó thêm y vào BIT.
 
 Tính đúng đắn: Khi bỏ phần tử trái nhất, nó không còn là điểm đầu của bất kỳ cặp
-nào; các nghịch thế duy nhất liên quan tới nó là cặp mà nó là phần tử đứng trước
-và lớn hơn phần tử sau, đúng bằng số phần tử nhỏ hơn nó trong cửa sổ. Khi thêm
-phần tử phải nhất, nó chỉ là điểm cuối của các cặp mới, đúng bằng số phần tử lớn
-hơn nó trong cửa sổ. Các nghịch thế giữa những phần tử còn lại không đổi, nên inv
-được cập nhật chính xác.
+nào; các nghịch thế duy nhất liên quan tới nó là cặp mà nó đứng trước và lớn hơn
+phần tử sau, đúng bằng số phần tử nhỏ hơn nó trong cửa sổ. Khi thêm phần tử phải
+nhất, nó chỉ là điểm cuối của các cặp mới, đúng bằng số phần tử lớn hơn nó trong
+cửa sổ. Các nghịch thế giữa những phần tử còn lại không đổi, nên inv được cập nhật
+chính xác.
 
-Lưu ý tràn số: số nghịch thế trong một cửa sổ có thể tới k*(k-1)/2 ~ 2*10^10,
-vượt quá int, nên dùng long long.
+LƯU Ý TLE: số nghịch thế trong một cửa sổ có thể tới k*(k-1)/2 ~ 2*10^10, vượt quá
+int, nên phải dùng long long để tránh tràn số.
 
-Độ phức tạp:
-- Thời gian: O(n log n) do mỗi phần tử được thêm/xóa một lần với các thao tác
-  Fenwick tree tốn O(log m).
-- Bộ nhớ: O(n) cho mảng, mảng nén và Fenwick tree.
+## Độ phức tạp
+- Thời gian: O(n log n) do mỗi phần tử được thêm/xóa một lần với các thao tác Fenwick
+  tree tốn O(log m).
+- Bộ nhớ: O(n) cho mảng gốc, mảng nén và Fenwick tree.

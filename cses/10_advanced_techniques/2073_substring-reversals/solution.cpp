@@ -1,16 +1,10 @@
-// Substring Reversals - CSES 2073
-// https://cses.fi/problemset/task/2073
-//
-// Implicit treap (cartesian tree keyed by array position) with a lazy
-// "reverse" flag. To reverse the substring [a, b] we split the treap into
-// three pieces  [1, a-1] , [a, b] , [b+1, n] , toggle the reverse flag on the
-// middle piece, then merge everything back. Each operation is O(log n).
-
 #include <bits/stdc++.h>
 using namespace std;
 
 const int MAXN = 200005;
 
+// Mỗi node của implicit treap: con trái/phải, size cây con, priority ngẫu
+// nhiên, ký tự val và cờ lazy rev_ (đánh dấu đoạn cần đảo ngược).
 int lc[MAXN], rc[MAXN], sz[MAXN];
 unsigned int pri[MAXN];
 char val[MAXN];
@@ -19,6 +13,7 @@ int nodeCount = 0;
 
 mt19937 rng(1234567891u);
 
+// Tạo một node mới ứng với ký tự c.
 int newNode(char c) {
     int x = ++nodeCount;
     lc[x] = rc[x] = 0;
@@ -29,11 +24,13 @@ int newNode(char c) {
     return x;
 }
 
+// Cập nhật lại size của node từ hai cây con.
 inline void update(int x) {
     if (!x) return;
     sz[x] = 1 + sz[lc[x]] + sz[rc[x]];
 }
 
+// Đẩy cờ đảo ngược xuống: hoán đổi con trái/phải rồi bật cờ cho hai con.
 inline void pushDown(int x) {
     if (x && rev_[x]) {
         swap(lc[x], rc[x]);
@@ -43,16 +40,18 @@ inline void pushDown(int x) {
     }
 }
 
-// Split t so that the first k nodes (in-order) go to l, the rest to r.
+// split: tách t sao cho k node đầu (theo in-order) về l, phần còn lại về r.
 void split(int t, int k, int &l, int &r) {
     if (!t) { l = r = 0; return; }
     pushDown(t);
     if (sz[lc[t]] < k) {
+        // Đủ node bên trái + gốc: đi tiếp sang cây con phải.
         int rr;
         split(rc[t], k - sz[lc[t]] - 1, rc[t], rr);
         l = t;
         r = rr;
     } else {
+        // Cắt nằm trong cây con trái.
         int ll;
         split(lc[t], k, ll, lc[t]);
         l = ll;
@@ -61,6 +60,7 @@ void split(int t, int k, int &l, int &r) {
     update(t);
 }
 
+// merge: ghép cây l (đứng trước) với cây r (đứng sau) theo quy ước max-heap.
 int merge(int l, int r) {
     if (!l || !r) return l | r;
     if (pri[l] > pri[r]) {
@@ -85,6 +85,7 @@ int main() {
     string s;
     cin >> s;
 
+    // Xây treap ban đầu bằng cách merge lần lượt từng ký tự.
     int root = 0;
     for (int i = 0; i < n; ++i)
         root = merge(root, newNode(s[i]));
@@ -93,15 +94,17 @@ int main() {
         int a, b;
         cin >> a >> b;
         int A, B, C, tmp;
-        // A = [1, a-1], tmp = [a, n]
+        // Tách thành A = [1, a-1] và tmp = [a, n].
         split(root, a - 1, A, tmp);
-        // B = [a, b], C = [b+1, n]
+        // Tách tmp thành B = [a, b] và C = [b+1, n].
         split(tmp, b - a + 1, B, C);
-        rev_[B] ^= 1;                 // lazily reverse the middle segment
+        // Đảo ngược đoạn giữa bằng cách bật cờ lazy ở gốc B, rồi ghép lại.
+        rev_[B] ^= 1;
         root = merge(merge(A, B), C);
     }
 
-    // In-order traversal (iterative, pushing lazy flags down) to print result.
+    // Duyệt in-order bằng vòng lặp với stack tường minh (đẩy pushDown khi đi
+    // xuống) để thu về xâu kết quả mà không dùng đệ quy sâu.
     string out;
     out.reserve(n);
     vector<int> stk;

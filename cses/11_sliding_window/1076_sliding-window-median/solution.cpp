@@ -1,12 +1,3 @@
-// Sliding Window Median (CSES 1076)
-// https://cses.fi/problemset/task/1076
-//
-// Median của mỗi cửa sổ k phần tử. Khi k chẵn lấy phần tử NHỎ HƠN trong hai
-// phần tử giữa (lower median) -> chính là phần tử ở hạng (k-1)/2 (0-indexed).
-// Dùng hai multiset: low (nửa dưới) và high (nửa trên) với bất biến
-// max(low) <= min(high) và |low| = target = (k+1)/2; đáp án = *low.rbegin().
-// Độ phức tạp: O(n log k) thời gian, O(k) bộ nhớ.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,8 +11,10 @@ int main() {
     vector<int> a(n);
     for (auto &x : a) cin >> x;
 
-    multiset<int> low, high;      // low giữ nửa dưới, đáp án = *low.rbegin()
-    const int target = (k + 1) / 2;   // kích thước mong muốn của low
+    // Hai multiset cân bằng: low giữ nửa dưới (đáp án = *low.rbegin() = max của low),
+    // high giữ nửa trên; bất biến max(low) <= min(high) và |low| = target.
+    multiset<int> low, high;
+    const int target = (k + 1) / 2;   // kích thước mong muốn của low (đáp án ở hạng (k-1)/2)
 
     auto rebalance = [&]() {
         // Chuyển bớt từ low sang high nếu low quá lớn.
@@ -39,6 +32,7 @@ int main() {
         }
     };
 
+    // Thêm x vào nửa dưới nếu x <= max(low), ngược lại thêm vào nửa trên.
     auto add = [&](int x) {
         if (low.empty() || x <= *low.rbegin()) low.insert(x);
         else high.insert(x);
@@ -53,6 +47,8 @@ int main() {
     vector<int> ans;
     ans.reserve(n - k + 1);
 
+    // Trượt cửa sổ: mỗi bước thêm phần tử mới, bỏ phần tử rời cửa sổ, cân bằng lại
+    // rồi ghi median khi cửa sổ đã đủ k phần tử.
     for (int i = 0; i < n; i++) {
         add(a[i]);
         if (i >= k) remove(a[i - k]);   // bỏ phần tử rời khỏi cửa sổ

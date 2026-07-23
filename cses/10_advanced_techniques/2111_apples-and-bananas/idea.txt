@@ -1,47 +1,43 @@
-Bài toán: Apples and Bananas (CSES 2111)
+Apples and Bananas - CSES 2111
+https://cses.fi/problemset/task/2111
 
-1) Phát biểu
-- Có n quả táo và m quả chuối, mỗi quả có trọng lượng nguyên trong [1, k].
-- Gọi cntA[i] = số quả táo có trọng lượng i, cntB[j] = số quả chuối có trọng lượng j.
-- Với mỗi tổng trọng lượng w từ 2 đến 2k, cần đếm số cách chọn 1 táo và 1 chuối
-  sao cho tổng trọng lượng bằng w, tức là:
-      c[w] = tổng của cntA[i] * cntB[j] với mọi i + j = w.
-- Đây chính xác là phép nhân chập (convolution) của hai dãy cntA và cntB, tương
-  đương với phép nhân hai đa thức A(x) = sum cntA[i]*x^i và B(x) = sum cntB[j]*x^j;
-  hệ số của x^w trong tích A(x)*B(x) chính là c[w].
+## Đề bài
+- Có n quả táo và m quả chuối, mỗi quả có trọng lượng nguyên trong đoạn [1, k].
+- Gọi cntA[i] là số quả táo có trọng lượng i, cntB[j] là số quả chuối có trọng lượng j.
+- Với mỗi tổng trọng lượng w từ 2 đến 2k, hãy đếm số cách chọn đúng một quả táo và một
+  quả chuối sao cho tổng trọng lượng của chúng bằng w, tức là:
+      c[w] = tổng của cntA[i] * cntB[j] trên mọi cặp thoả i + j = w.
 
-2) Kỹ thuật: NTT (Number Theoretic Transform) + CRT hai số nguyên tố
-- Tích chập độ dài tới ~2k (khoảng 4e5) cần thuật toán O(N log N), dùng NTT.
-- Vấn đề độ lớn: mỗi hệ số kết quả c[w] <= (sum cntA)*(sum cntB) = n*m <= 4e10.
-  Một số nguyên tố NTT thông dụng (ví dụ 998244353 ~ 1e9) NHỎ HƠN 4e10, nên nếu chỉ
-  làm NTT theo một modulo thì kết quả bị lấy dư và mất thông tin.
+## Ý tưởng
+- Đại lượng c[w] chính là phép nhân chập (convolution) của hai dãy cntA và cntB, tương
+  đương hệ số của x^w trong tích hai đa thức A(x) = sum cntA[i]*x^i và B(x) = sum cntB[j]*x^j.
+- Độ dài kết quả lên tới khoảng 2k (cỡ 4e5) nên cần thuật toán O(N log N), ở đây dùng NTT
+  (Number Theoretic Transform) để tính chập chính xác theo số học đồng dư, không có sai số.
+- Vấn đề độ lớn: mỗi hệ số c[w] có thể tới (sum cntA)*(sum cntB) = n*m <= 4e10, lớn hơn một
+  số nguyên tố NTT thông dụng (cỡ 1e9). Nếu chỉ làm NTT theo một modulo thì kết quả bị lấy dư
+  và mất thông tin.
 - Giải pháp: làm NTT theo HAI số nguyên tố dạng c*2^t + 1:
       MOD1 = 998244353  = 119 * 2^23 + 1
       MOD2 = 1004535809 = 479 * 2^21 + 1
-  cả hai đều có căn nguyên thuỷ G = 3 và hỗ trợ độ dài biến đổi tới >= 2^19 (đủ cho
-  N ~ 5.24e5). Sau khi có r1 = c[w] mod MOD1 và r2 = c[w] mod MOD2, dùng CRT
-  (Chinese Remainder Theorem) khôi phục c[w] mod (MOD1*MOD2):
-      t   = (r2 - r1) * inv(MOD1) mod MOD2
+  cả hai đều có căn nguyên thuỷ G = 3 và hỗ trợ độ dài biến đổi đủ lớn cho N ~ 5.24e5. Sau khi
+  có r1 = c[w] mod MOD1 và r2 = c[w] mod MOD2, dùng CRT (Chinese Remainder Theorem) để khôi
+  phục c[w] theo tích MOD1*MOD2:
+      t    = (r2 - r1) * nghịch_đảo(MOD1) mod MOD2
       c[w] = r1 + MOD1 * t.
-  Vì MOD1*MOD2 ~ 1e18 > 4e10 >= c[w], giá trị khôi phục là CHÍNH XÁC và vừa trong
-  kiểu long long.
-- Lý do dùng NTT thay vì FFT số thực: kết quả tới 4e10 đòi hỏi sai số tuyệt đối < 0.5,
-  tức độ chính xác tương đối ~1e-11 — nằm ở ranh giới của double và dễ sai làm tròn.
-  NTT + CRT cho kết quả số nguyên chính xác tuyệt đối.
+  Vì MOD1*MOD2 ~ 1e18 lớn hơn 4e10 >= c[w] nên giá trị khôi phục là chính xác tuyệt đối và vừa
+  trong kiểu long long.
+- Chọn NTT + CRT thay cho FFT số thực vì kết quả tới 4e10 đòi hỏi sai số tuyệt đối dưới 0.5,
+  nằm ở ranh giới của double và dễ sai làm tròn; NTT trên số nguyên cho kết quả chính xác.
+- Vì cả hai modulo đều nhỏ hơn 1.01e9 nên mỗi tích hai hệ số nhỏ hơn 1.01e18, vừa trong
+  unsigned long long, nên dùng nhân đồng dư 64-bit (nhanh hơn __int128) và precompute twiddle.
 
-3) Các bước triển khai
-- Đọc dữ liệu, đếm cntA[1..k], cntB[1..k] (O(n + m + k)).
-- multiply(A, B, MOD): chọn N là luỹ thừa 2 nhỏ nhất >= |A|+|B|-1, NTT thuận hai
-  dãy, nhân theo điểm, NTT nghịch, chia cho N. Gọi hai lần cho MOD1 và MOD2.
-- Ghép CRT cho từng w = 2..2k rồi in cách nhau bởi dấu cách.
+## Các bước triển khai
+- Đọc dữ liệu, đếm cntA[1..k] và cntB[1..k] (O(n + m + k)).
+- multiply(A, B, MOD): chọn N là luỹ thừa của 2 nhỏ nhất >= |A|+|B|-1, NTT thuận hai dãy, nhân
+  theo từng điểm, NTT nghịch rồi chia cho N. Gọi hai lần cho MOD1 và MOD2.
+- Ghép CRT cho từng w = 2..2k rồi in các giá trị cách nhau bởi dấu cách.
 
-4) Vì sao đúng
-- Nhân hai đa thức cho hệ số là convolution, đúng theo định nghĩa số cách ghép cặp.
-- NTT tính chính xác convolution modulo p (số học đồng dư, không sai số). CRT với
-  hai modulo có tích > giá trị thật nên khôi phục đúng giá trị nguyên gốc.
-
-5) Độ phức tạp
-- Thời gian: O(N log N) với N ~ 5.24e5, thực hiện tổng cộng 6 lần NTT (2 lần
-  multiply, mỗi lần 3 NTT). Khoảng ~6e7 phép nhân đồng dư (dùng __int128) — thừa
-  sức trong giới hạn 1.00 s của C++.
+## Độ phức tạp
+- Thời gian: O(N log N) với N ~ 5.24e5, tổng cộng 6 lần NTT (2 lần multiply, mỗi lần 3 NTT),
+  thừa sức trong giới hạn 1.00 s của C++.
 - Bộ nhớ: O(N) cho các mảng hệ số (vài chục MB, an toàn).

@@ -2,7 +2,7 @@ import sys
 
 
 def main():
-    # Doc toan bo du lieu mot lan de tang toc I/O.
+    # Đọc toàn bộ dữ liệu một lần để tăng tốc I/O.
     data = sys.stdin.buffer.read().split()
     if not data:
         return
@@ -11,16 +11,16 @@ def main():
     coins = [int(v) for v in data[2:2 + n]]
     MOD = 1000000007
 
-    # dp[s] = so cach CO THU TU tao ra tong dung bang s; co so dp[0] = 1.
+    # dp[s] = số cách CÓ THỨ TỰ tạo ra tổng đúng bằng s; cơ sở dp[0] = 1.
     dp = [0] * (x + 1)
     dp[0] = 1
 
-    # Sap xep tang dan de vong trong break som khi c > s.
+    # Sắp xếp tăng dần để vòng trong break sớm khi c > s.
     coins.sort()
     cmax = coins[-1]
 
-    # Vung bien 1 <= s < cmax: chua chac moi dong xu deu dung duoc nen phai kiem
-    # tra c <= s; coins da sap xep tang dan nen gap c > s la break som.
+    # Vùng biên 1 <= s < cmax: chưa chắc mọi đồng xu đều dùng được nên phải kiểm
+    # tra c <= s; coins đã sắp xếp tăng dần nên gặp c > s là break sớm.
     bhi = cmax if cmax <= x else x + 1
     for s in range(1, bhi):
         t = 0
@@ -30,9 +30,9 @@ def main():
             t += dp[s - c]
         dp[s] = t % MOD
 
-    # Vung nong cmax <= s <= x: moi dong xu deu hop le (s - c >= 0). Sinh san mot
-    # ham cong "duoi cuon" (unrolled) bang exec, nhung thang cac menh gia vao bieu
-    # thuc de bo vong lap ben trong -> CPython chay nhanh hon dang ke.
+    # Vùng nóng cmax <= s <= x: mọi đồng xu đều hợp lệ (s - c >= 0). Sinh sẵn một
+    # hàm cộng "duỗi cuộn" (unrolled) bằng exec, nhúng thẳng các mệnh giá vào biểu
+    # thức để bỏ vòng lặp bên trong -> CPython chạy nhanh hơn đáng kể.
     if x >= cmax:
         terms = " + ".join("d[s-%d]" % c for c in coins)
         src = (
@@ -44,7 +44,7 @@ def main():
         exec(src, namespace)
         namespace["hot"](dp, cmax, x + 1, MOD)
 
-    # Dap an: dp[x] mod MOD.
+    # Đáp án: dp[x] mod MOD.
     sys.stdout.write(str(dp[x] % MOD) + "\n")
 
 

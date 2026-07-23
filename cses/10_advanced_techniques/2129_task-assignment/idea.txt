@@ -1,12 +1,13 @@
-Bài toán: Task Assignment (CSES 2129)
+Task Assignment - CSES 2129
+https://cses.fi/problemset/task/2129
 
-1. Phát biểu
+## Đề bài
 - Có n nhân viên và n công việc. Chi phí để nhân viên i làm công việc j là
   c[i][j]. Cần gán mỗi nhân viên đúng một công việc (và mỗi công việc cho đúng
   một nhân viên) sao cho tổng chi phí là nhỏ nhất. Ngoài giá trị nhỏ nhất, còn
   phải in ra một phương án gán tối ưu.
 
-2. Mô hình
+## Ý tưởng
 - Đây là bài toán gán việc (assignment problem) kinh điển: tìm perfect matching
   có trọng số nhỏ nhất trên đồ thị hai phía đầy đủ n x n, một bên là nhân viên,
   một bên là công việc, cạnh (i, j) có trọng số c[i][j].
@@ -14,35 +15,31 @@ Bài toán: Task Assignment (CSES 2129)
   cost 0), nhân viên -> công việc (cap 1, cost c[i][j]), công việc -> sink
   (cap 1, cost 0). Nhưng ở đây ta dùng thuật toán Hungarian (Kuhn-Munkres) vì
   nó gọn và có độ phức tạp O(n^3) ổn định, không phụ thuộc vào giá trị chi phí.
+- Thuật toán Hungarian (Kuhn-Munkres):
+  + Duy trì hệ thế năng (potential) u[i] cho hàng và v[j] cho cột sao cho luôn
+    có reduced cost c[i][j] - u[i] - v[j] >= 0, và các cạnh trong matching có
+    reduced cost = 0 (điều kiện complementary slackness).
+  + Thêm lần lượt từng hàng i vào matching. Với mỗi hàng, chạy một bước kiểu
+    Dijkstra trên reduced cost: mảng minv[j] lưu khoảng cách nhỏ nhất tới cột j
+    chưa được dùng, way[j] lưu cột tiền nhiệm trên đường tăng. Chọn delta là
+    khoảng cách nhỏ nhất, cập nhật thế năng u, v (u[p[j]] += delta cho cột đã
+    dùng, v[j] -= delta), và tiếp tục cho đến khi chạm một cột chưa được gán
+    (p[j0] == 0). Sau đó lật ngược đường tăng để cập nhật matching p[].
+  + Kết quả: p[j] là nhân viên đang gán cho công việc j. Tổng chi phí bằng tổng
+    c[p[j]][j] (cũng bằng -v[0]).
+- Tính đúng đắn: bất biến reduced cost >= 0 cùng với việc mọi cạnh trong
+  matching có reduced cost = 0 chính là điều kiện tối ưu theo lý thuyết đối
+  ngẫu (complementary slackness) của quy hoạch tuyến tính cho bài toán gán. Bất
+  biến này được giữ qua mọi bước cập nhật thế năng. Khi tìm thấy đường tăng tới
+  một cột chưa gán, việc lật đường làm tăng kích thước matching thêm 1 mà vẫn
+  giữ tính tối ưu. Sau n vòng, ta có perfect matching với tổng trọng số nhỏ nhất.
+- In phương án: từ p[j] ta lập assignTask[p[j]] = j, rồi in cho từng nhân viên
+  i dòng "i assignTask[i]". Trình chấm của CSES chấp nhận bất kỳ perfect
+  matching tối ưu nào miễn là tổng chi phí đúng bằng giá trị nhỏ nhất.
 
-3. Thuật toán Hungarian (Kuhn-Munkres)
-- Duy trì hệ thế năng (potential) u[i] cho hàng và v[j] cho cột sao cho luôn có
-  reduced cost c[i][j] - u[i] - v[j] >= 0, và các cạnh trong matching có reduced
-  cost = 0 (điều kiện complementary slackness).
-- Thêm lần lượt từng hàng i vào matching. Với mỗi hàng, chạy một bước kiểu
-  Dijkstra trên reduced cost: mảng minv[j] lưu khoảng cách nhỏ nhất tới cột j
-  chưa được dùng, way[j] lưu cột tiền nhiệm trên đường tăng. Chọn delta là
-  khoảng cách nhỏ nhất, cập nhật thế năng u, v (u[p[j]] += delta cho cột đã dùng,
-  v[j] -= delta), và tiếp tục cho đến khi chạm một cột chưa được gán
-  (p[j0] == 0). Sau đó lật ngược đường tăng để cập nhật matching p[].
-- Kết quả: p[j] là nhân viên đang gán cho công việc j. Tổng chi phí bằng tổng
-  c[p[j]][j] (cũng bằng -v[0]).
-
-4. Tính đúng đắn
-- Bất biến reduced cost >= 0 cùng với việc mọi cạnh trong matching có reduced
-  cost = 0 chính là điều kiện tối ưu theo lý thuyết đối ngẫu (complementary
-  slackness) của quy hoạch tuyến tính cho bài toán gán. Bất biến này được giữ
-  qua mọi bước cập nhật thế năng. Khi tìm thấy đường tăng tới một cột chưa gán,
-  việc lật đường làm tăng kích thước matching thêm 1 mà vẫn giữ tính tối ưu.
-  Sau n vòng, ta có perfect matching với tổng trọng số nhỏ nhất.
-
-5. In phương án
-- Từ p[j] ta lập assignTask[p[j]] = j, rồi in cho từng nhân viên i:
-  "i assignTask[i]". Trình chấm của CSES chấp nhận bất kỳ perfect matching tối
-  ưu nào miễn là tổng chi phí đúng bằng giá trị nhỏ nhất.
-
-6. Độ phức tạp
-- Thời gian: O(n^3) ~ 8 * 10^6 phép tính với n = 200, chạy rất nhanh so với giới
-  hạn 1 giây. Bộ nhớ: O(n^2) cho ma trận chi phí.
+## Độ phức tạp
+- Thời gian: O(n^3) ~ 8 * 10^6 phép tính với n = 200, chạy rất nhanh so với
+  giới hạn 1 giây.
+- Bộ nhớ: O(n^2) cho ma trận chi phí.
 - Chi phí tối đa 200 * 1000 = 200000 vẫn nằm gọn trong int, nhưng ở đây dùng
   long long cho các thế năng và tổng để tránh mọi rủi ro tràn số.

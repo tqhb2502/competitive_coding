@@ -1,29 +1,31 @@
-Bài toán: Với mỗi cửa sổ (window) gồm k phần tử liên tiếp, đếm số giá trị phân biệt (distinct values).
+Sliding Window Distinct Values - CSES 3222
+https://cses.fi/problemset/task/3222
 
-Kỹ thuật: Sliding window kết hợp hashmap counts (đếm tần suất mỗi giá trị trong cửa sổ hiện tại).
+## Đề bài
+Cho mảng gồm n số nguyên và một cửa sổ (window) độ dài k. Với mỗi cửa sổ gồm k
+phần tử liên tiếp, hãy đếm số giá trị phân biệt (distinct values) bên trong cửa
+sổ đó. Có tất cả n - k + 1 cửa sổ, in kết quả trên một dòng, cách nhau bởi dấu cách.
 
-Ý tưởng chính:
-- Duy trì một hash map cnt[value] = số lần value xuất hiện trong cửa sổ hiện tại,
-  và một biến distinct = số giá trị đang có tần suất > 0.
-- Trượt cửa sổ từ trái sang phải. Khi thêm một phần tử x vào cửa sổ:
-  nếu cnt[x] đang bằng 0 thì distinct tăng 1, rồi cnt[x]++.
-- Khi bỏ một phần tử y ra khỏi cửa sổ (phần tử bên trái):
-  cnt[y]-- ; nếu cnt[y] trở về 0 thì distinct giảm 1.
-- Sau khi cửa sổ đủ k phần tử, tại mỗi bước ghi lại giá trị distinct làm đáp án.
+## Ý tưởng
+Dùng sliding window kết hợp một hash map đếm tần suất mỗi giá trị trong cửa sổ hiện tại.
+- Duy trì cnt[value] = số lần value xuất hiện trong cửa sổ hiện tại, và một biến
+  distinct = số giá trị đang có tần suất lớn hơn 0.
+- Khi thêm một phần tử x vào cửa sổ: nếu cnt[x] đang bằng 0 thì distinct tăng 1,
+  sau đó cnt[x]++.
+- Khi bỏ một phần tử y ra khỏi cửa sổ (phần tử bên trái): cnt[y]--; nếu cnt[y]
+  trở về 0 thì distinct giảm 1.
+- Khởi tạo cửa sổ đầu tiên [0, k-1] rồi ghi lại distinct. Sau đó cho i chạy từ k
+  đến n-1: thêm a[i], bỏ a[i-k], mỗi bước ghi lại distinct làm đáp án.
 
-Chi tiết cài đặt:
-- Thêm k phần tử đầu tiên để khởi tạo cửa sổ [0, k-1], ghi distinct.
-- Sau đó cho i chạy từ k đến n-1: thêm a[i], bỏ a[i-k], ghi distinct.
-- Có tất cả n-k+1 đáp án, in ra trên một dòng cách nhau bởi dấu cách.
+Tính đúng đắn: distinct luôn phản ánh chính xác số giá trị có cnt lớn hơn 0 trong
+cửa sổ, vì mỗi khi một giá trị chuyển từ 0 lên 1 ta tăng distinct và mỗi khi từ 1
+về 0 ta giảm distinct. Mỗi phần tử được thêm đúng một lần và bỏ đúng một lần.
 
-Vì giá trị xᵢ có thể tới 10^9 nên dùng unordered_map (hoặc nén tọa độ - coordinate
-compression rồi dùng mảng đếm để tránh chi phí hằng số của hash). Ở đây dùng
-unordered_map với reserve để giảm rehash.
+Vì giá trị của phần tử có thể lớn tới 10^9 nên dùng unordered_map (hoặc có thể nén
+tọa độ - coordinate compression rồi dùng mảng đếm để tránh chi phí hằng số của
+hash). Ở đây dùng unordered_map kèm reserve để giảm số lần rehash.
 
-Tính đúng đắn: distinct luôn phản ánh chính xác số phần tử có cnt > 0 trong cửa sổ,
-vì mỗi lần một giá trị chuyển từ 0 lên 1 ta tăng distinct, và mỗi lần từ 1 về 0 ta giảm
-distinct. Mỗi phần tử được thêm đúng một lần và bỏ đúng một lần.
-
-Độ phức tạp:
-- Thời gian: O(n) trung bình (mỗi phần tử vào/ra cửa sổ một lần, thao tác hashmap O(1) trung bình).
-- Bộ nhớ: O(n) cho hashmap và mảng đầu vào.
+## Độ phức tạp
+- Thời gian: O(n) trung bình - mỗi phần tử vào và ra cửa sổ đúng một lần, thao tác
+  hash map trung bình O(1).
+- Bộ nhớ: O(n) cho hash map và mảng đầu vào.

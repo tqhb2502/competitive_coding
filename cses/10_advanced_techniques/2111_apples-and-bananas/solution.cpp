@@ -1,18 +1,14 @@
-// Apples and Bananas - https://cses.fi/problemset/task/2111
-// Bai toan: dem so cach chon 1 tao va 1 chuoi co tong trong luong = w, voi moi w tu 2 den 2k.
-// Day chinh la tich chap (convolution) giua mang dem trong luong tao va mang dem trong luong chuoi.
-// Ket qua co the len toi n*m = 4e10 > 1 so nguyen to NTT (~1e9), nen dung 2 so nguyen to NTT + CRT
-// de khoi phuc gia tri chinh xac. Ca hai modulo < 1.01e9 nen moi tich hai he so < 1.01e18, vua
-// trong unsigned long long -> dung modmul 64-bit (nhanh hon __int128) va precompute twiddle.
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
+// Hai số nguyên tố NTT dạng c*2^t + 1, dùng để tính chập theo hai modulo rồi ghép CRT.
 const ll MOD1 = 998244353;   // 119 * 2^23 + 1
 const ll MOD2 = 1004535809;  // 479 * 2^21 + 1
-const ll G = 3;              // can nguyen thuy cho ca hai so nguyen to
+const ll G = 3;              // căn nguyên thuỷ chung cho cả hai số nguyên tố
 
+// Luỹ thừa nhanh theo modulo.
 ll power(ll a, ll b, ll mod) {
     a %= mod;
     if (a < 0) a += mod;
@@ -25,9 +21,10 @@ ll power(ll a, ll b, ll mod) {
     return r;
 }
 
-// NTT tai cho, cac he so < mod < 1.01e9 nen (ull)x*y an toan (< 1.01e18 < 2^64).
+// NTT tại chỗ; các hệ số nhỏ hơn mod < 1.01e9 nên tích (ull)x*y an toàn (< 1.01e18 < 2^64).
 void ntt(vector<ll>& a, bool inv, ll mod) {
     int n = (int)a.size();
+    // Hoán vị bit-reversal các phần tử về đúng vị trí.
     for (int i = 1, j = 0; i < n; i++) {
         int bit = n >> 1;
         for (; j & bit; bit >>= 1) j ^= bit;
@@ -39,7 +36,7 @@ void ntt(vector<ll>& a, bool inv, ll mod) {
         int half = len >> 1;
         ll ang = power(G, (mod - 1) / len, mod);
         if (inv) ang = power(ang, mod - 2, mod);
-        // precompute twiddle factors cho tang nay -> bo 1 modmul/butterfly
+        // Precompute các twiddle factor cho tầng này -> bớt một phép nhân đồng dư mỗi butterfly.
         wp[0] = 1;
         for (int j = 1; j < half; j++) wp[j] = (ull)wp[j - 1] * ang % mod;
         for (int i = 0; i < n; i += len) {
@@ -54,15 +51,17 @@ void ntt(vector<ll>& a, bool inv, ll mod) {
         }
     }
     if (inv) {
+        // Chia cho n để hoàn tất biến đổi nghịch.
         ll ninv = power(n, mod - 2, mod);
         for (auto& x : a) x = (ull)x * ninv % mod;
     }
 }
 
+// Nhân chập hai đa thức theo modulo: NTT thuận, nhân theo điểm, NTT nghịch.
 vector<ll> multiply(vector<ll> a, vector<ll> b, ll mod) {
     int rs = (int)a.size() + (int)b.size() - 1;
     int n = 1;
-    while (n < rs) n <<= 1;
+    while (n < rs) n <<= 1;   // luỹ thừa của 2 nhỏ nhất đủ chứa kết quả
     a.resize(n, 0);
     b.resize(n, 0);
     ntt(a, false, mod);
@@ -80,19 +79,22 @@ int main() {
     int k, n, m;
     cin >> k >> n >> m;
 
+    // Đếm số quả theo từng trọng lượng để tạo hai đa thức tần suất.
     vector<ll> A(k + 1, 0), B(k + 1, 0);
     for (int i = 0; i < n; i++) { int x; cin >> x; A[x]++; }
     for (int i = 0; i < m; i++) { int x; cin >> x; B[x]++; }
 
+    // Tính chập theo hai số nguyên tố để có c[w] mod MOD1 và c[w] mod MOD2.
     vector<ll> c1 = multiply(A, B, MOD1);
     vector<ll> c2 = multiply(A, B, MOD2);
 
-    // CRT: gia tri that = r1 + MOD1 * ((r2 - r1) * inv(MOD1) mod MOD2)
+    // CRT: giá trị thật = r1 + MOD1 * ((r2 - r1) * nghịch_đảo(MOD1) mod MOD2).
     ll inv1 = power(MOD1 % MOD2, MOD2 - 2, MOD2);
 
     int sz1 = (int)c1.size();
     int sz2 = (int)c2.size();
 
+    // Ghép CRT cho từng tổng trọng lượng w = 2..2k và in kết quả.
     string out;
     out.reserve((size_t)(2 * k) * 12);
     for (int w = 2; w <= 2 * k; w++) {
@@ -100,7 +102,7 @@ int main() {
         ll r2 = (w < sz2) ? c2[w] : 0;
         ll t = ((r2 - r1) % MOD2 + MOD2) % MOD2;
         t = (ull)t * inv1 % MOD2;
-        __int128 val = (__int128)r1 + (__int128)MOD1 * t; // < 4e10, vua trong long long
+        __int128 val = (__int128)r1 + (__int128)MOD1 * t; // < 4e10, vừa trong long long
         out += to_string((ll)val);
         out += (w == 2 * k) ? '\n' : ' ';
     }

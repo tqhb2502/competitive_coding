@@ -1,2 +1,0 @@
-Sliding Window Xor
-https://cses.fi/problemset/task/3426

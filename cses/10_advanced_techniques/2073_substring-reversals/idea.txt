@@ -1,23 +1,26 @@
-Bài toán: Substring Reversals (CSES 2073)
-Cho một xâu độ dài n, xử lý m thao tác, mỗi thao tác đảo ngược (reverse) một
-đoạn con [a, b] của xâu (chỉ số tính từ 1). In ra xâu cuối cùng.
+Substring Reversals - CSES 2073
+https://cses.fi/problemset/task/2073
 
+## Đề bài
+Cho một xâu độ dài n, xử lý m thao tác. Mỗi thao tác đảo ngược (reverse) một
+đoạn con [a, b] của xâu (chỉ số tính từ 1). In ra xâu cuối cùng sau khi thực
+hiện hết các thao tác.
 Ràng buộc: 1 <= n, m <= 2*10^5, 1 <= a <= b <= n.
 
-Kỹ thuật: implicit treap (cây Cartesian có khóa là vị trí trong mảng) kết hợp
-lazy propagation cho cờ đảo ngược "reverse".
+## Ý tưởng
+Sử dụng implicit treap (cây Cartesian có khóa ẩn theo vị trí trong mảng) kết
+hợp lazy propagation cho cờ đảo ngược "reverse".
 
-Ý tưởng chính:
-- Mỗi phần tử của xâu là một node của treap. Thay vì dùng khóa tường minh, ta
-  dùng "implicit key" — vị trí của một node được xác định bởi kích thước cây con
-  bên trái. Do đó cây giữ đúng thứ tự các ký tự theo in-order traversal.
-- Hai thao tác nền tảng:
-    * split(t, k): tách cây t thành hai cây, cây trái chứa k node đầu tiên theo
-      thứ tự, cây phải chứa phần còn lại. Độ phức tạp O(log n) kỳ vọng.
-    * merge(l, r): ghép hai cây l (đứng trước) và r (đứng sau) thành một cây,
-      tôn trọng thứ tự và tính chất heap của priority ngẫu nhiên. O(log n).
-- Mỗi node lưu: con trái/phải, size cây con, priority ngẫu nhiên, ký tự val, và
+- Mỗi ký tự của xâu là một node của treap. Thay vì dùng khóa tường minh, ta
+  dùng "implicit key" — vị trí của một node được xác định bởi kích thước cây
+  con bên trái. Do đó cây luôn giữ đúng thứ tự các ký tự theo in-order.
+- Mỗi node lưu: con trái/phải, size cây con, priority ngẫu nhiên, ký tự val và
   cờ lazy rev_.
+- Hai thao tác nền tảng:
+    * split(t, k): tách cây t thành hai cây, cây trái chứa k node đầu tiên
+      theo thứ tự, cây phải chứa phần còn lại. Kỳ vọng O(log n).
+    * merge(l, r): ghép hai cây l (đứng trước) và r (đứng sau) thành một cây,
+      tôn trọng thứ tự và tính chất max-heap của priority ngẫu nhiên. O(log n).
 
 Thao tác reverse [a, b]:
 - split để lấy A = [1, a-1] và phần còn lại tmp = [a, n].
@@ -34,9 +37,9 @@ Tính đúng đắn:
   nên split/merge chạy O(log n).
 - pushDown bảo đảm mọi cờ đảo ngược đang chờ được áp dụng trước khi ta đọc/đi
   qua các con, nên thứ tự in-order luôn phản ánh đúng trạng thái xâu hiện tại.
-  Đảo lồng nhau/chồng lấn được xử lý tự nhiên bằng cách bật/tắt (XOR) cờ.
+  Đảo lồng nhau hoặc chồng lấn được xử lý tự nhiên bằng cách bật/tắt (XOR) cờ.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: xây cây ban đầu O(n log n), mỗi thao tác reverse O(log n), tổng
   O((n + m) log n). In kết quả bằng in-order duyệt lặp O(n).
 - Bộ nhớ: O(n) cho các mảng node.

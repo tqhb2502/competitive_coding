@@ -1,2 +1,0 @@
-Sliding Window Advertisement
-https://cses.fi/problemset/task/3227

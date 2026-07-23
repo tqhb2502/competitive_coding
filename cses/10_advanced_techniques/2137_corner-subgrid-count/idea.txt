@@ -1,34 +1,35 @@
-Bài toán: Đếm số "corner subgrid" đẹp trong lưới n x n (0/1). Một subgrid được xác
-định bởi hai hàng r1 < r2 và hai cột c1 < c2; nó đẹp nếu cả bốn góc
-(r1,c1), (r1,c2), (r2,c1), (r2,c2) đều là ô đen (giá trị 1). Cần đếm tổng số bộ như vậy.
+Corner Subgrid Count - CSES 2137
+https://cses.fi/problemset/task/2137
+
+## Đề bài
+Cho lưới n x n gồm các ô 0/1. Một "corner subgrid" được xác định bởi hai hàng
+r1 < r2 và hai cột c1 < c2; nó đẹp nếu cả bốn góc (r1,c1), (r1,c2), (r2,c1),
+(r2,c2) đều là ô đen (giá trị 1). Cần đếm tổng số bộ đẹp như vậy.
 Ràng buộc: 1 <= n <= 3000.
 
-Kỹ thuật: bitset để tăng tốc phép giao hàng (row intersection).
-
-Ý tưởng chính:
-- Một subgrid đẹp tương ứng với việc chọn một cặp hàng (i, j) và một cặp cột (c1, c2)
-  sao cho ở cả hai hàng i và j, ô tại c1 và ô tại c2 đều bằng 1.
+## Ý tưởng
+- Một subgrid đẹp tương ứng với việc chọn một cặp hàng (i, j) và một cặp cột
+  (c1, c2) sao cho ở cả hai hàng i và j, ô tại c1 và ô tại c2 đều bằng 1.
 - Với một cặp hàng (i, j) cố định, gọi k là số cột c mà cả row[i][c] = 1 và
-  row[j][c] = 1 (tức là số cột "cùng màu đen" của hai hàng). Khi đó số cách chọn
-  hai cột phân biệt trong k cột này là C(k, 2) = k*(k-1)/2. Mỗi cách chọn hai cột
+  row[j][c] = 1 (số cột "cùng màu đen" của hai hàng). Khi đó số cách chọn hai
+  cột phân biệt trong k cột này là C(k, 2) = k*(k-1)/2. Mỗi cách chọn hai cột
   cùng với cặp hàng (i, j) tạo ra đúng một corner subgrid đẹp.
 - Vậy đáp án = tổng trên mọi cặp hàng (i, j) của C(k_{ij}, 2).
 
-Cài đặt với bitset:
-- Biểu diễn mỗi hàng bằng một bitset<3000>, bit thứ c bằng 1 nếu ô (hàng, c) là đen.
-- Với cặp hàng (i, j), k = popcount(row[i] AND row[j]), tính được bằng
-  (row[i] & row[j]).count() trong thời gian O(n / 64).
-- Cộng dồn k*(k-1)/2 vào đáp án. Dùng long long vì đáp án có thể lên tới cỡ
+Cài đặt với bitset (kỹ thuật tăng tốc phép giao hàng - row intersection):
+- Biểu diễn mỗi hàng bằng một dãy bit, bit thứ c bằng 1 nếu ô (hàng, c) là đen.
+- Với cặp hàng (i, j), k = popcount(row[i] AND row[j]), tính được bằng phép AND
+  theo word rồi cộng __builtin_popcountll, tốn thời gian O(n / 64).
+- Cộng dồn k*(k-1)/2 vào đáp án. Dùng số 64-bit vì đáp án có thể lên tới cỡ
   C(n,2)^2 ~ (4.5e6)^2 ~ 2e13, vượt phạm vi 32-bit.
 
-Tính đúng đắn:
-- Mỗi corner subgrid đẹp được đếm đúng một lần: nó ứng với một cặp hàng duy nhất
-  (i, j) với i < j và một cặp cột duy nhất (c1, c2) với c1 < c2 nằm trong tập k cột
-  chung. Công thức C(k, 2) đếm chính xác số cặp cột phân biệt không thứ tự, không
-  trùng và không sót.
+Tính đúng đắn: mỗi corner subgrid đẹp được đếm đúng một lần: nó ứng với một cặp
+hàng duy nhất (i, j) với i < j và một cặp cột duy nhất (c1, c2) với c1 < c2 nằm
+trong tập k cột chung. Công thức C(k, 2) đếm chính xác số cặp cột phân biệt
+không thứ tự, không trùng và không sót.
 
-Độ phức tạp:
-- Thời gian: số cặp hàng là O(n^2), mỗi cặp tốn O(n / 64) cho AND + popcount, tổng
-  O(n^3 / 64). Với n = 3000 khoảng 4.2e8 phép toán trên word, chạy dưới giới hạn
-  thời gian của CSES trong C++.
+## Độ phức tạp
+- Thời gian: số cặp hàng là O(n^2), mỗi cặp tốn O(n / 64) cho AND + popcount,
+  tổng O(n^3 / 64). Với n = 3000 khoảng 4.2e8 phép toán trên word, chạy dưới
+  giới hạn thời gian của CSES trong C++.
 - Bộ nhớ: O(n^2 / 8) byte cho các hàng bitset ~ 1.1 MB với n = 3000. Nhỏ.

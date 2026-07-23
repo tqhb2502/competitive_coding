@@ -1,2 +1,0 @@
-K-th Highest Score
-https://cses.fi/problemset/task/3305

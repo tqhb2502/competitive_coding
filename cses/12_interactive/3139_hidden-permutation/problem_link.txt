@@ -1,2 +1,0 @@
-Hidden Permutation
-https://cses.fi/problemset/task/3139

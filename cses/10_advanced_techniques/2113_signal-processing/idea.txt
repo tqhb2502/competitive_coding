@@ -1,49 +1,50 @@
-Bài toán: Signal Processing (CSES 2113)
+Signal Processing - CSES 2113
+https://cses.fi/problemset/task/2113
 
-Đề bài cho một signal a có n phần tử và một mask b có m phần tử. Ta trượt mask
-qua signal từ trái sang phải; tại mỗi vị trí chồng lấp, ta cộng tổng các tích
-a[i]*b[j] của những cặp phần tử đang chồng lên nhau. Kết quả gồm n+m-1 số.
+## Đề bài
+Cho một signal a gồm n phần tử và một mask b gồm m phần tử. Ta trượt mask qua
+signal từ trái sang phải; tại mỗi vị trí chồng lấp, ta cộng tổng các tích
+a[i]*b[j] của những cặp phần tử đang chồng lên nhau. Kết quả gồm n+m-1 số cần in.
 
-Nhận xét mấu chốt:
+## Ý tưởng
 Kiểm tra trên ví dụ (signal [1,3,2,1,4], mask [1,2,3] -> 3 11 13 10 16 9 4) cho
 thấy đây chính là phép convolution của signal a với mask b ĐẢO NGƯỢC:
-    result[p] = tong_{i+j=p} a[i] * b_rev[j]
-với b_rev là b viết ngược lại. Vì khi mask trượt vào, phần tử CUỐI của mask gặp
+    result[p] = tổng_{i+j=p} a[i] * b_rev[j]
+với b_rev là b viết ngược lại. Khi mask trượt vào, phần tử CUỐI của mask gặp
 phần tử ĐẦU của signal trước, nên chỉ cần đảo mask rồi làm convolution chuẩn
 (giống nhân hai đa thức).
 
-Kỹ thuật: NTT (Number Theoretic Transform)
-Convolution chính là nhân hai đa thức, làm bằng NTT trong O((n+m) log(n+m)).
-Ta biến đổi NTT của a và b_rev, nhân từng điểm (pointwise), rồi biến đổi ngược
-(inverse NTT) để thu về các hệ số của tích, chính là kết quả cần in.
+Kỹ thuật dùng: NTT (Number Theoretic Transform). Convolution chính là nhân hai
+đa thức, làm bằng NTT trong O((n+m) log(n+m)). Ta biến đổi NTT của a và b_rev,
+nhân từng điểm (pointwise), rồi biến đổi ngược (inverse NTT) để thu về các hệ số
+của tích, chính là kết quả cần in.
 
-Vì sao chỉ cần MỘT modulo (không cần CRT / hai prime):
-Giá trị tối đa của một hệ số đầu ra = min(n,m) * max(a) * max(b)
-= 2*10^5 * 100 * 100 = 2*10^9. Ta chọn prime NTT
-    MOD = 2013265921 = 15 * 2^27 + 1  (primitive root = 31),
-lớn hơn 2*10^9 (dư khoảng 1.3*10^7). Do kết quả thật luôn nhỏ hơn MOD nên phép
-lấy dư của NTT KHÔNG làm mất thông tin: giá trị trả về đúng bằng kết quả nguyên
-chính xác, không cần gộp hai prime bằng CRT. Thừa số 2^27 của MOD đủ lớn cho mọi
-kích thước FFT cần thiết (n+m tối đa ~ 4*10^5, làm tròn lên lũy thừa 2 là 2^19).
+Vì sao chỉ cần MỘT modulo (không cần CRT hay hai prime): giá trị tối đa của một
+hệ số đầu ra bằng min(n,m) * max(a) * max(b) = 2*10^5 * 100 * 100 = 2*10^9. Ta
+chọn prime NTT MOD = 2013265921 = 15 * 2^27 + 1 (primitive root = 31), lớn hơn
+2*10^9. Do kết quả thật luôn nhỏ hơn MOD nên phép lấy dư của NTT không làm mất
+thông tin: giá trị trả về đúng bằng kết quả nguyên chính xác. Thừa số 2^27 của
+MOD đủ lớn cho mọi kích thước FFT cần thiết (n+m tối đa khoảng 4*10^5, làm tròn
+lên lũy thừa 2 là 2^19).
 
-Vì sao không dùng FFT số thực (double):
-Kết quả cỡ 2*10^9 vẫn nằm trong ngưỡng an toàn của double, nhưng NTT nguyên cho
-kết quả CHÍNH XÁC TUYỆT ĐỐI, tránh mọi rủi ro sai số làm tròn.
+Vì sao không dùng FFT số thực (double): kết quả cỡ 2*10^9 vẫn nằm trong ngưỡng
+an toàn của double, nhưng NTT nguyên cho kết quả chính xác tuyệt đối, tránh mọi
+rủi ro sai số làm tròn.
 
 Chi tiết cài đặt:
 - Đọc n, m, mảng a, mảng b bằng cin với sync tắt.
 - reverse(b) để chuyển thành convolution chuẩn.
-- Kích thước biến đổi sz = lũy thừa 2 nhỏ nhất >= n+m-1; pad a, b bằng 0 tới sz.
+- Kích thước biến đổi sz là lũy thừa 2 nhỏ nhất >= n+m-1; pad a, b bằng 0 tới sz.
 - ntt(a, false), ntt(b, false); a[i] = a[i]*b[i] mod MOD; ntt(a, true).
-- In n+m-1 phần tử đầu tiên của a, cách nhau dấu cách.
+- In n+m-1 phần tử đầu tiên của a, cách nhau bằng dấu cách.
 - Mọi phép nhân trung gian (u*v mod MOD, lũy thừa nhanh) dùng __int128 để tránh
-  tràn vì tích hai số < MOD (~2*10^9) có thể tới ~4*10^18.
+  tràn vì tích hai số nhỏ hơn MOD (khoảng 2*10^9) có thể lên tới khoảng 4*10^18.
 
-Tính đúng đắn:
-a(x) = tong_i a[i] x^i, b_rev(x) = tong_j b_rev[j] x^j. Tích a(x)*b_rev(x) có hệ
-số x^k bằng tong_{i+j=k} a[i]*b_rev[j] = result[k]. NTT tính tích đa thức đúng
-theo modulo MOD; vì result[k] < MOD nên lấy dư không thay đổi giá trị.
+Tính đúng đắn: a(x) = tổng_i a[i] x^i, b_rev(x) = tổng_j b_rev[j] x^j. Tích
+a(x)*b_rev(x) có hệ số x^k bằng tổng_{i+j=k} a[i]*b_rev[j] = result[k]. NTT tính
+tích đa thức đúng theo modulo MOD; vì result[k] nhỏ hơn MOD nên lấy dư không làm
+thay đổi giá trị.
 
-Độ phức tạp:
+## Độ phức tạp
 Thời gian: O((n+m) log(n+m)) cho NTT.
 Bộ nhớ: O(n+m) cho các mảng hệ số.

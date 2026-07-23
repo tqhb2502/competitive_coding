@@ -1,37 +1,41 @@
-Bài toán: Cho mảng n số (n ≤ 40, mỗi phần tử và x tới 10^9). Đếm số cách chọn một
-tập con có tổng đúng bằng x.
+Meet in the Middle - CSES 1628
+https://cses.fi/problemset/task/1628
 
+## Đề bài
+Cho mảng gồm n số (n ≤ 40, mỗi phần tử và x tới 10^9). Hãy đếm số cách chọn
+một tập con có tổng đúng bằng x.
+
+## Ý tưởng
 Kỹ thuật: Meet in the Middle (chia đôi và gặp nhau ở giữa).
 
-Ý tưởng chính:
-- Nếu duyệt toàn bộ 2^n tập con thì với n = 40 sẽ là ~10^12, quá lớn. Thay vào đó ta
-  chia mảng thành hai nửa: nửa trái có n1 = n/2 phần tử, nửa phải có n2 = n - n1 phần
-  tử. Mỗi nửa có tối đa 2^20 ≈ 10^6 tập con, hoàn toàn khả thi.
-- Với mỗi nửa, sinh ra tất cả tổng của các tập con (subset sums), kể cả tập rỗng (tổng
-  0). Sinh bằng cách nhân đôi: bắt đầu từ [0], với mỗi phần tử e thêm vào danh sách các
-  tổng cũ cộng e. Gọi tập tổng của nửa trái là L và của nửa phải là R.
-- Một tập con toàn cục có tổng x tương ứng với việc chọn một tập con nửa trái (tổng sL)
-  và một tập con nửa phải (tổng sR) sao cho sL + sR = x. Do đó đáp án là:
-      sum over sL in L của ( số phần tử sR trong R sao cho sR = x - sL ).
+- Nếu duyệt toàn bộ 2^n tập con thì với n = 40 sẽ là ~10^12, quá lớn. Thay vào đó
+  ta chia mảng thành hai nửa: nửa trái có n1 = n/2 phần tử, nửa phải có n2 = n - n1
+  phần tử. Mỗi nửa có tối đa 2^20 ≈ 10^6 tập con, hoàn toàn khả thi.
+- Với mỗi nửa, sinh ra tất cả tổng của các tập con (subset sums), kể cả tập rỗng
+  (tổng 0). Sinh bằng cách nhân đôi: bắt đầu từ [0], với mỗi phần tử e thêm vào
+  danh sách các tổng cũ cộng e. Gọi tập tổng của nửa trái là L và nửa phải là R.
+- Một tập con toàn cục có tổng x tương ứng với việc chọn một tập con nửa trái
+  (tổng sL) và một tập con nửa phải (tổng sR) sao cho sL + sR = x. Do đó đáp án là:
+      tổng theo sL thuộc L của ( số phần tử sR trong R sao cho sR = x - sL ).
 
 Cách đếm nhanh:
 - Sắp xếp mảng R. Với mỗi sL trong L, ta cần đếm số phần tử của R bằng đúng x - sL.
-  Dùng binary search (equal_range: lower_bound & upper_bound) trên R đã sắp xếp để lấy
-  số lượng trong O(log|R|). Tổng chi phí O(|L| · log|R|).
+  Dùng binary search (equal_range: lower_bound & upper_bound) trên R đã sắp xếp để
+  lấy số lượng trong O(log|R|). Tổng chi phí O(|L| · log|R|).
 
 Tính đúng đắn:
-- Mỗi tập con toàn cục được xác định duy nhất bởi cặp (tập con nửa trái, tập con nửa
-  phải), vì hai nửa rời nhau (không chung phần tử). Việc chọn độc lập tập con ở mỗi nửa
-  liệt kê đầy đủ và không trùng lặp tất cả 2^n tập con. Các phần tử được coi là phân biệt
-  theo vị trí (index), nên các giá trị trùng nhau vẫn được đếm như các cách khác nhau —
-  đúng theo yêu cầu đề bài (ví dụ mảng 1 2 3 2 cho đáp án 3).
+- Mỗi tập con toàn cục được xác định duy nhất bởi cặp (tập con nửa trái, tập con
+  nửa phải), vì hai nửa rời nhau (không chung phần tử). Việc chọn độc lập tập con ở
+  mỗi nửa liệt kê đầy đủ và không trùng lặp tất cả 2^n tập con. Các phần tử được coi
+  là phân biệt theo vị trí (index), nên các giá trị trùng nhau vẫn được đếm như các
+  cách khác nhau — đúng theo yêu cầu đề bài (ví dụ mảng 1 2 3 2 cho đáp án 3).
 
 Về tràn số:
-- Tổng lớn nhất có thể là 40 · 10^9 = 4·10^10, vượt quá int nên dùng long long cho tổng.
-- Đáp án có thể lớn (tối đa cỡ 2^40), cũng dùng long long.
+- Tổng lớn nhất có thể là 40 · 10^9 = 4·10^10, vượt quá int nên dùng long long cho
+  tổng. Đáp án có thể lớn (tối đa cỡ 2^40), cũng dùng long long.
 
-Độ phức tạp:
+## Độ phức tạp
 - Sinh subset sums mỗi nửa: O(2^n1 · n1 + 2^n2 · n2) ≈ O(2^(n/2) · n).
 - Sắp xếp R: O(2^n2 · n2). Truy vấn: O(2^n1 · log(2^n2)).
-- Tổng thời gian ~ O(2^(n/2) · n) ≈ vài chục triệu phép tính, chạy dưới 1 giây bằng C++.
+- Tổng thời gian ~ O(2^(n/2) · n) ≈ vài chục triệu phép tính, chạy dưới 1 giây với C++.
 - Bộ nhớ: O(2^(n/2)) cho hai mảng tổng, khoảng vài MB, dưới 512 MB.

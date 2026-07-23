@@ -1,10 +1,13 @@
-Bài toán: Hamming Distance (CSES 2136)
+Hamming Distance - CSES 2136
+https://cses.fi/problemset/task/2136
 
+## Đề bài
 Cho n xâu nhị phân (n <= 2·10^4), mỗi xâu có độ dài k <= 30. Hãy tìm
 khoảng cách Hamming nhỏ nhất giữa hai xâu bất kỳ. Khoảng cách Hamming
 giữa hai xâu là số vị trí mà chúng khác nhau.
 
-Ý tưởng chính (bit-packing + popcount):
+## Ý tưởng
+Bit-packing kết hợp popcount:
 - Vì k <= 30, mỗi xâu nhị phân có thể đóng gói (pack) gọn vào một số
   nguyên không dấu 32 bit (unsigned int). Bit thứ j của số tương ứng
   với ký tự thứ j của xâu.
@@ -25,14 +28,14 @@ Tính đúng đắn:
 - Cắt tỉa: nếu ans = 0 (tồn tại hai xâu trùng nhau) thì không thể nhỏ
   hơn, ta dừng sớm; điều này không ảnh hưởng tính đúng đắn.
 
-Độ phức tạp:
-- Thời gian: O(n^2) phép so sánh, mỗi phép O(1) nhờ XOR + popcount
-  phần cứng. Với n = 2·10^4 thì số cặp khoảng 2·10^8, chạy nhanh dưới
-  giới hạn thời gian trong C++.
-- Bộ nhớ: O(n) để lưu n số nguyên 32 bit.
-
 Ghi chú kỹ thuật:
 - Dùng scanf để đọc nhanh. __builtin_popcount trên unsigned int
   thường biên dịch thành một lệnh POPCNT duy nhất trên phần cứng hiện
   đại, giúp vòng lặp trong cùng cực nhanh. Đây là bài mang bản chất
   O(n^2) với bitset, rất hợp với C++.
+
+## Độ phức tạp
+- Thời gian: O(n^2) phép so sánh, mỗi phép O(1) nhờ XOR + popcount
+  phần cứng. Với n = 2·10^4 thì số cặp khoảng 2·10^8, chạy nhanh dưới
+  giới hạn thời gian trong C++.
+- Bộ nhớ: O(n) để lưu n số nguyên 32 bit.

@@ -1,55 +1,56 @@
-Monster Game II — CSES 2085
+Monster Game II - CSES 2085
+https://cses.fi/problemset/task/2085
 
-Ý TƯỞNG CHÍNH
--------------
-Gọi dp[i] là tổng thời gian nhỏ nhất để tiêu diệt quái vật thứ i, với điều kiện
-i là con quái CUỐI CÙNG mà ta đánh trước thời điểm đó (các con nằm giữa được bỏ
-qua/chạy trốn). Đặt dp[0] = 0 và coi f_0 = x (skill factor ban đầu). Khi ta đã
-đánh con j (skill factor hiện tại là f_j) rồi bỏ qua tới con i thì chi phí giết
-con i là f_j * s_i. Vậy:
+## Đề bài
+Có n con quái vật, con thứ i có độ khó s_i và hệ số kỹ năng f_i. Ta khởi đầu với
+hệ số kỹ năng x. Chi phí (thời gian) để giết một con quái bằng hệ số kỹ năng hiện
+tại nhân với độ khó của con quái đó. Sau khi giết con j, hệ số kỹ năng của ta trở
+thành f_j (nhỏ dần). Ta được phép bỏ qua các con ở giữa, nhưng bắt buộc phải giết
+con quái cuối cùng n. Hãy tìm tổng thời gian nhỏ nhất để giết được con quái n.
+
+## Ý tưởng
+Gọi dp[i] là tổng thời gian nhỏ nhất để giết con quái thứ i, với điều kiện i là
+con quái CUỐI CÙNG mà ta đánh trước thời điểm đó (các con nằm giữa được bỏ qua).
+Đặt dp[0] = 0 và coi f_0 = x (hệ số kỹ năng ban đầu). Khi ta đã đánh con j (hệ số
+kỹ năng hiện tại là f_j) rồi bỏ qua tới con i thì chi phí giết con i là f_j * s_i.
+Vậy:
 
     dp[i] = min_{0 <= j < i} ( dp[j] + f_j * s_i )
 
 Đáp số là dp[n] (bắt buộc phải đánh con quái cuối cùng n).
 
-QUY VỀ MIN CỦA CÁC ĐƯỜNG THẲNG
-------------------------------
-Mỗi j sinh ra một đường thẳng theo biến t:
-        g_j(t) = f_j * t + dp[j]        (slope = f_j, intercept = dp[j])
-và dp[i] = min_j g_j(s_i), tức là giá trị nhỏ nhất của tập đường thẳng tại điểm
-truy vấn t = s_i.
+Quy về min của các đường thẳng: mỗi j sinh ra một đường thẳng theo biến t là
+g_j(t) = f_j * t + dp[j] (hệ số góc slope = f_j, tung độ gốc intercept = dp[j]),
+và dp[i] = min_j g_j(s_i), tức giá trị nhỏ nhất của tập đường thẳng tại điểm truy
+vấn t = s_i.
 
-Ở Monster Game I các slope f_j giảm dần và điểm truy vấn s_i tăng dần nên dùng
-convex hull trick tuyến tính (deque) được. Ở Monster Game II cả slope f_j lẫn
+Ở Monster Game I các hệ số góc f_j giảm dần và điểm truy vấn s_i tăng dần nên dùng
+convex hull trick tuyến tính (deque) được. Ở Monster Game II cả hệ số góc f_j lẫn
 điểm truy vấn s_i đều KHÔNG có tính đơn điệu, nên ta dùng Li Chao tree (dynamic
 convex hull trick) cho phép chèn đường thẳng bất kỳ và truy vấn min tại điểm bất
 kỳ, mỗi thao tác O(log).
 
-THUẬT TOÁN
-----------
+Thuật toán:
 - Miền truy vấn là các giá trị s_i, đều nằm trong [1, 10^6]. Dựng Li Chao tree
-  segment tree trên miền [0, 10^6]. Mỗi node giữ đúng một đường thẳng "tối ưu
-  nhất tại điểm giữa"; khi chèn ta đẩy đường thua xuống nửa phù hợp (O(log)).
-- Khởi tạo mọi node bằng "đường vô cực" (slope = 0, intercept = +INF) để đại
-  diện tập rỗng; nhờ vậy không cần cờ present riêng.
+  segment tree trên miền [0, 10^6]. Mỗi node giữ đúng một đường thẳng tối ưu nhất
+  tại điểm giữa; khi chèn ta đẩy đường thua xuống nửa phù hợp (O(log)).
+- Khởi tạo mọi node bằng đường vô cực (slope = 0, intercept = +INF) để đại diện
+  tập rỗng; nhờ vậy không cần cờ present riêng.
 - Chèn đường thẳng khởi đầu (slope = x, intercept = 0) ứng với j = 0.
 - Duyệt i = 1..n theo thứ tự:
     1) query tại điểm s_i để lấy dp[i] = min các đường đã chèn (mọi j < i),
     2) chèn đường thẳng (slope = f_i, intercept = dp[i]) cho các i tương lai.
 - In dp[n].
 
-TÍNH ĐÚNG
----------
-Li Chao tree luôn trả về đúng giá trị nhỏ nhất của tất cả đường thẳng đã chèn tại
-điểm truy vấn. Vì ta chỉ chèn đường của j trước khi query i (j < i), công thức
-quy hoạch động được tính đúng theo thứ tự phụ thuộc. Cận trên dp[i] <= x * s_i
-(chọn j = 0, tức đánh thẳng con i từ đầu) nên dp[i] <= 10^12; giá trị tại các
-đường (f_j * s_i + dp[j]) <= 2 * 10^12, gọn trong long long, không tràn số.
+Tính đúng: Li Chao tree luôn trả về đúng giá trị nhỏ nhất của tất cả đường thẳng
+đã chèn tại điểm truy vấn. Vì ta chỉ chèn đường của j trước khi query i (j < i),
+công thức quy hoạch động được tính đúng theo thứ tự phụ thuộc. Cận trên
+dp[i] <= x * s_i (chọn j = 0, tức đánh thẳng con i từ đầu) nên dp[i] <= 10^12;
+giá trị tại các đường (f_j * s_i + dp[j]) <= 2 * 10^12, gọn trong long long,
+không tràn số.
 
-ĐỘ PHỨC TẠP
------------
+## Độ phức tạp
 Thời gian: O(n log C) với C = 10^6 là kích thước miền (mỗi query/insert O(log C)).
 Bộ nhớ:    O(C) cho mảng segment tree của Li Chao tree (~64 MB, trong giới hạn).
-
-Với C++17 và Li Chao tree, ~2*10^5 thao tác * ~20 mức đệ quy là rất nhanh, thừa
+Với C++17 và Li Chao tree, ~2*10^5 thao tác nhân ~20 mức đệ quy là rất nhanh, thừa
 sức nằm trong time limit của CSES.

@@ -1,14 +1,13 @@
-Bài toán: Reachable Nodes (CSES 2138)
+Reachable Nodes - CSES 2138
+https://cses.fi/problemset/task/2138
 
-Đề bài
-------
+## Đề bài
 Cho một đồ thị có hướng không chu trình (DAG) gồm n đỉnh và m cạnh. Với mỗi đỉnh,
 hãy đếm số đỉnh có thể tới được từ đỉnh đó (kể cả chính nó).
 
 Ràng buộc: 1 <= n <= 5·10^4, 1 <= m <= 10^5.
 
-Ý tưởng chính
--------------
+## Ý tưởng
 Gọi reach[u] là tập các đỉnh tới được từ u. Vì đây là DAG nên có công thức truy hồi:
 
     reach[u] = {u}  hợp  (hợp của reach[v] với mọi cạnh u -> v)
@@ -26,15 +25,13 @@ Kết quả cho u là số bit đang bật, lấy bằng reach[u].count() (popco
 Vì phép hợp (OR) là idempotent nên các cạnh trùng hay nhiều đường đi cùng tới một
 đỉnh đều không gây đếm lặp — đây chính là lý do phải dùng bitset thay vì cộng số lượng.
 
-Tính đúng đắn
--------------
-Do xử lý theo topo ngược, khi tính reach[u] thì mọi reach[v] (v là đỉnh kề sau của u)
-đã hoàn chỉnh. Tập tới được từ u đúng bằng chính u hợp với tập tới được của các đỉnh
-kề trực tiếp — quy nạp theo thứ tự topo cho thấy công thức đúng cho mọi đỉnh. Phép OR
-trên bitset gộp các tập không trùng lặp, count() cho đúng lực lượng của tập kết quả.
+Tính đúng đắn: do xử lý theo topo ngược, khi tính reach[u] thì mọi reach[v] (v là đỉnh
+kề sau của u) đã hoàn chỉnh. Tập tới được từ u đúng bằng chính u hợp với tập tới được
+của các đỉnh kề trực tiếp — quy nạp theo thứ tự topo cho thấy công thức đúng cho mọi
+đỉnh. Phép OR trên bitset gộp các tập không trùng lặp, count() cho đúng lực lượng của
+tập kết quả.
 
-Độ phức tạp
------------
+## Độ phức tạp
 - Thời gian: mỗi cạnh gây một phép OR trên bitset độ dài n, tốn O(n/64). Tổng cộng
   O(m · n / 64) ≈ 10^5 · 50000 / 64 ≈ 8·10^7 phép toán từ (word) — rất nhanh trong
   C++. Thêm O(n + m) cho topo sort và O(n · n / 64) cho các popcount.

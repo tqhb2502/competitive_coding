@@ -1,22 +1,19 @@
-// Cut and Paste - CSES 2072
-// https://cses.fi/problemset/task/2072
-//
-// Implicit treap (rope): moi thao tac (a,b) cat doan [a,b] va dan vao cuoi xau.
-// Dung split/merge theo vi tri de di chuyen ca subtree trong O(log n).
-
 #include <bits/stdc++.h>
 using namespace std;
 
 const int MAXN = 200005;
 
-int lc[MAXN], rc[MAXN], sz[MAXN];
-unsigned long long pri[MAXN];
-char val[MAXN];
+// Implicit treap lưu bằng các mảng song song; node 0 đóng vai trò NULL.
+int lc[MAXN], rc[MAXN], sz[MAXN];   // con trái, con phải, size của cây con
+unsigned long long pri[MAXN];       // priority ngẫu nhiên để giữ max-heap
+char val[MAXN];                     // ký tự tại mỗi node
 int cnt = 0;
 
+// Priority lấy từ mt19937_64 để gần như không trùng, tránh cây bị lệch.
 mt19937_64 rng(
     (unsigned long long)chrono::steady_clock::now().time_since_epoch().count());
 
+// Tạo node mới giữ một ký tự, size = 1.
 inline int newNode(char c) {
     int id = ++cnt;
     lc[id] = rc[id] = 0;
@@ -26,11 +23,13 @@ inline int newNode(char c) {
     return id;
 }
 
+// Cập nhật lại size của node t từ hai cây con.
 inline void update(int t) {
     if (t) sz[t] = sz[lc[t]] + sz[rc[t]] + 1;
 }
 
-// Tach t thanh (a, b): a giu k phan tu dau (in-order), b giu phan con lai.
+// Tách t thành (a, b): a giữ k phần tử đầu theo in-order, b giữ phần còn lại.
+// Tại t, nếu size con trái < k thì t thuộc a và đi tiếp sang con phải.
 void split(int t, int k, int &a, int &b) {
     if (!t) { a = b = 0; return; }
     if (sz[lc[t]] < k) {
@@ -44,7 +43,7 @@ void split(int t, int k, int &a, int &b) {
     }
 }
 
-// Noi a truoc b, giu max-heap theo priority.
+// Nối cây a đứng trước cây b; chọn gốc là node có priority lớn hơn để giữ max-heap.
 int merge(int a, int b) {
     if (!a) return b;
     if (!b) return a;
@@ -68,20 +67,22 @@ int main() {
     string s;
     cin >> s;
 
+    // Xây cây ban đầu bằng cách merge từng ký tự vào cuối.
     int root = 0;
     for (int i = 0; i < n; ++i)
         root = merge(root, newNode(s[i]));
 
+    // Mỗi thao tác cắt đoạn [a, b] ra rồi dán vào cuối: chỉ 2 split + 2 merge.
     while (m--) {
         int a, b;
         cin >> a >> b;
         int T1, R, A, M;
         split(root, b, T1, R);      // T1 = [1..b], R = [b+1..n]
-        split(T1, a - 1, A, M);     // A = [1..a-1], M = [a..b]
-        root = merge(merge(A, R), M);
+        split(T1, a - 1, A, M);     // A = [1..a-1], M = [a..b] (đoạn bị cắt)
+        root = merge(merge(A, R), M); // xâu mới = A + R + M
     }
 
-    // Duyet in-order iterative de lay xau ket qua.
+    // Duyệt in-order lặp (stack thủ công) để lấy xâu kết quả, tránh tràn stack.
     string res;
     res.reserve(cnt);
     static int st[MAXN];

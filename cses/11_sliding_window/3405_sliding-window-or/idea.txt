@@ -1,37 +1,46 @@
-Bài toán: Sliding Window Or (CSES 3405)
+Sliding Window Or - CSES 3405
+https://cses.fi/problemset/task/3405
 
-Đề bài:
-- Mảng a[1..n] được sinh bởi công thức: x1 = x, xi = (a*x[i-1] + b) mod c.
-- Với mỗi cửa sổ (window) độ dài k liên tiếp, tính OR bit của tất cả phần tử trong cửa sổ.
-- In ra XOR của tất cả các giá trị OR đó.
+## Đề bài
+- Mảng a[1..n] được sinh bởi công thức truy hồi: x1 = x, x[i] = (a*x[i-1] + b) mod c,
+  trong đó phần tử a[i] chính là x[i].
+- Với mỗi cửa sổ (window) độ dài k liên tiếp, tính phép OR bit của tất cả phần tử
+  trong cửa sổ.
+- In ra XOR của toàn bộ các giá trị OR đó.
 - Ràng buộc: 1 <= k <= n <= 10^7; 0 <= x, a, b <= 10^9; 1 <= c <= 10^9.
-  Suy ra mọi giá trị phần tử < 2^30 (30 bit là đủ).
+  Suy ra mọi giá trị phần tử đều nhỏ hơn c <= 10^9 < 2^30.
 
-Kỹ thuật: sliding window + đếm số bit (bit-count) để duy trì OR động.
+## Ý tưởng
+- Vì n có thể lớn tới 10^7 nên phải sinh mảng và trả lời mọi cửa sổ trong thời gian
+  tuyến tính, đồng thời tiết kiệm bộ nhớ (chỉ giữ một khối kích thước k chứ không giữ
+  cả mảng).
+- Sinh dãy nhanh: dùng một Generator theo mô hình LCG. Để tránh phép chia và lấy dư
+  chậm khi lặp tới 10^7 lần, ta tính trước nghịch đảo (reciprocal) của modulus rồi
+  dùng nhân 128-bit theo kiểu Barrett reduction để lấy phần dư chỉ bằng phép nhân và
+  dịch bit.
+- Vài trường hợp đặc biệt được xử lý trực tiếp cho gọn và nhanh:
+  * c = 1: dãy trở thành x, 0, 0, ... nên chỉ đúng một cửa sổ chứa x; đáp án là x.
+  * k = 1: mỗi cửa sổ chỉ gồm một phần tử, đáp án là XOR của tất cả phần tử.
+  * k = n: chỉ có duy nhất một cửa sổ, đáp án là OR của toàn mảng.
+- Trường hợp tổng quát dùng kỹ thuật chia khối (block decomposition) cho sliding
+  window OR:
+  * Chia dãy thành các khối liên tiếp kích thước k. Mỗi cửa sổ độ dài k luôn nằm gọn
+    trong hai khối kề nhau: một đoạn hậu tố (suffix) của khối trước và một đoạn tiền tố
+    (prefix) của khối sau.
+  * Với khối trước, tính sẵn suffix OR: block[i] = OR của các phần tử từ vị trí i cho
+    tới hết khối.
+  * Duyệt khối sau và duy trì prefix OR tăng dần. Cửa sổ kết thúc tại vị trí offset của
+    khối sau có OR = suffixOR[offset+1] | prefixOR[0..offset]; khi cửa sổ trùng đúng cả
+    khối sau (offset = k-1) thì OR chỉ còn bằng prefix.
+  * XOR mỗi giá trị OR của cửa sổ vào đáp án. Cửa sổ đầu tiên (đúng bằng khối đầu) được
+    tính riêng bằng OR của khối đầu.
+  * Sau khi xử lý xong một khối, ghi đè khối bằng các giá trị thô rồi tính lại suffix OR
+    để nó đóng vai trò "khối trước" cho khối kế tiếp.
+- Tính đúng đắn: mọi cửa sổ đều được tách thành hậu tố khối trước và tiền tố khối sau,
+  hai đoạn này rời nhau và ghép lại đúng bằng k phần tử của cửa sổ, nên OR ghép chính xác.
 
-Ý tưởng chính:
-- Phép OR KHÔNG có phần tử nghịch đảo (không "trừ" ra được như prefix sum),
-  nên khi một phần tử rời cửa sổ ta không thể đơn giản xóa nó khỏi giá trị OR.
-- Cách xử lý: với mỗi bit b (0..29) duy trì cnt[b] = số phần tử trong cửa sổ
-  hiện tại có bit b bằng 1. Giá trị OR của cửa sổ = tập các bit b có cnt[b] > 0.
-- Ta duy trì thêm biến cur là giá trị OR hiện tại một cách incremental:
-  * Khi THÊM phần tử v: với mỗi bit set của v, nếu cnt[b] tăng từ 0 lên 1 thì
-    bật bit b trong cur.
-  * Khi XÓA phần tử w: với mỗi bit set của w, nếu cnt[b] giảm về 0 thì tắt bit b
-    trong cur.
-- Duyệt i từ 0..n-1: thêm a[i], nếu i >= k thì xóa a[i-k] (phần tử rời cửa sổ);
-  khi i >= k-1 (cửa sổ đã đủ k phần tử) thì lấy cur XOR vào đáp án.
-
-Tính đúng đắn:
-- Sau khi thêm a[i] và xóa a[i-k], cửa sổ đang chứa đúng các chỉ số [i-k+1, i].
-- cnt[b] luôn phản ánh chính xác số phần tử trong cửa sổ có bit b; cur bật bit b
-  khi và chỉ khi cnt[b] > 0, tức đúng bằng OR của cửa sổ. Cập nhật cur chỉ đổi
-  trạng thái tại các thời điểm cnt[b] chuyển 0<->1 nên luôn nhất quán.
-- Việc thêm trước, xóa sau trong cùng vòng lặp không gây lỗi: nếu a[i] và a[i-k]
-  cùng có bit b thì cnt[b] chỉ dao động quanh giá trị dương, bit vẫn giữ đúng.
-
-Độ phức tạp:
-- Sinh mảng: O(n) với phép nhân dùng unsigned long long (a*prev tối đa ~10^18).
-- Mỗi phần tử được thêm và xóa đúng một lần; mỗi thao tác duyệt qua số bit đang
-  bật (tối đa 30). Tổng thời gian O(n * 30) trong trường hợp xấu nhất, thực tế
-  chỉ duyệt các bit set nên nhanh hơn. Bộ nhớ O(n) để lưu mảng (mảng int 10^7 ~ 40MB).
+## Độ phức tạp
+- Thời gian: O(n) — mỗi phần tử được sinh đúng một lần và mỗi cửa sổ được trả lời trong
+  O(1) nhờ suffix OR và prefix OR; việc sinh dãy dùng nhân 64/128-bit thay cho phép lấy
+  dư nên rất nhanh.
+- Bộ nhớ: O(k) — chỉ lưu một khối kích thước k thay vì toàn bộ mảng 10^7 phần tử.

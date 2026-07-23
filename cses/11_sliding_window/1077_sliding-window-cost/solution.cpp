@@ -1,10 +1,3 @@
-// Sliding Window Cost - CSES 1077
-// https://cses.fi/problemset/task/1077
-//
-// Với mỗi cửa sổ k phần tử, chi phí tối thiểu để đưa về cùng một giá trị là
-// sum |a_i - median|. Dùng two multisets (low/high) cân bằng để duy trì median
-// và hai biến sum tích lũy, cập nhật O(log k) khi cửa sổ trượt.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -17,12 +10,13 @@ int main() {
     vector<long long> a(n);
     for (auto &x : a) cin >> x;
 
-    // low: nửa nhỏ (max của low là median); high: nửa lớn.
-    // Bất biến: low.size() == high.size() hoặc low.size() == high.size()+1,
-    // và mọi phần tử low <= mọi phần tử high.
+    // two multisets: low giữ nửa nhỏ (max của low là median), high giữ nửa lớn.
+    // Bất biến: low.size() == high.size() hoặc low.size() == high.size()+1, và
+    // mọi phần tử của low <= mọi phần tử của high. sumLow/sumHigh là tổng tích lũy.
     multiset<long long> low, high;
     long long sumLow = 0, sumHigh = 0;
 
+    // rebalance: chuyển phần tử biên giữa low/high cho tới khi phục hồi bất biến.
     auto rebalance = [&]() {
         while (low.size() > high.size() + 1) {
             auto it = prev(low.end());       // max của low
@@ -38,6 +32,7 @@ int main() {
         }
     };
 
+    // add: chèn x vào low nếu x <= median hiện tại, ngược lại vào high.
     auto add = [&](long long x) {
         if (low.empty() || x <= *low.rbegin()) {
             low.insert(x); sumLow += x;
@@ -47,6 +42,7 @@ int main() {
         rebalance();
     };
 
+    // remove: tìm x trong low trước, nếu không có thì trong high, rồi xóa một bản.
     auto remove = [&](long long x) {
         auto it = low.find(x);
         if (it != low.end()) {
@@ -61,10 +57,12 @@ int main() {
     vector<long long> ans;
     ans.reserve(n - k + 1);
 
+    // Trượt cửa sổ: thêm phần tử phải, khi đủ k phần tử thì tính chi phí rồi bỏ trái.
     for (int i = 0; i < n; i++) {
         add(a[i]);
         if (i >= k - 1) {
-            long long m = *low.rbegin();     // median
+            long long m = *low.rbegin();     // median = phần tử lớn nhất của low
+            // cost = sum (m - a_i) trên low + sum (a_i - m) trên high = sum |a_i - m|
             long long cost = (m * (long long)low.size() - sumLow)
                            + (sumHigh - m * (long long)high.size());
             ans.push_back(cost);

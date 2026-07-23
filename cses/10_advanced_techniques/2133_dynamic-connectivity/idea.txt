@@ -1,73 +1,63 @@
 Dynamic Connectivity - CSES 2133
+https://cses.fi/problemset/task/2133
 
-BAI TOAN
---------
-Cho do thi vo huong voi n dinh va m canh ban dau. Sau do co k su kien, moi su
-kien la them mot canh (loai 1) hoac xoa mot canh (loai 2). Ta phai in ra k+1 so:
-so thanh phan lien thong cua do thi ban dau (truoc su kien dau tien), va sau moi
-su kien tiep theo.
+## Đề bài
+Cho đồ thị vô hướng với n đỉnh và m cạnh ban đầu. Sau đó có k sự kiện, mỗi sự
+kiện là thêm một cạnh (loại 1) hoặc xóa một cạnh (loại 2). Ta phải in ra k+1 số:
+số thành phần liên thông của đồ thị ban đầu (trước sự kiện đầu tiên), và sau mỗi
+sự kiện tiếp theo.
 
-Rang buoc: 2 <= n <= 1e5; 1 <= m, k <= 1e5.
+Ràng buộc: 2 <= n <= 1e5; 1 <= m, k <= 1e5.
 
-Y TUONG CHINH: offline dynamic connectivity
---------------------------------------------
-Bai toan them/xoa canh khong the giai truc tiep bang DSU thong thuong vi DSU
-khong ho tro thao tac xoa (undo). Ky thuat chuan la:
+## Ý tưởng
+Đây là bài toán offline dynamic connectivity. Việc thêm/xóa cạnh không thể giải
+trực tiếp bằng DSU thông thường vì DSU không hỗ trợ thao tác xóa (undo). Kỹ thuật
+chuẩn là: segment tree trên trục thời gian + DSU-with-rollback (union by size,
+KHÔNG path compression).
 
-  segment tree tren truc thoi gian + DSU-with-rollback (union by size, KHONG
-  path compression).
+Coi các "trạng thái" là 0, 1, ..., k (trạng thái 0 là đồ thị ban đầu, trạng thái
+t là sau khi áp dụng t sự kiện đầu tiên). Mỗi cạnh cụ thể tồn tại trong một (hoặc
+nhiều) khoảng liên tiếp các trạng thái:
+  - Cạnh ban đầu: bắt đầu tồn tại từ trạng thái 0.
+  - Cạnh thêm bởi sự kiện i (loại 1): bắt đầu tồn tại từ trạng thái i.
+  - Cạnh xóa bởi sự kiện i (loại 2): tồn tại trong khoảng [start, i-1], với start
+    là thời điểm nó được thêm vào (hoặc 0 nếu là cạnh ban đầu).
+  - Cạnh không bao giờ bị xóa: tồn tại đến tận trạng thái k, khoảng [start, k].
 
-Coi cac "trang thai" la 0, 1, ..., k (trang thai 0 la do thi ban dau, trang thai
-t la sau khi ap dung t su kien dau tien). Moi canh cu the ton tai trong mot (hoac
-nhieu) khoang lien tiep cac trang thai:
+Ta dùng một unordered_map từ mã hóa cặp đỉnh (min*BASE + max) sang một stack các
+thời điểm start đang "mở". Khi xóa cạnh, ta lấy start ở đỉnh stack ra và sinh một
+khoảng [start, i-1]. Cách dùng stack xử lý đúng cả trường hợp có nhiều cạnh trùng
+lặp giữa cùng một cặp đỉnh (multi-edge), vì mỗi bản sao có tuổi thọ riêng.
 
-  - Canh ban dau: bat dau ton tai tu trang thai 0.
-  - Canh them boi su kien i (loai 1): bat dau ton tai tu trang thai i.
-  - Canh xoa boi su kien i (loai 2): ton tai trong khoang [start, i-1], voi start
-    la thoi diem no duoc them vao (hoac 0 neu la canh ban dau).
-  - Canh khong bao gio bi xoa: ton tai den tan trang thai k, khoang [start, k].
+Segment tree trên thời gian: xây segment tree trên miền [0, k] (k+1 lá). Với mỗi
+(cạnh, khoảng [l, r]), ta thêm cạnh đó vào O(log k) node phủ khoảng [l, r] (giống
+cách cập nhật "lazy" phủ đoạn). Tổng số bản ghi là O((m + k) log k), vừa đủ bộ nhớ.
 
-Ta dung mot unordered_map tu ma hoa cap dinh (min*BASE + max) sang mot stack cac
-thoi diem start dang "mo". Khi xoa canh, ta lay start o dinh stack ra va sinh mot
-khoang [start, i-1]. Cach dung stack xu ly dung ca truong hop co nhieu canh trung
-lap giua cung mot cap dinh (multi-edge), vi moi ban sao co tuoi tho rieng.
-
-SEGMENT TREE TREN THOI GIAN
----------------------------
-Xay segment tree tren mien [0, k] (k+1 la). Voi moi (canh, khoang [l, r]), ta them
-canh do vao O(log k) node phu khoang [l, r] (giong cach cap nhat "lazy" phu doan).
-Tong so ban ghi la O((m + k) log k), vua du bo nho.
-
-Sau do DFS segment tree:
-  - Tai moi node: ghi lai checkpoint = kich thuoc stack rollback, roi union tat ca
-    cac canh luu tai node do.
-  - Neu la node la (nl == nr): so thanh phan lien thong cua trang thai nl chinh la
-    dsu.comp hien tai.
-  - Neu khong phai la: de quy xuong hai con.
-  - Truoc khi tra ve: rollback tat ca cac union da thuc hien tai node nay ve
+Sau đó DFS segment tree:
+  - Tại mỗi node: ghi lại checkpoint = kích thước stack rollback, rồi union tất cả
+    các cạnh lưu tại node đó.
+  - Nếu là node lá (nl == nr): số thành phần liên thông của trạng thái nl chính là
+    dsu.comp hiện tại.
+  - Nếu không phải lá: đệ quy xuống hai con.
+  - Trước khi trả về: rollback tất cả các union đã thực hiện tại node này về
     checkpoint.
 
-DSU-with-rollback
------------------
-Dung union by size de cay find co do cao O(log n), va KHONG dung path compression
-(vi path compression khong the undo mot cach re tien). Moi lan union thuc su lam
-thay doi cau truc, ta luu (root, child) vao stack ops va giam bien dem comp. Khi
-rollback, ta bat cac ban ghi ra khoi stack, khoi phuc par[child] = child, tru lai
-sz[root], va tang comp. So thanh phan lien thong luon bang comp = n - (so union
-thanh cong tren duong tu goc xuong node hien tai).
+DSU-with-rollback: dùng union by size để cây find có độ cao O(log n), và KHÔNG
+dùng path compression (vì path compression không thể undo một cách rẻ tiền). Mỗi
+lần union thực sự làm thay đổi cấu trúc, ta lưu (root, child) vào stack ops và
+giảm biến đếm comp. Khi rollback, ta bật các bản ghi ra khỏi stack, khôi phục
+par[child] = child, trừ lại sz[root], và tăng comp. Số thành phần liên thông luôn
+bằng comp = n - (số union thành công trên đường từ gốc xuống node hiện tại).
 
-TINH DUNG DAN
--------------
-Tai moi trang thai t, tap canh dang "song" la dung tap canh ma cac khoang ton tai
-cua chung chua t. Trong qua trinh DFS, tren duong tu goc den la t, cac node ma ta
-di qua chinh la cac node ma segment tree dung de bieu dien tap khoang chua t; do
-do tat ca (va chi) cac canh song tai t da duoc union khi ta cham la t. Vi vay
-dsu.comp tai la t la so thanh phan lien thong dung cua trang thai t.
+Tính đúng đắn: tại mỗi trạng thái t, tập cạnh đang "sống" là đúng tập cạnh mà các
+khoảng tồn tại của chúng chứa t. Trong quá trình DFS, trên đường từ gốc đến lá t,
+các node mà ta đi qua chính là các node mà segment tree dùng để biểu diễn tập
+khoảng chứa t; do đó tất cả (và chỉ) các cạnh sống tại t đã được union khi ta chạm
+lá t. Vì vậy dsu.comp tại lá t là số thành phần liên thông đúng của trạng thái t.
 
-DO PHUC TAP
------------
-- Thoi gian: O((m + k) log k * alpha) ~ O((m + k) log k * log n). Moi canh xuat
-  hien trong O(log k) node, moi union/find ton O(log n). Voi n, m, k = 1e5 chay
-  rat nhanh trong gioi han thoi gian cua CSES.
-- Bo nho: O((m + k) log k) cho cac ban ghi canh trong segment tree, cong O(n) cho
-  DSU va O(k) cho mang ket qua.
+## Độ phức tạp
+- Thời gian: O((m + k) log k * alpha) ~ O((m + k) log k * log n). Mỗi cạnh xuất
+  hiện trong O(log k) node, mỗi union/find tốn O(log n). Với n, m, k = 1e5 chạy
+  rất nhanh trong giới hạn thời gian của CSES.
+- Bộ nhớ: O((m + k) log k) cho các bản ghi cạnh trong segment tree, cộng O(n) cho
+  DSU và O(k) cho mảng kết quả.

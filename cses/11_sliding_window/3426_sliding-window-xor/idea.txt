@@ -1,49 +1,43 @@
-Bài toán: Sliding Window Xor (CSES 3426)
+Sliding Window Xor - CSES 3426
+https://cses.fi/problemset/task/3426
 
-TÓM TẮT ĐỀ:
-- Mảng có n phần tử được SINH ra (không đọc trực tiếp) bằng công thức:
+## Đề bài
+- Mảng gồm n phần tử được SINH ra (không đọc trực tiếp) theo công thức truy hồi:
     x_1 = x
     x_i = (a * x_{i-1} + b) mod c   với i = 2..n
   Đầu vào chỉ gồm n, k rồi bốn tham số x, a, b, c.
 - Với mỗi cửa sổ (window) độ dài k (có tất cả n-k+1 cửa sổ), tính XOR của các
-  phần tử trong cửa sổ. Sau đó lấy XOR của TẤT CẢ các giá trị window-xor đó.
-  In ra kết quả cuối cùng.
+  phần tử trong cửa sổ. Sau đó lấy XOR của TẤT CẢ các giá trị window-xor đó và
+  in ra kết quả cuối cùng.
+- Ràng buộc: 1 <= k <= n <= 10^7 ; 0 <= x, a, b <= 10^9 ; 1 <= c <= 10^9.
 
-RÀNG BUỘC:
-- 1 <= k <= n <= 10^7
-- 0 <= x, a, b <= 10^9 ; 1 <= c <= 10^9
-
-KỸ THUẬT: sliding window + prefix xor (XOR cộng dồn theo cửa sổ trượt).
-
-Ý TƯỞNG CHÍNH:
+## Ý tưởng
+- Kỹ thuật: sliding window + prefix xor (XOR cộng dồn theo cửa sổ trượt).
 1) Sinh mảng arr[0..n-1] theo công thức truy hồi. Lưu ý x_1 = x giữ nguyên (có
    thể lớn hơn c), chỉ các phần tử sau mới lấy mod c. Tích a * x_{i-1} có thể tới
    10^9 * 10^9 = 10^18 nên phải dùng long long khi nhân trước khi lấy mod.
 2) Vì phép XOR có tính chất tự nghịch đảo (t ^ t = 0), khi cửa sổ trượt sang phải
-   một bước ta chỉ cần: bỏ phần tử rời khỏi cửa sổ và thêm phần tử mới vào:
-       window_xor ^= arr[i-k];   // phần tử rời đi
-       window_xor ^= arr[i];     // phần tử mới vào
+   một bước ta chỉ cần bỏ phần tử rời khỏi cửa sổ và thêm phần tử mới vào:
+       window_xor ^= arr[i-k];   // phần tử rời đi bị triệt tiêu
+       window_xor ^= arr[i];     // phần tử mới được cộng vào
    Đây chính là bản chất của prefix xor: window_xor của cửa sổ [i, i+k-1] bằng
    P[i+k] ^ P[i] với P là mảng XOR tiền tố; nhưng cách cập nhật tăng dần ở trên
    tránh phải lưu thêm mảng P.
-3) Khởi tạo window_xor bằng XOR của k phần tử đầu (đó là cửa sổ đầu tiên), gán
-   vào ans. Sau đó trượt cửa sổ đến hết mảng, mỗi lần cập nhật window_xor rồi
-   XOR vào ans. Cuối cùng in ans.
+3) Khởi tạo window_xor bằng XOR của k phần tử đầu (cửa sổ đầu tiên), gán vào ans.
+   Sau đó trượt cửa sổ đến hết mảng, mỗi lần cập nhật window_xor rồi XOR vào ans.
+   Cuối cùng in ans.
 
-TÍNH ĐÚNG ĐẮN:
-- Window đầu tiên [0, k-1] được tính trực tiếp và đúng.
-- Mỗi bước trượt, do XOR tự nghịch đảo, việc XOR thêm phần tử rời đi sẽ triệt tiêu
-  đóng góp của nó, còn XOR phần tử mới thêm đóng góp của nó, nên window_xor luôn
-  đúng cho cửa sổ hiện tại.
-- Số cửa sổ đúng bằng n-k+1: cửa sổ đầu + (n-k) lần trượt.
-- Giá trị phần tử < c <= 10^9 < 2^30, và x <= 10^9, nên mọi XOR nằm gọn trong int.
+- Tính đúng đắn: cửa sổ đầu [0, k-1] được tính trực tiếp và đúng. Mỗi bước trượt,
+  do XOR tự nghịch đảo, việc XOR thêm phần tử rời đi sẽ triệt tiêu đóng góp của nó,
+  còn XOR phần tử mới thêm đóng góp của nó, nên window_xor luôn đúng cho cửa sổ
+  hiện tại. Số cửa sổ đúng bằng n-k+1 (cửa sổ đầu + n-k lần trượt). Vì mọi giá trị
+  < c <= 10^9 < 2^30 và x <= 10^9 nên mọi XOR nằm gọn trong int.
 
-ĐỘ PHỨC TẠP:
+- Lưu ý cài đặt: đầu vào rất nhỏ (chỉ 6 số) nên I/O không phải nút cổ chai; nút cổ
+  chai là vòng lặp sinh mảng và trượt cửa sổ với n tới 10^7 -> dùng vòng lặp đơn
+  giản, tránh cấp phát thừa.
+
+## Độ phức tạp
 - Thời gian: O(n) — một lượt sinh mảng và một lượt trượt cửa sổ.
 - Bộ nhớ: O(n) để lưu mảng đã sinh (mảng int tĩnh ~ 40 MB với n = 10^7, nằm trong
   giới hạn bộ nhớ của CSES).
-
-LƯU Ý CÀI ĐẶT:
-- Đầu vào rất nhỏ (chỉ 6 số) nên I/O không phải nút cổ chai; nút cổ chai là vòng
-  lặp sinh mảng và trượt cửa sổ với n tới 10^7 -> dùng vòng lặp đơn giản, tránh
-  cấp phát thừa.

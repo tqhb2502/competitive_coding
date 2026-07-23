@@ -1,43 +1,42 @@
-Bài toán: Houses and Schools (CSES 2087)
+Houses and Schools - CSES 2087
+https://cses.fi/problemset/task/2087
 
-1. Phát biểu
-- Có n nhà xếp thẳng hàng ở các vị trí 1..n; nhà thứ i có c[i] trẻ em.
-- Đặt k trường học tại k nhà nào đó. Mỗi trẻ đi tới trường gần nhất, khoảng cách
-  bằng |hiệu vị trí|. Cần tối thiểu hóa tổng khoảng cách đi lại.
+## Đề bài
+- Có n ngôi nhà xếp thẳng hàng ở các vị trí 1..n; nhà thứ i có c[i] trẻ em.
+- Đặt k trường học tại k ngôi nhà nào đó. Mỗi trẻ đi tới trường gần nhất, khoảng
+  cách bằng trị tuyệt đối hiệu vị trí. Cần tối thiểu hóa tổng khoảng cách đi lại.
 - Ràng buộc: 1 <= k <= n <= 3000, 1 <= c[i] <= 10^9.
 
-2. Nhận xét cấu trúc
-- Trong lời giải tối ưu, tập nhà phục vụ bởi mỗi trường là một đoạn LIÊN TIẾP
-  (vì mỗi trẻ chọn trường gần nhất nên các nhà quanh một trường tạo thành đoạn).
-- Vậy bài toán quy về: chia n nhà thành đúng k đoạn liên tiếp; mỗi đoạn đặt trường
-  tại weighted median (trung vị theo trọng số) để tối thiểu tổng c[i]*|i - median|.
-  Với chuẩn L1, weighted median là điểm tối ưu.
+## Ý tưởng
+- Nhận xét cấu trúc: trong lời giải tối ưu, tập nhà phục vụ bởi mỗi trường là một
+  đoạn LIÊN TIẾP (vì mỗi trẻ chọn trường gần nhất nên các nhà quanh một trường tạo
+  thành một đoạn). Do đó bài toán quy về việc chia n nhà thành đúng k đoạn liên tiếp.
+- Mỗi đoạn đặt trường tại weighted median (trung vị theo trọng số) để tối thiểu tổng
+  c[i]*|i - median|; với chuẩn L1, weighted median chính là điểm tối ưu.
+- Công thức chi phí đoạn cost(l,r):
+  - Gọi pc[] là tiền tố của c, pw[] là tiền tố của i*c[i].
+  - Median m là chỉ số nhỏ nhất trong [l,r] sao cho 2*(pc[m]-pc[l-1]) >= tổng trọng số.
+  - cost(l,r) = m*(pc[m]-pc[l-1]) - (pw[m]-pw[l-1])   (phần bên trái m)
+              + (pw[r]-pw[m]) - m*(pc[r]-pc[m]).      (phần bên phải m)
+  - Hàm cost thỏa quadrangle inequality (điều kiện Monge).
+- Quy hoạch động và tối ưu:
+  - dp[i][j] = chi phí nhỏ nhất khi phục vụ i nhà đầu bằng j trường (tức j đoạn).
+    dp[i][j] = min_{p<i} dp[p][j-1] + cost(p+1, i), với dp[0][0] = 0. Đáp số là dp[n][k].
+  - Vì cost là Monge nên điểm tối ưu opt[i] không giảm theo i, nên mỗi tầng j tính
+    được bằng Divide & Conquer DP optimization: chỉ tốn O(n log n) lần truy vấn cost.
+- Làm cost(l,r) thành O(1):
+  - Tính trước bảng C[r][l] = cost([l,r]). Cố định r, cho l giảm dần từ r về 1: khi l
+    giảm, weighted median m di chuyển đơn điệu về trái nên dùng two-pointer, O(n) mỗi r.
+  - Bảng lưu dạng C[r][l] để lúc D&C truy cập C[mid][p+1] theo hàng liên tiếp (thân
+    thiện với cache).
+- Tính đúng đắn:
+  - Phân hoạch thành đoạn liên tiếp là tối ưu (đối số nhà gần trường nhất).
+  - Trong mỗi đoạn, weighted median tối thiểu tổng khoảng cách L1 có trọng số.
+  - Điều kiện Monge bảo đảm D&C optimization cho kết quả đúng của quy hoạch động phân đoạn.
 
-3. Công thức chi phí đoạn cost(l,r)
-- Gọi pc[] là tiền tố của c, pw[] là tiền tố của i*c[i].
-- Median m là chỉ số nhỏ nhất trong [l,r] sao cho 2*(pc[m]-pc[l-1]) >= tổng trọng số.
-- cost(l,r) = m*(pc[m]-pc[l-1]) - (pw[m]-pw[l-1])   // phần bên trái m
-            + (pw[r]-pw[m]) - m*(pc[r]-pc[m]).       // phần bên phải m
-- Hàm cost thỏa quadrangle inequality (điều kiện Monge).
-
-4. Quy hoạch động và tối ưu
-- dp[i][j] = chi phí nhỏ nhất khi phục vụ i nhà đầu bằng j trường (j đoạn).
-  dp[i][j] = min_{p<i} dp[p][j-1] + cost(p+1, i),  dp[0][0] = 0. Đáp số dp[n][k].
-- Vì cost là Monge nên điểm tối ưu opt[i] không giảm theo i => mỗi tầng j tính được
-  bằng Divide & Conquer DP optimization: chỉ tốn O(n log n) lần truy vấn cost/tầng.
-
-5. Làm cost(l,r) thành O(1)
-- Tính trước bảng C[r][l] = cost([l,r]). Cố định r, cho l giảm từ r về 1: khi l giảm,
-  weighted median m di chuyển đơn điệu về trái => dùng two-pointer, O(n) mỗi r.
-- Bảng lưu dạng C[r][l] để lúc D&C truy cập C[mid][p+1] theo hàng liên tiếp (thân thiện cache).
-
-6. Tính đúng đắn
-- Phân hoạch thành đoạn liên tiếp là tối ưu (đối số nhà gần trường nhất).
-- Trong mỗi đoạn, weighted median tối thiểu tổng khoảng cách L1 có trọng số.
-- Điều kiện Monge bảo đảm D&C optimization cho kết quả đúng của quy hoạch động phân đoạn.
-
-7. Độ phức tạp
-- Tiền xử lý bảng cost: O(n^2) thời gian, O(n^2) bộ nhớ (~72MB long long, nằm trong giới hạn).
+## Độ phức tạp
+- Tiền xử lý bảng cost: O(n^2) thời gian, O(n^2) bộ nhớ (~72MB long long, nằm trong
+  giới hạn).
 - Quy hoạch động: O(n*k*log n) thời gian.
 - Tổng: O(n^2 + n*k*log n) thời gian; đủ nhanh cho n,k <= 3000.
-- Dùng long long vì chi phí có thể tới ~9*10^15.
+- Dùng long long vì chi phí có thể lên tới khoảng 9*10^15.

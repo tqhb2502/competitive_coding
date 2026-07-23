@@ -1,54 +1,49 @@
-Parcel Delivery (CSES 2121)
+Parcel Delivery - CSES 2121
+https://cses.fi/problemset/task/2121
 
-Tóm tắt bài toán
-----------------
+## Đề bài
 Cho một đồ thị CÓ HƯỚNG gồm n thành phố và m tuyến đường. Mỗi tuyến đi từ a đến b có
 sức chứa r (số bưu kiện tối đa có thể đi qua tuyến này) và chi phí c cho MỖI bưu kiện.
 Cần chuyển đúng k bưu kiện từ thành phố 1 đến thành phố n sao cho TỔNG chi phí nhỏ nhất.
 Nếu không thể chuyển đủ k bưu kiện thì in ra -1.
 
-Kỹ thuật: Min-Cost Max-Flow (MCMF) với lượng luồng cố định = k
--------------------------------------------------------------
-Đây chính là bài toán luồng cực tiểu chi phí (min-cost flow) với một lượng luồng
-định trước. Ta xây dựng mạng luồng:
+## Ý tưởng
+Đây chính là bài toán luồng cực tiểu chi phí (min-cost flow) với một lượng luồng cố
+định định trước = k, giải bằng kỹ thuật Min-Cost Max-Flow (MCMF).
+
+Xây dựng mạng luồng:
   - Nguồn source = thành phố 1, đích sink = thành phố n.
-  - Với mỗi tuyến (a, b, r, c) thêm một cạnh có hướng a -> b với capacity = r,
-    cost = c. Đồng thời thêm cạnh ngược b -> a với capacity = 0, cost = -c
-    (cạnh residual dùng để hoàn (undo) luồng).
+  - Với mỗi tuyến (a, b, r, c) thêm một cạnh có hướng a -> b với capacity = r, cost = c.
+    Đồng thời thêm cạnh ngược b -> a với capacity = 0, cost = -c (cạnh residual dùng để
+    hoàn (undo) luồng).
   - Ta muốn đẩy đúng k đơn vị luồng từ source tới sink với tổng chi phí nhỏ nhất.
 
-Thuật toán Successive Shortest Paths (SSP)
-------------------------------------------
-Lặp: mỗi vòng tìm đường đi RẺ NHẤT (theo cost) từ source tới sink trên đồ thị
-residual (chỉ đi qua cạnh còn capacity > 0), rồi đẩy dọc đường đó một lượng luồng
-bằng min(bottleneck capacity, k - luồng_đã_đẩy). Cộng dồn chi phí = lượng đẩy * độ dài
-đường ngắn nhất. Dừng khi đã đẩy đủ k đơn vị, hoặc khi không còn đường nào tới sink.
+Thuật toán Successive Shortest Paths (SSP): lặp lại việc tìm đường đi RẺ NHẤT (theo cost)
+từ source tới sink trên đồ thị residual (chỉ đi qua cạnh còn capacity > 0), rồi đẩy dọc
+đường đó một lượng luồng bằng min(bottleneck capacity, k - luồng đã đẩy). Cộng dồn chi
+phí = lượng đẩy * độ dài đường ngắn nhất. Dừng khi đã đẩy đủ k đơn vị, hoặc khi không
+còn đường nào tới sink.
 
-Vì mỗi tuyến chỉ có chi phí c >= 1 (không âm), đường ngắn nhất theo chi phí luôn được
-tìm đúng. Tính đúng đắn của SSP dựa trên bất biến: sau mỗi lần đẩy luồng dọc đường
-rẻ nhất, luồng hiện tại là min-cost flow ứng với giá trị luồng hiện tại; nạp thêm luồng
-theo đường rẻ nhất tiếp theo giữ nguyên tính tối ưu. Cạnh residual chi phí âm cho phép
-sửa lại các lựa chọn trước, nên kết quả cuối cùng là chi phí cực tiểu để đẩy k đơn vị.
+Tính đúng đắn của SSP dựa trên bất biến: sau mỗi lần đẩy luồng dọc đường rẻ nhất, luồng
+hiện tại là min-cost flow ứng với giá trị luồng hiện tại; nạp thêm luồng theo đường rẻ
+nhất tiếp theo giữ nguyên tính tối ưu. Cạnh residual chi phí âm cho phép sửa lại các lựa
+chọn trước, nên kết quả cuối cùng là chi phí cực tiểu để đẩy k đơn vị.
 
-Tìm đường ngắn nhất bằng Dijkstra + Johnson potentials
-------------------------------------------------------
-Vì đồ thị residual có cạnh chi phí ÂM (cạnh ngược), không thể dùng Dijkstra trực tiếp.
-Ta dùng kỹ thuật thế năng (potentials) của Johnson: giữ mảng h[v] là khoảng cách thật
-nhỏ nhất từ source tới v tính đến hiện tại. Khi duyệt cạnh u -> v ta dùng
-"reduced cost" = cost(u,v) + h[u] - h[v] >= 0, nên Dijkstra chạy đúng. Sau mỗi lần
-Dijkstra, cập nhật h[v] += dist[v]. Ban đầu mọi chi phí không âm nên h khởi tạo bằng 0
-là hợp lệ (Dijkstra lần đầu chạy trực tiếp được). Chi phí thật của đường tới sink chính
-là h[sink] sau khi cập nhật, dùng để cộng dồn tổng chi phí.
+Tìm đường ngắn nhất bằng Dijkstra + Johnson potentials: vì đồ thị residual có cạnh chi
+phí ÂM (cạnh ngược), không thể dùng Dijkstra trực tiếp. Ta dùng kỹ thuật thế năng
+(potentials) của Johnson: giữ mảng h[v] là khoảng cách thật nhỏ nhất từ source tới v
+tính đến hiện tại. Khi duyệt cạnh u -> v ta dùng "reduced cost" = cost(u,v) + h[u] - h[v]
+>= 0, nên Dijkstra chạy đúng. Sau mỗi lần Dijkstra, cập nhật h[v] += dist[v]. Ban đầu mọi
+chi phí không âm nên h khởi tạo bằng 0 là hợp lệ (Dijkstra lần đầu chạy trực tiếp được).
+Chi phí thật của đường tới sink chính là h[sink] sau khi cập nhật, dùng để cộng dồn tổng
+chi phí.
 
-Đầu ra
-------
-Sau khi thuật toán dừng: nếu tổng luồng đẩy được < k thì không thể giao đủ -> in -1.
-Ngược lại in tổng chi phí. Chú ý dùng long long vì tổng chi phí có thể tới
+Đầu ra: sau khi thuật toán dừng, nếu tổng luồng đẩy được < k thì không thể giao đủ ->
+in -1. Ngược lại in tổng chi phí. Chú ý dùng long long vì tổng chi phí có thể tới
 k * (đường dài nhất) ~ 100 * 500 * 1000, vẫn trong long long.
 
-Độ phức tạp
------------
-Mỗi lần đẩy tăng luồng ít nhất 1 đơn vị, nên số vòng lặp <= k = 100. Mỗi vòng chạy
-một Dijkstra O(E log V). Với n <= 500, m <= 1000 (E ~ 2m cạnh có hướng), k <= 100,
-tổng chi phí thời gian khoảng O(k * E log V) rất nhỏ, chạy tức thời trong giới hạn CSES.
+## Độ phức tạp
+Mỗi lần đẩy tăng luồng ít nhất 1 đơn vị, nên số vòng lặp <= k = 100. Mỗi vòng chạy một
+Dijkstra O(E log V). Với n <= 500, m <= 1000 (E ~ 2m cạnh có hướng), k <= 100, tổng chi
+phí thời gian khoảng O(k * E log V) rất nhỏ, chạy tức thời trong giới hạn CSES.
 Bộ nhớ O(n + m) cho danh sách cạnh và mảng phụ.

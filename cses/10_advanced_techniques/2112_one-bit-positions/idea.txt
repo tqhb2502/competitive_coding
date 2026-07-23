@@ -1,46 +1,48 @@
-Bài toán: One Bit Positions (CSES 2112)
+One Bit Positions - CSES 2112
+https://cses.fi/problemset/task/2112
 
---- Phát biểu ---
+## Đề bài
 Cho một xâu nhị phân s độ dài n (2 <= n <= 2*10^5). Với mỗi khoảng cách k từ
-1 đến n-1, ta cần đếm số cặp vị trí (i, j) sao cho i - j = k và cả s[i] lẫn
-s[j] đều bằng bit '1'. In ra dãy các giá trị đếm cho k = 1, 2, ..., n-1.
+1 đến n-1, hãy đếm số cặp vị trí (i, j) sao cho i - j = k và cả s[i] lẫn s[j]
+đều bằng bit '1'. In ra dãy các giá trị đếm được cho k = 1, 2, ..., n-1.
 
---- Nhận xét chính: tự tương quan (autocorrelation) ---
+## Ý tưởng
 Gọi A[k] = số cặp vị trí cách nhau đúng k mà cả hai đều là bit '1'. Khi đó
       A[k] = tổng theo j của s[j] * s[j+k].
-Đây chính là hàm TỰ TƯƠNG QUAN (autocorrelation) của dãy bit s. Mỗi cặp không
+Đây chính là hàm tự tương quan (autocorrelation) của dãy bit s. Mỗi cặp không
 thứ tự {p, q} với p > q đóng góp đúng một lần vào A[p-q].
 
-Nếu làm ngây thơ bằng cách xét mọi cặp bit '1' thì với xâu toàn '1' dày đặc
-sẽ có O(n^2) cặp (tới 4*10^10) => quá chậm.
+Nếu làm ngây thơ bằng cách duyệt mọi cặp bit '1' thì với xâu toàn '1' dày đặc
+sẽ có tới O(n^2) cặp (khoảng 4*10^10) nên quá chậm.
 
---- Kỹ thuật: NTT (Number Theoretic Transform) để tính tích chập ---
-Autocorrelation được tính qua TÍCH CHẬP giữa s và bản ĐẢO NGƯỢC của s.
-Đặt a[i] = s[i] và b[i'] = s[n-1-i'] (dãy s đảo ngược). Gọi
-      conv[m] = tổng_{i + i' = m} a[i] * b[i'].
-Với b[i'] = s[n-1-i'], đặt j = n-1-i' thì i' = n-1-j, nên
+Kỹ thuật dùng ở đây là NTT (Number Theoretic Transform) để tính tích chập.
+Hàm tự tương quan được tính qua tích chập giữa s và bản đảo ngược của s. Đặt
+a[i] = s[i] và b[i'] = s[n-1-i'] (dãy s đảo ngược), gọi
+      conv[m] = tổng theo i + i' = m của a[i] * b[i'].
+Với b[i'] = s[n-1-i'], đặt j = n-1-i' thì i' = n-1-j, do đó
       i - j = i - (n-1-i') = (i + i') - (n-1) = m - (n-1).
-Vậy conv[m] = A[m - (n-1)]. Để lấy A[k] với k = 1..n-1 ta đọc conv[n-1+k],
-tức conv[n], conv[n+1], ..., conv[2n-2].
+Vậy conv[m] = A[m - (n-1)]. Để lấy A[k] với k = 1..n-1 ta đọc conv[n-1+k], tức
+là conv[n], conv[n+1], ..., conv[2n-2].
 
 Ta dùng NTT với số nguyên tố p = 998244353 (căn nguyên thủy G = 3). Vì kết quả
-A[k] <= (số bit '1') <= n <= 2*10^5 < p, nên phép NTT cho ra CHÍNH XÁC giá trị
-nguyên thật, không bị sai số floating point như FFT thông thường, và không cần
-hai modulo hay CRT.
+A[k] <= (số bit '1') <= n <= 2*10^5 < p, nên phép NTT cho ra chính xác giá trị
+nguyên thật, không bị sai số dấu phẩy động như FFT thông thường, và cũng không
+cần hai modulo hay CRT.
 
---- Vì sao đúng (tính đúng đắn) ---
+Tính đúng đắn:
 - NTT là biến đổi Fourier trên trường hữu hạn Z_p; tích chập tuần hoàn bằng
   phép nhân điểm-điểm trong miền tần số. Chọn kích thước sz là lũy thừa của 2
-  và sz >= 2n để tránh "wrap-around" (thu được tích chập tuyến tính đúng, không
-  bị chồng lấn).
+  và sz >= 2n để tránh hiện tượng wrap-around (thu được tích chập tuyến tính
+  đúng, không bị chồng lấn).
 - Mọi hệ số kết quả nằm trong [0, n] < p, nên phép lấy theo modulo p trả về
   đúng giá trị nguyên thật sự.
 
---- Độ phức tạp ---
-- Ba lần NTT trên mảng kích thước sz = O(n): thời gian O(n log n).
-- Bộ nhớ O(n) cho các mảng hệ số.
-- Với n = 2*10^5, sz = 2^19 = 524288, tổng chi phí khoảng 3 * sz * log2(sz)
-  ~ 3*10^7 phép tính, chạy rất nhanh trong giới hạn thời gian của C++.
+LƯU Ý TLE: cách khác là dùng bitset đếm popcount(a & (a >> k)) cho từng k với
+độ phức tạp O(n^2/64); với n = 2*10^5 sẽ khoảng 6*10^8 phép tính nên có nguy cơ
+TLE, vì vậy ở đây chọn NTT.
 
-(Cách khác: dùng bitset đếm popcount(a & (a >> k)) cho từng k là O(n^2/64),
-với n = 2*10^5 sẽ ~6*10^8 phép — có nguy cơ TLE, nên ở đây chọn NTT.)
+## Độ phức tạp
+- Thời gian: ba lần NTT trên mảng kích thước sz = O(n), tổng cộng O(n log n).
+- Bộ nhớ: O(n) cho các mảng hệ số.
+- Với n = 2*10^5, sz = 2^19 = 524288, chi phí khoảng 3 * sz * log2(sz) tương
+  đương 3*10^7 phép tính, chạy rất nhanh trong giới hạn thời gian của C++.

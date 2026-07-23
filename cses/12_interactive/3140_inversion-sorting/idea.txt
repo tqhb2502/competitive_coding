@@ -1,82 +1,64 @@
-Bài toán: Inversion Sorting (CSES 3140)
+Inversion Sorting - CSES 3140
 https://cses.fi/problemset/task/3140
 
-------------------------------------------------------------
-GIAO THỨC TƯƠNG TÁC (interactive protocol)
-------------------------------------------------------------
-- Có một hoán vị ẩn a[1..n] của 1..n (1 <= n <= 1000).
-- Đầu tiên đọc số nguyên n.
-- Mỗi lượt ta in ra hai số nguyên "i j" (1-indexed): yêu cầu grader đảo ngược
-  (reverse) đoạn con a[i..j].
-- Sau mỗi thao tác, grader in ra MỘT số nguyên: số nghịch thế (inversions) của
-  hoán vị hiện tại.
-- Khi số nghịch thế = 0 (hoán vị đã được sắp xếp tăng dần) thì ta THẮNG và phải
-  kết thúc chương trình ngay.
-- Giới hạn: tối đa 4n thao tác.
-- BẮT BUỘC flush stdout sau mỗi thao tác (dùng endl / cout.flush), nếu không
-  grader không nhận được truy vấn và sẽ deadlock.
+## Đề bài
+Có một hoán vị ẩn a[1..n] của 1..n (1 <= n <= 1000). Đầu tiên ta đọc số nguyên n.
+Mỗi lượt ta in ra hai số nguyên "i j" (1-indexed) để yêu cầu grader đảo ngược
+(reverse) đoạn con a[i..j]. Sau mỗi thao tác, grader in ra MỘT số nguyên: số nghịch
+thế (inversions) của hoán vị hiện tại. Khi số nghịch thế bằng 0 (hoán vị đã được sắp
+xếp tăng dần) thì ta THẮNG và phải kết thúc chương trình ngay. Giới hạn: tối đa 4n
+thao tác. BẮT BUỘC flush stdout sau mỗi thao tác (dùng endl / cout.flush), nếu không
+grader không nhận được truy vấn và sẽ bị deadlock.
 
-Lưu ý: ta KHÔNG được cho biết số nghịch thế ban đầu; chỉ nhận phản hồi SAU mỗi
-thao tác.
+Lưu ý: ta KHÔNG được cho biết số nghịch thế ban đầu; chỉ nhận phản hồi SAU mỗi thao
+tác. Đọc phản hồi bằng 0 luôn đồng nghĩa "đã sắp xếp".
 
-------------------------------------------------------------
-TÍNH CHẤT NỀN TẢNG (delta của số nghịch thế khi reverse)
-------------------------------------------------------------
+## Ý tưởng
+Tính chất nền tảng (delta số nghịch thế khi reverse):
 Khi reverse đoạn [i,j] có độ dài L = j-i+1:
 - Các cặp mà cả hai phần tử đều nằm NGOÀI đoạn: không đổi.
 - Các cặp có đúng một phần tử trong đoạn, một phần tử ngoài đoạn: quan hệ trái/phải
-  giữa chúng không đổi, giá trị không đổi => trạng thái nghịch thế không đổi.
-- Các cặp mà cả hai phần tử đều nằm TRONG đoạn (có L(L-1)/2 cặp): thứ tự bị lật,
-  nên nếu trước đó có x cặp nghịch thế bên trong thì sau đó thành L(L-1)/2 - x.
-=> delta = L(L-1)/2 - 2x, với x = số nghịch thế bên trong đoạn (trước khi reverse).
+  giữa chúng không đổi, giá trị không đổi nên trạng thái nghịch thế không đổi.
+- Các cặp mà cả hai phần tử đều nằm TRONG đoạn (có L(L-1)/2 cặp): thứ tự bị lật, nên
+  nếu trước đó có x cặp nghịch thế bên trong thì sau đó thành L(L-1)/2 - x.
+Suy ra: delta = L(L-1)/2 - 2x, với x = số nghịch thế bên trong đoạn (trước reverse).
 
-------------------------------------------------------------
-PHA 1 — KHÔI PHỤC HOÀN VỊ (dùng reverse tiền tố)
-------------------------------------------------------------
-Với tiền tố [1,i]: nếu reverse rồi reverse lại (restore) thì mảng trở về đúng
-trạng thái gốc. Gọi:
+Pha 1 — khôi phục hoán vị (dùng reverse tiền tố):
+Với tiền tố [1,i]: nếu reverse rồi reverse lại (restore) thì mảng trở về đúng trạng
+thái gốc. Gọi:
 - v1 = số nghịch thế sau lần reverse thứ nhất = T + C(i,2) - 2*x[i]
-- v2 = số nghịch thế sau lần reverse thứ hai = T  (T là tổng nghịch thế của mảng gốc)
+- v2 = số nghịch thế sau lần reverse thứ hai = T (T là tổng nghịch thế của mảng gốc)
 với x[i] = số nghịch thế nằm trong tiền tố độ dài i của MẢNG GỐC, C(i,2)=i(i-1)/2.
-Suy ra:  x[i] = (T + C(i,2) - v1) / 2   (chia hết, luôn nguyên).
+Suy ra: x[i] = (T + C(i,2) - v1) / 2 (luôn chia hết, luôn nguyên).
 
-Vì mỗi lần restore đưa mảng về gốc, mọi x[i] đều đo trên mảng gốc.
-Đặt c[i] = x[i] - x[i-1] = số phần tử đứng trước vị trí i mà lớn hơn a[i]
-(đây chính là "Lehmer/inversion table"), 0 <= c[i] <= i-1, x[1]=0.
+Vì mỗi lần restore đưa mảng về gốc, mọi x[i] đều đo trên mảng gốc. Đặt
+c[i] = x[i] - x[i-1] = số phần tử đứng trước vị trí i mà lớn hơn a[i] (đây chính là
+"Lehmer/inversion table"), với 0 <= c[i] <= i-1 và x[1]=0.
 
-Khôi phục hoán vị từ c[]: r[i] = i - c[i] là HẠNG (tăng dần) của a[i] trong i phần
-tử đầu tiên. Lần lượt i=1..n, chèn "phần tử i" vào vị trí r[i]-1 của một danh sách
-đang được sắp theo giá trị. Cuối cùng phần tử ở chỉ số k (0-indexed) của danh sách
-có giá trị k+1 => suy ra a[pos] cho mọi vị trí.
+Khôi phục hoán vị từ c[]: r[i] = i - c[i] là HẠNG (tăng dần) của a[i] trong i phần tử
+đầu tiên. Lần lượt i=1..n, chèn "phần tử i" vào vị trí r[i]-1 của một danh sách đang
+được sắp theo giá trị. Cuối cùng phần tử ở chỉ số k (0-indexed) của danh sách có giá
+trị k+1, từ đó suy ra a[pos] cho mọi vị trí. Nếu bất kỳ lần đọc nào bằng 0 thì mảng
+đã được sắp xếp nên ta thắng và dừng ngay (bao trọn cả trường hợp mảng gốc đã sắp sẵn).
 
-Chi phí pha 1: 2(n-1) thao tác (mỗi i dùng 2 reverse để đo và restore).
+Pha 2 — sắp xếp bằng selection sort với reverse:
+Đã biết hoán vị (bản mô phỏng a[] khớp mảng thật vì pha 1 luôn restore về gốc). Với
+pos = 1..n-1: nếu a[pos] != pos, tìm q là vị trí hiện tại của giá trị 'pos' (q >= pos),
+rồi reverse [pos, q]. Reverse này đưa giá trị pos về đúng vị trí pos và không phá các
+vị trí < pos đã đúng. Ta cập nhật a[] tương ứng. Khi mảng thành identity, grader trả 0
+và ta dừng.
 
-Nếu bất kỳ lần đọc nào = 0 thì mảng đã được sắp xếp (đọc 0 <=> đã sắp xếp), ta
-thắng và dừng ngay — điều này cũng bao trọn trường hợp mảng gốc đã sắp sẵn.
-
-------------------------------------------------------------
-PHA 2 — SẮP XẾP BẰNG SELECTION SORT VỚI REVERSE
-------------------------------------------------------------
-Đã biết hoán vị (bản mô phỏng a[] khớp với mảng thật vì pha 1 luôn restore về gốc).
-Với pos = 1..n-1: nếu a[pos] != pos, tìm q là vị trí hiện tại của giá trị 'pos'
-(q >= pos), rồi reverse [pos, q]. Reverse này đưa giá trị pos về đúng vị trí pos
-và không phá các vị trí < pos đã đúng. Ta cập nhật a[] tương ứng.
-Mỗi pos tốn tối đa 1 thao tác => tối đa n-1 thao tác. Khi mảng thành identity,
-grader trả 0 và ta dừng.
-
-------------------------------------------------------------
-SỐ THAO TÁC vs GIỚI HẠN
-------------------------------------------------------------
-Tổng: 2(n-1) (pha 1) + tối đa (n-1) (pha 2) = 3n - 3 <= 4n với mọi n >= 1.
-Với n = 1000: tối đa 2997 thao tác, dưới giới hạn 4000. n=1 xử lý riêng bằng 1
-thao tác không đổi để đọc số 0.
-
-------------------------------------------------------------
-VÌ SAO ĐÚNG
-------------------------------------------------------------
-- Công thức delta = L(L-1)/2 - 2x đúng vì chỉ các cặp nằm hoàn toàn trong đoạn mới
-  đổi trạng thái nghịch thế.
-- Chuỗi c[i] (số phần tử lớn hơn đứng trước) là song ánh với hoán vị, nên khôi phục
-  ra đúng một hoán vị chính là mảng ẩn.
+Vì sao đúng:
+- Công thức delta = L(L-1)/2 - 2x đúng vì chỉ các cặp nằm hoàn toàn trong đoạn mới đổi
+  trạng thái nghịch thế.
+- Chuỗi c[i] (số phần tử lớn hơn đứng trước) là song ánh với hoán vị, nên khôi phục ra
+  đúng một hoán vị chính là mảng ẩn.
 - Selection-sort-by-reverse sắp đúng mọi hoán vị đã biết trong <= n-1 phép reverse.
 - Đọc 0 luôn đồng nghĩa "đã sắp xếp", nên ta luôn dừng đúng lúc và không vượt giới hạn.
+
+## Độ phức tạp
+Chi phí pha 1: 2(n-1) thao tác (mỗi i dùng 2 reverse để đo và restore). Pha 2: tối đa
+n-1 thao tác (mỗi pos tốn tối đa 1 reverse). Tổng: 2(n-1) + (n-1) = 3n - 3 <= 4n với
+mọi n >= 1. Với n = 1000: tối đa 2997 thao tác, dưới giới hạn 4000. Trường hợp n=1 xử
+lý riêng bằng 1 thao tác không đổi để đọc số 0. Thời gian chạy O(n^2) cho phần chèn và
+tìm kiếm, thừa sức trong giới hạn.

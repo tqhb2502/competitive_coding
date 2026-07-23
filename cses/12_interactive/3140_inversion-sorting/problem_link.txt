@@ -1,2 +1,0 @@
-Inversion Sorting
-https://cses.fi/problemset/task/3140

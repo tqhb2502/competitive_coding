@@ -1,18 +1,13 @@
-// Eulerian Subgraphs - CSES 2078
-// https://cses.fi/problemset/task/2078
-//
-// Count edge-subsets where every vertex has even degree (the cycle space over
-// GF(2)). Such subsets form a vector space of dimension  d = m - n + c , where c
-// is the number of connected components. Answer = 2^(m - n + c) mod 1e9+7.
-
 #include <bits/stdc++.h>
 using namespace std;
 
 const long long MOD = 1000000007LL;
 
+// DSU (union-find) để đếm số thành phần liên thông c của đồ thị.
 int par[100005];
 int rnk[100005];
 
+// Tìm root với path compression.
 int findp(int x) {
     while (par[x] != x) {
         par[x] = par[par[x]];
@@ -21,6 +16,7 @@ int findp(int x) {
     return x;
 }
 
+// Hợp nhất hai tập theo union by rank.
 void unite(int a, int b) {
     a = findp(a);
     b = findp(b);
@@ -30,6 +26,7 @@ void unite(int a, int b) {
     if (rnk[a] == rnk[b]) rnk[a]++;
 }
 
+// Lũy thừa nhanh: tính base^exp mod.
 long long power_mod(long long base, long long exp, long long mod) {
     long long result = 1 % mod;
     base %= mod;
@@ -48,26 +45,29 @@ int main() {
     int n, m;
     if (!(cin >> n >> m)) return 0;
 
+    // Khởi tạo mỗi đỉnh là một tập riêng.
     for (int i = 1; i <= n; i++) {
         par[i] = i;
         rnk[i] = 0;
     }
 
+    // Hợp nhất hai đầu mút của từng cạnh.
     for (int i = 0; i < m; i++) {
         int a, b;
         cin >> a >> b;
         unite(a, b);
     }
 
-    // Count connected components (isolated vertices included).
+    // Đếm số thành phần liên thông (kể cả các đỉnh cô lập).
     int c = 0;
     for (int i = 1; i <= n; i++) {
         if (findp(i) == i) c++;
     }
 
-    // Cycle rank = m - n + c  (always >= 0).
+    // Số chiều cycle space = m - n + c (luôn >= 0).
     long long rank_ = (long long)m - (long long)n + (long long)c;
 
+    // Số Eulerian subgraph = 2^(m - n + c) mod 1e9+7.
     cout << power_mod(2, rank_, MOD) << '\n';
     return 0;
 }
