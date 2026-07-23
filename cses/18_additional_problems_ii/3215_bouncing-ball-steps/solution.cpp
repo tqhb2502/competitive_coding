@@ -7,6 +7,8 @@ using namespace std;
 
 using Integer = long long;
 
+// Tọa độ theo một chiều dài "length" sau "steps" bước: trải phẳng các lần phản
+// xạ, tọa độ chạy tuần hoàn với chu kỳ 2*(length-1) rồi lấy công thức tam giác.
 Integer coordinate(Integer length, Integer steps) {
     const Integer side = length - 1;
     const Integer remainder = steps % (2 * side);
@@ -25,6 +27,8 @@ int main() {
         Integer steps;
         cin >> rows >> columns >> steps;
 
+        // Bóng đổi hướng khi chạm biên dọc (bội của rows-1) hoặc biên ngang
+        // (bội của columns-1); dùng bù trừ để không đếm lặp lần chạm đồng thời.
         const Integer verticalPeriod = rows - 1;
         const Integer horizontalPeriod = columns - 1;
         const Integer commonPeriod =
@@ -32,6 +36,7 @@ int main() {
         const Integer changes = steps / verticalPeriod + steps / horizontalPeriod
                               - steps / commonPeriod;
 
+        // In ra hàng, cột sau k bước và tổng số lần đổi hướng.
         cout << coordinate(rows, steps) << ' '
              << coordinate(columns, steps) << ' '
              << changes << '\n';

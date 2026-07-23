@@ -1,25 +1,22 @@
-GRID PUZZLE I - CSES 2432
+Grid Puzzle I - CSES 2432
+https://cses.fi/problemset/task/2432
 
-ĐỀ BÀI (tóm tắt)
-Chọn các ô của bảng n x n sao cho hàng i có đúng a_i ô và cột j có đúng b_j
-ô. In một cách chọn hoặc -1. Ràng buộc: n <= 50.
+## Đề bài
+Cho bảng vuông n x n. Hãy chọn một số ô sao cho hàng thứ i có đúng a_i ô được
+chọn và cột thứ j có đúng b_j ô được chọn. In ra một cách chọn hợp lệ (ô được
+chọn ghi 'X', ô trống ghi '.'), hoặc in -1 nếu không tồn tại cách nào. Ràng
+buộc n <= 50.
 
-THUẬT TOÁN
-Dựng mạng luồng:
-- nguồn -> đỉnh hàng i, sức chứa a_i;
-- hàng i -> cột j, sức chứa 1 cho mọi ô;
-- cột j -> đích, sức chứa b_j.
-Nếu tổng a khác tổng b thì vô nghiệm. Chạy Dinic; khi luồng cực đại bằng tổng
-a, cạnh hàng-cột đã dùng luồng 1 chính là ô được chọn và được in bằng X.
+## Ý tưởng
+Mô hình hóa bằng mạng luồng (max-flow) và giải bằng Dinic:
+- Nguồn nối tới mỗi đỉnh hàng i với sức chứa a_i.
+- Mỗi đỉnh cột j nối tới đích với sức chứa b_j.
+- Mỗi ô (i, j) cho một cạnh hàng i -> cột j với sức chứa 1.
+Nếu tổng a khác tổng b thì chắc chắn vô nghiệm, in -1. Ngược lại chạy Dinic:
+nếu luồng cực đại bằng tổng a thì mỗi cạnh hàng-cột đã bão hòa (luồng 1) tương
+ứng một ô được chọn, ta in 'X' tại các ô đó; nếu luồng cực đại nhỏ hơn tổng a
+thì bài toán vô nghiệm, in -1.
 
-CHỨNG MINH ĐÚNG
-Từ một bảng hợp lệ, gửi một đơn vị luồng qua hàng i -> cột j cho mỗi ô X; các
-sức chứa ở nguồn và đích được bão hòa đúng theo a_i,b_j, nên thu được luồng có
-giá trị tổng a. Ngược lại, mọi sức chứa là số nguyên nên Dinic cho luồng nguyên;
-cạnh hàng-cột có sức chứa 1 tương ứng với chọn hoặc không chọn ô. Luồng đủ tổng
-a bão hòa mọi cạnh nguồn và, do hai tổng bằng nhau, mọi yêu cầu cột, tạo đúng
-một bảng hợp lệ. Vì vậy max-flow không đủ khi và chỉ khi bài toán vô nghiệm.
-
-ĐỘ PHỨC TẠP
-Mạng có O(n) đỉnh, O(n^2) cạnh; Dinic chạy đủ nhanh với n<=50, dùng O(n^2)
-bộ nhớ.
+## Độ phức tạp
+Mạng có O(n) đỉnh và O(n^2) cạnh; Dinic chạy đủ nhanh với n <= 50 và dùng
+O(n^2) bộ nhớ.

@@ -1,2 +1,0 @@
-GCD Subsets
-https://cses.fi/problemset/task/3161

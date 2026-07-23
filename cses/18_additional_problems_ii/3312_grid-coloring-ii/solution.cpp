@@ -6,12 +6,15 @@
 
 using namespace std;
 
+// Thêm cung kéo theo from -> to vào đồ thị thuận và đồ thị đảo (dùng cho Kosaraju).
 void addImplication(int from, int to, vector<vector<int>>& graph,
                     vector<vector<int>>& reverseGraph) {
     graph[from].push_back(to);
     reverseGraph[to].push_back(from);
 }
 
+// Cấm việc đồng thời chọn (firstVariable=firstChoice) và (secondVariable=secondChoice):
+// mệnh đề 2-SAT (!u hoặc !v) sinh hai cung kéo theo u -> !v và v -> !u.
 void forbidPair(int firstVariable, int firstChoice, int secondVariable,
                 int secondChoice, vector<vector<int>>& graph,
                 vector<vector<int>>& reverseGraph) {
@@ -33,8 +36,11 @@ int main() {
         cin >> row;
     }
 
+    // Mỗi ô là một biến Boolean; đỉnh 2*var và 2*var+1 là hai literal của biến đó.
     const int variables = rows * columns;
     const int vertices = 2 * variables;
+
+    // Với mỗi ô, hai màu được phép là hai màu khác màu cũ của ô.
     vector<array<char, 2>> choices(variables);
     for (int row = 0; row < rows; ++row) {
         for (int column = 0; column < columns; ++column) {
@@ -48,6 +54,8 @@ int main() {
         }
     }
 
+    // Dựng đồ thị kéo theo của 2-SAT: với mỗi cặp ô kề cạnh (phải và xuống),
+    // cấm mọi cặp lựa chọn khiến hai ô có cùng màu.
     vector<vector<int>> graph(vertices);
     vector<vector<int>> reverseGraph(vertices);
     const array<pair<int, int>, 2> directions = {{{1, 0}, {0, 1}}};
@@ -75,6 +83,7 @@ int main() {
         }
     }
 
+    // Kosaraju bước 1: DFS lặp trên đồ thị thuận, ghi thứ tự hoàn thành các đỉnh.
     vector<char> seen(vertices, false);
     vector<int> order;
     order.reserve(vertices);
@@ -101,6 +110,8 @@ int main() {
         }
     }
 
+    // Kosaraju bước 2: duyệt các đỉnh theo thứ tự hoàn thành ngược trên đồ thị
+    // đảo để gán số thành phần liên thông mạnh (SCC) cho từng đỉnh.
     vector<int> component(vertices, -1);
     int componentCount = 0;
     for (auto iterator = order.rbegin(); iterator != order.rend(); ++iterator) {
@@ -123,6 +134,8 @@ int main() {
         ++componentCount;
     }
 
+    // Với mỗi biến, nếu hai literal cùng SCC thì vô nghiệm; ngược lại chọn literal
+    // có SCC đứng sau (thứ tự SCC ngược cho một phép gán thỏa mãn 2-SAT).
     vector<int> selectedChoice(variables, 0);
     for (int variable = 0; variable < variables; ++variable) {
         if (component[2 * variable] == component[2 * variable + 1]) {
@@ -133,6 +146,7 @@ int main() {
             component[2 * variable + 1] > component[2 * variable] ? 1 : 0;
     }
 
+    // In bảng kết quả: mỗi ô lấy màu ứng với lựa chọn đã chọn.
     for (int row = 0; row < rows; ++row) {
         for (int column = 0; column < columns; ++column) {
             const int variable = row * columns + column;

@@ -1,30 +1,29 @@
-COIN GRID - CSES 1709
+Coin Grid - CSES 1709
+https://cses.fi/problemset/task/1709
 
-ĐỀ BÀI (tóm tắt)
-Mỗi ô có đồng xu tạo thành một cạnh giữa đỉnh hàng và đỉnh cột tương ứng.
-Cần chọn ít hàng/cột nhất sao cho mọi đồng xu được xóa, đồng thời in một cách
-chọn tối ưu. Ràng buộc: n <= 100.
+## Đề bài
+Cho lưới n×n, mỗi ô chứa đồng xu ('o') hoặc để trống ('.'). Mỗi thao tác cho
+phép chọn một hàng hoặc một cột và xóa toàn bộ đồng xu nằm trên đó. Cần tìm số
+thao tác nhỏ nhất để xóa hết mọi đồng xu, đồng thời in ra một cách chọn tối ưu
+(mỗi thao tác in "1 x" để chọn hàng x, hoặc "2 y" để chọn cột y). Ràng buộc:
+n ≤ 100.
 
-THUẬT TOÁN
-Xem bảng là đồ thị hai phía: phía trái gồm n hàng, phía phải gồm n cột; ô
-(i,j) có đồng xu tương ứng với cạnh i-j. Một tập thao tác xóa hết đồng xu chính
-là một vertex cover. Theo định lý Konig, kích thước vertex cover nhỏ nhất bằng
-kích thước matching lớn nhất.
+## Ý tưởng
+Xem lưới như một đồ thị hai phía: phía trái gồm n hàng, phía phải gồm n cột; ô
+(i, j) có đồng xu tương ứng với một cạnh nối hàng i và cột j. Một tập thao tác
+xóa hết đồng xu chính là một vertex cover của đồ thị này, và ta cần vertex cover
+nhỏ nhất. Theo định lý König, trên đồ thị hai phía kích thước vertex cover nhỏ
+nhất bằng kích thước matching lớn nhất.
 
-1. Tìm matching cực đại bằng các lượt DFS tìm đường tăng.
-2. Từ mọi hàng chưa ghép, duyệt các đường xen kẽ: từ hàng chỉ đi qua cạnh không
-   thuộc matching, từ cột đi về hàng được ghép với nó.
-3. Gọi Z là các đỉnh đã thăm. Vertex cover tối thiểu là:
-   (các hàng không thuộc Z) hợp (các cột thuộc Z).
+Các bước:
+1. Tìm matching cực đại bằng thuật toán Hungarian (mỗi hàng chạy DFS tìm đường
+   tăng để giành lấy một cột chưa ghép hoặc đẩy hàng đang giữ cột đi chỗ khác).
+2. Từ mọi hàng chưa được ghép, duyệt các đường xen kẽ (BFS): từ hàng đi tới cột
+   qua cạnh KHÔNG thuộc matching, từ cột quay về hàng đang được ghép với nó. Gọi
+   Z là tập đỉnh đã thăm.
+3. Theo cách dựng vertex cover tối thiểu của König: chọn (các hàng KHÔNG thuộc
+   Z) hợp (các cột THUỘC Z). Mỗi cạnh matching đóng góp đúng một đầu mút vào tập
+   này nên kích thước tập đúng bằng kích thước matching, và tập này phủ mọi cạnh.
 
-CHỨNG MINH ĐÚNG
-Matching sau khi không còn đường tăng là cực đại (bổ đề Berge). Trong phép
-duyệt xen kẽ, không cạnh nào có cả hàng nằm trong Z và cột nằm ngoài Z: nếu
-cạnh ấy không thuộc matching thì ta đã đi qua nó, còn nếu thuộc matching thì
-hàng đó chỉ có thể được thăm từ chính cột được ghép. Vì vậy phần bù của các
-hàng trong Z cùng các cột trong Z phủ mọi cạnh. Mỗi cạnh matching có đúng một
-đầu mút trong tập này, nên kích thước tập bằng kích thước matching. Theo định
-lý Konig, đây là vertex cover nhỏ nhất, do đó các thao tác được in là tối ưu.
-
-ĐỘ PHỨC TẠP
-O(n^3) thời gian với matching DFS và O(n^2) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n^3) do matching bằng DFS trên n hàng; bộ nhớ O(n^2) để lưu lưới.

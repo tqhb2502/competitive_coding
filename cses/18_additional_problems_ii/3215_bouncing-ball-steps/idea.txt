@@ -1,25 +1,22 @@
-BOUNCING BALL STEPS - CSES 3215
+Bouncing Ball Steps - CSES 3215
+https://cses.fi/problemset/task/3215
 
-ĐỀ BÀI (tóm tắt)
-Quả bóng bắt đầu tại (1,1) của bảng n x m, mỗi bước đi chéo một ô và phản xạ
-khi chạm biên. Với mỗi truy vấn, tìm vị trí sau k bước và số lần đổi hướng.
+## Đề bài
+Một quả bóng bắt đầu tại góc trên bên trái (1,1) của bảng n x m, ban đầu đi
+chéo ra xa góc đó, mỗi bước di chuyển một ô và đổi hướng mỗi khi chạm biên.
+Với mỗi truy vấn (n, m, k), in ra hàng, cột của quả bóng sau k bước và số lần
+nó đổi hướng.
 
-THUẬT TOÁN
-Xét riêng một tọa độ có độ dài d. Đặt p=d-1 và r=k mod (2p). Khoảng
-cách tới biên trên/trái là r nếu r<=p, ngược lại là 2p-r. Vì thế tọa độ bằng
-1+min(r,2p-r).
+## Ý tưởng
+Xét độc lập từng tọa độ. Với một chiều có độ dài d, đặt p = d - 1; khi trải
+phẳng các lần phản xạ, tọa độ đi theo chu kỳ 0,1,...,p,...,1 với chu kỳ 2p.
+Lấy r = k mod (2p) thì khoảng cách tới biên trên/trái bằng min(r, 2p - r), nên
+tọa độ là 1 + min(r, 2p - r). Áp dụng cho cả hàng (d = n) và cột (d = m).
 
-Bóng đổi hướng tại các thời điểm dương chia hết cho n-1 hoặc m-1. Dùng nguyên
-lý bù trừ, số lần là
-floor(k/(n-1)) + floor(k/(m-1)) - floor(k/lcm(n-1,m-1)).
-Một lần chạm đồng thời hai biên chỉ được tính một lần.
+Quả bóng đổi hướng tại mỗi thời điểm dương chia hết cho n - 1 (chạm biên
+trên/dưới) hoặc m - 1 (chạm biên trái/phải). Dùng nguyên lý bù trừ, số lần đổi
+hướng bằng floor(k/(n-1)) + floor(k/(m-1)) - floor(k/lcm(n-1, m-1)); phần trừ
+loại bỏ lần đếm lặp khi bóng chạm đồng thời hai biên tại các bội chung.
 
-CHỨNG MINH ĐÚNG
-Khi trải phẳng các lần phản xạ, mỗi tọa độ đi tuần hoàn 0,1,...,p,...,1 với
-chu kỳ 2p, nên công thức tam giác cho đúng vị trí. Thành phần dọc đổi chiều
-đúng tại bội dương của n-1, thành phần ngang tương tự với m-1. Hợp của hai tập
-thời điểm này chính là mọi lần quả bóng đổi hướng; bù trừ loại một lần đếm lặp
-ở các bội của bội chung nhỏ nhất. Do đó cả ba giá trị in ra đều đúng.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

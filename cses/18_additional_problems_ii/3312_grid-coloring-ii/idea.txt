@@ -1,28 +1,25 @@
-GRID COLORING II - CSES 3312
+Grid Coloring II - CSES 3312
+https://cses.fi/problemset/task/3312
 
-ĐỀ BÀI (tóm tắt)
-Đổi mỗi ô của bảng n x m sang một trong A, B, C, bắt buộc khác ký tự cũ và
-khác mọi ô kề cạnh. In một bảng hợp lệ hoặc IMPOSSIBLE. Ràng buộc:
-n,m <= 500.
+## Đề bài
+Cho bảng n x m gồm các ký tự A, B, C. Hãy tô lại mỗi ô sang một trong ba màu A,
+B, C sao cho màu mới khác màu cũ của ô đó và khác màu của mọi ô kề cạnh. In ra
+một bảng hợp lệ bất kỳ, hoặc in IMPOSSIBLE nếu không tồn tại. Ràng buộc: n, m <=
+500.
 
-THUẬT TOÁN
-Mỗi ô chỉ còn đúng hai màu được phép, nên biểu diễn lựa chọn của ô bằng một
-biến Boolean. Với mỗi cặp ô kề nhau, xét bốn cặp lựa chọn. Mỗi cặp tạo ra cùng
-một màu là bị cấm. Điều kiện "không đồng thời chọn hai literal u và v" là mệnh
-đề 2-SAT (!u hoặc !v), sinh hai cung kéo theo u -> !v và v -> !u.
+## Ý tưởng
+Vì màu mới phải khác màu cũ nên mỗi ô chỉ còn đúng hai màu được phép, tức là mỗi
+ô ứng với một biến Boolean (chọn màu thứ nhất hay màu thứ hai). Với mỗi cặp ô kề
+cạnh, xét bốn cặp lựa chọn; cặp nào cho ra cùng một màu thì bị cấm. Điều kiện
+"không đồng thời chọn hai literal u và v" chính là mệnh đề 2-SAT (!u hoặc !v),
+sinh hai cung kéo theo u -> !v và v -> !u.
 
 Dựng toàn bộ đồ thị kéo theo rồi dùng Kosaraju (DFS lặp để tránh tràn stack) tìm
-các thành phần liên thông mạnh. Nếu hai lựa chọn của một ô cùng SCC thì bài
-toán vô nghiệm. Ngược lại, thứ tự SCC cho một phép gán thỏa mãn; từ đó in màu
-tương ứng của từng ô.
+các thành phần liên thông mạnh. Nếu hai lựa chọn của cùng một ô nằm chung một SCC
+thì bài toán vô nghiệm (in IMPOSSIBLE). Ngược lại, thứ tự SCC cho một phép gán
+thỏa mãn: literal nào có SCC đứng sau thì được chọn, từ đó in ra màu tương ứng
+của từng ô.
 
-CHỨNG MINH ĐÚNG
-Mỗi ô được gán đúng một trong hai màu khác màu ban đầu. Với một cạnh kề, ta thêm
-mệnh đề cấm chính xác từng cặp lựa chọn có màu bằng nhau, nên thỏa mọi mệnh đề
-tương đương với hai đầu cạnh có màu khác nhau. Do đó công thức 2-SAT thỏa được
-khi và chỉ khi tồn tại bảng hợp lệ. Tiêu chuẩn SCC của 2-SAT phát hiện đúng mọi
-mâu thuẫn và cách gán theo thứ tự tô-pô ngược thỏa toàn bộ cung kéo theo. Vì
-vậy chương trình in IMPOSSIBLE đúng lúc, còn nếu in bảng thì bảng luôn hợp lệ.
-
-ĐỘ PHỨC TẠP
-O(nm) thời gian và O(nm) bộ nhớ vì bảng chỉ có O(nm) cạnh kề và literal.
+## Độ phức tạp
+O(n*m) thời gian và O(n*m) bộ nhớ, vì bảng chỉ có O(n*m) literal và O(n*m) cạnh
+kề nên số cung kéo theo cũng là O(n*m).

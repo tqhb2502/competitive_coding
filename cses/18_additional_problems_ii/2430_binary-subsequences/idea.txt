@@ -1,28 +1,28 @@
-BINARY SUBSEQUENCES - CSES 2430
+Binary Subsequences - CSES 2430
+https://cses.fi/problemset/task/2430
 
-ĐỀ BÀI (tóm tắt)
-Với n<=10^6, dựng xâu bit ngắn nhất có đúng n dãy con khác nhau không rỗng.
+## Đề bài
+Cho số nguyên n (1 <= n <= 10^6). Hãy dựng một xâu nhị phân ngắn nhất có đúng n
+dãy con khác nhau không rỗng. In ra xâu tìm được.
 
-THUẬT TOÁN
-Gọi A,B là số dãy con khác nhau kết thúc bằng 0,1. Đặt x=A+1, y=B+1; ban đầu
-(x,y)=(1,1). Nối 0 biến (x,y) thành (x+y,y), nối 1 thành (x,x+y). Yêu cầu
-x+y=n+2.
+## Ý tưởng
+Gọi A, B lần lượt là số dãy con khác nhau kết thúc bằng bit 0 và bit 1. Đặt
+x = A + 1, y = B + 1; ban đầu (x, y) = (1, 1). Khi nối thêm bit 0 vào cuối xâu,
+cặp trở thành (x + y, y); khi nối bit 1, cặp trở thành (x, x + y). Tổng số dãy
+con khác rỗng là A + B = (x + y) - 2, nên yêu cầu đúng n dãy con tương đương
+với điều kiện x + y = n + 2.
 
-Duyệt x từ 1 đến floor((n+2)/2), đặt y=n+2-x. Với mỗi cặp, chạy Euclid trừ
-theo lô: trừ q lần số nhỏ khỏi số lớn với q=(lớn-1)/nhỏ. Cặp hợp lệ nếu kết
-thúc ở (1,1); tổng các q là độ dài xâu. Chọn cặp có độ dài nhỏ nhất. Cuối cùng
-chạy phép trừ từng bước: nếu x>y ghi ký tự cuối là 0, ngược lại là 1; đảo chuỗi
-ký tự thu được để có đáp án.
+Đi ngược lại: mỗi xâu ứng với một đường đi từ (1, 1) tới cặp cuối, và phép nghịch
+đảo luôn trừ tọa độ nhỏ khỏi tọa độ lớn (giống thuật toán Euclid trừ), bit cuối
+xác định duy nhất (0 nếu x > y, 1 nếu x < y). Đường đi về được (1, 1) khi và chỉ
+khi hai tọa độ nguyên tố cùng nhau, và số bước trừ chính là độ dài xâu.
 
-CHỨNG MINH ĐÚNG
-Khi nối một bit, mọi dãy con cũ cộng bit đó cùng chính bit một ký tự tạo đúng
-1+A+B dãy mới kết thúc bằng bit ấy, suy ra hai phép chuyển trên. Phép chuyển
-ngược luôn trừ tọa độ nhỏ khỏi tọa độ lớn và ký tự cuối là duy nhất; nó về
-(1,1) đúng khi hai tọa độ nguyên tố cùng nhau. Vì thế mọi xâu có đúng n dãy
-con tương ứng song ánh với một cặp dương x+y=n+2, và số bước Euclid trừ chính
-là độ dài xâu. Thuật toán xét mọi cặp (đổi x,y chỉ đổi 0/1), chọn ít bước nhất
-nên xâu dựng được vừa đúng n dãy con vừa có độ dài tối thiểu.
+Duyệt x từ 1 tới floor((n + 2) / 2), đặt y = n + 2 - x. Với mỗi cặp, chạy Euclid
+trừ theo lô: trừ q lần số nhỏ khỏi số lớn với q = (lớn - 1) / nhỏ, cộng dồn q vào
+tổng bước. Cặp hợp lệ nếu kết thúc tại (1, 1); tổng các q là độ dài xâu. Chọn cặp
+có độ dài nhỏ nhất. Cuối cùng dựng lại xâu bằng phép trừ từng bước: nếu x > y ghi
+bit 0, ngược lại ghi bit 1; đảo ngược chuỗi bit thu được để có đáp án.
 
-ĐỘ PHỨC TẠP
-O(n log n) thời gian trong cận xấu của phép duyệt Euclid, O(L) bộ nhớ với L là
-độ dài xâu kết quả.
+## Độ phức tạp
+Thời gian O(n log n) do vòng duyệt kết hợp Euclid trừ theo lô; bộ nhớ O(L) với L
+là độ dài xâu kết quả.

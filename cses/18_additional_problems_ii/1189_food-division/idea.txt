@@ -1,21 +1,22 @@
-FOOD DIVISION - CSES 1189
+Food Division - CSES 1189
+https://cses.fi/problemset/task/1189
 
-ĐỀ BÀI (tóm tắt)
-n trẻ ngồi trên một vòng tròn. Mỗi bước chuyển một đơn vị thức ăn qua một cạnh
-kề. Biết lượng hiện tại và mong muốn có cùng tổng, tìm số bước ít nhất.
+## Đề bài
+Có n đứa trẻ ngồi thành một vòng tròn. Mỗi đứa đang có một lượng thức ăn và
+mong muốn một lượng thức ăn nhất định (tổng lượng hiện tại bằng tổng lượng mong
+muốn). Mỗi bước cho phép chuyển một đơn vị thức ăn qua một cạnh kề trên vòng
+tròn. Tìm số bước ít nhất để mỗi đứa trẻ đạt được lượng thức ăn mong muốn.
 
-THUẬT TOÁN
-Đặt d_i=a_i-b_i và s_i=d_1+...+d_i cho i=1..n (s_n=0). Nếu luồng qua cạnh
-cuối có một hằng số tự do, các luồng qua n cạnh lần lượt khác các s_i bởi cùng
-một hằng số c. Chi phí là tổng |s_i-c|. Giá trị tối ưu của c là trung vị của
-n giá trị s_i. Sắp xếp các tổng tiền tố, lấy trung vị và cộng khoảng cách.
+## Ý tưởng
+Đặt d_i = a_i - b_i (hiệu giữa lượng hiện có và lượng mong muốn) và tính tổng
+tiền tố s_i = d_1 + ... + d_i cho i = 1..n (do tổng bằng nhau nên s_n = 0). Gọi
+luồng qua cạnh cuối là một hằng số tự do c thì các luồng qua n cạnh lần lượt
+bằng s_i - c. Mỗi đơn vị giá trị tuyệt đối của luồng ứng với đúng một bước
+chuyển qua cạnh đó, nên tổng số bước là tổng |s_i - c|.
 
-CHỨNG MINH ĐÚNG
-Bảo toàn tại trẻ i buộc hiệu hai luồng kề nhau bằng d_i; giải hệ quanh vòng cho
-thấy mọi phương án khả thi và chỉ những phương án ấy có dạng luồng s_i-c. Mỗi
-đơn vị trị tuyệt đối của luồng tương ứng đúng một bước chuyển qua cạnh đó, nên
-tổng bước là tổng |s_i-c|. Tổng khoảng cách tuyệt đối đến một điểm đạt nhỏ nhất
-tại trung vị. Thuật toán chọn đúng trung vị nên cho chi phí khả thi tối thiểu.
+Tổng khoảng cách tuyệt đối tới một điểm đạt nhỏ nhất khi điểm đó là trung vị.
+Vậy chọn c bằng trung vị của n tổng tiền tố s_i, rồi cộng khoảng cách tuyệt đối
+từ mỗi s_i tới trung vị chính là đáp án. Dùng nth_element để tìm trung vị.
 
-ĐỘ PHỨC TẠP
-O(n log n) thời gian, O(n) bộ nhớ; dùng số nguyên 64 bit.
+## Độ phức tạp
+Thời gian O(n) trung bình (nth_element), bộ nhớ O(n); dùng số nguyên 64 bit.

@@ -1,28 +1,32 @@
-K SUBSET SUMS I - CSES 3108
+K Subset Sums I - CSES 3108
+https://cses.fi/problemset/task/3108
 
-ĐỀ BÀI (tóm tắt)
-Cho n số nguyên. Liệt kê k tổng nhỏ nhất của tất cả 2^n tập con, kể cả tập
-rỗng; các tập con khác nhau có cùng tổng vẫn phải xuất hiện đủ số lần.
+## Đề bài
+Cho n số nguyên. Hãy liệt kê k tổng nhỏ nhất trong số tất cả 2^n tập con, kể cả
+tập rỗng. Hai tập con khác nhau nhưng có cùng tổng vẫn phải được đếm và in ra
+đủ số lần.
 
-THUẬT TOÁN
-Mọi số âm luôn có lợi trong nghiệm cơ sở. Cộng chúng vào base rồi thay mỗi
-phần tử x bằng |x|. Khi chọn một tập con của các trị tuyệt đối, ta đang quyết
-định lật trạng thái chọn/không chọn so với cơ sở, nên tổng gốc bằng base cộng
-tổng mới. Sắp xếp mảng không âm.
+## Ý tưởng
+Mọi số âm luôn có lợi trong nghiệm cơ sở (làm tổng nhỏ nhất). Cộng tất cả số âm
+vào biến base, rồi thay mỗi phần tử x bằng giá trị tuyệt đối |x|. Khi ta chọn
+một tập con của các giá trị tuyệt đối, ta đang quyết định lật trạng thái
+chọn/không chọn so với cơ sở, nên tổng gốc luôn bằng base cộng tổng mới. Sắp xếp
+mảng không âm này theo thứ tự tăng dần.
 
-Liệt kê các tổng tập con không âm bằng heap. In 0 trước và đưa (a[0],0) vào
-heap. Khi lấy (sum,i), nếu còn i+1 thì sinh:
-- sum+a[i+1]: giữ a[i] và thêm a[i+1];
-- sum-a[i]+a[i+1]: thay a[i] bằng a[i+1].
-Mỗi lần lấy ra, in base+sum, đến đủ k giá trị.
+Liệt kê các tổng tập con không âm bằng min-heap. In tổng nhỏ nhất là base (ứng
+với tập rỗng) trước, rồi đưa cặp (a[0], 0) vào heap. Mỗi khi lấy ra cặp
+(sum, i), nếu còn chỉ số i+1 thì sinh thêm hai trạng thái:
+- sum + a[i+1]: giữ a[i] và thêm a[i+1];
+- sum - a[i] + a[i+1]: thay a[i] bằng a[i+1].
+Mỗi lần lấy ra khỏi heap, in base + sum, cho đến khi in đủ k giá trị.
 
-CHỨNG MINH ĐÚNG
-Phép lật quanh tập gồm mọi phần tử âm là song ánh và cộng đúng base. Với mảng
-đã sắp, mỗi tập con không rỗng có chỉ số lớn nhất i. Cha duy nhất của nó là tập
-bỏ i nếu chỉ số i-1 được chọn, hoặc tập thay i bằng i-1 nếu i-1 không được
-chọn. Đây chính là nghịch đảo của một trong hai phép sinh trên. Do a không
-giảm, cạnh cây không làm giảm tổng. Vì thế heap duyệt cây theo tổng tăng dần,
-mỗi tập con đúng một lần, kể cả khi nhiều nút có cùng tổng.
+Chứng minh đúng: phép lật quanh tập gồm mọi phần tử âm là một song ánh và cộng
+đúng base. Với mảng đã sắp, mỗi tập con không rỗng có chỉ số lớn nhất i; cha duy
+nhất của nó là tập bỏ i (nếu i-1 được chọn) hoặc tập thay i bằng i-1 (nếu i-1
+không được chọn). Đây chính là nghịch đảo của một trong hai phép sinh trên. Vì a
+không giảm nên cạnh cây không làm giảm tổng, do đó heap duyệt cây theo tổng tăng
+dần, mỗi tập con đúng một lần, kể cả khi nhiều nút có cùng tổng.
 
-ĐỘ PHỨC TẠP
-O(n log n + k log k) thời gian, O(n+k) bộ nhớ. Dùng số nguyên 64 bit.
+## Độ phức tạp
+Thời gian O(n log n + k log k), bộ nhớ O(n + k). Dùng số nguyên 64 bit vì tổng
+có thể rất lớn.

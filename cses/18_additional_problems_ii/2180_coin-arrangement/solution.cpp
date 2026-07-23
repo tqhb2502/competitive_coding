@@ -20,13 +20,17 @@ int main() {
         cin >> coins;
     }
 
+    // topBalance, bottomBalance: số xu dư tích lũy ở mỗi hàng (âm nghĩa là thiếu).
     long long topBalance = 0;
     long long bottomBalance = 0;
     long long answer = 0;
+    // Quét các cột từ trái sang phải theo kiểu tham lam (greedy).
     for (int column = 0; column < n; ++column) {
+        // Cộng (số xu của ô trừ 1) vào số dư của hàng tương ứng.
         topBalance += topRow[column] - 1;
         bottomBalance += bottomRow[column] - 1;
 
+        // Hai số dư trái dấu: chuyển dọc để triệt tiêu ngay tại cột này.
         if (topBalance > 0 && bottomBalance < 0) {
             const long long moved = min(topBalance, -bottomBalance);
             topBalance -= moved;
@@ -39,6 +43,7 @@ int main() {
             answer += moved;
         }
 
+        // Số dư còn lại bắt buộc đi qua biên phải sang cột kế tiếp.
         if (column + 1 < n) {
             answer += llabs(topBalance) + llabs(bottomBalance);
         }

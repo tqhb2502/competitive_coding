@@ -1,29 +1,28 @@
-COIN ARRANGEMENT - CSES 2180
+Coin Arrangement - CSES 2180
+https://cses.fi/problemset/task/2180
 
-ĐỀ BÀI (tóm tắt)
-Trên bảng 2 x n có tổng cộng 2n đồng xu. Mỗi bước chuyển một đồng xu sang ô
-kề cạnh. Tìm số bước ít nhất để mỗi ô có đúng một xu. Ràng buộc: n <= 10^5.
+## Đề bài
+Cho một bảng lưới kích thước 2 x n chứa tổng cộng 2n đồng xu (mỗi ô có thể
+chứa nhiều xu). Mỗi bước ta được phép chuyển một đồng xu sang một ô kề cạnh.
+Hãy tìm số bước ít nhất để mỗi ô có đúng một đồng xu. Ràng buộc: n <= 10^5.
 
-THUẬT TOÁN
-Quét các cột từ trái sang phải. top và bottom là số xu dư (âm nghĩa là thiếu)
-đã tích lũy ở hai hàng sau khi xử lý các cột hiện tại.
+## Ý tưởng
+Duyệt các cột từ trái sang phải theo kiểu tham lam (greedy). Với hàng trên và
+hàng dưới, ta giữ hai biến số dư tích lũy top và bottom (giá trị âm nghĩa là
+đang thiếu xu) sau khi đã xử lý các cột phía trước.
 
 Tại mỗi cột:
-1. Cộng số xu của ô trừ 1 vào hai số dư.
-2. Nếu hai số dư trái dấu, chuyển dọc min(|top|,|bottom|) xu để triệt tiêu;
-   cộng đúng lượng đó vào đáp án.
-3. Trừ cột cuối, mọi số dư còn lại bắt buộc đi qua biên sang cột kế tiếp;
-   cộng |top|+|bottom| vào đáp án.
+1. Cộng (số xu của ô trừ 1) vào số dư của hàng tương ứng.
+2. Nếu hai số dư trái dấu, chuyển dọc min(|top|, |bottom|) xu để triệt tiêu
+   một phần dư/thiếu ngay tại cột này; cộng đúng lượng đó vào đáp án.
+3. Nếu chưa phải cột cuối, mọi số dư còn lại bắt buộc phải đi qua biên phải
+   sang cột kế tiếp; cộng |top| + |bottom| vào đáp án.
 
-CHỨNG MINH ĐÚNG
-Sau một prefix cột, mỗi xu dư/thiếu chưa ghép ở một hàng bắt buộc đi qua biên
-phải của prefix trên chính hàng đó, trừ khi được ghép với nhu cầu trái dấu của
-hàng kia bằng một cạnh dọc. Ghép một cặp trái dấu ngay tại cột hiện tại tốn một
-bước dọc; hoãn việc ghép bắt buộc cả hai phía đi thêm theo chiều ngang và không
-thể rẻ hơn. Vì vậy phép triệt tiêu tham lam tồn tại trong một phương án tối ưu.
-Sau khi triệt tiêu, |top|+|bottom| là số lần qua biên bắt buộc. Cộng chi phí
-bắt buộc ở từng cạnh dọc/ngang tạo được một luồng vận chuyển hợp lệ và đạt mọi
-cận dưới đó, nên tổng thu được là nhỏ nhất.
+Mỗi xu dư/thiếu chưa được ghép ở một hàng buộc phải vượt qua biên phải của
+prefix trên chính hàng đó, trừ khi được ghép với nhu cầu trái dấu của hàng
+còn lại bằng một cạnh dọc. Ghép cặp trái dấu ngay tại cột hiện tại chỉ tốn
+một bước dọc và không thể rẻ hơn việc hoãn lại, nên phép triệt tiêu tham lam
+luôn tồn tại trong một phương án tối ưu.
 
-ĐỘ PHỨC TẠP
-O(n) thời gian và O(1) bộ nhớ ngoài dữ liệu đọc.
+## Độ phức tạp
+O(n) thời gian và O(1) bộ nhớ phụ (ngoài dữ liệu đọc vào).

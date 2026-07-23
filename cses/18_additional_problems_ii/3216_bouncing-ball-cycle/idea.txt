@@ -1,29 +1,31 @@
-BOUNCING BALL CYCLE - CSES 3216
+Bouncing Ball Cycle - CSES 3216
+https://cses.fi/problemset/task/3216
 
-ĐỀ BÀI (tóm tắt)
-Quả bóng xuất phát ở góc trên trái của bảng n x m và đi chéo, phản xạ ở biên.
-Tìm thời điểm đầu tiên trở về ô ban đầu và số ô khác nhau đã đi qua.
+## Đề bài
+Quả bóng xuất phát ở góc trên trái của bảng kích thước n x m và di chuyển theo
+đường chéo, phản xạ mỗi khi chạm biên. Với mỗi truy vấn, hãy tìm thời điểm đầu
+tiên bóng trở về đúng ô ban đầu và số ô khác nhau mà bóng đã đi qua.
 
-THUẬT TOÁN
-Đặt a=n-1, b=m-1, g=gcd(a,b), A=a/g, B=b/g. Hai tọa độ có chu kỳ 2a và
-2b, nên thời điểm trở lại là T=lcm(2a,2b)=2*lcm(a,b).
+## Ý tưởng
+Đặt a = n - 1, b = m - 1. Hai tọa độ của bóng dao động độc lập với chu kỳ lần
+lượt là 2a và 2b, nên thời điểm quay lại góc xuất phát là T = lcm(2a, 2b) =
+2 * lcm(a, b).
 
-Ô có khoảng cách (x,y) tới góc đầu (0<=x<=a, 0<=y<=b) được thăm khi hệ
-t đồng dư với một trong ±x modulo 2a và với một trong ±y modulo 2b có nghiệm.
-Theo định lý phần dư Trung Hoa, điều này tương đương
-x đồng dư y hoặc -y modulo 2g.
+Gọi g = gcd(a, b). Một ô có khoảng cách (x, y) tới góc đầu (0 <= x <= a,
+0 <= y <= b) được thăm khi tồn tại thời điểm t đồng dư với một trong ±x theo
+modulo 2a và đồng dư với một trong ±y theo modulo 2b. Theo định lý phần dư
+Trung Hoa, hệ này có nghiệm khi và chỉ khi x đồng dư y hoặc x đồng dư -y theo
+modulo 2g.
 
-Đếm các cặp phần dư trong O(1). Trên đoạn 0..gA, số phần tử ở mỗi lớp modulo
-2g gồm floor(A/2), cộng thêm lớp 0 nếu A chẵn, hoặc mọi lớp 0..g nếu A lẻ.
-Mô tả tương tự cho B. Tính tổng số cặp có phần dư bằng nhau, cộng số cặp có
-phần dư đối nhau, rồi trừ các lớp tự đối 0 và g đã bị đếm hai lần.
+Từ đó ta đếm số ô được thăm trong O(1). Đặt A = a/g, B = b/g. Trên đoạn 0..a,
+số phần tử rơi vào mỗi lớp thặng dư modulo 2g bằng floor(A/2), cộng thêm lớp 0
+nếu A chẵn, hoặc mọi lớp 0..g nếu A lẻ; mô tả tương tự cho cạnh b với B. Ta
+tính tổng số cặp có phần dư bằng nhau, cộng số cặp có phần dư đối nhau, rồi trừ
+đi các lớp tự đối (lớp 0 và lớp g) vì chúng bị đếm hai lần.
 
-CHỨNG MINH ĐÚNG
-Công thức chu kỳ là bội chung dương nhỏ nhất khiến cả hai tọa độ tam giác về 0.
-Mỗi tọa độ x xuất hiện đúng khi t đồng dư x hoặc -x theo chu kỳ tương ứng.
-Tiêu chuẩn tương thích của hai đồng dư cho ta chính xác điều kiện phần dư nêu
-trên, nên việc đếm các cặp lớp đếm mỗi ô được thăm. Hai quan hệ chỉ giao nhau
-ở lớp 0 và g; bước trừ cuối bảo đảm mỗi ô được tính đúng một lần.
+Công thức chu kỳ chính là bội chung dương nhỏ nhất khiến cả hai tọa độ tam giác
+cùng về 0. Hai quan hệ "phần dư bằng nhau" và "phần dư đối nhau" chỉ giao nhau
+tại lớp 0 và lớp g, nên bước trừ cuối bảo đảm mỗi ô được đếm đúng một lần.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

@@ -1,28 +1,29 @@
-K SUBSET SUMS II - CSES 3109
+K Subset Sums II - CSES 3109
+https://cses.fi/problemset/task/3109
 
-ĐỀ BÀI (tóm tắt)
+## Đề bài
 Cho n số nguyên. Liệt kê k tổng nhỏ nhất của các tập con có đúng m phần tử;
-các tập khác nhau có tổng bằng nhau vẫn được tính riêng.
+hai tập khác nhau nhưng có cùng tổng vẫn được tính riêng. In ra k tổng đó theo
+thứ tự không giảm.
 
-THUẬT TOÁN
-Sắp xếp a. Tập cơ sở lấy các chỉ số 0..m-1. Mọi tổ hợp khác biểu diễn duy nhất
-bằng d_0<=...<=d_{m-1}, trong đó phần tử thứ i dùng chỉ số i+d_i. Đảo thứ tự
-các d dương ta được phân hoạch lambda_1>=...>=lambda_r>0.
+## Ý tưởng
+Sắp xếp mảng a tăng dần. Tập cơ sở là các chỉ số 0..m-1 (cho tổng nhỏ nhất).
+Mọi tổ hợp m phần tử khác được biểu diễn duy nhất bằng dãy d_0 <= ... <= d_{m-1},
+trong đó phần tử thứ i dùng chỉ số i + d_i. Đảo thứ tự các d dương ta thu được
+một phân hoạch lambda_1 >= ... >= lambda_r > 0 với r <= m.
 
-Dùng heap trên cây phân hoạch. Từ một trạng thái có r phần dương, phần cuối v
-và phần áp cuối p, có tối đa hai con:
-1. Nếu r<m, nối thêm phần 1; tổng tăng a[m-r]-a[m-r-1].
-2. Tăng v lên 1 nếu không va vào phần trước (r=1 hoặc v<p) và còn trong mảng;
-   tổng tăng a[m-r+v+1]-a[m-r+v].
-In tổng cơ sở rồi liên tục lấy trạng thái nhỏ nhất và đưa các con vào heap.
+Dùng heap (priority_queue) duyệt trên cây phân hoạch theo tổng tăng dần. Mỗi
+trạng thái lưu: tổng hiện tại, số phần dương r, giá trị phần cuối v và giá trị
+phần áp cuối p. Từ một trạng thái sinh tối đa hai con:
+1. Nếu r < m: nối thêm một phần bằng 1; tổng tăng a[m-r] - a[m-r-1].
+2. Tăng phần cuối v lên 1 nếu không đè lên phần trước (r = 1 hoặc v < p) và chỉ
+   số vẫn nằm trong mảng; tổng tăng a[m-r+v+1] - a[m-r+v].
 
-CHỨNG MINH ĐÚNG
-Mỗi tổ hợp tương ứng duy nhất một phân hoạch trong hình chữ nhật m x (n-m).
-Trong cây, cha của phân hoạch xóa phần cuối nếu nó bằng 1, còn không thì giảm
-phần cuối một đơn vị. Vì vậy mỗi phân hoạch khác rỗng có đúng một cha, và hai
-phép trên sinh đủ, không trùng. Mảng đã sắp nên mọi độ tăng trên cạnh không âm.
-Do đó heap lấy các nút theo tổng không giảm và in chính xác k tổ hợp nhỏ nhất;
-các nút khác nhau có tổng bằng nhau vẫn được giữ riêng.
+Mỗi phân hoạch khác rỗng có đúng một cha (xóa phần cuối nếu nó bằng 1, ngược lại
+giảm phần cuối một đơn vị), nên hai phép sinh trên phủ đủ và không trùng. Vì mảng
+đã sắp nên độ tăng trên mọi cạnh đều không âm, do đó heap trả về các nút theo tổng
+không giảm. In tổng cơ sở trước, rồi lặp k lần: lấy trạng thái nhỏ nhất và đẩy các
+con của nó vào heap.
 
-ĐỘ PHỨC TẠP
-O(n log n + k log k) thời gian, O(n+k) bộ nhớ; tổng dùng số nguyên 64 bit.
+## Độ phức tạp
+O(n log n + k log k) thời gian, O(n + k) bộ nhớ; dùng số nguyên 64 bit cho tổng.

@@ -1,22 +1,21 @@
-GCD SUBSETS - CSES 3161
+GCD Subsets - CSES 3161
+https://cses.fi/problemset/task/3161
 
-ĐỀ BÀI (tóm tắt)
-Cho n số thuộc [1,n]. Với mỗi k=1..n, đếm số tập con không rỗng có gcd đúng
-bằng k, modulo 10^9+7. Ràng buộc n <= 2*10^5.
+## Đề bài
+Cho n số nguyên, mỗi số thuộc đoạn [1, n]. Với mỗi k = 1..n, hãy đếm số tập
+con không rỗng có ước chung lớn nhất (gcd) đúng bằng k, kết quả lấy theo
+modulo 10^9 + 7. Ràng buộc n <= 2*10^5.
 
-THUẬT TOÁN
-Với mỗi d, đếm cnt[d]: có bao nhiêu phần tử chia hết cho d bằng cách duyệt các
-bội của d. Có 2^cnt[d]-1 tập con không rỗng chỉ gồm các bội của d; gcd của
-chúng là một bội của d.
+## Ý tưởng
+Với mỗi ước d, gọi cnt[d] là số phần tử chia hết cho d, tính được bằng cách
+duyệt các bội d, 2d, 3d, ... và cộng tần suất. Có đúng 2^cnt[d] - 1 tập con
+không rỗng chỉ gồm các bội của d; gcd của mỗi tập con đó luôn là một bội của d.
 
-Duyệt d giảm dần. Đặt exact[d] ban đầu bằng 2^cnt[d]-1, rồi trừ exact[m] của
-mọi bội thực sự m=2d,3d,... đã được tính.
+Duyệt d giảm dần và đặt exact[d] = 2^cnt[d] - 1, sau đó trừ đi exact[m] của
+mọi bội thực sự m = 2d, 3d, ... (đã được tính trước đó). Theo nguyên lí này,
+2^cnt[d] - 1 bằng tổng exact[m] trên mọi m là bội của d; vì duyệt giảm dần nên
+mọi exact[m] với m > d đã chính xác, do đó phần còn lại đúng bằng số tập con có
+gcd bằng d. Cuối cùng in exact[1], exact[2], ..., exact[n].
 
-CHỨNG MINH ĐÚNG
-Một tập con có mọi phần tử chia hết cho d khi và chỉ khi gcd của nó là một bội
-của d. Vì vậy 2^cnt[d]-1 bằng tổng exact[m] trên mọi m là bội của d. Khi duyệt
-giảm, mọi exact[m] với m>d đã đúng; trừ các bội thực sự để lại chính xác số tập
-con có gcd bằng d. Suy ra mọi giá trị in ra đều đúng.
-
-ĐỘ PHỨC TẠP
-O(n log n) thời gian theo tổng chuỗi điều hòa và O(n) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n log n) theo tổng chuỗi điều hòa, bộ nhớ O(n).

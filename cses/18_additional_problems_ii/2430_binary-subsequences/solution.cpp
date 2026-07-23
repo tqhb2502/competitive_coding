@@ -5,6 +5,9 @@
 
 using namespace std;
 
+// Đếm số bước Euclid trừ theo lô để đưa cặp (first, second) về (1, 1).
+// Mỗi lô trừ count lần số nhỏ khỏi số lớn; nếu không về được 1 thì cặp không
+// nguyên tố cùng nhau, trả về vô cực (không hợp lệ).
 int subtractionSteps(int first, int second) {
     int steps = 0;
     while (first != second) {
@@ -27,7 +30,11 @@ int main() {
 
     int subsequences;
     cin >> subsequences;
+
+    // Điều kiện đúng n dãy con: chọn cặp (first, second) với first + second = n + 2.
     const int sum = subsequences + 2;
+
+    // Duyệt mọi first, tìm cặp có độ dài xâu (số bước) nhỏ nhất.
     int bestFirst = 1;
     int bestSteps = numeric_limits<int>::max();
     for (int first = 1; first <= sum / 2; ++first) {
@@ -38,6 +45,7 @@ int main() {
         }
     }
 
+    // Dựng lại xâu bằng phép trừ từng bước: first > second ghi bit 0, ngược lại ghi bit 1.
     int first = bestFirst;
     int second = sum - first;
     string answer;
@@ -51,6 +59,7 @@ int main() {
             answer.push_back('1');
         }
     }
+    // Chuỗi bit dựng theo thứ tự ngược, đảo lại để có đáp án.
     reverse(answer.begin(), answer.end());
     cout << answer << '\n';
 }

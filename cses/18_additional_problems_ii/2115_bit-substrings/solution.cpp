@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// Lũy thừa modulo nhanh: tính base^exponent mod modulus.
 long long modularPower(long long base, long long exponent, int modulus) {
     long long result = 1;
     while (exponent > 0) {
@@ -17,9 +18,12 @@ long long modularPower(long long base, long long exponent, int modulus) {
     return result;
 }
 
+// Biến đổi số học (NTT) trên trường modulo với căn nguyên thủy PrimitiveRoot;
+// invert = true để tính biến đổi ngược.
 template <int Modulus, int PrimitiveRoot>
 void numberTheoreticTransform(vector<int>& values, bool invert) {
     const int size = static_cast<int>(values.size());
+    // Sắp xếp lại các phần tử theo thứ tự đảo bit (bit-reversal).
     for (int index = 1, reversed = 0; index < size; ++index) {
         int bit = size >> 1;
         while ((reversed & bit) != 0) {
@@ -32,10 +36,12 @@ void numberTheoreticTransform(vector<int>& values, bool invert) {
         }
     }
 
+    // Butterfly: ghép từng đoạn độ dài length tăng dần theo lũy thừa của 2.
     for (int length = 2; length <= size; length <<= 1) {
         int root = static_cast<int>(
             modularPower(PrimitiveRoot, (Modulus - 1) / length, Modulus));
         if (invert) {
+            // Biến đổi ngược dùng nghịch đảo của căn đơn vị.
             root = static_cast<int>(modularPower(root, Modulus - 2, Modulus));
         }
         for (int start = 0; start < size; start += length) {
@@ -60,6 +66,7 @@ void numberTheoreticTransform(vector<int>& values, bool invert) {
         }
     }
     if (invert) {
+        // Chia cho size (nhân nghịch đảo) để hoàn tất biến đổi ngược.
         const long long inverseSize =
             modularPower(size, Modulus - 2, Modulus);
         for (int& value : values) {
@@ -68,6 +75,7 @@ void numberTheoreticTransform(vector<int>& values, bool invert) {
     }
 }
 
+// Nhân đa thức (tích chập) hai dãy hệ số theo modulo bằng NTT.
 template <int Modulus, int PrimitiveRoot>
 vector<int> convolution(const vector<long long>& first,
                         const vector<long long>& second) {
@@ -85,6 +93,7 @@ vector<int> convolution(const vector<long long>& first,
     }
     numberTheoreticTransform<Modulus, PrimitiveRoot>(left, false);
     numberTheoreticTransform<Modulus, PrimitiveRoot>(right, false);
+    // Nhân điểm-điểm trong miền tần số rồi biến đổi ngược.
     for (int index = 0; index < size; ++index) {
         left[index] = static_cast<int>(
             static_cast<long long>(left[index]) * right[index] % Modulus);
@@ -100,6 +109,8 @@ int main() {
 
     string bits;
     cin >> bits;
+
+    // frequency[t] = số prefix có đúng t bit 1 (prefix rỗng đóng góp t = 0).
     int ones = 0;
     vector<long long> frequency(bits.size() + 1, 0);
     ++frequency[0];
@@ -111,6 +122,7 @@ int main() {
     }
     frequency.resize(ones + 1);
 
+    // Đảo ngược f rồi nhân đa thức: hệ số tại (m-1-k) là tổng_t f[t]*f[t+k].
     vector<long long> reversedFrequency = frequency;
     reverse(reversedFrequency.begin(), reversedFrequency.end());
     constexpr int firstModulus = 998244353;
@@ -119,14 +131,18 @@ int main() {
         convolution<firstModulus, 3>(frequency, reversedFrequency);
     const vector<int> secondProduct =
         convolution<secondModulus, 3>(frequency, reversedFrequency);
+    // Chuẩn bị nghịch đảo của firstModulus để ghép CRT hai phần dư.
     const long long inverseFirstModulus = modularPower(
         firstModulus % secondModulus, secondModulus - 2, secondModulus);
 
+    // k = 0: chọn hai prefix cùng giá trị, tổng C(f[t], 2).
     long long zeroAnswer = 0;
     for (const long long count : frequency) {
         zeroAnswer += count * (count - 1) / 2;
     }
     cout << zeroAnswer;
+
+    // k >= 1: lấy hệ số tương ứng, khôi phục số thật bằng CRT hai modulus.
     const int valueCount = ones + 1;
     for (int requiredOnes = 1;
          requiredOnes <= static_cast<int>(bits.size()); ++requiredOnes) {

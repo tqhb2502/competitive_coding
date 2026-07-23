@@ -1,2 +1,0 @@
-K Subset Sums I
-https://cses.fi/problemset/task/3108

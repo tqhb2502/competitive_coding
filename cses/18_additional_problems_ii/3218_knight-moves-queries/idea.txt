@@ -1,24 +1,28 @@
-KNIGHT MOVES QUERIES - CSES 3218
+Knight Moves Queries - CSES 3218
+https://cses.fi/problemset/task/3218
 
-ĐỀ BÀI (tóm tắt)
-Với nhiều vị trí (x,y) trên bàn cờ vô hạn, tìm số nước đi mã ít nhất để đến
-ô (1,1).
+## Đề bài
+Cho nhiều truy vấn, mỗi truy vấn là một ô (x, y) trên bàn cờ vô hạn với các
+hàng và cột đều dương. Với mỗi truy vấn, tìm số nước đi ít nhất của quân mã để
+đi từ ô (x, y) về ô (1, 1).
 
-THUẬT TOÁN
-Đổi gốc: a=|x-1|, b=|y-1| và hoán đổi để a>=b. Ba trường hợp đặc biệt là
-(1,0) cần 3 nước, (1,1) cần 4 nước và (2,2) cần 4 nước. Trường hợp (1,1)
-phát sinh do bàn cờ chỉ có các hàng và cột dương: cách đi 2 nước trên mặt
-phẳng hai chiều phải vượt qua biên trên hoặc biên trái. Ngoài các ngoại lệ, đặt
-d=max(ceil(a/2), ceil((a+b)/3)).
-Nếu d và a+b khác tính chẵn lẻ thì tăng d một đơn vị.
+## Ý tưởng
+Dời gốc tọa độ về ô (1, 1): đặt a = |x - 1|, b = |y - 1| rồi hoán đổi để bảo
+đảm a >= b. Khoảng cách mã lúc này chỉ phụ thuộc vào cặp (a, b).
 
-CHỨNG MINH ĐÚNG
-Mỗi nước thay đổi một tọa độ nhiều nhất 2 nên cần ít nhất ceil(a/2) nước; tổng
-khoảng cách Manhattan tăng tối đa 3 nên cần ít nhất ceil((a+b)/3) nước. Mỗi
-nước mã đổi parity tổng tọa độ, do đó số nước phải cùng parity với a+b. Ngoại
-trừ ba cấu hình nhỏ đã xử lý riêng, công thức khoảng cách mã trên miền hàng và
-cột dương cho biết cận lớn nhất sau khi chỉnh parity luôn dựng được mà không
-vượt qua biên. Vì vậy d là cận dưới đạt được và chính là đáp án tối ưu.
+Có ba cấu hình nhỏ cần xử lý riêng vì công thức tổng quát không đúng:
+- (1, 0) cần 3 nước.
+- (2, 2) cần 4 nước.
+- (1, 1) cần 4 nước; trường hợp này phát sinh do bàn cờ chỉ có hàng và cột
+  dương nên cách đi 2 nước phải vượt qua biên trên hoặc biên trái.
 
-ĐỘ PHỨC TẠP
+Ngoài các ngoại lệ trên, đặt d = max(ceil(a / 2), ceil((a + b) / 3)). Đây là
+cận dưới: mỗi nước mã thay đổi một tọa độ tối đa 2 đơn vị nên cần ít nhất
+ceil(a / 2) nước; tổng khoảng cách Manhattan giảm tối đa 3 mỗi nước nên cần ít
+nhất ceil((a + b) / 3) nước. Vì mỗi nước mã đổi tính chẵn lẻ của tổng tọa độ,
+số nước phải cùng tính chẵn lẻ với a + b; nếu d và a + b khác tính chẵn lẻ thì
+tăng d thêm một đơn vị. Giá trị d sau khi chỉnh chẵn lẻ luôn dựng được và là
+đáp án tối ưu.
+
+## Độ phức tạp
 O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

@@ -1,2 +1,0 @@
-Stick Difference
-https://cses.fi/problemset/task/3401

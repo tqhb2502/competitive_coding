@@ -6,6 +6,7 @@ using namespace std;
 
 using Swap = pair<int, int>;
 
+// In ra một vòng: số cặp hoán đổi, rồi từng cặp chỉ số (đổi về 1-based)
 void printRound(const vector<Swap> &swaps) {
     cout << swaps.size() << '\n';
     for (const auto [first, second] : swaps) {
@@ -22,7 +23,7 @@ int main() {
     vector<int> permutation(static_cast<size_t>(size));
     for (int &value : permutation) {
         cin >> value;
-        --value;
+        --value; // Chuyển sang chỉ số 0-based
     }
 
     vector<char> visited(static_cast<size_t>(size), false);
@@ -32,6 +33,7 @@ int main() {
         if (visited[static_cast<size_t>(start)]) {
             continue;
         }
+        // Duyệt lần theo chu trình chứa vị trí start
         vector<int> cycle;
         int current = start;
         while (!visited[static_cast<size_t>(current)]) {
@@ -40,6 +42,7 @@ int main() {
             current = permutation[static_cast<size_t>(current)];
         }
 
+        // Vòng 1: các cặp đối xứng (c[left], c[right]) từ hai đầu vào giữa
         int left = 0;
         int right = static_cast<int>(cycle.size()) - 1;
         while (left < right) {
@@ -48,6 +51,7 @@ int main() {
             ++left;
             --right;
         }
+        // Vòng 2: các cặp đối xứng bắt đầu từ i = 1 (cần khi chu trình dài >= 3)
         left = 1;
         right = static_cast<int>(cycle.size()) - 1;
         while (left < right) {
@@ -58,6 +62,7 @@ int main() {
         }
     }
 
+    // Chọn đáp án: 0 vòng nếu đã sắp; 1 vòng nếu toàn chu trình ngắn; ngược lại 2 vòng
     if (firstRound.empty()) {
         cout << 0 << '\n';
     } else if (secondRound.empty()) {

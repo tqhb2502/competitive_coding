@@ -1,25 +1,26 @@
-SWAP ROUND SORTING - CSES 1698
+Swap Round Sorting - CSES 1698
+https://cses.fi/problemset/task/1698
 
-ĐỀ BÀI (tóm tắt)
-Sắp xếp một hoán vị bằng số vòng ít nhất. Trong một vòng được đổi chỗ tùy ý
-nhiều cặp chỉ số đôi một rời nhau; cần in ra các cặp của từng vòng.
+## Đề bài
+Cho một hoán vị của các số từ 1 đến n. Ta muốn sắp xếp hoán vị này bằng số vòng
+ít nhất. Trong mỗi vòng, ta được phép đổi chỗ đồng thời nhiều cặp chỉ số, miễn
+là các cặp này đôi một rời nhau (mỗi chỉ số chỉ tham gia tối đa một cặp). Hãy in
+ra số vòng nhỏ nhất cùng danh sách các cặp hoán đổi của từng vòng.
 
-THUẬT TOÁN
-Tách hoán vị vị trí -> giá trị thành các chu trình c[0..L-1]. Với mỗi chu trình
-không tầm thường, đưa vào vòng 1 các cặp (c[i],c[L-1-i]). Với L>=3, đưa vào
-vòng 2 các cặp (c[i],c[L-i]) cho i bắt đầu từ 1 và hai đầu chưa gặp nhau.
+## Ý tưởng
+Tách hoán vị (vị trí -> giá trị) thành các chu trình rời nhau c[0..L-1]. Vì một
+vòng swap là một phép tự nghịch, chỉ hoán vị gồm toàn chu trình dài tối đa 2 mới
+sắp được trong đúng một vòng, nên đáp án luôn là 0, 1 hoặc 2 vòng.
 
-Nếu không có cặp, in 0 vòng. Nếu vòng 2 rỗng, mọi chu trình dài 2 và in 1 vòng.
-Ngược lại in cả 2 vòng.
+Với mỗi chu trình, ở vòng 1 đưa vào các cặp đối xứng (c[i], c[L-1-i]) với i chạy
+từ hai đầu vào giữa. Với chu trình dài L >= 3, ở vòng 2 đưa vào các cặp
+(c[i], c[L-i]) bắt đầu từ i = 1 và tiến vào giữa. Tích của hai phép đối xứng này
+chính là phép quay ngược của chu trình ban đầu, nên sau hai vòng mọi giá trị về
+đúng vị trí. Do các chu trình rời nhau nên mọi cặp trong cùng một vòng cũng rời
+nhau, thỏa điều kiện đề bài.
 
-CHỨNG MINH ĐÚNG
-Trong một chu trình, vòng 1 cố định c[0] (và các vị trí đối xứng tương ứng),
-sau đó vòng 2 đổi các cặp còn lệch để mọi c[i] nhận giá trị i; kiểm tra trực
-tiếp theo thứ tự chu trình cho thấy tích hai phép đối xứng là phép quay ngược
-của chu trình ban đầu. Các chu trình rời nhau nên mọi cặp trong cùng một vòng
-đều rời nhau. Một vòng swap luôn là một phép tự nghịch, vì thế chỉ hoán vị gồm
-chu trình dài tối đa 2 mới sắp được trong một vòng. Do đó 0/1/2 vòng mà thuật
-toán chọn không chỉ hợp lệ mà còn nhỏ nhất.
+Nếu không có cặp nào thì hoán vị đã sắp và in 0 vòng. Nếu vòng 2 rỗng thì mọi
+chu trình dài tối đa 2 và in 1 vòng. Ngược lại in cả 2 vòng.
 
-ĐỘ PHỨC TẠP
-O(n) thời gian, O(n) bộ nhớ và in O(n) cặp.
+## Độ phức tạp
+Thời gian O(n), bộ nhớ O(n) và tổng số cặp in ra là O(n).

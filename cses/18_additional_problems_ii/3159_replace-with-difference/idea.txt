@@ -1,37 +1,31 @@
-REPLACE WITH DIFFERENCE - CSES 3159
+Replace with Difference - CSES 3159
+https://cses.fi/problemset/task/3159
 
-ĐỀ BÀI (tóm tắt)
-Mỗi thao tác xóa hai giá trị a,b trong multiset và thêm |a-b|. Sau đúng n-1
-thao tác cần còn lại 0; hãy dựng dãy thao tác hoặc in -1.
-Ràng buộc: n <= 1000, x_i <= 1000.
+## Đề bài
+Cho một multiset gồm n số nguyên. Mỗi thao tác chọn hai giá trị a, b trong
+multiset, xóa chúng và thêm vào |a - b|. Sau đúng n - 1 thao tác chỉ còn lại
+một phần tử; hãy dựng dãy thao tác sao cho phần tử còn lại bằng 0, hoặc in -1
+nếu không thể. Ràng buộc: 2 <= n <= 1000 và 1 <= x_i <= 1000.
 
-THUẬT TOÁN
+## Ý tưởng
 Kết quả cuối của một cây các phép hiệu luôn biểu diễn được dưới dạng trị tuyệt
-đối của tổng có dấu +/- x_i. Vì vậy muốn được 0, các số ban đầu phải chia được
-thành hai nhóm có tổng bằng nhau; điều kiện này cũng đủ.
+đối của một tổng có dấu +/- x_i. Vì vậy muốn thu được 0, các số ban đầu phải
+chia được thành hai nhóm có tổng bằng nhau; điều kiện này cũng là đủ. Do đó nếu
+tổng lẻ thì lập tức in -1.
 
-Tìm subset có tổng bằng một nửa tổng bằng bitset động. Mỗi lần dịch bitset bởi
-x_i, với các tổng mới đạt lần đầu ta lưu phần tử và tổng trước đó để truy vết.
-Cài theo từng từ 64 bit nên mất O(n*S/64), S là tổng cần tìm.
+Tìm một tập con có tổng đúng bằng nửa tổng (subset-sum) bằng bitset động. Mỗi
+lần dịch bitset đi x_i, với những tổng lần đầu đạt tới ta lưu lại phần tử vừa
+thêm cùng tổng trước đó để truy vết. Cài đặt theo từng từ 64 bit nên chi phí là
+O(n*S/64), với S là tổng cần đạt.
 
 Sau khi có hai nhóm tổng bằng nhau, liên tục lấy a ở nhóm A và b ở nhóm B:
-- in thao tác (a,b);
-- nếu a>b, đưa a-b trở lại A; nếu b>a, đưa b-a trở lại B;
-- nếu bằng nhau, kết quả là một số 0 và được để riêng.
-Tổng hai nhóm luôn bằng nhau, nên cuối cùng cả hai cùng hết. Ghép các số 0 còn
-lại bằng các thao tác (0,0) cho đến khi chỉ còn một số 0.
+- in thao tác (a, b);
+- nếu a > b, đưa a - b trở lại A; nếu b > a, đưa b - a trở lại B;
+- nếu a = b, kết quả là một số 0 và được để riêng.
+Vì các x_i đều dương nên mọi giá trị trong hai nhóm luôn dương và tổng hai nhóm
+luôn bằng nhau, do đó cả hai cùng cạn đồng thời. Cuối cùng ghép các số 0 sinh ra
+bằng những thao tác (0, 0) cho đến khi chỉ còn duy nhất một số 0. Tổng số thao
+tác đúng bằng n - 1 và lời giải in ra là hợp lệ.
 
-CHỨNG MINH ĐÚNG
-Quy nạp trên cây thao tác cho thấy mỗi giá trị đang có là trị tuyệt đối của một
-tổng có dấu của các lá đã dùng. Nếu kết quả là 0, các dấu tạo thành một phân
-hoạch hai tổng bằng nhau, nên điều kiện subset-sum là cần thiết.
-
-Trong phần dựng, khi a>b, tổng A giảm b (xóa a rồi thêm a-b) và tổng B cũng
-giảm b; trường hợp đối xứng tương tự, còn a=b làm cả hai tổng giảm a. Vì vậy
-bất biến tổng A=tổng B luôn giữ, giá trị được đưa lại đúng là |a-b| và mọi thao
-tác hợp lệ trên multiset hiện tại. Hai nhóm kết thúc đồng thời và sinh ít nhất
-một số 0; ghép các số 0 không đổi kết quả. Tổng số thao tác đúng n-1, chứng minh
-điều kiện cũng đủ và lời giải được in là hợp lệ.
-
-ĐỘ PHỨC TẠP
-O(n*S/64 + S) thời gian, O(S+n) bộ nhớ, với S <= 5*10^5.
+## Độ phức tạp
+O(n*S/64 + S) thời gian, O(S + n) bộ nhớ, với S <= 5*10^5.

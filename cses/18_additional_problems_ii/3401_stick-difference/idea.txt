@@ -1,76 +1,53 @@
-STICK DIFFERENCE - CSES 3401
+Stick Difference - CSES 3401
+https://cses.fi/problemset/task/3401
 
-ĐỀ BÀI (tóm tắt)
-Cho n thanh dài a_i. Với mỗi k=1..m, cắt đúng k lần (tạo n+k đoạn nguyên
-dương) sao cho đoạn dài nhất trừ đoạn ngắn nhất nhỏ nhất. n<=10^5, m<=2*10^5.
+## Đề bài
+Cho n thanh gỗ có độ dài nguyên a_i. Với mỗi k = 1..m, ta cắt đúng k nhát để
+tạo thành n+k đoạn có độ dài nguyên dương, sao cho hiệu (đoạn dài nhất trừ đoạn
+ngắn nhất) là nhỏ nhất. In đáp án cho từng k. Ràng buộc n <= 1e5, m <= 2e5.
 
-ĐIỀU KIỆN KHẢ THI
-Một thanh dài a có thể chia thành q đoạn đều thuộc [L,R] khi và chỉ khi
+## Ý tưởng
+Điều kiện khả thi: một thanh dài a chia được thành q đoạn cùng thuộc [L, R] khi
+và chỉ khi ceil(a/R) <= q <= floor(a/L). Do đó khi cắt tổng cộng thành p = n+k
+đoạn, ta khả thi khi mọi khoảng số đoạn riêng của từng thanh không rỗng và p
+nằm giữa tổng các cận trái và tổng các cận phải.
 
-  ceil(a/R) <= q <= floor(a/L).
+Với mỗi p = n+k, đặt:
+- R là cận trên nhỏ nhất sao cho sum ceil(a_i/R) <= p;
+- L là cận dưới lớn nhất trong [1, min_i a_i] sao cho sum floor(a_i/L) >= p.
+Chỉ lấy R - L chưa đủ, vì có thể một thanh không tách được thành các đoạn thuộc
+[L, R] (ví dụ thanh dài 5 với khoảng [3, 4]).
 
-Vì thế tổng p đoạn khả thi khi mọi khoảng q riêng không rỗng và p nằm giữa
-tổng các cận trái và tổng các cận phải.
+Sửa các thanh xấu: đặt x = floor(a/L), y = ceil(a/R). Vì L <= R nên luôn có
+y <= x+1, thanh bị xấu khi x < y, tức y = x+1. Để khoảng số đoạn của thanh trở
+lại không rỗng, phải làm ít nhất một trong hai việc: hạ cận dưới xuống
+lo = floor(a/(x+1)), hoặc tăng cận trên lên hi = ceil(a/x). Sắp các cặp
+(lo, hi) theo lo: nếu chọn cận dưới mới tại một lo thì mọi cặp có lo lớn hơn
+được sửa bằng phía dưới, các cặp đứng trước phải sửa bằng phía trên. Quét
+prefix maximum của hi cho công thức tối ưu min(max(R, maxHiPrefix) - loCurrent),
+và trường hợp sửa tất cả bằng phía trên là max(R, maxHiAll) - L. Khi mọi khoảng
+riêng đã không rỗng, việc hạ L hoặc tăng R chỉ nới rộng hai tổng nên p vẫn nằm
+giữa chúng, phương án là khả thi thật sự.
 
-Với mỗi p=n+k, đặt:
+Xử lý đồng thời mọi k: hai dãy R[k], L[k] được sinh bằng heap. Tăng số mảnh của
+thanh đang có ceil(a/q) lớn nhất để lấy mọi R[k]; trộn các dãy
+floor(a/2), floor(a/3), ... rồi lấy dần giá trị lớn nhất để lấy mọi L[k], với
+phép gán L[k] = min(L[k-1], giá trị vừa lấy) đồng thời giữ điều kiện
+L <= min_i a_i. Với một thanh và một x cố định, hai điều kiện floor(a/L[k]) = x
+và ceil(a/R[k]) = x+1 cùng đúng trên một đoạn liên tiếp của k, hai đầu đoạn tìm
+bằng binary search; tổng số x cần xét không vượt quá tổng số mảnh bắt buộc tại
+k = m, tức O(n+m).
 
-- R là cận trên nhỏ nhất sao cho sum ceil(a_i/R)<=p;
-- L là cận dưới lớn nhất trong [1,min_i a_i] sao cho
-  sum floor(a_i/L)>=p.
+Thêm hoặc xóa cặp (lo, hi) theo các sự kiện đoạn thời gian. Segment tree theo
+lo lưu hi lớn nhất và lo hoạt động lớn nhất trong mỗi node. Khi quét prefix,
+nếu maximum hi của cả node không vượt prefix maximum hiện tại thì node không
+đổi prefix và ứng viên tốt nhất dùng lo lớn nhất của node, nhờ vậy bỏ qua cả
+node; nếu prefixMaximum - maxActiveLow đã không nhỏ hơn đáp án tốt nhất hiện có
+thì không lo nào trong node cải thiện được, cũng bỏ qua node sau khi gộp
+maximum hi của nó. Ngược lại đi xuống hai con để cập nhật các mốc prefix
+maximum.
 
-Chỉ lấy R-L chưa đủ: chẳng hạn [5,12], p=5 cho L=3,R=4 nhưng thanh 5 không
-thể tách thành các đoạn 3..4.
-
-SỬA CÁC THANH XẤU
-Đặt x=floor(a/L), y=ceil(a/R). Vì L<=R, luôn y<=x+1. Thanh xấu khi x<y,
-nên y=x+1. Để khoảng số đoạn của thanh này trở lại không rỗng, ta phải làm ít
-nhất một trong hai việc:
-
-  hạ cận dưới tới lo=floor(a/(x+1)), hoặc
-  tăng cận trên tới hi=ceil(a/x).
-
-Sắp các cặp (lo,hi) theo lo. Nếu chọn cận dưới mới tại một lo, mọi cặp có lo
-lớn hơn được sửa bằng phía dưới; các cặp đứng trước phải sửa bằng phía trên.
-Do đó quét prefix maximum của hi cho công thức tối ưu:
-
-  min(max(R, maxHiPrefix) - loCurrent),
-
-và trường hợp sửa tất cả bằng phía trên là max(R,maxHiAll)-L. Khi mọi khoảng
-riêng đã không rỗng, hạ L/tăng R chỉ nới hai tổng, nên p vẫn nằm giữa chúng và
-phương án thật sự khả thi.
-
-XỬ LÝ ĐỒNG THỜI MỌI k
-Hai dãy R[k],L[k] được sinh bằng heap:
-
-- tăng số mảnh của thanh đang có ceil(a/q) lớn nhất để lấy mọi R[k];
-- trộn các dãy floor(a/2),floor(a/3),... và lấy lần lượt giá trị lớn nhất để
-  lấy mọi L[k]. Phép gán L[k]=min(L[k-1],giá trị vừa lấy) đồng thời duy trì
-  điều kiện L<=min_i a_i.
-
-Với một thanh và một x cố định, các điều kiện
-floor(a/L[k])=x và ceil(a/R[k])=x+1 cùng đúng trên một đoạn liên tiếp của k.
-Tìm hai đầu bằng binary search. Tổng số x cần xét không quá tổng số mảnh bắt
-buộc ở k=m, tức O(n+m).
-
-Thêm/xóa cặp (lo,hi) theo các sự kiện đoạn thời gian. Segment tree theo lo lưu
-hi lớn nhất và lo hoạt động lớn nhất. Khi quét prefix, nếu maximum hi của cả
-một node không vượt maximum hiện tại, toàn node không đổi maximum và ứng viên
-tốt nhất dùng lo lớn nhất của node; nhờ vậy bỏ qua cả node. Ngoài ra, nếu
-prefixMaximum-maxActiveLow đã không nhỏ hơn đáp án tốt nhất hiện có thì không
-lo nào trong node có thể cải thiện đáp án, nên cũng bỏ qua node sau khi gộp
-maximum hi của nó. Nếu chưa thỏa một trong hai điều kiện này, đi xuống hai con
-để cập nhật các mốc prefix maximum.
-
-CHỨNG MINH ĐÚNG
-Điều kiện chia một thanh theo [L,R] là cần và đủ do q đoạn có tổng nằm trong
-[qL,qR], và mọi tổng nguyên trong khoảng này đều dựng được. Định nghĩa R,L bảo
-đảm hai bất đẳng thức tổng; phân tích thanh xấu và phép quét xét đúng mọi cách
-chia các thanh xấu thành nhóm sửa phía trên/phía dưới. Vì vậy giá trị truy vấn
-segment tree đúng bằng độ rộng khả thi nhỏ nhất cho p. Các heap sinh đúng hai
-ngưỡng theo định nghĩa, còn sự kiện binary search kích hoạt đúng từng cặp xấu,
-nên lập luận áp dụng cho mọi k được in.
-
-ĐỘ PHỨC TẠP
-O((n+m) log(n+m) + Q) thời gian, trong đó Q là số node segment tree thực sự
-được thăm khi quét các mốc prefix maximum; các node không đổi maximum hoặc
-không thể cải thiện đáp án được bỏ qua ngay. Bộ nhớ O(n+m).
+## Độ phức tạp
+Thời gian O((n+m) log(n+m) + Q), trong đó Q là số node segment tree thực sự
+được thăm khi quét các mốc prefix maximum (các node không đổi maximum hoặc
+không thể cải thiện đáp án bị bỏ qua ngay). Bộ nhớ O(n+m).

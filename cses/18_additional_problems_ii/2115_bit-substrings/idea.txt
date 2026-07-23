@@ -1,29 +1,22 @@
-BIT SUBSTRINGS - CSES 2115
+Bit Substrings - CSES 2115
+https://cses.fi/problemset/task/2115
 
-ĐỀ BÀI (tóm tắt)
-Với mỗi k=0..n, đếm số substring không rỗng của chuỗi bit chứa đúng k chữ số
-1. Ràng buộc: n <= 2*10^5.
+## Đề bài
+Cho một chuỗi bit độ dài n. Với mỗi k = 0..n, đếm số substring không rỗng
+chứa đúng k chữ số 1, rồi in ra n+1 giá trị đó. Ràng buộc n <= 2*10^5.
 
-THUẬT TOÁN
-Gọi p_i là số lượng bit 1 trong prefix độ dài i (i=0..n), và f[t] là số
-prefix có p_i=t.
+## Ý tưởng
+Gọi p_i là số bit 1 trong prefix độ dài i (i = 0..n) và f[t] là số prefix có
+p_i = t. Một substring (l, r] có đúng k bit 1 khi và chỉ khi p_r - p_l = k.
+- Với k = 0: hai đầu prefix phải cùng giá trị, đáp án là tổng C(f[t], 2).
+- Với k > 0: vì dãy p không giảm nên mọi prefix mang t luôn đứng trước mọi
+  prefix mang t+k; do đó số cặp hợp lệ là tổng_t f[t]*f[t+k], tức tương quan
+  chéo của f.
+Đảo ngược một bản sao của f rồi nhân đa thức: hệ số tại vị trí (m-1-k) chính là
+tổng trên, với m là số giá trị prefix khác nhau. Vì đáp án có thể lớn hơn một
+modulus, ta chạy NTT với hai số nguyên tố 998244353 và 1004535809 rồi ghép hai
+phần dư bằng CRT; tích hai modulus lớn hơn mọi đáp án nên khôi phục được số
+nguyên thật.
 
-- Với k=0, hai đầu prefix phải có cùng giá trị: đáp án là tổng C(f[t],2).
-- Với k>0, vì p_i không giảm, mọi cặp giá trị t và t+k tự động xuất hiện theo
-  đúng thứ tự. Đáp án là tổng_t f[t]*f[t+k], tức tương quan chéo của f.
-
-Đảo ngược một bản sao của f rồi nhân đa thức; hệ số ở vị trí m-1-k chính là
-tổng trên (m là số giá trị prefix khác nhau). Để hoàn toàn chính xác dù đáp án
-lớn hơn một modulus, chạy NTT với hai số nguyên tố 998244353 và 1004535809,
-sau đó ghép hai phần dư bằng CRT. Tích hai modulus lớn hơn mọi đáp án.
-
-CHỨNG MINH ĐÚNG
-Substring (l,r] có đúng k bit 1 khi và chỉ khi p_r-p_l=k. Với k=0, chọn hai
-prefix bất kỳ trong cùng nhóm f[t] cho đúng một substring không rỗng. Với k>0,
-mọi prefix mang t đứng trước mọi prefix mang t+k do dãy p không giảm, nên có
-đúng f[t]f[t+k] cặp hợp lệ. Phép nhân với mảng đảo đặt tổng các tích này đúng
-tại hệ số m-1-k. NTT tính tích theo từng modulus, CRT khôi phục duy nhất số
-nguyên thật trong miền đáp án, nên mọi giá trị được in đều chính xác.
-
-ĐỘ PHỨC TẠP
-O(n log n) thời gian và O(n) bộ nhớ.
+## Độ phức tạp
+O(n log n) thời gian, O(n) bộ nhớ.

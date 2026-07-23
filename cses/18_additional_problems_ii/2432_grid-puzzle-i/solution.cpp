@@ -7,17 +7,20 @@
 
 using namespace std;
 
+// Cạnh của mạng luồng: đỉnh đích, chỉ số cạnh ngược, sức chứa còn lại
 struct Edge {
     int to;
     int reverseIndex;
     int capacity;
 };
 
+// Thuật toán Dinic tìm luồng cực đại
 class Dinic {
 public:
     explicit Dinic(int vertexCount)
         : graph(vertexCount), level(vertexCount), nextEdge(vertexCount) {}
 
+    // Thêm cạnh có hướng from -> to (sức chứa capacity) kèm cạnh ngược (sức chứa 0)
     int addEdge(int from, int to, int capacity) {
         const int index = static_cast<int>(graph[from].size());
         const int reverseIndex = static_cast<int>(graph[to].size());
@@ -26,6 +29,7 @@ public:
         return index;
     }
 
+    // Lặp: dựng đồ thị phân tầng rồi đẩy luồng cho tới khi không còn đường tăng
     int maximumFlow(int source, int sink) {
         int result = 0;
         while (buildLevels(source, sink)) {
@@ -44,9 +48,10 @@ public:
 
 private:
     vector<vector<Edge>> graph;
-    vector<int> level;
-    vector<int> nextEdge;
+    vector<int> level;     // tầng của mỗi đỉnh theo BFS
+    vector<int> nextEdge;  // cạnh kế tiếp cần xét ở mỗi đỉnh (tối ưu DFS)
 
+    // BFS gán tầng; trả về true nếu còn đường đi từ nguồn tới đích
     bool buildLevels(int source, int sink) {
         fill(level.begin(), level.end(), -1);
         queue<int> searchQueue;
@@ -65,6 +70,7 @@ private:
         return level[sink] != -1;
     }
 
+    // DFS đẩy luồng dọc theo các cạnh tăng tầng, cập nhật cả cạnh ngược
     int sendFlow(int vertex, int sink, int available) {
         if (vertex == sink) {
             return available;
@@ -91,6 +97,7 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
+    // Đọc n, số ô cần chọn trên mỗi hàng (a) và mỗi cột (b)
     int n;
     cin >> n;
     vector<int> rowDemand(n);
@@ -105,11 +112,14 @@ int main() {
         cin >> value;
         columnSum += value;
     }
+    // Tổng số ô theo hàng phải bằng tổng theo cột, nếu không thì vô nghiệm
     if (rowSum != columnSum) {
         cout << -1 << '\n';
         return 0;
     }
 
+    // Dựng mạng: nguồn -> hàng (sức chứa a_i), cột -> đích (sức chứa b_j),
+    // mỗi ô là cạnh hàng -> cột sức chứa 1
     const int source = 2 * n;
     const int sink = source + 1;
     Dinic flowNetwork(sink + 1);
@@ -127,10 +137,12 @@ int main() {
         }
     }
 
+    // Không bão hòa đủ tổng a nghĩa là không thể sắp xếp hợp lệ
     if (flowNetwork.maximumFlow(source, sink) != rowSum) {
         cout << -1 << '\n';
         return 0;
     }
+    // Cạnh ô có sức chứa còn lại bằng 0 tức đã dùng luồng 1 -> ô được chọn 'X'
     for (int row = 0; row < n; ++row) {
         string answerRow(n, '.');
         for (int column = 0; column < n; ++column) {

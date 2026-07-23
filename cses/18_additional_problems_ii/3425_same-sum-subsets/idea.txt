@@ -1,37 +1,30 @@
-SAME SUM SUBSETS - CSES 3425
+Same Sum Subsets - CSES 3425
+https://cses.fi/problemset/task/3425
 
-ĐỀ BÀI (tóm tắt)
-Cho n số nguyên dương. Dựng hai tập con rời nhau, không rỗng và có cùng tổng.
-Ràng buộc n <= 40 và tổng các số <= 2^n-2.
+## Đề bài
+Cho n số nguyên dương (n <= 40, tổng các số <= 2^n - 2). Hãy dựng hai tập con
+rời nhau, không rỗng và có cùng tổng. Nếu không tồn tại thì in "IMPOSSIBLE".
+Thực tế với ràng buộc trên đáp án luôn tồn tại.
 
-SỰ TỒN TẠI
-Có 2^n-1 tập con không rỗng nhưng tổng của chúng chỉ thuộc
-[1, sum(x)] với nhiều nhất 2^n-2 giá trị. Theo nguyên lý Dirichlet, hai tập con
-khác nhau có cùng tổng. Xóa giao của chúng khỏi cả hai phía vẫn giữ tổng bằng
-nhau và tạo hai tập rời nhau. Do các số dương, hai hiệu đều không rỗng. Vì vậy
-theo ràng buộc đề bài, IMPOSSIBLE thực ra không xảy ra.
+## Ý tưởng
+Có 2^n - 1 tập con không rỗng, nhưng tổng của chúng chỉ nhận nhiều nhất
+2^n - 2 giá trị khác nhau (nằm trong đoạn [1, tổng]). Theo nguyên lý Dirichlet,
+tồn tại hai tập con khác nhau có cùng tổng. Bỏ đi phần giao của chúng ở cả hai
+phía thì tổng vẫn bằng nhau và hai phần còn lại rời nhau; vì các số đều dương
+nên cả hai phần còn lại đều không rỗng. Vậy đáp án luôn tồn tại.
 
-THUẬT TOÁN
-Chia mảng thành hai nửa và sinh, sắp xếp mọi (tổng,mask) của từng nửa. Với v,
-đếm C(v), số tập con không rỗng có tổng <=v, bằng hai con trỏ trên hai danh
-sách tổng trong O(2^(n/2)).
+Dùng kỹ thuật meet-in-the-middle: chia mảng thành hai nửa, sinh và sắp xếp mọi
+cặp (tổng, mask) của từng nửa. Với ngưỡng v, đếm C(v) là số tập con không rỗng
+có tổng <= v bằng hai con trỏ trên hai danh sách tổng, mất O(2^(n/2)).
 
-Đặt P(v) = [C(v)>v]. Ta có P(0)=false và
-P(2^n-2)=true. Dùng tìm kiếm nhị phân chỉ với bất biến hai đầu false/true;
-P không cần đơn điệu. Khi hai đầu trở thành hai số liên tiếp l,r:
+Đặt vị từ P(v) = [C(v) > v]. Ta có P(0) = false và P(2^n - 2) = true, nên dùng
+tìm kiếm nhị phân giữ bất biến hai đầu false/true (P không cần đơn điệu). Khi
+hai đầu thành hai số liên tiếp l, r thì số tập con có tổng đúng bằng r là
+C(r) - C(l) > r - l = 1, tức có ít nhất hai tập con cùng tổng r.
 
-  số tập tổng đúng r = C(r)-C(l) > r-l = 1.
+Cuối cùng dùng hai con trỏ lần nữa để duyệt các cặp (nửa trái, nửa phải) có tổng
+bằng r, lấy hai tập con khác nhau. Xóa các bit chung của hai mask rồi in giá trị
+của hai phần còn lại.
 
-Vậy có ít nhất hai tập tổng r. Dùng hai con trỏ lần nữa, gom các nhóm tổng bằng
-nhau của hai nửa để lấy hai cặp mask khác nhau. Cuối cùng xóa các bit chung của
-hai mask và in giá trị của hai phần còn lại.
-
-CHỨNG MINH ĐÚNG
-Bất biến P(l)=false, P(r)=true được giữ sau mỗi bước bất kể P có đơn điệu hay
-không; do đó lúc r=l+1 ta có C(l)<=l và C(r)>r, suy ra có ít nhất hai tập tổng
-r. Bước hai con trỏ liệt kê đúng các cặp tổng trái+phải bằng r, nên tìm được hai
-tập khác nhau ấy. Xóa giao trừ cùng một lượng ở hai tổng và bảo đảm rời nhau;
-lập luận số dương ở trên bảo đảm cả hai không rỗng. Kết quả in ra vì thế hợp lệ.
-
-ĐỘ PHỨC TẠP
-O(n*2^(n/2)) thời gian và O(2^(n/2)) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n * 2^(n/2)), bộ nhớ O(2^(n/2)).

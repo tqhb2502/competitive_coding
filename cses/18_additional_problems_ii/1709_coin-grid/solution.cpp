@@ -6,6 +6,8 @@
 
 using namespace std;
 
+// Tìm đường tăng cho hàng row: thử ghép nó với một cột có đồng xu.
+// Nếu cột trống hoặc hàng đang giữ cột đó tự đẩy sang chỗ khác được thì ghép.
 bool augment(int row, const vector<string>& grid, vector<int>& columnMatch,
              vector<char>& seenColumn) {
     const int n = static_cast<int>(grid.size());
@@ -34,12 +36,14 @@ int main() {
         cin >> row;
     }
 
+    // Bước 1: xây matching cực đại giữa hàng và cột (mỗi ô 'o' là một cạnh).
     vector<int> columnMatch(n, -1);
     for (int row = 0; row < n; ++row) {
         vector<char> seenColumn(n, false);
         augment(row, grid, columnMatch, seenColumn);
     }
 
+    // Ánh xạ ngược: rowMatch[row] là cột đang ghép với hàng đó.
     vector<int> rowMatch(n, -1);
     for (int column = 0; column < n; ++column) {
         if (columnMatch[column] != -1) {
@@ -47,6 +51,8 @@ int main() {
         }
     }
 
+    // Bước 2: BFS theo đường xen kẽ, xuất phát từ các hàng CHƯA được ghép.
+    // side == 0: đỉnh là hàng; side == 1: đỉnh là cột.
     vector<char> seenRow(n, false);
     vector<char> seenColumn(n, false);
     queue<pair<int, int>> searchQueue;
@@ -61,6 +67,7 @@ int main() {
         const auto [side, vertex] = searchQueue.front();
         searchQueue.pop();
         if (side == 0) {
+            // Từ hàng đi sang cột qua cạnh KHÔNG thuộc matching.
             const int row = vertex;
             for (int column = 0; column < n; ++column) {
                 if (grid[row][column] == 'o' && rowMatch[row] != column &&
@@ -70,6 +77,7 @@ int main() {
                 }
             }
         } else {
+            // Từ cột quay về hàng đang ghép với nó (cạnh thuộc matching).
             const int column = vertex;
             const int row = columnMatch[column];
             if (row != -1 && !seenRow[row]) {
@@ -79,6 +87,7 @@ int main() {
         }
     }
 
+    // Bước 3: vertex cover König = (các hàng KHÔNG thăm) hợp (các cột ĐÃ thăm).
     vector<pair<int, int>> answer;
     for (int row = 0; row < n; ++row) {
         if (!seenRow[row]) {
@@ -91,6 +100,7 @@ int main() {
         }
     }
 
+    // In số thao tác rồi liệt kê từng thao tác (loại và chỉ số 1-based).
     cout << answer.size() << '\n';
     for (const auto [type, index] : answer) {
         cout << type << ' ' << index << '\n';

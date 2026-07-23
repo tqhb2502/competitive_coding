@@ -1,33 +1,34 @@
-CODING COMPANY - CSES 1665
+Coding Company - CSES 1665
+https://cses.fi/problemset/task/1665
 
-ĐỀ BÀI (tóm tắt)
-Chia n lập trình viên thành các đội không rỗng. Phạt của một đội là kỹ năng
-lớn nhất trừ nhỏ nhất; đếm số cách chia có tổng phạt <=x modulo 10^9+7.
+## Đề bài
+Chia n lập trình viên thành các đội không rỗng. Phạt của một đội bằng kỹ năng
+lớn nhất trừ kỹ năng nhỏ nhất trong đội. Đếm số cách chia sao cho tổng phạt của
+tất cả các đội không vượt quá x, lấy kết quả modulo 10^9+7.
 Ràng buộc n <= 100, x <= 5000.
 
-THUẬT TOÁN
-Sắp xếp kỹ năng tăng dần. Khi đã xử lý một tiền tố, một đội "mở" đã có thành
-viên nhỏ nhất nhưng chưa chọn thành viên lớn nhất. dp[open][cost] đếm cách với
-số đội mở và tổng phạt tích lũy.
+## Ý tưởng
+Sắp xếp kỹ năng tăng dần. Quét lần lượt từng người theo thứ tự đã sắp. Gọi một
+đội là "đang mở" nếu nó đã có thành viên nhỏ nhất nhưng chưa chốt thành viên lớn
+nhất. Dùng quy hoạch động dp[open][cost]: số cách với open đội đang mở và tổng
+phạt tích lũy bằng cost.
 
-Trước khi xử lý kỹ năng a[i], tăng mọi đầu phải của open đội qua khoảng
-d=a[i]-a[i-1], nên chi phí tăng open*d. Với người hiện tại có bốn lựa chọn:
+Trước khi xử lý người thứ i, mọi đội đang mở đều "kéo dài" biên phải qua khoảng
+d = a[i] - a[i-1], nên tổng phạt tăng thêm open*d. Với người hiện tại có bốn lựa
+chọn:
+1. Tạo đội một người (mở rồi đóng ngay): open giữ nguyên, 1 cách.
+2. Thêm vào một trong các đội đang mở nhưng vẫn để đội đó mở: open cách.
+3. Bắt đầu một đội mở mới: open tăng 1, 1 cách.
+4. Thêm vào rồi đóng một trong các đội đang mở: open giảm 1, open cách.
 
-1. tạo đội một người: open giữ nguyên, 1 cách;
-2. thêm vào một trong open đội và vẫn để đội mở: open cách;
-3. bắt đầu một đội mở mới: open tăng 1, 1 cách;
-4. thêm vào rồi đóng một trong open đội: open giảm 1, open cách.
+Hai lựa chọn đầu gộp thành hệ số (open + 1). Cuối cùng đáp án là tổng các trạng
+thái không còn đội mở (open = 0) với mọi cost <= x.
 
-Hai trường hợp đầu gộp thành hệ số open+1. Cuối cùng chỉ lấy trạng thái không
-còn đội mở và cộng mọi cost<=x.
+Mỗi đội có duy nhất một thời điểm gặp thành viên nhỏ nhất (mở) và một thời điểm
+gặp thành viên lớn nhất (đóng); đội một người mở và đóng ngay. Bốn chuyển tiếp
+liệt kê đủ và không trùng mọi vai trò của người hiện tại, còn tích open*d cộng
+dồn đúng tổng max - min của các đội, nên dp tạo song ánh với các phân hoạch được
+gắn đúng chi phí.
 
-CHỨNG MINH ĐÚNG
-Trong thứ tự kỹ năng, mỗi đội có duy nhất thời điểm gặp thành viên nhỏ nhất
-(mở) và thành viên lớn nhất (đóng); đội một người mở và đóng ngay. Bốn chuyển
-tiếp liệt kê đúng và không trùng mọi vai trò của người hiện tại. Khi quét qua
-khoảng d, mỗi đội đang mở đóng góp d vào max-min của nó, nên open*d cộng dồn
-đúng tổng phạt. Do đó dp tạo song ánh với các phân hoạch được gắn đúng chi phí;
-các trạng thái open=0, cost<=x chính là đáp án.
-
-ĐỘ PHỨC TẠP
-O(n^2*x) thời gian và O(n*x) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n^2 * x), bộ nhớ O(n * x).
