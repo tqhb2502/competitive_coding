@@ -1,2 +1,0 @@
-Collecting Numbers Distribution
-https://cses.fi/problemset/task/3157

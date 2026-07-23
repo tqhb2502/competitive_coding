@@ -1,15 +1,7 @@
-// Bus Companies - CSES 3158
-// https://cses.fi/problemset/task/3158
-//
-// Mô hình hóa mỗi bus company bằng một virtual node (nút ảo).
-// Với công ty i (giá c_i, tập thành phố S_i):
-//   - cạnh  a -> (n+i)  trọng số c_i  (lên xe / mua vé),  với mọi a thuộc S_i
-//   - cạnh  (n+i) -> a  trọng số 0    (xuống xe miễn phí)
-// Sau đó chạy Dijkstra từ thành phố 1 (Syrjälä).
-
 #include <bits/stdc++.h>
 using namespace std;
 
+// Fast IO: đọc từng ký tự từ buffer để tăng tốc do lượng số đọc vào lớn.
 static char ibuf[1 << 22];
 static int ipos = 0, ilen = 0;
 
@@ -39,13 +31,17 @@ int main() {
     int n = readInt();
     int m = readInt();
 
-    // Nodes: 1..n cities, n+1..n+m company virtual nodes.
+    // Đỉnh 1..n là các thành phố, đỉnh n+1..n+m là nút ảo của từng công ty.
     int N = n + m;
 
+    // Đọc giá vé c_i của mỗi công ty.
     vector<int> cost(m + 1);
     for (int i = 1; i <= m; i++) cost[i] = readInt();
 
-    // Build adjacency list.
+    // Dựng danh sách kề của đồ thị mở rộng.
+    // Với mỗi thành phố a thuộc công ty i (nút ảo n+i):
+    //   - cạnh a -> (n+i) trọng số c_i : lên xe / mua vé,
+    //   - cạnh (n+i) -> a trọng số 0   : xuống xe miễn phí.
     vector<vector<pair<int, long long>>> adj(N + 1);
     for (int i = 1; i <= m; i++) {
         int k = readInt();
@@ -54,11 +50,12 @@ int main() {
         adj[cnode].reserve(k);
         while (k--) {
             int a = readInt();
-            adj[a].push_back({cnode, c});   // board bus (pay c)
-            adj[cnode].push_back({a, 0});    // alight (free)
+            adj[a].push_back({cnode, c});   // lên xe (trả c)
+            adj[cnode].push_back({a, 0});    // xuống xe (miễn phí)
         }
     }
 
+    // Dijkstra từ nút 1 (Syrjälä) trên đồ thị trọng số không âm.
     const long long INF = LLONG_MAX;
     vector<long long> dist(N + 1, INF);
     priority_queue<pair<long long, int>, vector<pair<long long, int>>,
@@ -69,7 +66,7 @@ int main() {
     while (!pq.empty()) {
         auto [d, u] = pq.top();
         pq.pop();
-        if (d > dist[u]) continue;
+        if (d > dist[u]) continue;   // bỏ qua mục cũ đã lỗi thời
         for (auto& e : adj[u]) {
             int v = e.first;
             long long nd = d + e.second;
@@ -80,7 +77,7 @@ int main() {
         }
     }
 
-    // Output cheapest cost to cities 1..n.
+    // In chi phí rẻ nhất tới các thành phố 1..n.
     string out;
     out.reserve(n * 7);
     for (int i = 1; i <= n; i++) {

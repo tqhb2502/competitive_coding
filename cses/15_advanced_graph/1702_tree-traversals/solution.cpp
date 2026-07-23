@@ -1,10 +1,3 @@
-// Tree Traversals (CSES 1702)
-// https://cses.fi/problemset/task/1702
-//
-// Cho preorder + inorder của một cây nhị phân (nhãn phân biệt 1..n),
-// tái tạo cây bằng stack lặp (O(n)) rồi in ra postorder bằng duyệt
-// hai-stack lặp để tránh tràn stack với n = 1e5.
-
 #include <bits/stdc++.h>
 using namespace std;
 

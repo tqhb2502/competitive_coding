@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Đọc số nguyên nhanh từ stdin bằng buffer tự quản lý
 class FastInput {
 public:
     int readInteger() {
@@ -42,8 +43,10 @@ private:
     }
 };
 
+// Cây lưu bằng danh sách kề dạng CSR (mảng offset + mảng neighbor)
 class Tree {
 public:
+    // Đếm bậc từng đỉnh, dồn thành offset, rồi rải các đỉnh kề vào mảng phẳng
     Tree(int vertexCount, const vector<pair<int, int>>& edges)
         : offsets_(static_cast<size_t>(vertexCount + 1), 0),
           neighbors_(static_cast<size_t>(2 * max(0, vertexCount - 1))) {
@@ -81,6 +84,9 @@ private:
     vector<int> neighbors_;
 };
 
+// Centroid decomposition: duy trì khoảng cách tới văn phòng gần nhất.
+// Mỗi đỉnh nhớ danh sách centroid ancestor và khoảng cách tới từng centroid;
+// best[c] là khoảng cách nhỏ nhất từ centroid c tới một văn phòng đã chọn.
 class NearestOffice {
 public:
     NearestOffice(const Tree& tree, int vertexCount)
@@ -92,6 +98,8 @@ public:
         buildCentroidPaths();
     }
 
+    // Khoảng cách tới văn phòng gần nhất = min(best[c] + dist(vertex, c))
+    // qua mọi centroid ancestor c; tổng đạt dấu bằng ở centroid tách hai đỉnh
     int query(int vertex) const {
         int answer = INFINITY_DISTANCE;
         const int levels = pathLength_[static_cast<size_t>(vertex)];
@@ -108,6 +116,7 @@ public:
         return answer;
     }
 
+    // Đặt văn phòng tại vertex: cập nhật best[c] cho mọi centroid ancestor c
     void addOffice(int vertex) {
         const int levels = pathLength_[static_cast<size_t>(vertex)];
         for (int level = 0; level < levels; ++level) {
@@ -143,6 +152,9 @@ private:
     vector<int> pathLength_;
     vector<int> bestDistance_;
 
+    // Phân rã cây theo centroid bằng vòng lặp (tránh tràn stack).
+    // Mỗi thành phần: tìm centroid, lưu centroid + khoảng cách cho mọi đỉnh
+    // trong thành phần, gỡ centroid rồi đẩy các thành phần con vào hàng đợi.
     void buildCentroidPaths() {
         vector<char> removed(static_cast<size_t>(vertexCount_), false);
         vector<int> traversalParent(static_cast<size_t>(vertexCount_), -1);
@@ -162,6 +174,7 @@ private:
             const ComponentTask task = tasks.back();
             tasks.pop_back();
 
+            // Duyệt thu thập mọi đỉnh của thành phần hiện tại theo thứ tự BFS
             component.clear();
             component.push_back(task.entry);
             traversalParent[static_cast<size_t>(task.entry)] = -1;
@@ -179,6 +192,7 @@ private:
                 }
             }
 
+            // Tính kích thước cây con (duyệt ngược theo thứ tự BFS)
             for (const int vertex : component) {
                 subtreeSize[static_cast<size_t>(vertex)] = 1;
             }
@@ -190,6 +204,7 @@ private:
                     subtreeSize[static_cast<size_t>(vertex)];
             }
 
+            // Với mỗi đỉnh, largestPart là kích thước phần lớn nhất khi bỏ đỉnh đó
             const int componentSize = static_cast<int>(component.size());
             for (const int vertex : component) {
                 largestPart[static_cast<size_t>(vertex)] =
@@ -204,6 +219,7 @@ private:
                         subtreeSize[static_cast<size_t>(vertex)]);
             }
 
+            // Centroid là đỉnh có largestPart nhỏ nhất
             int centroid = task.entry;
             for (const int vertex : component) {
                 if (largestPart[static_cast<size_t>(vertex)] <
@@ -212,6 +228,7 @@ private:
                 }
             }
 
+            // Từ centroid lan ra, ghi centroid và khoảng cách cho từng đỉnh
             walk.clear();
             walk.push_back({centroid, -1, 0});
             while (!walk.empty()) {
@@ -236,6 +253,7 @@ private:
                 }
             }
 
+            // Gỡ centroid rồi đẩy mỗi thành phần con vào hàng đợi ở tầng kế
             removed[static_cast<size_t>(centroid)] = true;
             for (int edge = tree_.begin(centroid); edge < tree_.end(centroid);
                  ++edge) {
@@ -262,6 +280,7 @@ int main() {
     }
     const Tree tree(vertexCount, edges);
 
+    // Root cây tại đỉnh 0 bằng BFS lặp, lưu thứ tự duyệt theo độ sâu tăng dần
     vector<int> order;
     order.reserve(static_cast<size_t>(vertexCount));
     vector<int> parent(static_cast<size_t>(vertexCount), -1);
@@ -278,6 +297,8 @@ int main() {
         }
     }
 
+    // Greedy: xét đỉnh theo độ sâu giảm dần (duyệt ngược order); chọn v nếu
+    // khoảng cách tới mọi văn phòng đã chọn đều >= minimumDistance
     NearestOffice nearestOffice(tree, vertexCount);
     vector<int> offices;
     offices.reserve(static_cast<size_t>(vertexCount));
@@ -289,6 +310,7 @@ int main() {
         }
     }
 
+    // In số văn phòng rồi danh sách đỉnh (chuyển về chỉ số 1-based)
     string output = to_string(offices.size()) + '\n';
     for (size_t index = 0; index < offices.size(); ++index) {
         if (index != 0) {

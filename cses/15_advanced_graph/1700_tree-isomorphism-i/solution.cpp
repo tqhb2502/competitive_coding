@@ -1,12 +1,3 @@
-// Tree Isomorphism I - CSES 1700
-// https://cses.fi/problemset/task/1700
-//
-// Rooted tree isomorphism (gốc luôn là đỉnh 1).
-// Dùng AHU canonical labeling: gán id chính tắc cho mỗi subtree theo multiset
-// id của các con (đã sắp xếp), tra trong map dùng chung cho cả hai cây.
-// Hai cây đẳng cấu <=> id của gốc (đỉnh 1) ở hai cây bằng nhau.
-// Duyệt lặp (BFS + xử lý ngược) để tránh tràn stack với n = 1e5.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -17,6 +8,7 @@ int main() {
         int n;
         scanf("%d", &n);
 
+        // Đọc n-1 cạnh cho mỗi cây, dựng danh sách kề vô hướng.
         vector<vector<int>> adj1(n + 1), adj2(n + 1);
         for (int i = 0; i < n - 1; i++) {
             int a, b; scanf("%d %d", &a, &b);
@@ -61,10 +53,12 @@ int main() {
             // Xử lý ngược thứ tự BFS => con trước cha (post-order).
             for (int i = (int)order.size() - 1; i >= 0; i--) {
                 int u = order[i];
+                // Gom id của các con rồi SẮP XẾP để khoá không phụ thuộc thứ tự (multiset).
                 vector<int> ch;
                 for (int v : adj[u])
                     if (v != parent[u]) ch.push_back(id[v]);
                 sort(ch.begin(), ch.end());
+                // Tra khoá trong map chung: có sẵn thì tái dùng id, chưa có thì cấp id mới.
                 auto it = canon.find(ch);
                 if (it == canon.end()) {
                     id[u] = idCnt;
@@ -77,6 +71,7 @@ int main() {
             return id[1];
         };
 
+        // Hai cây đẳng cấu (có gốc) <=> id chính tắc của gốc (đỉnh 1) trùng nhau.
         int r1 = rootId(adj1);
         int r2 = rootId(adj2);
         printf(r1 == r2 ? "YES\n" : "NO\n");

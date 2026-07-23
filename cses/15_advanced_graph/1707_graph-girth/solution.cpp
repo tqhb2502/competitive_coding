@@ -1,13 +1,3 @@
-// Graph Girth - CSES 1707
-// https://cses.fi/problemset/task/1707
-//
-// Tìm girth (độ dài chu trình ngắn nhất) của đồ thị vô hướng không trọng số.
-// Nếu không có chu trình nào thì in ra -1.
-//
-// Cách làm: BFS từ mỗi đỉnh làm gốc. Trong mỗi lần BFS, khi gặp "non-tree edge"
-// (u, w) (w đã thăm và w != cha của u) thì cập nhật girth = dist[u]+dist[w]+1.
-// Độ phức tạp O(n * (n + m)).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -18,6 +8,7 @@ int main() {
     int n, m;
     if (!(cin >> n >> m)) return 0;
 
+    // Danh sách kề của đồ thị vô hướng
     vector<vector<int>> adj(n + 1);
     for (int i = 0; i < m; ++i) {
         int a, b;
@@ -29,12 +20,13 @@ int main() {
     const int INF = INT_MAX;
     int girth = INF;
 
-    vector<int> dist(n + 1, -1);
-    vector<int> par(n + 1, -1);
-    vector<int> queueArr(n + 1);
+    vector<int> dist(n + 1, -1);   // khoảng cách BFS; -1 nghĩa là chưa thăm
+    vector<int> par(n + 1, -1);    // đỉnh cha trên cây BFS
+    vector<int> queueArr(n + 1);   // hàng đợi mảng cho BFS lặp
 
+    // Chạy BFS từ mỗi đỉnh làm gốc; girth nhỏ nhất của đồ thị đơn là 3 nên dừng sớm khi đạt 3
     for (int s = 1; s <= n && girth > 3; ++s) {
-        // reset trạng thái cho lần BFS bắt đầu từ s
+        // Reset trạng thái cho lần BFS bắt đầu từ s
         for (int v = 1; v <= n; ++v) {
             dist[v] = -1;
             par[v] = -1;
@@ -50,11 +42,12 @@ int main() {
             int du = dist[u];
             for (int w : adj[u]) {
                 if (dist[w] == -1) {
+                    // Cạnh cây: mở rộng cây BFS
                     dist[w] = du + 1;
                     par[w] = u;
                     queueArr[tail++] = w;
                 } else if (w != par[u]) {
-                    // non-tree edge: khép kín một chu trình qua gốc s
+                    // Non-tree edge: khép kín một chu trình đi qua gốc s
                     int cand = du + dist[w] + 1;
                     if (cand < girth) girth = cand;
                 }
@@ -62,6 +55,7 @@ int main() {
         }
     }
 
+    // Không tìm thấy chu trình nào thì in -1
     if (girth == INF) cout << -1 << '\n';
     else cout << girth << '\n';
 

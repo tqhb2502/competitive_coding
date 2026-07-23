@@ -1,21 +1,29 @@
-Bài toán: Counting Sequences (CSES 2228)
+Counting Sequences - CSES 2228
+https://cses.fi/problemset/task/2228
 
-Có tổng cộng k^n dãy độ dài n trên bảng chữ cái 1..k, nhưng cần mỗi giá trị xuất
-hiện ít nhất một lần. Dùng nguyên lý bù trừ:
+## Đề bài
+Đếm số dãy có độ dài n, mỗi phần tử là một số nguyên trong khoảng 1..k, sao cho
+mỗi giá trị trong 1..k đều xuất hiện ít nhất một lần. In kết quả theo modulo
+p = 10^9 + 7.
 
-- Chọn i giá trị bị cấm theo C(k,i) cách.
-- Mỗi vị trí còn k-i lựa chọn, tạo ra (k-i)^n dãy.
+## Ý tưởng
+Tổng cộng có k^n dãy độ dài n trên bảng chữ cái 1..k, nhưng ta cần ràng buộc mỗi
+giá trị phải xuất hiện. Dùng nguyên lý bù trừ (inclusion-exclusion):
+
+- Chọn i giá trị bị cấm (không được xuất hiện) theo C(k, i) cách.
+- Mỗi vị trí còn k - i lựa chọn, tạo ra (k - i)^n dãy.
 - Cộng khi i chẵn và trừ khi i lẻ.
 
 Công thức:
 
-    answer = sum(i=0..k) (-1)^i * C(k,i) * (k-i)^n.
+    answer = sum(i = 0..k) (-1)^i * C(k, i) * (k - i)^n.
 
-Tiền xử lý factorial và inverse factorial modulo p=1e9+7 để tính C(k,i) trong
+Tiền xử lý factorial và inverse factorial theo modulo p để tính C(k, i) trong
 O(1). Nghịch đảo modulo được tính bằng định lý Fermat:
 
     x^(-1) = x^(p-2) (mod p).
 
-Mỗi lũy thừa dùng binary exponentiation.
+Mỗi lũy thừa dùng lũy thừa nhị phân (binary exponentiation / modpow).
 
-Độ phức tạp: O(k log n) thời gian, O(k) bộ nhớ; k,n<=10^6.
+## Độ phức tạp
+Thời gian O(k log n), bộ nhớ O(k); với k, n <= 10^6.

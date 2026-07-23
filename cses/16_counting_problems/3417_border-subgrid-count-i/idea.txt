@@ -1,32 +1,32 @@
-BORDER SUBGRID COUNT I - CSES 3417
+Border Subgrid Count I - CSES 3417
 https://cses.fi/problemset/task/3417
 
-ĐỀ BÀI (tóm tắt)
-Cho lưới n x n gồm k chữ cái đầu tiên. Với mỗi chữ cái, đếm số lưới con hình
-vuông có toàn bộ đường viền là chữ cái đó. Ràng buộc n <= 3000, k <= 26.
+## Đề bài
+Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Với mỗi chữ cái, hãy đếm số
+lưới con hình vuông có toàn bộ đường viền (chu vi) là chữ cái đó. Ràng buộc
+n <= 3000, k <= 26. In ra k số, một số trên mỗi dòng theo thứ tự chữ cái.
 
-Ý TƯỞNG
-Với ô p là góc trên-trái, đặt start[p] là giá trị nhỏ hơn giữa:
-  - số ký tự giống nhau liên tiếp sang phải từ p;
-  - số ký tự giống nhau liên tiếp đi xuống từ p.
+## Ý tưởng
+Với ô p làm góc trên-trái, đặt start[p] là giá trị nhỏ hơn giữa:
+  - số ký tự giống nhau liên tiếp sang phải tính từ p;
+  - số ký tự giống nhau liên tiếp đi xuống tính từ p.
 
-Với ô q là góc dưới-phải, đặt finish[q] là giá trị nhỏ hơn giữa:
+Với ô q làm góc dưới-phải, đặt finish[q] là giá trị nhỏ hơn giữa:
   - số ký tự giống nhau liên tiếp sang trái tới q;
   - số ký tự giống nhau liên tiếp đi lên tới q.
 
-Hai ô p, q trên cùng đường chéo chính, cách nhau d vị trí, tạo thành một hình
-vuông có viền đồng màu khi và chỉ khi:
+Hai ô p, q nằm trên cùng một đường chéo chính, cách nhau d vị trí, tạo thành một
+hình vuông có viền đồng màu khi và chỉ khi:
 
     start[p] >= d+1 và finish[q] >= d+1.
 
-Hai điều kiện lần lượt bảo đảm cạnh trên + trái và cạnh dưới + phải. Các cạnh
-gặp nhau ở hai góc còn lại nên màu của chúng cũng bắt buộc giống nhau.
+Hai điều kiện lần lượt bảo đảm cạnh trên + cạnh trái và cạnh dưới + cạnh phải.
+Các cạnh gặp nhau ở hai góc còn lại nên màu của chúng cũng bắt buộc giống nhau.
 
 Xét riêng một đường chéo, đánh số vị trí 0..m-1. Mỗi điểm bắt đầu p còn hiệu lực
-đến R[p] = p + start[p] - 1, tức là hết hiệu lực tại thời điểm
-E[p] = p + start[p].
+đến R[p] = p + start[p] - 1, tức là hết hiệu lực tại thời điểm E[p] = p + start[p].
 
-Khi đang xét q, finish[q] = g cho ta ngay g ứng viên
+Khi đang xét q, giá trị finish[q] = g cho ta ngay g ứng viên
 
     p thuộc [q-g+1, q].
 
@@ -35,24 +35,24 @@ những p đã hết hiệu lực, tức E[p] <= q. Vì vậy:
 
     số hình hợp lệ = g - số p đã hết hiệu lực trong [q-g+1, q).
 
-Các thời điểm hết hiệu lực được lưu bằng danh sách liên kết theo bucket. Khi
-quét đến q, thêm mọi p trong bucket q vào tập "đã hết hiệu lực", thực hiện truy
-vấn trên rồi lên lịch E[q] cho điểm q. Khác với việc lưu tập đang hiệu lực, mỗi
-điểm chỉ phải cập nhật cấu trúc đúng một lần; với lưới gần như toàn một chữ,
-hầu như không có cập nhật nào trong lúc quét.
+Các thời điểm hết hiệu lực được lưu bằng danh sách liên kết theo bucket. Khi quét
+đến q, thêm mọi p trong bucket q vào tập "đã hết hiệu lực", thực hiện truy vấn
+trên rồi lên lịch E[q] cho điểm q. Khác với việc lưu tập đang hiệu lực, mỗi điểm
+chỉ phải cập nhật cấu trúc đúng một lần; với lưới gần như toàn một chữ, hầu như
+không có cập nhật nào trong lúc quét.
 
 Tập đã hết hiệu lực được lưu bằng bitset động. Mỗi 64 vị trí có một bộ đếm, và
 mỗi 8 word (512 vị trí) có một bộ đếm lớn. Truy vấn chọn cách rẻ hơn giữa đếm
-trực tiếp đoạn [L,q) và lấy tổng trừ prefix [0,L). Với n <= 3000, nó chỉ phải
+trực tiếp đoạn [L,q) và lấy tổng trừ đi prefix [0,L). Với n <= 3000, nó chỉ phải
 đi qua tối đa 6 khối lớn và 7 word.
 
 Để giảm cache miss, start, finish và màu của một ô được đóng gói trong một số
-32 bit (mỗi reach cần 12 bit), rồi dữ liệu của từng đường chéo được chép vào
-một mảng tạm liên tục trước khi quét. Input lớn nhất có khoảng 9 triệu ký tự,
-nên code dùng bộ đọc dựa trên fread thay cho formatted input.
+32 bit (mỗi reach cần 12 bit), rồi dữ liệu của từng đường chéo được chép vào một
+mảng tạm liên tục trước khi quét. Input lớn nhất có khoảng 9 triệu ký tự, nên
+code dùng bộ đọc dựa trên fread thay cho formatted input.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Tính các độ dài: O(n^2).
-- Quét đường chéo: O(n^2 * ceil(n/512)); với n <= 3000 hệ số khối tối đa là 6
-  và mỗi điểm chỉ được thêm vào bitset nhiều nhất một lần.
+- Quét đường chéo: O(n^2 * ceil(n/512)); với n <= 3000 hệ số khối tối đa là 6 và
+  mỗi điểm chỉ được thêm vào bitset nhiều nhất một lần.
 - Bộ nhớ: O(n^2 + k).

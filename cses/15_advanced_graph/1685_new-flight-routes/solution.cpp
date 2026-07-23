@@ -1,10 +1,3 @@
-// New Flight Routes - CSES 1685
-// https://cses.fi/problemset/task/1685
-//
-// Thêm số cạnh ít nhất để đồ thị có hướng trở thành strongly connected.
-// SCC (Kosaraju, DFS lặp) -> condensation DAG -> ghép source/sink -> xây chu trình.
-// Số cạnh tối thiểu = max(#source, #sink) (Eswaran-Tarjan).
-
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,10 +1,3 @@
-// Nearest Shops - CSES 3303
-// https://cses.fi/problemset/task/3303
-//
-// BFS đa nguồn lưu top-2 nhãn (label) khác nhau tại mỗi đỉnh.
-// Mỗi thành phố có shop là một nguồn BFS mang nhãn = id của nó.
-// Với đỉnh có shop đáp án = d2 (shop khác gần nhất), không shop = d1.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -46,6 +39,8 @@ int main() {
     vector<int> d1(n + 1, UNSET), s1(n + 1, UNSET);
     vector<int> d2(n + 1, UNSET), s2(n + 1, UNSET);
 
+    // BFS đa nguồn: mỗi thành phố có shop là một nguồn mang NHÃN = id của nó,
+    // khoảng cách khởi đầu bằng 0. Trạng thái = (đỉnh, khoảng cách, nhãn).
     struct St { int node, dist, label; };
     queue<St> q;
     for (int i = 0; i < k; i++) {
@@ -58,6 +53,8 @@ int main() {
         q.pop();
         int v = cur.node, dist = cur.dist, label = cur.label;
 
+        // Vì BFS xử lý theo khoảng cách không giảm, lần đầu chạm đỉnh v ghi nhãn
+        // gần nhất (top-1); lần sau với nhãn KHÁC ghi nhãn gần nhì (top-2).
         if (d1[v] == UNSET) {
             d1[v] = dist;
             s1[v] = label;
@@ -68,13 +65,15 @@ int main() {
             continue; // nhãn này không nằm trong top-2 của v -> không lan tiếp
         }
 
+        // Chỉ lan nhãn thuộc top-2 sang các đỉnh kề với khoảng cách tăng 1.
         for (int idx = head[v]; idx < head[v + 1]; idx++) {
             int u = adj[idx];
             q.push({u, dist + 1, label});
         }
     }
 
-    // Xuất kết quả.
+    // Xuất kết quả: đỉnh có shop lấy d2 (shop khác gần nhất, bỏ chính nó ở d1),
+    // đỉnh không shop lấy d1; đều trả -1 nếu chưa đặt.
     string out;
     out.reserve(n * 3);
     char buf[16];

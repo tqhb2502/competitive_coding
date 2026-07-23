@@ -1,44 +1,44 @@
-Bài toán: Graph Coloring (CSES 3308)
+Graph Coloring - CSES 3308
+https://cses.fi/problemset/task/3308
 
-Yêu cầu: tô màu các đỉnh của một đồ thị đơn với ít màu nhất sao cho không cạnh
-nào nối hai đỉnh cùng màu. Đây chính là bài toán tìm chromatic number (số sắc
-thái) của đồ thị. Vì n <= 16 nên ta dùng quy hoạch động trên tập con (bitmask
-subset DP).
+## Đề bài
+Cho một đồ thị đơn vô hướng có n đỉnh (n <= 16) và m cạnh. Hãy tô màu các đỉnh
+bằng số màu ít nhất sao cho không có cạnh nào nối hai đỉnh cùng màu. In ra số màu
+tối thiểu k, rồi in n số là màu (từ 1 tới k) của từng đỉnh. Đây chính là bài toán
+tìm chromatic number (số sắc thái) của đồ thị. Bài chấp nhận mọi lời giải hợp lệ
+(special judge), luôn có nghiệm nên không có trường hợp IMPOSSIBLE.
 
-Kỹ thuật: Subset DP + independent set.
+## Ý tưởng
+Kỹ thuật: Subset DP trên bitmask kết hợp independent set.
 
-Ý tưởng chính:
 - Mỗi lớp màu (color class) là một tập độc lập (independent set): tập các đỉnh
   đôi một không kề nhau. Một cách tô hợp lệ chính là một phân hoạch tập đỉnh
-  thành các independent set; số màu nhỏ nhất = số phần tử ít nhất của phân hoạch
-  như vậy.
-- Tiền xử lý indep[S]: S là independent set khi và chỉ khi không có cạnh nào
-  nằm hoàn toàn trong S. Tính tăng dần: gọi v là bit thấp nhất của S, thì
-  indep[S] = indep[S \ {v}] AND (adj[v] & S == 0), với adj[v] là bitmask các
-  đỉnh kề v.
-- dp[S] = số màu nhỏ nhất để tô đúng tập đỉnh S. dp[0] = 0.
-  dp[S] = min over T (T là independent set, T tập con của S) của dp[S \ T] + 1.
+  thành các independent set; số màu nhỏ nhất bằng số phần tử ít nhất của một phân
+  hoạch như vậy.
+- Tiền xử lý indep[S]: S là independent set khi và chỉ khi không có cạnh nào nằm
+  hoàn toàn trong S. Tính tăng dần: gọi v là bit thấp nhất của S, thì
+  indep[S] = indep[S \ {v}] AND (adj[v] & S == 0), với adj[v] là bitmask các đỉnh
+  kề v.
+- dp[S] = số màu nhỏ nhất để tô đúng tập đỉnh S, với dp[0] = 0. Công thức:
+  dp[S] = min theo T (T là independent set, T là tập con của S) của dp[S \ T] + 1.
   Nghĩa là chọn một lớp màu T rồi tô phần còn lại.
-- Tối ưu: để tránh đếm trùng và đủ đúng đắn, ta chỉ cần xét các T chứa bit thấp
-  nhất "low" của S (vì đỉnh low chắc chắn phải thuộc một lớp màu nào đó). Nhờ đó
-  chỉ duyệt qua các tập con của S có chứa low.
+- Tối ưu: để tránh đếm trùng mà vẫn đúng đắn, ta chỉ xét các T chứa bit thấp nhất
+  "low" của S (vì đỉnh low chắc chắn phải thuộc một lớp màu nào đó). Nhờ đó chỉ
+  duyệt qua các tập con của S có chứa low.
 - Truy vết (reconstruction): lưu choice[S] = independent set T được chọn. Bắt đầu
   từ S = full, mỗi bước lấy T = choice[S], gán một màu mới cho mọi đỉnh trong T,
   rồi S ^= T cho đến khi S rỗng.
 
 Tính đúng đắn:
 - Mọi cách tô hợp lệ tương ứng 1-1 với một phân hoạch thành các independent set,
-  nên số màu tối thiểu = kích thước phân hoạch nhỏ nhất, đúng bằng dp[full].
+  nên số màu tối thiểu bằng kích thước phân hoạch nhỏ nhất, đúng bằng dp[full].
 - Ràng buộc T phải chứa low không làm mất nghiệm tối ưu: trong phân hoạch tối ưu,
   đỉnh low nằm ở đúng một lớp màu, lớp đó là một independent set con của S chứa
   low; ta luôn xét được nó.
 
-Độ phức tạp:
+## Độ phức tạp
 - Tính indep: O(2^n).
 - DP: với mỗi S duyệt các tập con chứa low, tổng chi phí là
   sum_S 2^(popcount(S)-1) = (1/2) * 3^n. Với n = 16, khoảng 2.1 * 10^7 phép, rất
   nhanh trong giới hạn thời gian.
 - Bộ nhớ: O(2^n) cho các mảng indep, dp, choice (2^16 = 65536 phần tử).
-
-Định dạng ra: dòng đầu in k = dp[full]; dòng sau in n số là màu của từng đỉnh
-(1..k). Bài chấp nhận mọi lời giải hợp lệ (special judge).

@@ -1,30 +1,35 @@
-Bài toán: Visiting Cities (CSES 1203)
+Visiting Cities - CSES 1203
+https://cses.fi/problemset/task/1203
 
-Yêu cầu: Trên đồ thị có hướng, có trọng số dương, tìm tất cả các thành phố
-mà MỌI đường đi ngắn nhất (min-cost) từ thành phố 1 đến thành phố n đều
-bắt buộc phải đi qua (mandatory vertices / cut vertices của shortest-path DAG).
+## Đề bài
+Cho đồ thị có hướng, trọng số dương, gồm n thành phố và m chuyến bay. Tìm tất
+cả các thành phố mà MỌI đường đi ngắn nhất (chi phí nhỏ nhất) từ thành phố 1
+đến thành phố n đều BẮT BUỘC phải đi qua (mandatory vertices trên shortest-path
+DAG). In ra số lượng và danh sách các thành phố đó. Thành phố 1 và thành phố n
+luôn nằm trong đáp án.
 
-Kỹ thuật: Dijkstra hai chiều + xây shortest-path DAG + sweep phủ đoạn (interval coverage).
+## Ý tưởng
+Kỹ thuật: Dijkstra hai chiều + dựng shortest-path DAG + sweep phủ đoạn
+(interval coverage).
 
-Ý tưởng chính:
 1. Chạy Dijkstra từ đỉnh 1 trên đồ thị gốc để có d1[v] = khoảng cách ngắn nhất
    từ 1 đến v. Chạy Dijkstra từ đỉnh n trên đồ thị đảo chiều để có
    d2[v] = khoảng cách ngắn nhất từ v đến n. Đặt D = d1[n] là chi phí tối ưu.
 
-2. Một cạnh (a -> b, trọng số c) nằm trên MỘT đường đi ngắn nhất nào đó
-   khi và chỉ khi d1[a] + c + d2[b] == D. Với các cạnh này luôn có
-   d1[a] + c == d1[b] (vì nếu tới b rẻ hơn thì tổng lại nhỏ hơn D, mâu thuẫn).
-   Do trọng số c >= 1 nên dọc mọi cạnh trên DAG giá trị d1 tăng NGẶT.
-   Một đỉnh v nằm trên đường đi ngắn nhất nào đó khi d1[v] + d2[v] == D.
+2. Một cạnh (a -> b, trọng số c) nằm trên MỘT đường đi ngắn nhất nào đó khi và
+   chỉ khi d1[a] + c + d2[b] == D. Với các cạnh này luôn có d1[a] + c == d1[b]
+   (vì nếu tới b rẻ hơn thì tổng lại nhỏ hơn D, mâu thuẫn). Do trọng số c >= 1
+   nên dọc mọi cạnh trên DAG giá trị d1 tăng NGẶT. Một đỉnh v nằm trên đường đi
+   ngắn nhất nào đó khi d1[v] + d2[v] == D.
 
-3. Tính chất mandatory: Xét một đường đi ngắn nhất bất kì; dãy d1 của các đỉnh
+3. Tính chất bắt buộc: Xét một đường đi ngắn nhất bất kì; dãy d1 của các đỉnh
    trên nó tăng ngặt từ 0 tới D. Xét mức khoảng cách t = d1[v] của một đỉnh v
    thuộc DAG. Đường đi phải "cắt" qua mức t: hoặc có một đỉnh đúng tại mức t,
-   hoặc có một cạnh (a,b) nhảy qua với d1[a] < t < d1[b].
-   Vì vậy đỉnh v là bắt buộc (nằm trên MỌI đường đi ngắn nhất) khi và chỉ khi:
+   hoặc có một cạnh (a, b) nhảy qua với d1[a] < t < d1[b]. Vì vậy đỉnh v là bắt
+   buộc (nằm trên MỌI đường đi ngắn nhất) khi và chỉ khi:
      (i)  v là đỉnh DUY NHẤT thuộc DAG có d1 bằng đúng t, VÀ
-     (ii) KHÔNG có cạnh nào của DAG "nhảy qua" mức t, tức không tồn tại
-          cạnh với khoảng mở (d1[a], d1[b]) chứa ngặt t.
+     (ii) KHÔNG có cạnh nào của DAG "nhảy qua" mức t, tức không tồn tại cạnh có
+          khoảng mở (d1[a], d1[b]) chứa ngặt t.
    Nếu có cạnh nhảy qua t thì có đường đi bỏ qua v; nếu có hai đỉnh cùng mức t
    thì mỗi đường chỉ qua được một trong hai, nên không đỉnh nào bắt buộc.
 
@@ -34,10 +39,10 @@ Kỹ thuật: Dijkstra hai chiều + xây shortest-path DAG + sweep phủ đoạ
    lên các tọa độ nằm ngặt trong khoảng; prefix sum cho số cạnh phủ mỗi mức.
    Đỉnh v là đáp án nếu số đỉnh cùng mức d1[v] bằng 1 và độ phủ tại mức đó bằng 0.
 
-Tính đúng đắn: Đã chứng minh điều kiện (i)+(ii) là điều kiện cần và đủ để v
-nằm trên mọi đường đi ngắn nhất. Đỉnh 1 (mức 0) và đỉnh n (mức D) luôn là đáp án.
+Tính đúng đắn: Điều kiện (i) + (ii) là điều kiện cần và đủ để v nằm trên mọi
+đường đi ngắn nhất. Đỉnh 1 (mức 0) và đỉnh n (mức D) luôn là đáp án.
 
-Độ phức tạp:
+## Độ phức tạp
 - Dijkstra: O((n + m) log n) mỗi lần, chạy 2 lần.
 - Sweep phủ đoạn: O((n + m) log n).
 Tổng: O((n + m) log n), thỏa n <= 1e5, m <= 2e5.

@@ -1,41 +1,42 @@
-Fixed Length Walk Queries (CSES 3357)
+Fixed Length Walk Queries - CSES 3357
+https://cses.fi/problemset/task/3357
 
-Kỹ thuật: BFS trên "parity graph" (đồ thị nhân đôi theo tính chẵn/lẻ độ dài).
-
-Bài toán:
-Cho đồ thị vô hướng, đơn, liên thông có n đỉnh, m cạnh. Với mỗi truy vấn (a, b, x)
+## Đề bài
+Cho đồ thị vô hướng, đơn, liên thông có n đỉnh và m cạnh. Với mỗi truy vấn (a, b, x),
 hỏi có tồn tại một walk (đường đi có thể lặp lại đỉnh/cạnh) độ dài đúng bằng x bước
-đi từ a tới b hay không.
+đi từ a tới b hay không. In ra "YES" nếu tồn tại, ngược lại in ra "NO".
 
-Ý tưởng chính:
+## Ý tưởng
+Kỹ thuật: BFS trên "parity graph" (đồ thị nhân đôi theo tính chẵn/lẻ của độ dài).
+
 - Xét một walk bất kỳ từ a tới b có độ dài L. Vì đồ thị liên thông và n >= 2 nên mọi
-  đỉnh đều có bậc >= 1. Khi đã đang đứng ở b sau L bước, ta luôn có thể "chèn thêm"
-  từng cặp 2 bước (đi sang một đỉnh kề rồi quay lại b) để tăng độ dài lên 2 mà vẫn kết
-  thúc ở b. Do đó nếu tồn tại walk độ dài L từ a tới b thì tồn tại walk mọi độ dài
+  đỉnh đều có bậc >= 1. Khi đã đứng ở b sau L bước, ta luôn có thể "chèn thêm" từng
+  cặp 2 bước (đi sang một đỉnh kề rồi quay lại b) để tăng độ dài lên 2 mà vẫn kết thúc
+  ở b. Do đó nếu tồn tại walk độ dài L từ a tới b thì tồn tại walk mọi độ dài
   L, L+2, L+4, ... (cùng tính chẵn/lẻ với L).
 - Vì vậy tồn tại walk độ dài đúng x  <=>  tồn tại walk độ dài L <= x với L cùng tính
   chẵn/lẻ với x. Tức là ta chỉ cần biết:
-     * evenDist(a,b) = độ dài walk CHẴN ngắn nhất từ a tới b,
-     * oddDist(a,b)  = độ dài walk LẺ  ngắn nhất từ a tới b.
-  Đáp án YES  <=>  (x chẵn và evenDist(a,b) <= x) hoặc (x lẻ và oddDist(a,b) <= x).
+     * evenDist(a, b) = độ dài walk CHẴN ngắn nhất từ a tới b,
+     * oddDist(a, b)  = độ dài walk LẺ  ngắn nhất từ a tới b.
+  Đáp án YES  <=>  (x chẵn và evenDist(a, b) <= x) hoặc (x lẻ và oddDist(a, b) <= x).
 
 Tính evenDist / oddDist:
 - Dựng "parity graph" với trạng thái (đỉnh, parity), parity = số bước đã đi mod 2.
-  Mỗi cạnh (u,v) sinh cạnh trạng thái (u,p) -> (v, p^1). BFS từ (a, 0):
-     * khoảng cách tới (b, 0) chính là evenDist(a,b),
-     * khoảng cách tới (b, 1) chính là oddDist(a,b).
-  Đúng vì độ dài walk mod 2 luôn bằng parity của trạng thái đích, và BFS cho đường
+  Mỗi cạnh (u, v) sinh cạnh trạng thái (u, p) -> (v, p^1). BFS từ (a, 0):
+     * khoảng cách tới (b, 0) chính là evenDist(a, b),
+     * khoảng cách tới (b, 1) chính là oddDist(a, b).
+  Đúng vì độ dài walk mod 2 luôn bằng parity của trạng thái đích, và BFS cho đường đi
   ngắn nhất theo số cạnh.
 
-Xử lý truy vấn (offline theo nguồn):
-- Gom các truy vấn theo đỉnh nguồn a. Với mỗi đỉnh nguồn xuất hiện, chạy 1 lần BFS
-  trên parity graph rồi trả lời mọi truy vấn cùng nguồn đó. Có tối đa n nguồn phân biệt.
+Xử lý truy vấn (offline gom theo nguồn):
+- Gom các truy vấn theo đỉnh nguồn a. Với mỗi đỉnh nguồn xuất hiện, chạy 1 lần BFS trên
+  parity graph rồi trả lời mọi truy vấn cùng nguồn đó. Có tối đa n nguồn phân biệt.
 
 Tính đúng đắn:
 - Lập luận "chèn 2 bước" ở trên đảm bảo điều kiện cần và đủ. evenDist/oddDist được BFS
   cho ra chính xác. So sánh với x (cùng parity) là đủ.
 
-Độ phức tạp:
+## Độ phức tạp
 - Mỗi BFS: O(n + m). Tối đa n nguồn phân biệt => O(n * (n + m)).
   Với n <= 2500, m <= 5000: khoảng 2500 * 7500 ~ 1.9e7 thao tác, rất nhẹ.
 - Bộ nhớ: O(n + m) cho mỗi lần BFS (mảng dist kích thước 2n), tái sử dụng.

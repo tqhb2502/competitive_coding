@@ -1,2 +1,0 @@
-Tree Coin Collecting II
-https://cses.fi/problemset/task/3149

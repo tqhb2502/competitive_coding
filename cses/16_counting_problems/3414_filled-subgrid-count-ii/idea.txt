@@ -1,27 +1,29 @@
-FILLED SUBGRID COUNT II - CSES 3414
+Filled Subgrid Count II - CSES 3414
 https://cses.fi/problemset/task/3414
 
-ĐỀ BÀI (tóm tắt)
-Cho lưới n x n gồm k chữ cái đầu tiên. Với mỗi chữ cái, đếm số lưới con hình
-chữ nhật mà mọi ô đều chứa chữ cái đó. Ràng buộc n <= 3000, k <= 26.
+## Đề bài
+Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Với mỗi chữ cái, đếm số
+lưới con hình chữ nhật mà mọi ô đều chứa đúng chữ cái đó. Ràng buộc n <= 3000,
+k <= 26. In ra k số, mỗi số là đáp án cho một chữ cái.
 
-Ý TƯỞNG
-Tại mỗi hàng, height[c] là số ô liên tiếp cùng chữ đi lên từ ô hiện tại ở cột c.
-Một hình chữ nhật đồng màu có cạnh dưới kết thúc tại cột c chỉ có thể bắt đầu
-trong đoạn liên tiếp cùng chữ trên hàng hiện tại.
+## Ý tưởng
+Quét lưới theo từng hàng. Với mỗi cột c, gọi height[c] là số ô liên tiếp cùng
+chữ tính từ ô hiện tại đi lên. Một hình chữ nhật đồng màu có cạnh dưới nằm trên
+hàng hiện tại và kết thúc tại cột c chỉ có thể mở rộng trong đoạn liên tiếp cùng
+chữ trên hàng đó.
 
-Trong từng đoạn như vậy, bài toán trở thành: với mỗi vị trí, tính tổng giá trị
-nhỏ nhất của height trên mọi đoạn con kết thúc tại vị trí đó. Mỗi giá trị nhỏ
-nhất chính là số cách chọn chiều cao của hình chữ nhật.
+Trong từng đoạn cùng chữ, bài toán quy về: với mỗi vị trí, tính tổng giá trị nhỏ
+nhất của height trên mọi đoạn con kết thúc tại vị trí đó. Mỗi giá trị nhỏ nhất
+chính là số cách chọn chiều cao của một hình chữ nhật.
 
-Dùng ngăn xếp đơn điệu gồm các cặp (height, số đoạn). Khi thêm height h:
-  - Gộp mọi phần tử có height >= h.
+Dùng ngăn xếp đơn điệu gồm các cặp (height, số cột đại diện). Khi thêm height h:
+  - Gộp mọi phần tử trên đỉnh có height >= h.
   - Trừ đóng góp cũ của chúng khỏi tổng hiện tại.
-  - Thêm h nhân với tổng số đoạn vừa gộp.
+  - Cộng lại h nhân với tổng số cột vừa gộp.
+Tổng hiện tại sau thao tác chính là số hình chữ nhật đồng màu có góc dưới phải
+tại ô đang xét, ta cộng thẳng vào đáp án của chữ cái đó. Khi ký tự trên hàng
+thay đổi, xóa ngăn xếp và bắt đầu một đoạn mới.
 
-Tổng hiện tại sau thao tác là số hình chữ nhật đồng màu có góc dưới phải tại ô
-đang xét. Khi ký tự trên hàng thay đổi, ta xóa ngăn xếp và bắt đầu đoạn mới.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n^2), vì mỗi phần tử vào và ra ngăn xếp tối đa một lần.
 - Bộ nhớ: O(n + k).

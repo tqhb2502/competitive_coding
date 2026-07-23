@@ -1,12 +1,3 @@
-// MST Edge Set Check - CSES 3408
-// https://cses.fi/problemset/task/3408
-//
-// Ý tưởng: Một tập cạnh cùng nằm trong một MST khi và chỉ khi với mỗi giá trị
-// trọng số w, các cạnh trọng số w của tập tạo thành forest (không chu trình)
-// trong đồ thị đã co (contract) các thành phần liên thông của các cạnh trọng
-// số < w. Tiền xử lý bằng Kruskal/DSU để lấy "đỉnh đã co" cho mỗi cạnh, sau
-// đó trả lời từng truy vấn bằng DSU tạm theo từng nhóm trọng số.
-
 #include <bits/stdc++.h>
 using namespace std;
 

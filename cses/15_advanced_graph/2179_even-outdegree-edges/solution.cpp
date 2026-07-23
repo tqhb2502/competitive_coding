@@ -1,13 +1,3 @@
-// Even Outdegree Edges — CSES 2179
-// https://cses.fi/problemset/task/2179
-//
-// Định hướng các cạnh vô hướng để mọi đỉnh có bậc ra (outdegree) chẵn.
-// Cách làm: dựng cây DFS (spanning forest) bằng DFS LẶP, định hướng back edge
-// tùy ý khi phát hiện, rồi khi mỗi đỉnh (khác gốc) kết thúc thì chọn hướng cho
-// cạnh cây nối cha để ép bậc ra của đỉnh đó thành chẵn (post-order fix parity).
-// Cuối cùng nếu còn đỉnh bậc ra lẻ (chỉ có thể là gốc của thành phần có số cạnh
-// lẻ) thì in "IMPOSSIBLE". Độ phức tạp O(n + m).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -23,7 +13,7 @@ int main() {
         deg[ev[i]]++;
     }
 
-    // CSR adjacency: neighbor + edge index.
+    // Danh sách kề dạng CSR: lưu đỉnh kề kèm chỉ số cạnh.
     vector<int> start(n + 2, 0);
     for (int v = 1; v <= n; v++) start[v + 1] = start[v] + deg[v];
     vector<int> adjTo(2 * m), adjEi(2 * m);
@@ -58,23 +48,23 @@ int main() {
             if (ptr[v] < start[v + 1]) {
                 int idx = ptr[v]++;
                 int ei = adjEi[idx];
-                if (usedEdge[ei]) continue;   // đã xử lý (kể cả cạnh tới cha)
+                if (usedEdge[ei]) continue;   // đã xử lý (kể cả cạnh nối lên cha)
                 usedEdge[ei] = 1;
                 int to = adjTo[idx];
                 if (!visited[to]) {
-                    // cạnh cây: hướng quyết định khi 'to' kết thúc
+                    // cạnh cây: hướng sẽ quyết định khi con 'to' kết thúc
                     visited[to] = 1;
                     parent[to] = v;
                     parentEdge[to] = ei;
                     stk.push_back(to);
                 } else {
-                    // back edge: định hướng tùy ý v -> to
+                    // cạnh ngược (back edge): định hướng tùy ý v -> to
                     fromArr[ei] = v;
                     toArr[ei] = to;
                     outdeg[v]++;
                 }
             } else {
-                // đỉnh v kết thúc: chỉnh parity qua cạnh cây tới cha
+                // đỉnh v kết thúc: chỉnh tính chẵn lẻ qua cạnh cây nối lên cha
                 stk.pop_back();
                 int pe = parentEdge[v];
                 if (pe != -1) {

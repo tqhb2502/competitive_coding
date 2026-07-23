@@ -1,39 +1,40 @@
-Bài toán: Prufer Code (CSES 1134)
+Prufer Code - CSES 1134
+https://cses.fi/problemset/task/1134
 
-Kỹ thuật: Prüfer decode (giải mã Prüfer code để dựng lại cây).
-
-Bối cảnh:
-- Prüfer code là một dãy gồm n-2 số nguyên (mỗi số trong khoảng [1, n]),
-  mã hoá duy nhất một cây có gán nhãn với n đỉnh (nhãn 1..n).
+## Đề bài
+- Cho một dãy Prüfer gồm n-2 số nguyên (mỗi số trong khoảng [1, n]),
+  dãy này mã hoá duy nhất một cây có gán nhãn với n đỉnh (nhãn 1..n).
 - Yêu cầu: từ dãy Prüfer đã cho, khôi phục lại n-1 cạnh của cây.
+- Với mọi dãy Prüfer hợp lệ luôn tồn tại cây tương ứng, nên không có
+  trường hợp IMPOSSIBLE.
 
-Ý tưởng chính (thuật toán giải mã chuẩn):
-1. Tính bậc (degree) của mỗi đỉnh trong cây: một đỉnh xuất hiện k lần trong
-   Prüfer code sẽ có bậc = k + 1. Vậy khởi tạo deg[v] = 1 cho mọi v, rồi với
-   mỗi giá trị x trong code, tăng deg[x] lên 1.
+## Ý tưởng
+Kỹ thuật: Prüfer decode (giải mã Prüfer code để dựng lại cây).
+1. Tính bậc (degree) của mỗi đỉnh trong cây: một đỉnh xuất hiện k lần
+   trong Prüfer code sẽ có bậc = k + 1. Vậy khởi tạo deg[v] = 1 cho mọi
+   v, rồi với mỗi giá trị x trong code, tăng deg[x] lên 1.
 2. Duy trì một min-heap (priority_queue) chứa tất cả các đỉnh đang là lá,
    tức là deg = 1.
 3. Duyệt lần lượt từng phần tử x trong Prüfer code:
-   - Lấy ra lá có nhãn NHỎ NHẤT hiện tại là leaf (đỉnh của heap).
+   - Lấy ra lá có nhãn nhỏ nhất hiện tại là leaf (đỉnh của heap).
    - Thêm cạnh (leaf, x) vào kết quả.
-   - Giảm deg[x] đi 1; nếu deg[x] trở thành 1 thì x vừa biến thành lá, đẩy x
-     vào heap.
-4. Sau khi duyệt hết code, còn đúng 2 đỉnh có deg = 1; nối chúng lại thành
-   cạnh cuối cùng.
+   - Giảm deg[x] đi 1; nếu deg[x] trở thành 1 thì x vừa biến thành lá,
+     đẩy x vào heap.
+4. Sau khi duyệt hết code, còn đúng 2 đỉnh có deg = 1; nối chúng lại
+   thành cạnh cuối cùng.
 
 Vì sao lấy lá nhỏ nhất là đúng:
-- Theo định nghĩa mã hoá Prüfer, ở mỗi bước ta xoá lá có nhãn nhỏ nhất và ghi
-  lại đỉnh kề với nó. Quá trình giải mã đảo ngược đúng bước này: phần tử thứ i
-  của code chính là đỉnh kề với lá nhỏ nhất tại bước i. Do đó việc dùng min-heap
-  để luôn chọn lá nhỏ nhất tái tạo chính xác cây gốc.
-- Việc giảm bậc và đẩy đỉnh mới thành lá vào heap phản ánh đúng việc "gỡ lá" khỏi
-  cây theo thứ tự.
+- Theo định nghĩa mã hoá Prüfer, ở mỗi bước ta xoá lá có nhãn nhỏ nhất
+  và ghi lại đỉnh kề với nó. Quá trình giải mã đảo ngược đúng bước này:
+  phần tử thứ i của code chính là đỉnh kề với lá nhỏ nhất tại bước i. Do
+  đó việc dùng min-heap để luôn chọn lá nhỏ nhất tái tạo chính xác cây gốc.
+- Việc giảm bậc và đẩy đỉnh mới thành lá vào heap phản ánh đúng việc "gỡ
+  lá" khỏi cây theo thứ tự.
 
 Ghi chú về output:
-- Đề cho phép in các cạnh theo thứ tự bất kỳ và hai đầu cạnh theo thứ tự bất kỳ
-  (special judge chấp nhận mọi cây hợp lệ tương ứng với code). Với mọi Prüfer code
-  hợp lệ luôn tồn tại cây, nên không có trường hợp IMPOSSIBLE.
+- Đề cho phép in các cạnh theo thứ tự bất kỳ và hai đầu cạnh theo thứ tự
+  bất kỳ (special judge chấp nhận mọi cây hợp lệ tương ứng với code).
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n log n) do thao tác trên min-heap (n có thể tới 2 * 10^5).
 - Bộ nhớ: O(n).

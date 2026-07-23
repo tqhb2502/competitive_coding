@@ -1,2 +1,0 @@
-Graph Coloring
-https://cses.fi/problemset/task/3308

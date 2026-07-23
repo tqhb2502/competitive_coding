@@ -1,70 +1,63 @@
-MST Edge Set Check (CSES 3408)
+MST Edge Set Check - CSES 3408
 https://cses.fi/problemset/task/3408
 
-BÀI TOÁN
---------
-Cho đồ thị vô hướng liên thông, có trọng số, n đỉnh và m cạnh. Có q truy vấn,
-mỗi truy vấn cho một tập cạnh. Hỏi tất cả các cạnh trong tập đó có thể CÙNG
-nằm trong MỘT cây khung nhỏ nhất (MST) hay không. In "YES" hoặc "NO".
+## Đề bài
+Cho đồ thị vô hướng liên thông, có trọng số, gồm n đỉnh và m cạnh. Có q truy
+vấn, mỗi truy vấn cho một tập cạnh. Hỏi tất cả các cạnh trong tập đó có thể
+CÙNG nằm trong MỘT cây khung nhỏ nhất (MST) hay không. In "YES" hoặc "NO".
 
-KỸ THUẬT: Kruskal / DSU + phân lớp theo trọng số (contraction theo weight).
+## Ý tưởng
+Kỹ thuật: Kruskal / DSU + phân lớp theo trọng số (co các thành phần theo weight).
 
-Ý TƯỞNG CHÍNH
--------------
 Tính chất cốt lõi của MST (dựa trên thuật toán Kruskal):
 
-1) Với một giá trị trọng số w, xét đồ thị G_{<w} gồm TẤT CẢ các cạnh có
-   trọng số nhỏ hơn w (strictly less). Phân hoạch các đỉnh thành các thành
-   phần liên thông của G_{<w} là DUY NHẤT, không phụ thuộc cách chọn MST.
+1) Với một giá trị trọng số w, xét đồ thị G_{<w} gồm TẤT CẢ các cạnh có trọng
+   số nhỏ hơn w (strictly less). Phân hoạch các đỉnh thành các thành phần liên
+   thông của G_{<w} là DUY NHẤT, không phụ thuộc cách chọn MST.
 
 2) Mọi MST, khi xử lý các cạnh có trọng số đúng bằng w, đều thêm vào một
-   "spanning forest" (rừng khung) của các cạnh trọng số w trong đồ thị đã
-   co (contract) các thành phần liên thông của G_{<w}. Vì thế một tập cạnh
-   trọng số w có thể cùng nằm trong một MST khi và chỉ khi chúng KHÔNG tạo
-   chu trình trong đồ thị đã co đó (tức là chúng tạo thành một forest).
+   "spanning forest" (rừng khung) của các cạnh trọng số w trong đồ thị đã co
+   (contract) các thành phần liên thông của G_{<w}. Vì thế một tập cạnh trọng
+   số w có thể cùng nằm trong một MST khi và chỉ khi chúng KHÔNG tạo chu trình
+   trong đồ thị đã co đó (tức là chúng tạo thành một forest).
 
-3) Các lớp trọng số khác nhau ĐỘC LẬP với nhau: đồ thị co dùng cho lớp
-   trọng số w chỉ phụ thuộc các cạnh có trọng số < w (mà cấu trúc thành
-   phần của chúng là cố định). Do đó ta có thể ghép các lựa chọn của từng
-   lớp trọng số lại thành đúng một MST.
+3) Các lớp trọng số khác nhau ĐỘC LẬP với nhau: đồ thị co dùng cho lớp trọng
+   số w chỉ phụ thuộc các cạnh có trọng số < w (mà cấu trúc thành phần của
+   chúng là cố định). Do đó ta có thể ghép các lựa chọn của từng lớp trọng số
+   lại thành đúng một MST.
 
-=> Kết luận: Tập cạnh F nằm trong một MST nào đó KHI VÀ CHỈ KHI với mỗi giá
-   trị trọng số w, tập các cạnh của F có trọng số w tạo thành một forest
-   (không có chu trình) trong đồ thị đã co các thành phần của G_{<w}.
+=> Kết luận: Tập cạnh F nằm trong một MST nào đó KHI VÀ CHỈ KHI với mỗi giá trị
+   trọng số w, tập các cạnh của F có trọng số w tạo thành một forest (không có
+   chu trình) trong đồ thị đã co các thành phần của G_{<w}.
 
-TIỀN XỬ LÝ (offline, giống Kruskal)
------------------------------------
+Tiền xử lý (offline, giống Kruskal):
 - Sắp xếp các cạnh theo trọng số tăng dần. Duyệt theo từng nhóm cùng trọng số.
-- Trước khi hợp (union) các cạnh của nhóm trọng số w, DSU hiện tại chính là
-  các thành phần liên thông của G_{<w}. Với mỗi cạnh e trong nhóm, ghi lại
-  cặp gốc DSU của hai đầu mút: CU[e] = find(a[e]), CV[e] = find(b[e]).
-  Đây chính là hai "đỉnh đã co" của cạnh e.
+- Trước khi hợp (union) các cạnh của nhóm trọng số w, DSU hiện tại chính là các
+  thành phần liên thông của G_{<w}. Với mỗi cạnh e trong nhóm, ghi lại cặp gốc
+  DSU của hai đầu mút: CU[e] = find(a[e]), CV[e] = find(b[e]). Đây chính là hai
+  "đỉnh đã co" của cạnh e.
 - Sau đó union tất cả các cạnh của nhóm để chuyển sang trọng số kế tiếp.
 
-TRẢ LỜI TRUY VẤN
-----------------
-Với mỗi truy vấn: nhóm các cạnh theo trọng số (sort theo trọng số). Với mỗi
-nhóm cùng trọng số, dùng một DSU tạm để kiểm tra các cặp (CU[e], CV[e]) có
-tạo chu trình không:
-  - Nếu find(CU)==find(CV) trước khi union -> có chu trình -> đáp án NO.
+Trả lời truy vấn:
+Với mỗi truy vấn, nhóm các cạnh theo trọng số (sort theo trọng số). Với mỗi
+nhóm cùng trọng số, dùng một DSU tạm để kiểm tra các cặp (CU[e], CV[e]) có tạo
+chu trình không:
+  - Nếu find(CU) == find(CV) trước khi union -> có chu trình -> đáp án NO.
   - Ngược lại union và tiếp tục.
-Sau mỗi nhóm trọng số phải reset DSU tạm (chỉ xoá các phần tử đã chạm tới),
-vì hai lớp trọng số khác nhau không được ảnh hưởng lẫn nhau (một id đỉnh co
-có thể trùng nhau giữa các lớp). Nếu tất cả các nhóm đều là forest -> YES.
+Sau mỗi nhóm trọng số phải reset DSU tạm (chỉ xoá các phần tử đã chạm tới), vì
+hai lớp trọng số khác nhau không được ảnh hưởng lẫn nhau (một id đỉnh co có thể
+trùng nhau giữa các lớp). Nếu tất cả các nhóm đều là forest -> YES.
 
-Trường hợp một cạnh có CU[e]==CV[e] (self-loop trong đồ thị co) nghĩa là cạnh
+Trường hợp một cạnh có CU[e] == CV[e] (self-loop trong đồ thị co) nghĩa là cạnh
 đó không thuộc bất kỳ MST nào -> lập tức NO.
 
-TÍNH ĐÚNG ĐẮN
--------------
-Suy trực tiếp từ tính chất Kruskal ở trên: phân hoạch thành phần của G_{<w}
-là bất biến qua mọi MST, và mỗi MST chọn một rừng khung tối đa cho mỗi lớp
-trọng số. Ghép các rừng khung của từng lớp (mở rộng từ tập cạnh của truy vấn
-nếu nó acyclic) cho đúng một MST chứa toàn bộ tập; ngược lại nếu có chu trình
-trong một lớp thì không MST nào chứa được cả tập.
+Tính đúng đắn: suy trực tiếp từ tính chất Kruskal ở trên. Phân hoạch thành phần
+của G_{<w} là bất biến qua mọi MST, và mỗi MST chọn một rừng khung tối đa cho
+mỗi lớp trọng số. Ghép các rừng khung của từng lớp (mở rộng từ tập cạnh của
+truy vấn nếu nó acyclic) cho đúng một MST chứa toàn bộ tập; ngược lại nếu có
+chu trình trong một lớp thì không MST nào chứa được cả tập.
 
-ĐỘ PHỨC TẠP
------------
+## Độ phức tạp
 - Tiền xử lý: sắp xếp O(m log m) + DSU gần như O(m α(n)).
 - Mỗi truy vấn: sort các cạnh theo trọng số + DSU tạm. Tổng số cạnh trong tất
   cả truy vấn <= m, nên tổng O(m log m).

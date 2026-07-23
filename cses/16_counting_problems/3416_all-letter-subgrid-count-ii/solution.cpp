@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+// Hàng đợi hỗ trợ lấy OR của toàn bộ phần tử (phép OR không có nghịch đảo nên
+// cài bằng hai ngăn xếp, mỗi ngăn xếp lưu OR tích lũy).
 class OrQueue {
 public:
     explicit OrQueue(int capacity)
@@ -15,6 +17,7 @@ public:
         back_size_ = 0;
     }
 
+    // Thêm giá trị vào ngăn xếp sau và cập nhật OR tích lũy.
     void push(std::uint32_t value) {
         back_value_[back_size_] = value;
         back_or_[back_size_] = value;
@@ -24,6 +27,7 @@ public:
         ++back_size_;
     }
 
+    // Xóa phần tử đầu; nếu ngăn xếp trước rỗng thì chuyển toàn bộ từ sau sang.
     void pop() {
         if (front_size_ == 0) {
             transfer_to_front();
@@ -31,6 +35,7 @@ public:
         --front_size_;
     }
 
+    // OR của cả hàng đợi = OR hai giá trị tích lũy trên đỉnh hai ngăn xếp.
     [[nodiscard]] std::uint32_t aggregate() const {
         const std::uint32_t front = front_size_ == 0 ? 0 : front_or_[front_size_ - 1];
         const std::uint32_t back = back_size_ == 0 ? 0 : back_or_[back_size_ - 1];
@@ -38,6 +43,7 @@ public:
     }
 
 private:
+    // Đổ toàn bộ ngăn xếp sau sang ngăn xếp trước (đảo thứ tự), dựng lại OR tích lũy.
     void transfer_to_front() {
         while (back_size_ > 0) {
             --back_size_;
@@ -72,20 +78,24 @@ int main() {
         std::cin >> row;
     }
 
+    // full_mask có đúng k bit 1: một cửa sổ đủ chữ khi OR bằng giá trị này.
     const std::uint32_t full_mask = (std::uint32_t{1} << k) - 1;
     std::vector<std::uint32_t> column_mask(n, 0);
     OrQueue window(n);
     std::int64_t answer = 0;
 
+    // Cố định hàng trên top, mở rộng dần hàng dưới bottom.
     for (int top = 0; top < n; ++top) {
         std::fill(column_mask.begin(), column_mask.end(), 0);
 
         for (int bottom = top; bottom < n; ++bottom) {
+            // Bổ sung chữ cái của hàng bottom vào bitmask của từng cột.
             for (int column = 0; column < n; ++column) {
                 column_mask[column] |=
                     std::uint32_t{1} << (grid[bottom][column] - 'A');
             }
 
+            // Hai con trỏ: với mỗi cột trái left, tìm right nhỏ nhất để cửa sổ đủ chữ.
             window.clear();
             int right = 0;
             for (int left = 0; left < n; ++left) {
@@ -94,6 +104,7 @@ int main() {
                     ++right;
                 }
 
+                // Nếu đủ chữ thì mọi cột phải từ right-1 tới n-1 đều hợp lệ.
                 if (window.aggregate() == full_mask) {
                     answer += n - right + 1;
                 }

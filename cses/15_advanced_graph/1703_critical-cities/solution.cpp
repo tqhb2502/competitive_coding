@@ -1,18 +1,12 @@
-// Critical Cities - CSES 1703
-// https://cses.fi/problemset/task/1703
-//
-// Critical city = đỉnh nằm trên MỌI đường đi từ 1 tới n = DOMINATOR của n.
-// Đáp án = chuỗi các tổ tiên của n trên dominator tree (gốc = đỉnh 1).
-// Dùng thuật toán Lengauer-Tarjan (link-eval + path compression).
-// DFS và path compression đều viết dạng ITERATIVE để tránh tràn stack.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-static vector<int> sdom, idomv, lab, anc; // dfs-index-based LT arrays
-static vector<int> pathBuf;               // reusable buffer for compress
+// Các mảng Lengauer-Tarjan làm việc trên không gian dfs-index
+static vector<int> sdom, idomv, lab, anc;
+static vector<int> pathBuf;               // bộ đệm dùng lại cho compress
 
-// Path compression (iterative). Precondition: anc[v] != -1.
+// Nén đường DSU (path compression) viết dạng ITERATIVE để tránh đệ quy sâu.
+// Điều kiện tiên quyết: anc[v] != -1.
 static void compress(int v) {
     pathBuf.clear();
     int u = v;
@@ -28,7 +22,7 @@ static void compress(int v) {
 }
 
 // Eval: trả về đỉnh (dfs-index) có semidominator nhỏ nhất trên đường DSU.
-static inline int evalf(int v) {
+static inline int evalf(int v) {   // hàm Eval của Lengauer-Tarjan
     if (anc[v] == -1) return v;
     compress(v);
     return lab[v];
@@ -38,6 +32,7 @@ int main() {
     int n, m;
     if (scanf("%d %d", &n, &m) != 2) return 0;
 
+    // adj: danh sách kề xuôi; radj: danh sách kề ngược (predecessor)
     vector<vector<int>> adj(n + 1), radj(n + 1);
     for (int i = 0; i < m; ++i) {
         int a, b;
@@ -46,14 +41,14 @@ int main() {
         radj[b].push_back(a);
     }
 
-    // --- Iterative DFS từ đỉnh 1: đánh số preorder, lưu cha trên cây DFS ---
-    vector<int> arr(n + 1, -1); // arr[vertex] = dfs index (-1 nếu không tới được)
-    vector<int> rev(n + 1, -1); // rev[dfsIndex] = vertex
-    vector<int> par;            // par[dfsIndex] = dfs index của cha (-1 cho gốc)
+    // --- DFS lặp từ đỉnh 1: đánh số preorder, lưu cha trên cây DFS ---
+    vector<int> arr(n + 1, -1); // arr[đỉnh] = dfs index (-1 nếu không tới được)
+    vector<int> rev(n + 1, -1); // rev[dfs index] = đỉnh
+    vector<int> par;            // par[dfs index] = dfs index của cha (-1 cho gốc)
     par.reserve(n + 1);
 
     {
-        vector<pair<int,int>> st; // (vertex, parentDfsIndex)
+        vector<pair<int,int>> st; // (đỉnh, dfs index của cha)
         st.reserve(n + 1);
         st.push_back({1, -1});
         int cnt = 0;
@@ -70,9 +65,9 @@ int main() {
         }
     }
 
-    int N = (int)par.size(); // số đỉnh reachable từ gốc
+    int N = (int)par.size(); // số đỉnh reachable (tới được) từ gốc
 
-    // --- Lengauer-Tarjan trên không gian dfs-index ---
+    // --- Thuật toán Lengauer-Tarjan trên không gian dfs-index ---
     sdom.assign(N, 0);
     idomv.assign(N, 0);
     lab.assign(N, 0);
@@ -81,20 +76,22 @@ int main() {
 
     vector<vector<int>> bucket(N);
 
+    // Duyệt đỉnh theo thứ tự dfs GIẢM DẦN để tính semidominator sdom
     for (int i = N - 1; i >= 1; --i) {
         int w = rev[i];
+        // Xét các cạnh ngược (predecessor), dùng Eval lấy min semidominator
         for (int u : radj[w]) {
             int ju = arr[u];
-            if (ju == -1) continue; // predecessor không reachable
+            if (ju == -1) continue; // predecessor không tới được từ gốc
             int t = evalf(ju);
             if (sdom[t] < sdom[i]) sdom[i] = sdom[t];
         }
         bucket[sdom[i]].push_back(i);
 
-        // link i vào cha
+        // Nối (link) i vào cha trên cây DFS
         anc[i] = par[i];
 
-        // xử lý các đỉnh có semidominator = par[i]
+        // Xử lý các đỉnh trong bucket có semidominator = par[i] để tính idom tạm
         for (int v : bucket[par[i]]) {
             int u = evalf(v);
             idomv[v] = (sdom[u] == sdom[v]) ? sdom[v] : u;
@@ -102,14 +99,14 @@ int main() {
         bucket[par[i]].clear();
     }
 
-    // chỉnh lại idom
+    // Chỉnh lại idom bằng một lượt duyệt tăng dần
     for (int i = 1; i < N; ++i)
         if (idomv[i] != sdom[i]) idomv[i] = idomv[idomv[i]];
     idomv[0] = 0;
 
     // --- Thu thập chuỗi dominator của n: đi từ n lên gốc theo idom ---
     vector<int> res;
-    int cur = arr[n]; // n chắc chắn reachable
+    int cur = arr[n]; // n chắc chắn tới được
     while (true) {
         res.push_back(rev[cur]);
         if (cur == 0) break;

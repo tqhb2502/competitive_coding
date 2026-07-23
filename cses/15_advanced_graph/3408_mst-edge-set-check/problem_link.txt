@@ -1,2 +1,0 @@
-MST Edge Set Check
-https://cses.fi/problemset/task/3408

@@ -1,24 +1,27 @@
-MST Edge Check (CSES 3407)
+MST Edge Check - CSES 3407
+https://cses.fi/problemset/task/3407
 
+## Đề bài
+Cho đồ thị vô hướng có trọng số. Với mỗi cạnh (a, b, w), xác định xem cạnh
+đó có thể nằm trong MỘT cây khung nhỏ nhất (MST) nào đó hay không. In "YES"
+nếu có, "NO" nếu không, theo đúng thứ tự cạnh trong input.
+
+## Ý tưởng
 Kỹ thuật: Kruskal + DSU (Union-Find), xử lý các cạnh theo nhóm trọng số bằng nhau.
 
-Bài toán: Với mỗi cạnh (a, b, w) của đồ thị vô hướng có trọng số, xác định
-xem cạnh đó có thể nằm trong MỘT cây khung nhỏ nhất (MST) nào đó hay không.
-In "YES" nếu có, "NO" nếu không, theo đúng thứ tự cạnh trong input.
+Một cạnh e = (a, b, w) có thể thuộc MỘT MST nào đó KHI VÀ CHỈ KHI: hai đỉnh
+a và b KHÔNG được nối với nhau nếu ta chỉ dùng các cạnh có trọng số NHỎ HƠN
+HẲN w (strictly less than w).
 
-Ý tưởng chính:
-- Một cạnh e = (a, b, w) có thể thuộc MỘT MST nào đó KHI VÀ CHỈ KHI: hai đỉnh
-  a và b KHÔNG được nối với nhau nếu ta chỉ dùng các cạnh có trọng số NHỎ HƠN
-  HẲN w (strictly less than w).
-- Lý do (correctness):
-  + Nếu a và b đã được nối bằng một đường đi chỉ gồm các cạnh trọng số < w, thì
-    trong bất kỳ cây khung nào chứa e, việc bỏ e ra sẽ chia cây thành hai phần,
-    nhưng luôn tồn tại một cạnh trọng số < w bắc qua vết cắt đó, nên thay thế e
-    bằng cạnh nhỏ hơn cho ra cây khung tổng trọng số nhỏ hơn. Vậy e KHÔNG thể
-    nằm trong bất kỳ MST nào (e là cạnh cực đại duy nhất trên một chu trình).
-  + Ngược lại, nếu a và b chưa nối được bằng các cạnh trọng số < w, ta có thể
-    dựng DSU từ toàn bộ cạnh trọng số < w; khi đó a, b khác thành phần, và theo
-    thuật toán Kruskal ta có thể chọn e vào MST. Vậy e thuộc MỘT MST nào đó.
+Chứng minh (correctness):
+- Nếu a và b đã được nối bằng một đường đi chỉ gồm các cạnh trọng số < w, thì
+  trong bất kỳ cây khung nào chứa e, việc bỏ e ra sẽ chia cây thành hai phần,
+  nhưng luôn tồn tại một cạnh trọng số < w bắc qua vết cắt đó, nên thay thế e
+  bằng cạnh nhỏ hơn cho ra cây khung tổng trọng số nhỏ hơn. Vậy e KHÔNG thể
+  nằm trong bất kỳ MST nào (e là cạnh cực đại duy nhất trên một chu trình).
+- Ngược lại, nếu a và b chưa nối được bằng các cạnh trọng số < w, ta có thể
+  dựng DSU từ toàn bộ cạnh trọng số < w; khi đó a, b khác thành phần, và theo
+  thuật toán Kruskal ta có thể chọn e vào MST. Vậy e thuộc MỘT MST nào đó.
 
 Cài đặt:
 - Sắp xếp các cạnh theo trọng số tăng dần (giữ chỉ số gốc để in đúng thứ tự).
@@ -31,7 +34,7 @@ Cài đặt:
   chu trình (ví dụ tam giác cùng trọng số) đều được đánh "YES", vì mỗi cạnh đều
   có thể được chọn trong một MST nào đó.
 
-Độ phức tạp:
+## Độ phức tạp
 - Sắp xếp: O(m log m).
 - DSU với path compression + union by rank: gần như O(alpha) mỗi thao tác.
 - Tổng: O(m log m + (n + m) alpha), thoải mái với n <= 1e5, m <= 2e5.

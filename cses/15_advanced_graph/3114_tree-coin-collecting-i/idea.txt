@@ -1,42 +1,48 @@
-Bài toán: Tree Coin Collecting I (CSES 3114)
-Cho cây n node, một số node có coin. Mỗi query (a, b): tìm độ dài ngắn nhất
-của một đường đi (walk) từ a tới b sao cho có đi qua ít nhất một node có coin.
+Tree Coin Collecting I - CSES 3114
+https://cses.fi/problemset/task/3114
 
-KỸ THUẬT: multi-source BFS (BFS đa nguồn) + LCA (binary lifting) +
-truy vấn min trên đường đi (path minimum query) bằng sparse table trên cây.
+## Đề bài
+Cho một cây có n đỉnh, một số đỉnh có chứa đồng xu (coin). Với mỗi truy vấn (a, b),
+hãy tìm độ dài ngắn nhất của một hành trình (walk) đi từ a tới b sao cho hành trình
+đó đi qua ít nhất một đỉnh có đồng xu. Không có trường hợp IMPOSSIBLE vì luôn tồn
+tại ít nhất một đồng xu.
 
-Ý TƯỞNG CHÍNH:
-- Một walk từ a tới b bắt buộc đi qua coin c: độ dài tối thiểu chính là
-  d(a, c) + d(c, b), với d là khoảng cách trên cây (vì cắt walk tại lần đầu
-  chạm c, phần a->c dài >= d(a,c), phần c->b dài >= d(c,b), và đẳng thức đạt được).
-- Gọi p là điểm gần c nhất nằm trên đường đi (path) từ a tới b trên cây. Khi đó:
+## Ý tưởng
+Một hành trình từ a tới b bắt buộc đi qua đồng xu c có độ dài tối thiểu là
+d(a, c) + d(c, b), với d là khoảng cách trên cây (cắt hành trình tại lần đầu chạm c,
+phần a->c dài ít nhất d(a, c), phần c->b dài ít nhất d(c, b), và đẳng thức đạt được).
+
+Gọi p là điểm gần c nhất nằm trên đường đi (path) từ a tới b trên cây. Khi đó:
       d(a, c) + d(c, b) = d(a, b) + 2 * d(p, c)
-  và d(p, c) = dist(c, path(a,b)) (khoảng cách từ c tới đường đi a-b).
-- Vậy đáp án = d(a, b) + 2 * min_{c là coin} dist(c, path(a,b)).
-- Mà: min_{c coin} dist(c, path) = min_{v thuộc path} ( min_{c coin} dist(v, c) )
-                                 = min_{v thuộc path(a,b)} nearestCoin(v),
-  với nearestCoin(v) = khoảng cách từ v tới coin gần nhất.
+và d(p, c) = dist(c, path(a, b)) là khoảng cách từ c tới đường đi a-b.
 
-DO ĐÓ đáp án của query (a, b) = dist_tree(a, b)
-                              + 2 * ( giá trị nhỏ nhất của nearestCoin(v)
-                                      trên tất cả node v thuộc đường đi a-b ).
+Vậy đáp án = d(a, b) + 2 * min_{c là coin} dist(c, path(a, b)). Do
+dist(c, path) = min_{v thuộc path} dist(c, v) nên có thể đổi min theo coin thành
+min theo đỉnh trên path:
+      min_{c coin} dist(c, path) = min_{v thuộc path(a, b)} nearestCoin(v),
+với nearestCoin(v) là khoảng cách từ v tới đồng xu gần nhất. Suy ra:
+      đáp án(a, b) = dist_tree(a, b)
+                   + 2 * ( giá trị nhỏ nhất của nearestCoin(v) trên mọi đỉnh v
+                           thuộc đường đi a-b ).
 
-CÁCH TÍNH:
-1) nearestCoin(v): chạy BFS đa nguồn từ TẤT CẢ các node có coin cùng lúc, O(n).
-2) dist_tree(a, b) = depth[a] + depth[b] - 2*depth[LCA(a,b)], dùng binary lifting.
-3) min nearestCoin trên đường đi a-b: binary lifting lưu thêm minf[k][v] =
-   min nearestCoin trên đoạn 2^k node tính từ v đi lên. Tách đường đi a->b thành
-   a->LCA và b->LCA, mỗi nửa leo bằng các block lũy thừa 2. O(log n) mỗi query.
+Cách tính:
+1) nearestCoin(v): chạy multi-source BFS (BFS đa nguồn) đồng thời từ tất cả các đỉnh
+   có đồng xu, chi phí O(n).
+2) dist_tree(a, b) = depth[a] + depth[b] - 2*depth[LCA(a, b)], dùng binary lifting.
+3) min nearestCoin trên đường đi a-b: binary lifting lưu thêm minf[k][v] = min
+   nearestCoin trên đoạn 2^k đỉnh tính từ v đi lên. Tách đường đi a->b thành a->LCA
+   và b->LCA, mỗi nửa leo theo các khối lũy thừa 2, chi phí O(log n) mỗi truy vấn.
 
-TÍNH ĐÚNG: chứng minh trực tiếp qua công thức khai triển ở trên; min theo coin
-đổi thành min theo node trên path là hợp lệ vì dist(c, path) = min_{v in path} dist(c, v).
+Tính đúng: chứng minh trực tiếp qua công thức khai triển ở trên; việc đổi min theo
+coin thành min theo đỉnh trên path là hợp lệ vì dist(c, path) = min_{v in path} dist(c, v).
 
-ĐỘ PHỨC TẠP: tiền xử lý O(n log n), mỗi query O(log n). Tổng O((n + q) log n),
-với n, q <= 2e5 -> chạy tốt trong giới hạn thời gian.
+## Độ phức tạp
+Tiền xử lý O(n log n), mỗi truy vấn O(log n). Tổng O((n + q) log n), với
+n, q <= 2e5 nên chạy tốt trong giới hạn thời gian.
 
-Kiểm tra với ví dụ: coin ở {1,4}, nearestCoin = [_,0,1,1,0,2].
-  (1,5): d=2, min trên path {1,3,5} = 0 -> 2 + 0 = 2.
-  (3,2): d=1, min trên path {3,2} = 1 -> 1 + 2 = 3.
-  (4,4): d=0, nearestCoin(4)=0 -> 0.
-  (5,5): d=0, nearestCoin(5)=2 -> 0 + 4 = 4.
+Kiểm tra với ví dụ: coin ở {1, 4}, nearestCoin = [_, 0, 1, 1, 0, 2].
+  (1, 5): d = 2, min trên path {1, 3, 5} = 0 -> 2 + 0 = 2.
+  (3, 2): d = 1, min trên path {3, 2} = 1 -> 1 + 2 = 3.
+  (4, 4): d = 0, nearestCoin(4) = 0 -> 0.
+  (5, 5): d = 0, nearestCoin(5) = 2 -> 0 + 4 = 4.
 Khớp toàn bộ output mẫu.

@@ -1,2 +1,0 @@
-Fixed Length Walk Queries
-https://cses.fi/problemset/task/3357

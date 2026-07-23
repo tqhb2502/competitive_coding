@@ -1,15 +1,18 @@
-Bài toán: Graph Girth (CSES 1707)
-Tìm girth = độ dài chu trình ngắn nhất của một đồ thị vô hướng, không trọng số.
+Graph Girth - CSES 1707
+https://cses.fi/problemset/task/1707
+
+## Đề bài
+Cho đồ thị vô hướng, không trọng số, đơn (giữa hai đỉnh có tối đa một cạnh, không
+có cạnh song song) gồm n đỉnh và m cạnh.
+Tìm girth = độ dài chu trình ngắn nhất của đồ thị.
 Nếu đồ thị không có chu trình nào thì in ra -1.
+Ràng buộc: 1 <= n <= 2500, 1 <= m <= 5000.
 
-Ràng buộc: 1 <= n <= 2500, 1 <= m <= 5000, giữa hai đỉnh có tối đa một cạnh
-(đồ thị đơn, không có cạnh song song).
+## Ý tưởng
+Kỹ thuật: chạy BFS lần lượt từ mỗi đỉnh làm gốc (source), tổng cộng n lần BFS.
 
-Kỹ thuật: BFS từ mỗi đỉnh (multi-source-free, chạy n lần BFS).
-
-Ý tưởng chính:
-- Với đồ thị vô hướng KHÔNG trọng số, chu trình ngắn nhất có thể tìm bằng cách
-  chạy BFS lần lượt từ mỗi đỉnh làm gốc (source).
+Với đồ thị vô hướng KHÔNG trọng số, chu trình ngắn nhất có thể tìm bằng cách
+chạy BFS từ mỗi đỉnh làm gốc:
 - Trong một lần BFS từ gốc s, ta xây dựng cây BFS với mảng khoảng cách dist[]
   và mảng cha par[]. Khi duyệt đỉnh u và xét cạnh (u, w):
     + Nếu w chưa thăm: đặt dist[w] = dist[u] + 1, par[w] = u, đẩy w vào hàng đợi.
@@ -37,12 +40,12 @@ Chứng minh tính đúng đắn:
    Vậy đáp án cuối <= g. Kết hợp (1) và (2): đáp án = girth.
 
 Chi tiết cài đặt:
-- Danh sách kề (adjacency list).
+- Dùng danh sách kề (adjacency list).
 - Mỗi lần BFS reset dist[] về -1 (chưa thăm), par[] về -1.
 - Dùng BFS lặp bằng hàng đợi mảng (iterative), không đệ quy nên không lo tràn stack.
 - Tối ưu: girth của đồ thị đơn nhỏ nhất là 3, nên nếu tìm được 3 có thể dừng sớm.
 
-Độ phức tạp:
+## Độ phức tạp
 - Mỗi BFS là O(n + m). Chạy n lần => O(n * (n + m)).
 - Với n = 2500, m = 5000: khoảng 2500 * 7500 ~ 1.9 * 10^7 thao tác, thừa sức
   trong 1.00 s. Bộ nhớ O(n + m).

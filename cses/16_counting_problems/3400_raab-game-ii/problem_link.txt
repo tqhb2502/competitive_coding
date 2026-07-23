@@ -1,2 +1,0 @@
-Raab Game II
-https://cses.fi/problemset/task/3400

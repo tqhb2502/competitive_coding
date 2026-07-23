@@ -1,11 +1,3 @@
-// Network Renovation - CSES 1704
-// https://cses.fi/problemset/task/1704
-//
-// Tree augmentation to 2-edge-connectivity (Eswaran-Tarjan).
-// Số cạnh mới tối thiểu = ceil(L/2) với L = số lá (đỉnh bậc 1).
-// Chọn root là một đỉnh không phải lá, DFS lấy danh sách lá theo thứ tự duyệt,
-// rồi nối leaves[i] với leaves[i + L/2]; nếu L lẻ nối thêm (leaves[L-1], leaves[0]).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -47,14 +39,18 @@ int main() {
         for (int w : adj[u]) if (!vis[w]) st.push_back(w);
     }
 
+    // Số cạnh tối thiểu cần thêm = ceil(cnt/2) với cnt là số lá.
     int cnt = (int)leaves.size();
     int m = cnt / 2;
     int k = (cnt + 1) / 2;
 
     printf("%d\n", k);
+    // Ghép lá cách nhau m trong danh sách: nối leaves[i] với leaves[i + m].
+    // Mỗi cạnh mới "vắt ngang" một đoạn lá liên tiếp nên phủ (làm hết cầu) mọi cạnh cây.
     for (int i = 0; i < m; i++) {
         printf("%d %d\n", leaves[i], leaves[i + m]);
     }
+    // Nếu cnt lẻ, lá cuối chưa được ghép: nối thêm nó với lá đầu tiên.
     if (cnt & 1) {
         printf("%d %d\n", leaves[cnt - 1], leaves[0]);
     }

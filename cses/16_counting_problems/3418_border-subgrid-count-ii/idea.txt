@@ -1,29 +1,32 @@
-BORDER SUBGRID COUNT II - CSES 3418
+Border Subgrid Count II - CSES 3418
 https://cses.fi/problemset/task/3418
 
-ĐỀ BÀI (tóm tắt)
-Cho lưới n x n gồm k chữ cái đầu tiên. Với mỗi chữ cái, đếm số lưới con hình
-chữ nhật có toàn bộ đường viền là chữ cái đó. Ràng buộc n <= 500, k <= 26.
+## Đề bài
+Cho lưới n x n gồm k chữ cái đầu tiên (A, B, ...). Với mỗi chữ cái, đếm số lưới
+con hình chữ nhật có toàn bộ đường viền là chữ cái đó. In ra k dòng, mỗi dòng là
+số lượng ứng với một chữ cái. Ràng buộc n <= 500, k <= 26.
 
-Ý TƯỞNG
-Cố định hàng trên top và tăng hàng dưới bottom. Một cột c là "hợp lệ" nếu mọi ô
-từ top tới bottom trong cột đều chứa cùng một chữ. Khi bottom tăng, trạng thái
-này chỉ có thể chuyển từ đúng sang sai, nên cập nhật bằng một mảng boolean.
+## Ý tưởng
+Cố định hàng trên top rồi tăng dần hàng dưới bottom. Một cột c được gọi là "hợp
+lệ" nếu mọi ô từ hàng top tới hàng bottom trong cột đó đều chứa cùng một chữ. Khi
+bottom tăng, trạng thái hợp lệ chỉ có thể chuyển từ đúng sang sai, nên ta cập nhật
+tăng dần bằng một mảng boolean valid_column.
 
-Xét cột phải r hợp lệ, gọi x là chữ tại đó. Để chọn cột trái l:
+Xét cột phải r hợp lệ, gọi x là chữ tại đó. Để chọn cột trái l tạo thành hình chữ
+nhật có viền toàn x thì:
   - l cũng phải là cột hợp lệ;
-  - đoạn [l,r] trên hàng top phải toàn x;
-  - đoạn [l,r] trên hàng bottom phải toàn x.
+  - đoạn [l, r] trên hàng top phải toàn x;
+  - đoạn [l, r] trên hàng bottom phải toàn x.
 
-Gọi run_start[row][r] là đầu đoạn ký tự giống nhau kết thúc tại r trên một hàng.
-Hai điều kiện ngang tương đương:
+Gọi run_start[row][r] là chỉ số đầu của đoạn ký tự giống nhau kết thúc tại r trên
+một hàng. Khi đó hai điều kiện ngang tương đương với:
 
     l >= max(run_start[top][r], run_start[bottom][r]).
 
-Ta tạo prefix sum của các cột hợp lệ. Nhờ đó, với mỗi r hợp lệ, số cách chọn l
-trong đoạn trên được lấy trong O(1). Màu của hình chữ nhật chính là màu tại r.
-Công thức cũng xử lý đúng hình chữ nhật cao 1 hoặc rộng 1.
+Ta dựng prefix sum của các cột hợp lệ. Nhờ đó, với mỗi r hợp lệ, số cách chọn l
+trong đoạn cho phép được lấy trong O(1). Màu của hình chữ nhật chính là màu tại r.
+Công thức cũng xử lý đúng các hình chữ nhật cao 1 hoặc rộng 1.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n^3).
 - Bộ nhớ: O(n^2 + k).

@@ -1,14 +1,15 @@
-Bài toán: MST Edge Cost (CSES 3409)
+MST Edge Cost - CSES 3409
+https://cses.fi/problemset/task/3409
 
-Đề bài:
+## Đề bài
 - Cho đồ thị vô hướng liên thông, có trọng số, đơn (n đỉnh, m cạnh).
-- Với MỖI cạnh (theo thứ tự nhập), tính chi phí cây khung nhỏ nhất (MST)
+- Với MỖI cạnh (theo thứ tự nhập vào), tính chi phí cây khung nhỏ nhất (MST)
   BẮT BUỘC phải chứa cạnh đó.
 
-Kỹ thuật: Kruskal (dựng MST) + Binary Lifting (LCA) để truy vấn cạnh trọng số
-lớn nhất trên đường đi giữa hai đỉnh trên cây MST.
+## Ý tưởng
+Kỹ thuật: Kruskal (dựng MST) + Binary Lifting (LCA) để truy vấn cạnh có trọng
+số lớn nhất trên đường đi giữa hai đỉnh trên cây MST.
 
-Ý tưởng chính:
 1. Dùng Kruskal dựng một MST bất kỳ của đồ thị. Gọi T là tổng trọng số MST.
 2. Với một cạnh e = (a, b, w) buộc phải nằm trong cây khung:
    - Nếu e đã thuộc MST thì đáp án chính là T.
@@ -42,7 +43,7 @@ Chi tiết cài đặt:
   đồng thời tới LCA, lấy max các cạnh đi qua.
 - ans = T + w - maxEdgeOnPath(a, b).
 
-Độ phức tạp:
+## Độ phức tạp
 - Kruskal: O(m log m).
 - Binary lifting build: O(n log n).
 - Mỗi truy vấn: O(log n); tổng m truy vấn: O(m log n).

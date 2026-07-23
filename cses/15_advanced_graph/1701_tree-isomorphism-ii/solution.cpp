@@ -1,15 +1,8 @@
-// Tree Isomorphism II - CSES 1701
-// https://cses.fi/problemset/task/1701
-//
-// Đẳng cấu cây không gốc = tìm center(s) rồi so canonical hash (AHU).
-// - Mỗi cây có 1 hoặc 2 center (bóc lá theo lớp).
-// - AHU: nhãn của 1 đỉnh = id của danh sách nhãn con đã SORT (map dùng chung).
-// - So số center; nếu bằng thì root cây 1 tại center, thử từng center cây 2.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-static map<vector<int>, int> idMap; // canonical: sorted child-labels -> integer id
+// AHU: map dùng chung ánh xạ danh sách nhãn con đã sắp xếp -> id nguyên duy nhất
+static map<vector<int>, int> idMap;
 static int nextId = 0;
 
 static inline int getId(vector<int>& v) {
@@ -20,7 +13,8 @@ static inline int getId(vector<int>& v) {
     return id;
 }
 
-// Tìm center(s) của cây bằng cách bóc lá theo từng lớp (topological trimming).
+// Tìm tâm (1 hoặc 2 center) của cây bằng cách bóc lá theo từng lớp cho tới khi
+// còn không quá 2 đỉnh (topological trimming), độ phức tạp O(n).
 static vector<int> findCenters(int n, const vector<vector<int>>& adj) {
     if (n == 1) return {1};
     vector<int> deg(n + 1);
@@ -44,7 +38,8 @@ static vector<int> findCenters(int n, const vector<vector<int>>& adj) {
     return cur;
 }
 
-// Tính canonical label của cây khi root tại `root` (AHU, iterative).
+// Tính nhãn chuẩn hoá (canonical label) của cây khi chọn gốc tại `root`.
+// Cài đặt AHU lặp (iterative), không đệ quy để tránh tràn stack.
 static int rootedLabel(int n, const vector<vector<int>>& adj, int root) {
     vector<int> order;
     order.reserve(n);
@@ -52,9 +47,10 @@ static int rootedLabel(int n, const vector<vector<int>>& adj, int root) {
     vector<int> label(n + 1, 0);
     vector<char> visited(n + 1, 0);
 
+    // BFS từ gốc để lấy thứ tự duyệt `order` và cha `parent` của mỗi đỉnh.
     order.push_back(root);
     visited[root] = 1;
-    parent[root] = 0; // 0 không phải đỉnh hợp lệ (đỉnh đánh số 1..n)
+    parent[root] = 0; // 0 không phải đỉnh hợp lệ (các đỉnh đánh số 1..n)
     for (size_t i = 0; i < order.size(); i++) {
         int u = order[i];
         for (int v : adj[u]) {
@@ -65,7 +61,8 @@ static int rootedLabel(int n, const vector<vector<int>>& adj, int root) {
             }
         }
     }
-    // Duyệt ngược thứ tự BFS = post-order hợp lệ (con luôn sau cha).
+    // Duyệt ngược thứ tự BFS (post-order hợp lệ, con luôn đứng sau cha): với mỗi
+    // đỉnh gom nhãn các con, SẮP XẾP tăng dần rồi tra map để lấy nhãn chuẩn hoá.
     for (int i = (int)order.size() - 1; i >= 0; i--) {
         int u = order[i];
         vector<int> childLabels;
@@ -101,6 +98,8 @@ int main() {
         vector<int> c1 = findCenters(n, adj1);
         vector<int> c2 = findCenters(n, adj2);
 
+        // Số tâm khác nhau -> chắc chắn không đẳng cấu. Nếu bằng, chọn gốc cây 1
+        // tại tâm rồi thử từng tâm của cây 2 (tối đa 2) so mã băm rooted.
         bool ans = false;
         if (c1.size() == c2.size()) {
             int h1 = rootedLabel(n, adj1, c1[0]);

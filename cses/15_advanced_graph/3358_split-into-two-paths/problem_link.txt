@@ -1,2 +1,0 @@
-Split into Two Paths
-https://cses.fi/problemset/task/3358

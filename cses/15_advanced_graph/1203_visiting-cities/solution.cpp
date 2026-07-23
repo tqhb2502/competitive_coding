@@ -1,9 +1,3 @@
-// Visiting Cities - CSES 1203
-// https://cses.fi/problemset/task/1203
-//
-// Tìm tất cả thành phố bắt buộc đi qua trên MỌI đường đi ngắn nhất 1 -> n.
-// Dijkstra hai chiều -> shortest-path DAG -> sweep phủ đoạn (interval coverage).
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;

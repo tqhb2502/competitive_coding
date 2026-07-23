@@ -1,2 +1,0 @@
-Grid Paths II
-https://cses.fi/problemset/task/1078

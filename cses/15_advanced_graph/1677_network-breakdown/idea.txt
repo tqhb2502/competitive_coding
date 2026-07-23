@@ -1,18 +1,17 @@
-Bài toán: Network Breakdown (CSES 1677)
+Network Breakdown - CSES 1677
+https://cses.fi/problemset/task/1677
 
-Kỹ thuật: Offline + DSU (Union-Find) xử lý ngược (reverse-deletion).
-
-Đề bài:
+## Đề bài
 - Mạng gồm n máy tính và m kết nối (cạnh vô hướng, tối đa một kết nối giữa
   hai máy). Có k lần hỏng, mỗi lần hỏng làm mất một kết nối cụ thể (a, b).
-  Sau mỗi lần hỏng, in ra số thành phần liên thông (connected components)
+- Sau mỗi lần hỏng, in ra số thành phần liên thông (connected components)
   của mạng. In tất cả k kết quả trên một dòng, cách nhau bởi dấu cách.
 
-Ý tưởng chính:
+## Ý tưởng
+- Kỹ thuật: Offline + DSU (Union-Find) xử lý ngược (reverse-deletion).
 - Việc XÓA cạnh khỏi đồ thị rất khó xử lý trực tiếp với DSU (DSU chỉ hỗ trợ
   hợp nhất - union, không hỗ trợ tách). Vì tất cả truy vấn đều biết trước
   (offline), ta xử lý NGƯỢC THỜI GIAN: thêm cạnh lại chính là phép union.
-
 - Gọi trạng thái "sau lần hỏng thứ i" là đồ thị chứa toàn bộ m cạnh trừ đi
   các cạnh bị hỏng ở lần 1..i. Đặc biệt, "sau lần hỏng thứ k" là đồ thị
   chỉ còn các cạnh KHÔNG BAO GIỜ bị hỏng (gọi là base graph).
@@ -28,14 +27,13 @@ Kỹ thuật: Offline + DSU (Union-Find) xử lý ngược (reverse-deletion).
      quả cho "sau lần hỏng thứ i-1".
   4. In result[1..k] theo thứ tự xuôi.
 
-Vì sao đúng:
-- Trạng thái sau lần hỏng thứ (i-1) = trạng thái sau lần hỏng thứ i CỘNG
-  thêm đúng cạnh đã bị hỏng ở lần i. Do đó thêm cạnh đó vào DSU của trạng
-  thái sau lần i sẽ cho chính xác trạng thái sau lần i-1. Bắt đầu từ base
-  graph (trạng thái sau lần k) và thêm dần các cạnh theo thứ tự ngược, ta
-  khôi phục đúng số thành phần liên thông của mọi trạng thái.
+- Vì sao đúng: trạng thái sau lần hỏng thứ (i-1) = trạng thái sau lần hỏng
+  thứ i CỘNG thêm đúng cạnh đã bị hỏng ở lần i. Do đó thêm cạnh đó vào DSU
+  của trạng thái sau lần i sẽ cho chính xác trạng thái sau lần i-1. Bắt đầu
+  từ base graph (trạng thái sau lần k) và thêm dần các cạnh theo thứ tự
+  ngược, ta khôi phục đúng số thành phần liên thông của mọi trạng thái.
 
-Độ phức tạp:
+## Độ phức tạp
 - DSU với path compression + union by size: gần như O(1) trên mỗi thao tác
   (hệ số Ackermann ngược alpha). Tổng cộng O((n + m) * alpha) cho toàn bộ
   các phép union, cộng O(m) cho việc đọc và định danh cạnh (dùng

@@ -1,16 +1,16 @@
-Network Renovation (CSES 1704)
+Network Renovation - CSES 1704
 https://cses.fi/problemset/task/1704
 
-BÀI TOÁN
+## Đề bài
 Cho một cây (tree) gồm n đỉnh và n-1 cạnh. Mỗi cạnh của cây là một cầu (bridge):
 xóa một cạnh bất kỳ sẽ làm mạng bị chia cắt. Hãy thêm số cạnh MỚI ít nhất để đồ thị
 trở thành 2-edge-connected (2 liên thông cạnh), tức là mạng vẫn liên thông kể cả khi
 bất kỳ MỘT cạnh nào bị hỏng. In ra số cạnh cần thêm và danh sách các cạnh đó. Có thể
 có nhiều đáp án đúng (special judge chấp nhận mọi lời giải hợp lệ tối ưu).
 
-KỸ THUẬT: Tree augmentation to 2-edge-connectivity (định lý Eswaran-Tarjan).
+## Ý tưởng
+Kỹ thuật: Tree augmentation to 2-edge-connectivity (định lý Eswaran-Tarjan).
 
-Ý TƯỞNG CHÍNH
 1) Số cạnh tối thiểu cần thêm là ceil(L / 2), với L là số lá (leaf, đỉnh bậc 1) của cây.
    Lý do cận dưới: mỗi lá có duy nhất một cạnh nối với phần còn lại; cạnh này là cầu.
    Để "phủ" (làm hết cầu) cạnh treo của một lá, lá đó phải là đầu mút của ít nhất một
@@ -26,7 +26,7 @@ KỸ THUẬT: Tree augmentation to 2-edge-connectivity (định lý Eswaran-Tarj
      i = 0 .. m-1. Nếu cnt lẻ, nối thêm leaves[cnt-1] với leaves[0]. Tổng cộng đúng ceil(cnt/2)
      cạnh.
 
-CHỨNG MINH ĐÚNG (phủ hết mọi cầu)
+Chứng minh đúng (phủ hết mọi cầu):
 Xét một cạnh cây e = (cha, con). Xóa e tách cây thành 2 phần; tập lá nằm trong subtree của
 "con" là một đoạn liên tiếp leaves[a..b] có kích thước s. Vì root không phải lá và root là
 gốc (bậc >= 2 nên có >= 2 con), nên subtree của bất kỳ con nào cũng thiếu ít nhất lá của một
@@ -40,7 +40,7 @@ Trường hợp cnt lẻ, lá cuối cùng chưa được ghép; cạnh phụ (l
 đoạn còn hở (đặc biệt đoạn chỉ chứa lá cuối, hoặc đoạn chứa mọi lá đã ghép). Vậy mọi cầu đều
 được phủ => đồ thị trở thành 2-edge-connected.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Xây đồ thị + DFS: O(n).
 - In kết quả: O(L).
 Tổng: O(n) thời gian, O(n) bộ nhớ. Dùng DFS lặp (iterative stack) để tránh tràn stack với

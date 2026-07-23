@@ -1,12 +1,3 @@
-// Strongly Connected Edges — CSES 2177
-// https://cses.fi/problemset/task/2177
-//
-// Robbins' theorem: an undirected graph has a strongly connected orientation
-// iff it is connected and bridgeless (2-edge-connected).
-// Iterative DFS (Tarjan) to detect bridges + connectivity, and orient edges:
-//   tree edges parent -> child, back edges deeper -> ancestor.
-// Complexity: O(n + m).
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -14,6 +5,7 @@ int main() {
     int n, m;
     if (scanf("%d %d", &n, &m) != 2) return 0;
 
+    // Đọc và lưu danh sách cạnh vô hướng, đồng thời đếm bậc mỗi đỉnh.
     vector<int> eu(m), ev(m);
     vector<int> deg(n + 2, 0);
     for (int e = 0; e < m; e++) {
@@ -23,7 +15,7 @@ int main() {
         deg[a]++; deg[b]++;
     }
 
-    // CSR adjacency (undirected): store (neighbor, edge id).
+    // Dựng danh sách kề dạng CSR (vô hướng): mỗi cung lưu (đỉnh kề, id cạnh).
     vector<int> head(n + 2, 0);
     for (int i = 1; i <= n; i++) head[i + 1] = head[i] + deg[i];
     int totalArc = head[n + 1];
@@ -36,12 +28,15 @@ int main() {
         adjTo[pos[b]] = a; adjEdge[pos[b]] = e; pos[b]++;
     }
 
+    // disc[]: thời điểm thăm; low[]: đỉnh nhỏ nhất tới được (Tarjan phát hiện cầu).
     vector<int> disc(n + 1, 0), low(n + 1, 0);
-    // Oriented result per edge: outU[e] -> outV[e].
+    // Kết quả định hướng của mỗi cạnh: outU[e] -> outV[e].
     vector<int> outU(m), outV(m);
     int timer = 0;
     bool hasBridge = false;
 
+    // DFS lặp bằng stack tường minh (tránh tràn stack với n, m lớn).
+    // Mỗi frame lưu: đỉnh u, id cạnh cha pe, con trỏ quét danh sách kề ptr.
     struct Frame { int u; int pe; int ptr; };
     vector<Frame> st;
     st.reserve(n + 5);
@@ -54,43 +49,45 @@ int main() {
         int pe = st.back().pe;
         if (st.back().ptr < head[u + 1]) {
             int idx = st.back().ptr;
-            st.back().ptr++;             // advance BEFORE any push_back
+            st.back().ptr++;             // tăng con trỏ TRƯỚC mọi push_back
             int e = adjEdge[idx];
             int w = adjTo[idx];
-            if (e == pe) continue;       // skip the edge we came from
+            if (e == pe) continue;       // bỏ qua đúng cạnh vừa đi tới (cạnh cha)
             if (disc[w] == 0) {
-                // tree edge: orient parent -> child
+                // Cạnh cây: định hướng cha -> con
                 outU[e] = u; outV[e] = w;
                 disc[w] = low[w] = ++timer;
-                st.push_back({w, e, head[w]});   // invalidates refs; fine, done above
+                st.push_back({w, e, head[w]});   // đã tăng ptr ở trên nên an toàn
             } else if (disc[w] < disc[u]) {
-                // back edge going up: orient deeper -> ancestor
+                // Back edge đi lên: định hướng đỉnh sâu hơn -> tổ tiên
                 if (disc[w] < low[u]) low[u] = disc[w];
                 outU[e] = u; outV[e] = w;
             }
-            // else disc[w] > disc[u]: already oriented from w's (deeper) side
+            // else disc[w] > disc[u]: đã được định hướng từ phía w (sâu hơn)
         } else {
+            // Quét xong đỉnh u: cập nhật low của cha và kiểm tra cầu.
             int lu = low[u];
             st.pop_back();
             if (!st.empty()) {
                 int p = st.back().u;
                 if (lu < low[p]) low[p] = lu;
-                if (lu > disc[p]) hasBridge = true;   // tree edge (p,u) is a bridge
+                if (lu > disc[p]) hasBridge = true;   // cạnh cây (p,u) là cầu
             }
         }
     }
 
-    // Connectivity: every node must have been visited.
+    // Kiểm tra liên thông: mọi đỉnh đều phải được thăm.
     bool connected = true;
     for (int i = 1; i <= n && connected; i++)
         if (disc[i] == 0) connected = false;
 
+    // Theo định lý Robbins: có cầu hoặc không liên thông => vô nghiệm.
     if (!connected || hasBridge) {
         printf("IMPOSSIBLE\n");
         return 0;
     }
 
-    // Output oriented edges (input order; any order is accepted by the judge).
+    // In các cạnh đã định hướng theo thứ tự đầu vào (special judge chấp nhận mọi thứ tự).
     string out;
     out.reserve((size_t)m * 12);
     char buf[32];

@@ -1,16 +1,9 @@
-// MST Edge Cost - CSES 3409
-// https://cses.fi/problemset/task/3409
-//
-// Với mỗi cạnh, tính chi phí MST bắt buộc chứa cạnh đó.
-// ans(e=(a,b,w)) = T + w - maxEdgeOnPath(a,b trên MST),
-// với T là tổng trọng số của một MST bất kỳ.
-// Dùng Kruskal + Binary Lifting (LCA) để truy vấn cạnh lớn nhất trên đường đi.
-
 #include <bits/stdc++.h>
 using namespace std;
 
 static const int LOG = 17;
 
+// DSU (union-find) với path halving để chạy Kruskal.
 int par[100005];
 int findp(int x) {
     while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
@@ -74,6 +67,8 @@ int main() {
         }
     }
 
+    // Nạp bảng nhảy: up[v][k] = tổ tiên cách v đúng 2^k bước;
+    // mx[v][k] = trọng số cạnh lớn nhất trên đoạn nhảy đó.
     for (int k = 1; k < LOG; k++) {
         for (int v = 1; v <= n; v++) {
             int mid = up[v][k - 1];
@@ -108,6 +103,7 @@ int main() {
     };
 
     // --- Trả lời từng cạnh theo thứ tự nhập ---
+    // Công thức: ans(e) = T + w - (cạnh lớn nhất trên đường a..b của MST).
     string out;
     out.reserve((size_t)m * 8);
     char buf[24];

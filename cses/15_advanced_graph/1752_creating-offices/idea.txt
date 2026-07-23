@@ -1,52 +1,50 @@
-CREATING OFFICES - CSES 1752
+Creating Offices - CSES 1752
+https://cses.fi/problemset/task/1752
 
-ĐỀ BÀI (tóm tắt)
-Cho cây n đỉnh. Chọn nhiều đỉnh nhất sao cho khoảng cách giữa hai đỉnh
-được chọn bất kỳ không nhỏ hơn d, đồng thời in ra một tập tối ưu.
-Ràng buộc n,d <= 2*10^5.
+## Đề bài
+Cho cây n đỉnh. Hãy chọn nhiều đỉnh nhất có thể sao cho khoảng cách giữa
+hai đỉnh được chọn bất kỳ không nhỏ hơn d, đồng thời in ra một tập tối ưu.
+Ràng buộc n, d <= 2*10^5. Luôn tồn tại nghiệm (ít nhất một đỉnh), nên không
+có trường hợp vô nghiệm.
 
-GREEDY TỐI ƯU
-Root cây tại đỉnh 1 và xét các đỉnh theo độ sâu giảm dần. Chọn đỉnh v
-nếu khoảng cách từ v tới mọi văn phòng đã chọn đều >=d.
+## Ý tưởng
+Dùng greedy kết hợp centroid decomposition.
 
-Để thấy greedy tối ưu, xét v là đỉnh sâu nhất còn hợp lệ. Mọi hai
-đỉnh x,y còn hợp lệ và có dist(v,x),dist(v,y)<d phải có dist(x,y)<d:
+Greedy: root cây tại đỉnh 1 và xét các đỉnh theo độ sâu giảm dần. Chọn đỉnh
+v nếu khoảng cách từ v tới mọi văn phòng đã chọn đều >= d.
 
-- Đặt a=LCA(v,x), b=LCA(v,y), và giả sử a không cao hơn b.
-- Gọi alpha=depth(v)-depth(a), beta=depth(x)-depth(a). Vì v sâu nhất
-  nên beta<=alpha.
-- Gọi gamma=depth(v)-depth(b), delta=depth(y)-depth(b). Lộ trình
-  x -> a -> b -> y dài beta+(gamma-alpha)+delta, không quá
-  gamma+delta=dist(v,y)<d; do đó dist(x,y)<d.
+Để thấy greedy tối ưu, xét v là đỉnh sâu nhất còn hợp lệ. Mọi hai đỉnh x, y
+còn hợp lệ và có dist(v,x), dist(v,y) < d phải có dist(x,y) < d:
+- Đặt a = LCA(v,x), b = LCA(v,y), và giả sử a không cao hơn b.
+- Gọi alpha = depth(v) - depth(a), beta = depth(x) - depth(a). Vì v sâu nhất
+  nên beta <= alpha.
+- Gọi gamma = depth(v) - depth(b), delta = depth(y) - depth(b). Lộ trình
+  x -> a -> b -> y dài beta + (gamma - alpha) + delta, không quá
+  gamma + delta = dist(v,y) < d; do đó dist(x,y) < d.
 
-Vì thế một nghiệm hợp lệ chứa nhiều nhất một đỉnh trong bán kính
-d-1 quanh v. Trong một nghiệm tối ưu, nếu bán kính này chưa có đỉnh thì
-ta thêm v; nếu có một đỉnh thì đổi nó thành v. Phép đổi không thể
-tạo xung đột với đỉnh nào nằm ngoài bán kính. Do đó luôn tồn tại
-nghiệm tối ưu chứa lựa chọn greedy; quy nạp chứng minh toàn bộ tập in ra
-có số lượng lớn nhất.
+Vì thế một nghiệm hợp lệ chứa nhiều nhất một đỉnh trong bán kính d-1 quanh v.
+Trong một nghiệm tối ưu, nếu bán kính này chưa có đỉnh thì ta thêm v; nếu đã
+có một đỉnh thì đổi nó thành v. Phép đổi không thể tạo xung đột với đỉnh nào
+nằm ngoài bán kính. Do đó luôn tồn tại nghiệm tối ưu chứa lựa chọn greedy;
+quy nạp chứng minh toàn bộ tập in ra có số lượng lớn nhất.
 
-DUY TRÌ KHOẢNG CÁCH BẰNG CENTROID DECOMPOSITION
-BFS lại trong bán kính d-1 sau mỗi lần chọn có thể lặp lại rất nhiều công
-việc và gây TLE. Thay vào đó, phân rã cây theo centroid.
+Duy trì khoảng cách bằng centroid decomposition: BFS lại trong bán kính d-1
+sau mỗi lần chọn có thể lặp lại rất nhiều công việc và gây TLE. Thay vào đó,
+phân rã cây theo centroid. Với mỗi đỉnh v, lưu centroid c và dist(v,c) ở từng
+tầng phân rã. Mỗi centroid c còn có best[c]: khoảng cách nhỏ nhất từ c tới
+một văn phòng đã chọn.
+- add(v): với mọi centroid ancestor c, gán best[c] = min(best[c], dist(v,c)).
+- query(v): lấy min(best[c] + dist(v,c)) qua mọi centroid ancestor c.
 
-Với mỗi đỉnh v, lưu centroid c và dist(v,c) ở từng tầng phân rã. Mỗi
-đỉnh còn có best[c]: khoảng cách nhỏ nhất từ c tới một văn phòng đã
-chọn.
+Mọi tổng trong query là cận trên của khoảng cách thật theo bất đẳng thức tam
+giác. Ở centroid đầu tiên tách v và văn phòng gần nhất, đường đi giữa chúng đi
+qua centroid đó, nên dấu bằng đạt được. Vì vậy query trả về chính xác khoảng
+cách tới văn phòng gần nhất.
 
-- add(v): với mọi centroid ancestor c, gán
-  best[c] = min(best[c], dist(v,c)).
-- query(v): lấy min(best[c]+dist(v,c)) qua mọi centroid ancestor c.
+Cài đặt: cả việc root cây và centroid decomposition đều dùng stack/vector lặp,
+tránh tràn stack trên cây dạng đường thẳng. Danh sách centroid ancestor được
+lưu trong bảng tĩnh 20 tầng vì mỗi lần kích thước thành phần giảm ít nhất một
+nửa.
 
-Mọi tổng trong query là cận trên của khoảng cách thật theo bất đẳng thức
-tam giác. Ở centroid đầu tiên tách v và văn phòng gần nhất, đường đi
-giữa chúng đi qua centroid đó, nên dấu bằng đạt được. Vì vậy query
-trả về chính xác khoảng cách tới văn phòng gần nhất.
-
-CÀI ĐẶT
-Cả việc root cây và centroid decomposition đều dùng stack/vector lặp, tránh
-tràn stack trên cây dạng đường thẳng. Danh sách centroid ancestor được lưu
-trong bảng tĩnh 20 tầng vì mỗi lần kích thước thành phần giảm ít nhất một nửa.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 O(n log n) thời gian và O(n log n) bộ nhớ. Mỗi add/query tốn O(log n).

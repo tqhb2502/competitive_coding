@@ -1,14 +1,7 @@
-// Tree Coin Collecting I - CSES 3114
-// https://cses.fi/problemset/task/3114
-//
-// Answer(a,b) = dist_tree(a,b) + 2 * min_{v on path(a,b)} nearestCoin(v)
-//   nearestCoin(v): khoảng cách từ v tới coin gần nhất (multi-source BFS).
-//   dist_tree & path-min: binary lifting (LCA) có lưu thêm min trên đoạn 2^k.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// ---- fast input ----
+// Đọc số nguyên nhanh bằng buffer tự quản lý
 static char ibuf[1 << 23];
 static int ilen = 0, ipos = 0;
 static inline int gc() {
@@ -33,16 +26,17 @@ const int LOG = 18;      // 2^18 = 262144 > 2e5
 const int INF = 1e9;
 
 int N;
-vector<int> adj_head, adj_nxt, adj_to; // CSR-like adjacency via linked list
+// Danh sách kề dạng linked-list (đầu danh sách, con trỏ kế, đỉnh đích)
+vector<int> adj_head, adj_nxt, adj_to;
 int edgeCnt = 0;
 inline void addEdge(int u, int v) {
     adj_to[edgeCnt] = v; adj_nxt[edgeCnt] = adj_head[u]; adj_head[u] = edgeCnt++;
 }
 
-int nd[200005];                 // nearest coin distance
-int par[200005], dep[200005];
-int up[LOG][200005];
-int minf[LOG][200005];
+int nd[200005];                 // nearestCoin: khoảng cách từ đỉnh tới đồng xu gần nhất
+int par[200005], dep[200005];   // cha và độ sâu của mỗi đỉnh
+int up[LOG][200005];            // binary lifting: tổ tiên thứ 2^k
+int minf[LOG][200005];          // min nearestCoin trên đoạn 2^k đỉnh tính từ v đi lên
 
 int main() {
     int n = readInt(), q = readInt();
@@ -59,7 +53,8 @@ int main() {
         addEdge(b, a);
     }
 
-    // ---- multi-source BFS: nearest coin distance ----
+    // Multi-source BFS (BFS đa nguồn): xuất phát đồng thời từ mọi đỉnh có đồng xu
+    // để tính nearestCoin cho tất cả các đỉnh trong O(n)
     for (int i = 1; i <= n; i++) nd[i] = INF;
     {
         vector<int> Q;
@@ -74,7 +69,7 @@ int main() {
         }
     }
 
-    // ---- BFS build parent/depth from root 1 (iterative, no recursion) ----
+    // BFS dựng cha và độ sâu từ gốc 1 (lặp, không đệ quy để tránh tràn stack)
     {
         vector<char> vis(n + 1, 0);
         vector<int> Q;
@@ -89,8 +84,7 @@ int main() {
         }
     }
 
-    // ---- binary lifting tables ----
-    // node 0 = sentinel: up->0, minf->INF, nd->INF
+    // Dựng bảng binary lifting; đỉnh 0 là sentinel: up->0, minf->INF, nd->INF
     nd[0] = INF;
     for (int u = 1; u <= n; u++) { up[0][u] = par[u]; minf[0][u] = nd[u]; }
     up[0][0] = 0; minf[0][0] = INF;
@@ -102,6 +96,7 @@ int main() {
         }
     }
 
+    // LCA bằng binary lifting: cân bằng độ sâu rồi cùng leo lên
     auto lca = [&](int a, int b) -> int {
         if (dep[a] < dep[b]) swap(a, b);
         int diff = dep[a] - dep[b];
@@ -111,7 +106,7 @@ int main() {
         return up[0][a];
     };
 
-    // min nearestCoin over the (steps+1) nodes: v, par(v), ..., ancestor at distance `steps`
+    // min nearestCoin trên (steps+1) đỉnh: v, par(v), ..., tổ tiên cách v `steps` bước
     auto climbMin = [&](int v, int steps) -> int {
         int cnt = steps + 1;
         int res = INF;
@@ -122,7 +117,7 @@ int main() {
         return res;
     };
 
-    // ---- answer queries ----
+    // Trả lời truy vấn: đáp án = dist_tree(a, b) + 2 * min nearestCoin trên path(a, b)
     string out;
     out.reserve((size_t)q * 7);
     char tmp[24];
@@ -130,6 +125,7 @@ int main() {
         int a = readInt(), b = readInt();
         int L = lca(a, b);
         long long dist = (long long)dep[a] + dep[b] - 2LL * dep[L];
+        // Tách path a-b thành a->LCA và b->LCA, lấy min nearestCoin trên cả hai nửa
         int m = min(climbMin(a, dep[a] - dep[L]), climbMin(b, dep[b] - dep[L]));
         long long ans = dist + 2LL * m;
         int len = sprintf(tmp, "%lld\n", ans);

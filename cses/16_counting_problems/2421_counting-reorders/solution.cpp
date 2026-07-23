@@ -10,10 +10,11 @@ constexpr int MAX_N = 5000;
 
 long long factorial[MAX_N + 1];
 long long inverseFactorial[MAX_N + 1];
-long long ways[MAX_N + 1];
-long long nextWays[MAX_N + 1];
-long long blockWays[MAX_N + 1];
+long long ways[MAX_N + 1];      // dp: ways[B] = tổng tích P_c[b_i] trên các cách có B khối
+long long nextWays[MAX_N + 1];  // dp tạm khi nhân thêm một đa thức của chữ cái mới
+long long blockWays[MAX_N + 1]; // P_c[b] = C(c-1, b-1) / b! của chữ đang xét
 
+// Lũy thừa nhanh theo modulo (dùng để lấy nghịch đảo qua định lý Fermat).
 long long modPow(long long base, long long exponent) {
     long long result = 1;
     while (exponent > 0) {
@@ -34,11 +35,13 @@ int main() {
     cin >> input;
     const int n = static_cast<int>(input.size());
 
+    // Đếm tần suất của từng chữ cái thường.
     array<int, 26> frequency{};
     for (char letter : input) {
         ++frequency[static_cast<size_t>(letter - 'a')];
     }
 
+    // Tiền xử lý giai thừa và nghịch đảo giai thừa.
     factorial[0] = 1;
     inverseFactorial[0] = 1;
     for (int i = 1; i <= n; ++i) {
@@ -49,6 +52,7 @@ int main() {
         inverseFactorial[i - 1] = inverseFactorial[i] * i % MOD;
     }
 
+    // Tổ hợp C(total, chosen) theo modulo.
     const auto combination = [&](int total, int chosen) -> long long {
         if (chosen < 0 || chosen > total) {
             return 0;
@@ -58,18 +62,21 @@ int main() {
     };
 
     ways[0] = 1;
-    int used = 0;
+    int used = 0; // tổng số khối đã tích lũy từ các chữ đã xử lý
 
+    // Nhân dần đa thức khối của từng chữ cái vào dp.
     for (int count : frequency) {
         if (count == 0) {
             continue;
         }
 
+        // Hệ số của chữ hiện tại: chia c bản sao thành b khối rồi chia cho b!.
         for (int blocks = 1; blocks <= count; ++blocks) {
             blockWays[blocks] = combination(count - 1, blocks - 1)
                                 * inverseFactorial[blocks] % MOD;
         }
 
+        // Tích chập: gộp số khối cũ với số khối của chữ hiện tại.
         fill(nextWays, nextWays + used + count + 1, 0);
         for (int oldBlocks = 0; oldBlocks <= used; ++oldBlocks) {
             if (ways[oldBlocks] == 0) {
@@ -88,6 +95,7 @@ int main() {
         copy(nextWays, nextWays + used + 1, ways);
     }
 
+    // Bao hàm - loại trừ: cộng B! * dp[B] với dấu (-1)^(n-B).
     long long answer = 0;
     for (int blocks = 1; blocks <= n; ++blocks) {
         const long long term = ways[blocks] * factorial[blocks] % MOD;

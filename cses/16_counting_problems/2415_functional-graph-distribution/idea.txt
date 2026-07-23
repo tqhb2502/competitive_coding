@@ -1,42 +1,41 @@
-FUNCTIONAL GRAPH DISTRIBUTION - CSES 2415
+Functional Graph Distribution - CSES 2415
+https://cses.fi/problemset/task/2415
 
-ĐỀ BÀI (tóm tắt)
-Với mỗi k=1..n, đếm số đồ thị hàm có n đỉnh gắn nhãn và đúng k thành phần liên
-thông. Mỗi đỉnh có đúng một cạnh đi ra. In modulo 10^9+7.
+## Đề bài
+Với mỗi k = 1..n, đếm số đồ thị hàm có n đỉnh gắn nhãn và đúng k thành phần liên
+thông. Đồ thị hàm là đồ thị mà mỗi đỉnh có đúng một cạnh đi ra. In kết quả theo
+modulo 10^9 + 7.
 Ràng buộc: n <= 5000.
 
-CẤU TRÚC VÀ HÀM SINH
-Mỗi thành phần của đồ thị hàm gồm một chu trình có hướng; tại mỗi đỉnh chu trình
-là một cây có gốc, với các cạnh hướng dần về gốc.
+## Ý tưởng
+Mỗi thành phần của đồ thị hàm gồm một chu trình có hướng; tại mỗi đỉnh của chu
+trình treo một cây có gốc với các cạnh hướng dần về gốc.
 
-Gọi T(x) là hàm sinh mũ của cây có gốc gắn nhãn. Công thức cây cổ điển cho ta
+Gọi T(x) là hàm sinh mũ của cây có gốc gắn nhãn, thoả công thức cây cổ điển
     T = x * exp(T).
-Một thành phần là một chu trình của các cây, nên hàm sinh của một thành phần là
-    C(x) = sum_{l>=1} T(x)^l/l = -log(1-T(x)).
-Một đồ thị là một tập các thành phần. Đánh dấu mỗi thành phần bởi y:
-    F(x,y) = exp(y*C(x)) = (1-T(x))^(-y).
-Số cần tìm là n! nhân hệ số [x^n y^k] F.
+Một thành phần là một chu trình của các cây nên hàm sinh của một thành phần là
+    C(x) = sum_{l>=1} T(x)^l / l = -log(1 - T(x)).
+Một đồ thị là một tập các thành phần; đánh dấu mỗi thành phần bằng biến y:
+    F(x, y) = exp(y * C(x)) = (1 - T(x))^(-y).
+Đáp án cho từng k là n! nhân với hệ số [x^n y^k] của F.
 
-ĐẢO LAGRANGE
-Vì T=x*exp(T), công thức Lagrange cho H(T), với H(t)=(1-t)^(-y), là
-  [x^n] H(T(x))
-    = y/n * [t^(n-1)] exp(n*t) (1-t)^(-y-1)
-    = y/n * sum_{r=0}^{n-1}
-        n^(n-1-r)/(n-1-r)! * binom(y+r,r).
+Dùng đảo Lagrange (Lagrange inversion) với T = x * exp(T) cho H(t) = (1 - t)^(-y):
+    [x^n] H(T(x))
+        = y/n * [t^(n-1)] exp(n*t) (1 - t)^(-y-1)
+        = y/n * sum_{r=0}^{n-1} n^(n-1-r)/(n-1-r)! * binom(y+r, r).
+Sau khi nhân n!, đa thức đáp án theo y là
+    (n-1)! * y * sum_r w_r * Q_r(y),
+với
+    w_r    = n^(n-1-r)/(n-1-r)!    (trọng số weight),
+    Q_r(y) = binom(y+r, r).
 
-Sau khi nhân n!, đa thức đáp án là
-  (n-1)! * y * sum_r w_r Q_r(y),
-trong đó
-  w_r = n^(n-1-r)/(n-1-r)!,
-  Q_r(y) = binom(y+r,r).
+Xây các hệ số của Q_r theo quan hệ truy hồi
+    Q_0(y) = 1,
+    Q_{r+1}(y) = Q_r(y) * (y + r + 1)/(r + 1).
+Nếu q[d] là hệ số của y^d trong Q_r thì khi cập nhật (duyệt bậc giảm dần):
+    q_mới[d] = q_cũ[d] + q_cũ[d-1]/(r+1).
+Ở mỗi r, cộng w_r * q[d] vào đa thức tổng. Cuối cùng thừa số y làm dịch bậc lên
+một (nên hệ số y^k lấy từ vị trí k-1) và nhân thêm (n-1)!.
 
-Ta xây lần lượt các hệ số của Q_r bằng
-  Q_0(y)=1,
-  Q_{r+1}(y)=Q_r(y)*(y+r+1)/(r+1).
-Nếu q[d] là hệ số y^d của Q_r thì khi cập nhật giảm dần:
-  q_mới[d] = q_cũ[d] + q_cũ[d-1]/(r+1).
-Ở mỗi r, cộng w_r*q[d] vào đa thức tổng. Cuối cùng dịch bậc thêm một do thừa
-số y và nhân (n-1)!.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 Thời gian O(n^2), bộ nhớ O(n).

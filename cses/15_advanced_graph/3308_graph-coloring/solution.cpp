@@ -1,10 +1,3 @@
-// Graph Coloring - CSES 3308
-// https://cses.fi/problemset/task/3308
-//
-// Tìm chromatic number (số màu ít nhất) của đồ thị đơn với n <= 16.
-// Subset DP: mỗi lớp màu là một independent set; dp[S] = số màu ít nhất
-// để tô đúng tập đỉnh S. Truy vết để xuất cách tô cụ thể.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -12,7 +5,8 @@ int main() {
     int n, m;
     if (scanf("%d %d", &n, &m) != 2) return 0;
 
-    vector<int> adj(n, 0); // adj[v] = bitmask các đỉnh kề v
+    // adj[v] = bitmask các đỉnh kề với đỉnh v
+    vector<int> adj(n, 0);
     for (int i = 0; i < m; i++) {
         int a, b;
         scanf("%d %d", &a, &b);
@@ -25,7 +19,9 @@ int main() {
 
     int full = (1 << n) - 1;
 
-    // indep[S] = true nếu S là independent set (không có cạnh trong S)
+    // indep[S] = true nếu S là independent set (không có cạnh nằm trong S).
+    // Tính tăng dần: tách bit thấp nhất v, S độc lập khi phần còn lại độc lập
+    // và v không kề đỉnh nào khác trong S.
     vector<char> indep(1 << n, 0);
     indep[0] = 1;
     for (int S = 1; S <= full; S++) {
@@ -33,13 +29,16 @@ int main() {
         indep[S] = indep[S ^ (1 << v)] && ((adj[v] & S) == 0);
     }
 
+    // dp[S] = số màu ít nhất để tô đúng tập đỉnh S.
+    // choice[S] = lớp màu (independent set) được chọn để truy vết.
     const int INF = 1e9;
     vector<int> dp(1 << n, INF), choice(1 << n, 0);
     dp[0] = 0;
     for (int S = 1; S <= full; S++) {
-        int low = S & (-S);                // giữ bit thấp nhất
+        int low = S & (-S);                // giữ lại bit thấp nhất của S
         int rest = S ^ low;
-        // duyệt mọi tập con của S có chứa 'low'
+        // duyệt mọi tập con của S có chứa 'low' làm lớp màu ứng viên T;
+        // đỉnh low luôn phải thuộc một lớp màu nên chỉ cần xét các T chứa nó
         for (int sub = rest; ; sub = (sub - 1) & rest) {
             int T = sub | low;             // lớp màu ứng viên (chứa low)
             if (indep[T] && dp[S ^ T] + 1 < dp[S]) {
@@ -50,7 +49,7 @@ int main() {
         }
     }
 
-    // Truy vết cách tô màu
+    // Truy vết cách tô: mỗi lớp màu choice[S] được gán một màu mới
     vector<int> color(n, 0);
     int S = full, c = 0;
     while (S) {

@@ -6,15 +6,18 @@ using namespace std;
 constexpr int MOD = 1'000'000'007;
 constexpr int MAX_N = 500;
 
+// Vị trí A/B của mỗi hàng và mỗi cột (-1 nghĩa là chưa có).
 int rowA[MAX_N];
 int rowB[MAX_N];
 int columnA[MAX_N];
 int columnB[MAX_N];
 long long factorial[MAX_N + 1];
 long long inverseFactorial[MAX_N + 1];
+// Các tổng con SA[u], SB[u] theo số sự kiện trùng u (xem idea.txt).
 long long remainingA[MAX_N + 1];
 long long remainingB[MAX_N + 1];
 
+// Luỹ thừa nhanh theo modulo, dùng để lấy nghịch đảo qua Fermat.
 long long modPow(long long base, long long exponent) {
     long long result = 1;
     while (exponent > 0) {
@@ -41,6 +44,7 @@ int main() {
     int placedA = 0;
     int placedB = 0;
 
+    // Đọc lưới và ghi lại vị trí các chữ cái A, B đã cho trước.
     for (int row = 0; row < n; ++row) {
         char line[MAX_N + 1];
         cin >> line;
@@ -57,10 +61,11 @@ int main() {
         }
     }
 
-    int rowsFreeForBoth = 0;
-    int columnsFreeForBoth = 0;
-    int fixedAOverlapChoices = 0;
-    int fixedBOverlapChoices = 0;
+    // Phân loại các sự kiện trùng ô (A và B cùng một ô) theo ba loại.
+    int rowsFreeForBoth = 0;      // x: hàng chưa có cả A lẫn B
+    int columnsFreeForBoth = 0;   // y: cột chưa có cả A lẫn B
+    int fixedAOverlapChoices = 0; // zA: hàng có A, cột của A chưa có B
+    int fixedBOverlapChoices = 0; // zB: hàng có B, cột của B chưa có A
 
     for (int row = 0; row < n; ++row) {
         if (rowA[row] == -1 && rowB[row] == -1) {
@@ -80,6 +85,7 @@ int main() {
         }
     }
 
+    // Tiền xử lý giai thừa và nghịch đảo giai thừa để tính tổ hợp nCr.
     factorial[0] = 1;
     inverseFactorial[0] = 1;
     for (int i = 1; i <= n; ++i) {
@@ -98,10 +104,13 @@ int main() {
                * inverseFactorial[total - chosen] % MOD;
     };
 
+    // Số A, số B còn phải điền và số sự kiện trùng tối đa của loại K(x, y).
     const int missingA = n - placedA;
     const int missingB = n - placedB;
     const int maxCommon = min(rowsFreeForBoth, columnsFreeForBoth);
     for (int common = 0; common <= maxCommon; ++common) {
+        // SA[common]: tổng bao hàm - loại trừ trên các sự kiện cô lập loại zB,
+        // phần còn lại của hoán vị A là (missingA - common - chosen)!.
         for (int chosen = 0;
              chosen <= fixedBOverlapChoices && chosen + common <= missingA;
              ++chosen) {
@@ -120,6 +129,8 @@ int main() {
             }
         }
 
+        // SB[common]: tương tự cho các sự kiện cô lập loại zA, phần còn lại của
+        // hoán vị B là (missingB - common - chosen)!.
         for (int chosen = 0;
              chosen <= fixedAOverlapChoices && chosen + common <= missingB;
              ++chosen) {
@@ -139,8 +150,11 @@ int main() {
         }
     }
 
+    // Cộng dồn kết quả: tổng theo common của
+    //   (-1)^common * C(x, common) * C(y, common) * common! * SA * SB.
     long long answer = 0;
     for (int common = 0; common <= maxCommon; ++common) {
+        // Số cách chọn common sự kiện đôi một khác hàng/khác cột trong K(x, y).
         long long matchings = combination(rowsFreeForBoth, common);
         matchings = matchings * combination(columnsFreeForBoth, common) % MOD;
         matchings = matchings * factorial[common] % MOD;

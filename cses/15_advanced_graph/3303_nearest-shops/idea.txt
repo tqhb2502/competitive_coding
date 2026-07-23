@@ -1,14 +1,14 @@
-Bài: Nearest Shops (CSES 3303)
+Nearest Shops - CSES 3303
+https://cses.fi/problemset/task/3303
 
-Đề bài:
+## Đề bài
 - Có n thành phố, m con đường vô hướng (không trọng số), k thành phố có shop.
-- Với mỗi thành phố, in ra khoảng cách ngắn nhất tới shop ở một thành phố KHÁC
+- Với mỗi thành phố, in ra khoảng cách ngắn nhất tới một shop nằm ở thành phố KHÁC
   (khác chính nó). Nếu không tới được shop nào khác thì in -1.
 - Ràng buộc: 1 <= k <= n <= 1e5, 0 <= m <= 2e5.
 
-Kỹ thuật: Multi-source BFS với "top-2 nhãn (label) khác nhau".
-
-Ý tưởng chính:
+## Ý tưởng
+- Kỹ thuật: BFS đa nguồn (multi-source BFS) lưu "top-2 nhãn (label) khác nhau".
 - Mỗi thành phố có shop là một nguồn BFS, mang NHÃN chính là id của nó.
 - Chạy BFS đa nguồn trên đồ thị vô hướng không trọng số (mọi cạnh trọng số 1).
 - Với mỗi đỉnh v ta lưu HAI khoảng cách nhỏ nhất tới các nguồn có NHÃN KHÁC NHAU:
@@ -37,6 +37,6 @@ Tính đúng đắn:
 - Với đỉnh có shop, d1 = 0 tương ứng chính nó nên loại bằng cách lấy d2 (nhãn khác);
   với đỉnh không shop nhãn gần nhất đã tự động khác id của nó.
 
-Độ phức tạp:
+## Độ phức tạp
 - Mỗi đỉnh chỉ được "ghi" tối đa 2 lần, mỗi lần lan sang các đỉnh kề, nên tổng số
   trạng thái là O(m). Tổng thể O(n + m) thời gian, O(n + m) bộ nhớ.

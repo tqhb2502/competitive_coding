@@ -1,29 +1,36 @@
-Bài toán: Counting Bishops (CSES 2176)
+Counting Bishops - CSES 2176
 
-Một tượng luôn đứng trên các ô cùng màu trong suốt đường đi, nên các tượng ở ô
-đen không bao giờ tấn công tượng ở ô trắng. Ta đếm độc lập trên hai màu rồi chập
-hai kết quả.
+https://cses.fi/problemset/task/2176
 
-Xét các đường chéo theo một hướng. Mọi ô trên cùng một đường chéo có cùng màu.
-Với mỗi màu, thu thập độ dài các đường chéo và sắp xếp tăng dần.
+## Đề bài
+Cho bàn cờ n*n, đếm số cách đặt k quân tượng sao cho không có hai quân nào
+tấn công nhau. Hai quân tượng tấn công nhau nếu cùng nằm trên một đường chéo.
+In kết quả theo modulo 1e9+7.
 
-Đặt dp[j] là số cách đặt j tượng sau khi xử lý một số đường chéo của màu đang
-xét. Khi xử lý đường chéo có L ô:
+## Ý tưởng
+Một quân tượng luôn di chuyển trên các ô cùng màu, nên tượng ở ô đen không bao
+giờ tấn công tượng ở ô trắng. Ta đếm độc lập trên hai màu rồi chập hai kết quả.
 
-- Không đặt tượng trên đường chéo mới: giữ dp[j].
-- Đặt tượng thứ j trên đó: j-1 tượng cũ đã chiếm j-1 đường chéo theo hướng còn
-  lại. Nhờ xử lý các độ dài theo thứ tự tăng dần, mỗi đường chéo bị chiếm cắt
-  đường chéo hiện tại tại một ô hợp lệ. Còn L-(j-1) ô để chọn.
+Xét các đường chéo theo một hướng (theo tổng chỉ số hàng cộng cột). Mọi ô trên
+cùng một đường chéo có cùng màu. Với mỗi màu, thu thập độ dài các đường chéo và
+sắp xếp tăng dần.
 
-Do đó, cập nhật j giảm dần:
+Đặt dp[j] là số cách đặt j quân tượng sau khi đã xử lý một số đường chéo của
+màu đang xét. Khi xử lý đường chéo có L ô, cập nhật j giảm dần:
+
+- Không đặt tượng trên đường chéo mới: giữ nguyên dp[j].
+- Đặt quân tượng thứ j trên đó: j-1 quân cũ đã chiếm j-1 đường chéo theo hướng
+  còn lại. Nhờ xử lý các độ dài theo thứ tự tăng dần, mỗi đường chéo bị chiếm
+  cắt đường chéo hiện tại tại đúng một ô hợp lệ, nên còn L-(j-1) ô để chọn:
 
     dp[j] += dp[j-1] * (L-j+1).
 
 Gọi black[i], white[j] là kết quả của hai màu. Đáp án là:
 
-    sum black[i] * white[k-i].
+    tổng black[i] * white[k-i].
 
-Trên bàn n*n, số tượng không tấn công nhau tối đa là 1 nếu n=1, và 2n-2 nếu
-n>1. Nếu k vượt giới hạn này có thể trả lời 0 ngay.
+Trên bàn n*n, số quân tượng không tấn công nhau tối đa là 1 khi n=1, và 2n-2
+khi n>1. Nếu k vượt giới hạn này có thể trả lời 0 ngay.
 
-Độ phức tạp: O(n*k) thời gian, O(k) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n*k), bộ nhớ O(k).

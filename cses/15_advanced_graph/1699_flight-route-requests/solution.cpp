@@ -1,23 +1,15 @@
-// Flight Route Requests - CSES 1699
-// https://cses.fi/problemset/task/1699
-//
-// Ta được xây cạnh có hướng TÙY Ý. Với mỗi yêu cầu (a,b) chỉ cần b reachable từ a.
-// Xét từng weakly-connected component (WCC) của đồ thị yêu cầu:
-//   - Nếu WCC acyclic (DAG): cần V_c - 1 cạnh (đường đi Hamilton theo thứ tự topo).
-//   - Nếu WCC có chu trình có hướng: cần V_c cạnh (chu trình Hamilton bao phủ tất cả).
-// Đáp án = tổng (V_c - [WCC là DAG]) trên mỗi WCC.
-// Cài đặt: DSU cho WCC + Kahn's topo sort để phát hiện chu trình. O(n + m).
-
 #include <bits/stdc++.h>
 using namespace std;
 
 static const int MAXN = 100005;
 int par[MAXN], sz_[MAXN];
 
+// DSU: tìm gốc của thành phần chứa x (nén đường đi)
 int findp(int x) {
     while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
     return x;
 }
+// DSU: hợp nhất hai thành phần theo kích thước
 void uni(int a, int b) {
     a = findp(a); b = findp(b);
     if (a == b) return;
@@ -30,8 +22,8 @@ int main() {
     int n, m;
     if (scanf("%d %d", &n, &m) != 2) return 0;
 
-    vector<vector<int>> adj(n + 1);      // cạnh có hướng a -> b (cho Kahn)
-    vector<int> indeg(n + 1, 0);
+    vector<vector<int>> adj(n + 1);      // cạnh có hướng a -> b (dùng cho Kahn)
+    vector<int> indeg(n + 1, 0);         // bậc vào của mỗi đỉnh
     vector<char> appears(n + 1, 0);      // đỉnh có xuất hiện trong yêu cầu (a != b)
     vector<pair<int,int>> edges;
     edges.reserve(m);
@@ -48,14 +40,16 @@ int main() {
         appears[a] = appears[b] = 1;
     }
 
-    // DSU: tạo các weakly-connected component
+    // DSU: gộp mọi yêu cầu để tạo các weakly-connected component (WCC)
     for (auto &e : edges) uni(e.first, e.second);
 
-    // Kahn's topological sort (lặp, không đệ quy)
+    // Kahn's topological sort (lặp, không đệ quy): khởi tạo hàng đợi bằng các
+    // đỉnh có xuất hiện và bậc vào bằng 0
     queue<int> q;
     for (int v = 1; v <= n; v++)
         if (appears[v] && indeg[v] == 0) q.push(v);
 
+    // Gỡ dần các đỉnh: đỉnh nào gỡ được thuộc phần acyclic của WCC
     vector<char> removed(n + 1, 0);
     while (!q.empty()) {
         int u = q.front(); q.pop();
@@ -69,7 +63,7 @@ int main() {
     for (int v = 1; v <= n; v++)
         if (appears[v] && !removed[v]) cyclic[findp(v)] = 1;
 
-    // Cộng theo từng root: sz - (cyclic ? 0 : 1)
+    // Cộng theo từng root: sz nếu WCC có chu trình, ngược lại sz - 1 (DAG)
     long long ans = 0;
     for (int v = 1; v <= n; v++) {
         if (appears[v] && findp(v) == v) {

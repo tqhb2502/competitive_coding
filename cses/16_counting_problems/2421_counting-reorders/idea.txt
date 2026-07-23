@@ -1,30 +1,32 @@
-COUNTING REORDERS - CSES 2421
+Counting Reorders - CSES 2421
+https://cses.fi/problemset/task/2421
 
-ĐỀ BÀI (tóm tắt)
-Cho một xâu gồm n chữ cái thường. Đếm số xâu phân biệt nhận được bằng cách sắp
-xếp lại ký tự sao cho hai ký tự kề nhau luôn khác nhau. In modulo 10^9+7.
-Ràng buộc: n <= 5000.
+## Đề bài
+Cho một xâu gồm n chữ cái thường. Hãy đếm số xâu phân biệt nhận được bằng cách
+sắp xếp lại các ký tự sao cho hai ký tự kề nhau luôn khác nhau. In kết quả theo
+modulo 10^9+7. Ràng buộc: n <= 5000.
 
-Ý TƯỞNG: BAO HÀM - LOẠI TRỪ BẰNG CÁCH GHÉP KHỐI
-Xét một chữ cái xuất hiện c lần và đánh số các bản sao theo thứ tự xuất hiện
-từ trái sang phải. Có c-1 sự kiện xấu: bản sao i đứng ngay sát bản sao i+1.
+## Ý tưởng
+Dùng bao hàm - loại trừ bằng cách ghép khối.
 
-Nếu chọn t sự kiện trong bao hàm - loại trừ, các bản sao của chữ này bị ghép
-thành b=c-t khối. Có C(c-1,t)=C(c-1,b-1) cách chọn các mối ghép. Sau khi làm
-điều đó cho mọi chữ, nếu tổng số khối là B thì số cách xen các khối là
-    B! / product(b_i!).
-Các khối cùng chữ vẫn giữ thứ tự tự nhiên của các bản sao, nên có mẫu số b_i!.
-Dấu bao hàm - loại trừ là (-1)^(sum t_i)=(-1)^(n-B).
+Xét một chữ cái xuất hiện c lần và đánh số các bản sao theo thứ tự xuất hiện từ
+trái sang phải. Có c-1 sự kiện xấu: bản sao i đứng ngay sát bản sao i+1. Nếu
+chọn t sự kiện trong bao hàm - loại trừ, các bản sao của chữ này bị ghép thành
+b = c-t khối. Có C(c-1, t) = C(c-1, b-1) cách chọn các mối ghép.
+
+Sau khi làm điều đó cho mọi chữ, nếu tổng số khối là B thì số cách xen các khối
+là B! / product(b_i!). Các khối cùng một chữ vẫn giữ thứ tự tự nhiên của các
+bản sao, nên có mẫu số b_i!. Dấu bao hàm - loại trừ là (-1)^(sum t_i) = (-1)^(n-B).
 
 Ta nhân các đa thức của tối đa 26 chữ cái. Với chữ có tần suất c, đa thức theo
-số khối b là
-    P_c[b] = C(c-1,b-1) / b!,    1 <= b <= c.
+số khối b là:
+    P_c[b] = C(c-1, b-1) / b!,    1 <= b <= c.
 Sau khi nhân, dp[B] là tổng của product(P_c[b_i]) trên mọi cách có B khối.
 Kết quả:
     sum_B (-1)^(n-B) * B! * dp[B].
 
 Mọi phép chia được thực hiện bằng nghịch đảo giai thừa modulo 10^9+7.
 
-ĐỘ PHỨC TẠP
-Tổng chi phí các phép nhân đa thức là O(n^2), thực tế không quá khoảng n^2/2
-do chỉ có 26 chữ cái. Bộ nhớ O(n).
+## Độ phức tạp
+Tổng chi phí các phép nhân đa thức là O(n^2), thực tế không quá khoảng n^2/2 do
+chỉ có 26 chữ cái. Bộ nhớ O(n).

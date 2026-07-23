@@ -1,24 +1,31 @@
-Bài toán: Permutation Inversions (CSES 2229)
+Permutation Inversions - CSES 2229
+https://cses.fi/problemset/task/2229
 
-Đặt dp[i][j] là số hoán vị của 1..i có đúng j nghịch thế. Khi chèn phần tử lớn
-nhất i vào một hoán vị của 1..i-1, nếu đặt nó sao cho có x phần tử ở bên phải
-thì nó tạo thêm x nghịch thế, với 0<=x<=i-1. Vì thế:
+## Đề bài
+Đếm số hoán vị của các số 1..n có đúng k nghịch thế (nghịch thế là cặp
+chỉ số i < j nhưng giá trị a[i] > a[j]). In kết quả theo modulo 1e9+7.
 
-    dp[i][j] = sum(dp[i-1][j-x]), x=0..i-1.
+## Ý tưởng
+Gọi dp[i][j] là số hoán vị của 1..i có đúng j nghịch thế. Khi chèn phần tử
+lớn nhất i vào một hoán vị của 1..i-1, nếu đặt nó sao cho có x phần tử nằm
+bên phải thì nó tạo thêm đúng x nghịch thế, với 0 <= x <= i-1. Do đó:
 
-Tính tổng này trực tiếp sẽ có thêm một thừa số i. Ta duy trì tổng cửa sổ:
+    dp[i][j] = tổng dp[i-1][j-x] với x = 0..i-1.
+
+Tính tổng này trực tiếp sẽ thêm một thừa số i. Ta duy trì tổng cửa sổ:
 
     window(j) = dp[i-1][j] + ... + dp[i-1][j-i+1]
 
-Khi tăng j, chỉ cần thêm dp cũ tại j và bỏ dp cũ tại j-i, nên mỗi trạng thái được
-tính trong O(1).
+Khi tăng j chỉ cần cộng thêm dp cũ tại j và trừ đi dp cũ tại j-i, nên mỗi
+trạng thái được tính trong O(1).
 
-Số nghịch thế tối đa là total=n(n-1)/2. Ánh xạ mỗi giá trị x thành n+1-x biến
-một hoán vị có k nghịch thế thành một hoán vị có total-k nghịch thế. Do đó hai
-số lượng bằng nhau và ta có thể thay k bằng min(k,total-k), giảm gần một nửa số
-trạng thái trong trường hợp lớn nhất.
+Số nghịch thế tối đa là total = n(n-1)/2. Phép ánh xạ mỗi giá trị x thành
+n+1-x biến một hoán vị có k nghịch thế thành một hoán vị có total-k nghịch
+thế, nên hai số lượng bằng nhau. Vì vậy ta thay k bằng min(k, total-k),
+giảm gần một nửa số trạng thái trong trường hợp lớn nhất.
 
 Chỉ hàng i-1 cần cho hàng i nên dùng hai mảng cuộn.
 
-Độ phức tạp: O(n*k') thời gian và O(k') bộ nhớ, với
-k'=min(k,n(n-1)/2-k). Trong thực tế còn chỉ duyệt tới min(k',i(i-1)/2).
+## Độ phức tạp
+Thời gian O(n*k') và bộ nhớ O(k'), với k' = min(k, n(n-1)/2 - k). Trong
+thực tế mỗi hàng chỉ duyệt tới min(k', i(i-1)/2).

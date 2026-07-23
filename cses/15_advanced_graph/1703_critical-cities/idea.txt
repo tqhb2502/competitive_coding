@@ -1,28 +1,25 @@
-CRITICAL CITIES (CSES 1703)
+Critical Cities - CSES 1703
+https://cses.fi/problemset/task/1703
 
-BÀI TOÁN
---------
-Cho đồ thị có hướng n đỉnh, m cạnh (chuyến bay một chiều). Có ít nhất một
-đường đi từ đỉnh 1 tới đỉnh n. Một thành phố gọi là "critical" nếu nó nằm
-trên MỌI đường đi từ 1 tới n. Cần in ra số lượng và danh sách các thành phố
-critical theo thứ tự tăng dần (đỉnh 1 và đỉnh n luôn là critical).
+## Đề bài
+Cho đồ thị có hướng n đỉnh, m cạnh (chuyến bay một chiều). Đề bảo đảm có ít
+nhất một đường đi từ đỉnh 1 tới đỉnh n. Một thành phố gọi là "critical" nếu
+nó nằm trên MỌI đường đi từ 1 tới n. Cần in ra số lượng và danh sách các
+thành phố critical theo thứ tự tăng dần (đỉnh 1 và đỉnh n luôn là critical).
 
-Ý TƯỞNG CHÍNH — DOMINATOR TREE
-------------------------------
-Một đỉnh v nằm trên mọi đường đi từ 1 tới n <=> v là DOMINATOR của n trong
-đồ thị dòng chảy (flow graph) với gốc là đỉnh 1. Theo định nghĩa, đỉnh d
-dominate đỉnh v nếu mọi đường đi từ gốc tới v đều phải đi qua d. Tập các
-dominator của n tạo thành một chuỗi (chain) đi từ gốc 1 xuống n trên
-DOMINATOR TREE (chính là các tổ tiên của n, kể cả n).
+## Ý tưởng
+Ý tưởng chính là DOMINATOR TREE. Một đỉnh v nằm trên mọi đường đi từ 1 tới n
+<=> v là DOMINATOR của n trong đồ thị dòng chảy (flow graph) với gốc là đỉnh
+1. Theo định nghĩa, đỉnh d dominate đỉnh v nếu mọi đường đi từ gốc tới v đều
+phải đi qua d. Tập các dominator của n tạo thành một chuỗi (chain) đi từ gốc
+1 xuống n trên dominator tree (chính là các tổ tiên của n, kể cả n).
 
-=> Đáp án = tập các đỉnh trên đường từ gốc 1 tới n trên dominator tree.
+=> Đáp án = tập các đỉnh trên đường từ gốc 1 tới n trên dominator tree. Cách
+này ĐÚNG cả khi đồ thị có chu trình (cycle), vì khái niệm dominator được định
+nghĩa trên đồ thị bất kỳ có gốc, không đòi hỏi DAG.
 
-Cách này ĐÚNG cả khi đồ thị có chu trình (cycle), vì khái niệm dominator
-được định nghĩa trên đồ thị bất kỳ có gốc, không đòi hỏi DAG.
-
-THUẬT TOÁN LENGAUER–TARJAN
---------------------------
-Xây dominator tree bằng Lengauer–Tarjan (link-eval với path compression):
+Xây dominator tree bằng thuật toán Lengauer–Tarjan (link-eval với path
+compression):
 1. DFS từ đỉnh 1, đánh số thứ tự dfs (preorder), lưu cha trên cây DFS và mảng
    ánh xạ ngược. Chỉ các đỉnh reachable từ 1 mới được xét (n chắc chắn tới
    được vì đề bảo đảm có đường đi).
@@ -32,19 +29,15 @@ Xây dominator tree bằng Lengauer–Tarjan (link-eval với path compression):
    một lượt duyệt tăng dần: nếu idom[i] != sdom[i] thì idom[i] = idom[idom[i]].
 4. Đáp án: đi từ n theo idom lên tới gốc 1, thu thập các đỉnh, sắp xếp tăng dần.
 
-CHI TIẾT CÀI ĐẶT AN TOÀN
-------------------------
+Chi tiết cài đặt an toàn:
 - DFS dùng STACK tường minh (iterative) để tránh tràn stack với n tới 1e5.
-- Hàm compress (path compression) cũng viết dạng ITERATIVE (thu thập chuỗi
-  tổ tiên rồi xử lý ngược) để tránh đệ quy sâu tới 1e5 mức.
+- Hàm compress (path compression) cũng viết dạng ITERATIVE (thu thập chuỗi tổ
+  tiên rồi xử lý ngược) để tránh đệ quy sâu tới 1e5 mức.
 
-ĐỘ PHỨC TẠP
------------
+## Độ phức tạp
 Lengauer–Tarjan với path compression đơn giản: O((n + m) log n) thời gian,
 O(n + m) bộ nhớ. Với n <= 1e5, m <= 2e5 chạy rất nhanh.
 
-KIỂM TRA VÍ DỤ
---------------
-5 đỉnh, cạnh 1->2, 2->3, 2->4, 3->5, 4->5.
-Đường đi: 1-2-3-5 và 1-2-4-5. Chung cho mọi đường: {1, 2, 5}.
-idom(5)=2, idom(2)=1, idom(1)=gốc => đáp án 3 đỉnh: 1 2 5 (khớp).
+Ghi chú (kiểm tra ví dụ): 5 đỉnh, cạnh 1->2, 2->3, 2->4, 3->5, 4->5. Đường đi
+1-2-3-5 và 1-2-4-5, chung cho mọi đường là {1, 2, 5}. idom(5)=2, idom(2)=1,
+idom(1)=gốc => đáp án 3 đỉnh: 1 2 5 (khớp).

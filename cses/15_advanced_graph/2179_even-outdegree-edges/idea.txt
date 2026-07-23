@@ -1,59 +1,59 @@
-Even Outdegree Edges — CSES 2179
+Even Outdegree Edges - CSES 2179
 https://cses.fi/problemset/task/2179
 
-BÀI TOÁN
-Cho đồ thị vô hướng đơn (không cạnh bội, không tự khuyên) với n đỉnh, m cạnh.
-Hãy định hướng TẤT CẢ các cạnh sao cho MỌI đỉnh có bậc ra (outdegree) là số
-CHẴN. In ra m dòng, mỗi dòng "a b" nghĩa là cạnh có hướng a -> b. Nếu không tồn
+## Đề bài
+Cho đồ thị vô hướng đơn (không cạnh bội, không tự khuyên) với n đỉnh và m cạnh.
+Hãy định hướng TẤT CẢ các cạnh sao cho MỌI đỉnh có bậc ra (outdegree) là số CHẴN.
+In ra m dòng, mỗi dòng "a b" nghĩa là cạnh được định hướng a -> b. Nếu không tồn
 tại cách định hướng hợp lệ thì in "IMPOSSIBLE".
 
-KỸ THUẬT: DFS tree (spanning forest) + sửa parity từ dưới lên (post-order).
+Điều kiện tồn tại nghiệm: xét một thành phần liên thông bất kỳ. Tổng bậc ra của
+các đỉnh trong thành phần bằng số cạnh của thành phần đó (mỗi cạnh đóng góp đúng
+1 vào bậc ra của một đỉnh). Nếu mọi đỉnh có bậc ra chẵn thì tổng này chẵn, nên số
+cạnh của thành phần phải CHẴN. Vậy điều kiện cần: MỌI thành phần liên thông có số
+cạnh chẵn; ta sẽ thấy điều này cũng ĐỦ. (Chú ý: m chẵn toàn cục là chưa đủ, ví dụ
+hai thành phần đều lẻ.)
 
-ĐIỀU KIỆN TỒN TẠI NGHIỆM
-Xét một thành phần liên thông (connected component) bất kỳ. Tổng bậc ra của các
-đỉnh trong thành phần = số cạnh của thành phần đó (mỗi cạnh đóng góp đúng 1 vào
-bậc ra của một đỉnh). Nếu mọi đỉnh có bậc ra chẵn thì tổng này chẵn, nên số cạnh
-của thành phần phải CHẴN. Vậy điều kiện cần: MỌI thành phần liên thông có số
-cạnh chẵn. Ta sẽ chứng minh điều này cũng ĐỦ. (Chú ý: m chẵn toàn cục là chưa
-đủ, ví dụ hai thành phần đều lẻ.)
+## Ý tưởng
+Dùng cây DFS (spanning forest) và sửa tính chẵn lẻ từ dưới lên (post-order).
 
-Ý TƯỞNG CHÍNH (xây dựng nghiệm bằng cây DFS)
-1) Với mỗi thành phần, dựng cây DFS có gốc r. Phân loại cạnh thành cạnh cây
-   (tree edge) và back edge.
-2) Back edge: định hướng TÙY Ý ngay khi phát hiện (ở đây hướng từ đỉnh đang xét
-   v lên tổ tiên đã thăm, tức v -> to), cộng vào outdeg[v].
+1) Với mỗi thành phần, dựng cây DFS có gốc r. Phân loại cạnh thành cạnh cây (tree
+   edge) và cạnh ngược (back edge).
+2) Cạnh ngược: định hướng TÙY Ý ngay khi phát hiện (ở đây hướng từ đỉnh đang xét v
+   lên tổ tiên đã thăm, tức v -> to), cộng vào outdeg[v].
 3) Duyệt các đỉnh theo thứ tự KẾT THÚC DFS (post-order: con xong trước cha). Với
    mỗi đỉnh v khác gốc, gọi cạnh cây nối v với cha p là e. Tại thời điểm v kết
    thúc, MỌI cạnh kề v (trừ e) đã được định hướng xong:
-     - các back edge có v là đầu mút: đã định hướng khi quét,
+     - các cạnh ngược có v là đầu mút: đã định hướng khi quét,
      - các cạnh cây xuống con của v: đã định hướng khi con kết thúc.
    Do đó ta chọn hướng cho e để làm outdeg[v] chẵn:
      - nếu outdeg[v] đang LẺ  -> hướng e là v -> p (outdeg[v] tăng 1 thành chẵn),
      - nếu outdeg[v] đang CHẴN -> hướng e là p -> v (cộng vào outdeg[p]).
    Sau bước này MỌI đỉnh không phải gốc đều có bậc ra chẵn.
-4) Gốc r không được sửa. Tổng bậc ra toàn thành phần = số cạnh C của thành phần.
-   Vì mọi đỉnh khác gốc đã chẵn nên outdeg[r] ≡ C (mod 2). Nếu C chẵn thì gốc
-   cũng chẵn -> nghiệm hợp lệ. Nếu C lẻ thì gốc lẻ -> thành phần vô nghiệm.
-   Ta chỉ cần kiểm tra cuối cùng: nếu tồn tại đỉnh có bậc ra lẻ (chỉ có thể là
-   một gốc nào đó) thì in "IMPOSSIBLE".
+4) Gốc r không được sửa. Tổng bậc ra toàn thành phần bằng số cạnh C của thành
+   phần. Vì mọi đỉnh khác gốc đã chẵn nên outdeg[r] ≡ C (mod 2). Nếu C chẵn thì
+   gốc cũng chẵn -> nghiệm hợp lệ; nếu C lẻ thì gốc lẻ -> thành phần vô nghiệm. Ta
+   chỉ cần kiểm tra cuối cùng: nếu tồn tại đỉnh có bậc ra lẻ (chỉ có thể là một
+   gốc nào đó) thì in "IMPOSSIBLE".
 
-CHỨNG MINH TÍNH ĐÚNG
-- Mỗi cạnh vô hướng được định hướng đúng MỘT lần (back edge lúc phát hiện, cạnh
+Tính đúng đắn:
+- Mỗi cạnh vô hướng được định hướng đúng MỘT lần (cạnh ngược lúc phát hiện, cạnh
   cây lúc con kết thúc), nên đây là một orientation hợp lệ của đồ thị.
-- Bước 3 luôn ép được mọi đỉnh không phải gốc thành bậc ra chẵn, bất kể back
-  edge được định hướng thế nào (vì cạnh cây tới cha là cạnh cuối cùng chưa gán
-  của v, dùng nó để chỉnh parity). Hướng của back edge chỉ chuyển việc "tính
-  cạnh đó cho ai" chứ không phá vỡ khả năng chỉnh parity.
+- Bước 3 luôn ép được mọi đỉnh không phải gốc thành bậc ra chẵn, bất kể cạnh ngược
+  được định hướng thế nào (vì cạnh cây tới cha là cạnh cuối cùng chưa gán của v,
+  dùng nó để chỉnh tính chẵn lẻ). Hướng của cạnh ngược chỉ chuyển việc "tính cạnh
+  đó cho ai" chứ không phá vỡ khả năng chỉnh tính chẵn lẻ.
 - Bước 4 cho thấy gốc chẵn KHI VÀ CHỈ KHI C chẵn, khớp đúng điều kiện cần đã nêu.
   Do đó thuật toán tìm được nghiệm khi và chỉ khi mọi thành phần có số cạnh chẵn.
 
-LƯU Ý THỰC THI
-- DFS phải LẶP (explicit stack) vì n <= 1e5, m <= 2e5, đệ quy dễ tràn stack.
-  Mỗi cạnh dùng cờ usedEdge[] để không xử lý lại từ đầu kia; cạnh tới cha bị bỏ
-  qua tự nhiên vì đã đánh dấu used khi cha phát hiện con. Việc "đỉnh kết thúc"
-  (pop khỏi stack) đúng lúc bảo đảm mọi con đã hoàn tất trước cha, nên có thể
-  chỉnh parity ngay tại lúc pop.
+Lưu ý thực thi:
+- DFS phải LẶP (explicit stack) vì n <= 1e5, m <= 2e5, đệ quy dễ tràn stack. Mỗi
+  cạnh dùng cờ usedEdge[] để không xử lý lại từ đầu kia; cạnh tới cha bị bỏ qua tự
+  nhiên vì đã được đánh dấu used khi cha phát hiện con. Việc "đỉnh kết thúc" (pop
+  khỏi stack) đúng lúc bảo đảm mọi con đã hoàn tất trước cha, nên có thể chỉnh tính
+  chẵn lẻ ngay tại lúc pop.
 - Special judge: chấp nhận BẤT KỲ cách định hướng hợp lệ nào (mẫu đề cũng chỉ là
   một nghiệm). Ta in mỗi cạnh theo thứ tự đầu vào với hướng đã gán.
 
-ĐỘ PHỨC TẠP: O(n + m) thời gian, O(n + m) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n + m), bộ nhớ O(n + m).

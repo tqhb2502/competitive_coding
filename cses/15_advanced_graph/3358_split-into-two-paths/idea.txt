@@ -1,47 +1,43 @@
-Bài: Split into Two Paths (CSES 3358)
-URL: https://cses.fi/problemset/task/3358
+Split into Two Paths - CSES 3358
+https://cses.fi/problemset/task/3358
 
-1. Phát biểu
-Cho một DAG (đồ thị có hướng, không chu trình) gồm n đỉnh, m cạnh. Hỏi có thể
+## Đề bài
+Cho một DAG (đồ thị có hướng, không chu trình) gồm n đỉnh và m cạnh. Hỏi có thể
 phân hoạch TẤT CẢ các đỉnh thành đúng hai đường đi có hướng (path) rời đỉnh hay
-không (một đường được phép rỗng, tức chứa 0 đỉnh). Nếu được thì in ra hai đường.
+không (một đường được phép rỗng, tức chứa 0 đỉnh). Nếu được thì in "YES" cùng hai
+đường; nếu không thì in "NO".
 
-2. Kỹ thuật: Minimum Path Cover trên DAG bằng bipartite matching (Hopcroft-Karp)
-- Bài toán "phủ tất cả đỉnh của DAG bằng số đường đi rời đỉnh ít nhất" là bài
-  toán kinh điển Minimum Path Cover. Kết quả: số đường tối thiểu = n - M, trong
-  đó M là lực lượng cặp ghép cực đại (maximum matching) của đồ thị hai phía tạo
-  bởi: phía trái là bản sao "out" của mỗi đỉnh, phía phải là bản sao "in" của mỗi
-  đỉnh; mỗi cạnh có hướng u -> v của DAG cho một cạnh u_out - v_in.
+## Ý tưởng
+- Đây là bài toán kinh điển Minimum Path Cover (phủ tất cả đỉnh của DAG bằng số
+  đường đi rời đỉnh ít nhất). Kết quả: số đường tối thiểu = n - M, với M là lực
+  lượng cặp ghép cực đại (maximum matching) của đồ thị hai phía tạo bởi: phía trái
+  là bản sao "out" của mỗi đỉnh, phía phải là bản sao "in" của mỗi đỉnh; mỗi cạnh
+  có hướng u -> v của DAG cho một cạnh u_out - v_in.
 - Ta chỉ cần kiểm tra Minimum Path Cover <= 2, tức cần M >= n - 2.
-
-3. Ý tưởng chính
-- Xây đồ thị hai phía như trên, chạy Hopcroft-Karp để tìm maximum matching.
-- Tối ưu dừng sớm: một matching bất kỳ trong đồ thị hai phía luôn tương ứng với
-  một tập đường đi rời đỉnh phủ hết n đỉnh, với số đường = n - (kích thước
-  matching). Do đồ thị gốc là DAG nên các đường này không bao giờ tạo chu trình,
-  mỗi đỉnh có nhiều nhất một đỉnh kế (matchL) và một đỉnh trước (matchR). Vì vậy
-  chỉ cần tìm được matching kích thước >= n - 2 là đã có lời giải hai đường; ta
-  dừng Hopcroft-Karp ngay khi matched >= n - 2 (đáp án YES).
-- Nếu Hopcroft-Karp kết thúc (không còn augmenting path) mà matching cực đại vẫn
-  cho n - M > 2 thì đáp án là NO.
-
-4. Dựng lại hai đường
-- matchL[u] = v nghĩa là trong đường đi, đỉnh kế sau u là v (dùng cạnh u -> v).
-  matchR[v] = u nghĩa là đỉnh đứng trước v là u.
-- Điểm bắt đầu của một đường là đỉnh v có matchR[v] = 0 (không có đỉnh trước).
-  Từ mỗi điểm bắt đầu, đi theo matchL cho tới khi matchL = 0 để lấy trọn một
-  đường. Số điểm bắt đầu = n - M (bằng 1 hoặc 2). Nếu chỉ có 1 đường thì in
-  đường đó và một đường rỗng "0".
-
-5. Tính đúng đắn
-- Tương ứng 1-1 giữa matching và tập đường đi rời đỉnh phủ hết đỉnh là kết quả
-  chuẩn của Minimum Path Cover trên DAG. Số đường = n - |matching|. Do đó tồn
-  tại phân hoạch thành <= 2 đường khi và chỉ khi maximum matching >= n - 2.
-- Mỗi đỉnh nằm trong đúng một đường (do mỗi đỉnh có tối đa một in-match và một
+- Xây đồ thị hai phía như trên rồi chạy Hopcroft-Karp để tìm maximum matching.
+- Tối ưu dừng sớm: mọi matching trong đồ thị hai phía luôn tương ứng với một tập
+  đường đi rời đỉnh phủ hết n đỉnh, với số đường = n - (kích thước matching). Do đồ
+  thị gốc là DAG nên các đường này không bao giờ tạo chu trình; mỗi đỉnh có nhiều
+  nhất một đỉnh kế (matchL) và một đỉnh trước (matchR). Vì vậy chỉ cần tìm được
+  matching kích thước >= n - 2 là đã có lời giải hai đường; ta dừng Hopcroft-Karp
+  ngay khi matched >= n - 2 (đáp án YES).
+- Nếu Hopcroft-Karp kết thúc (không còn augmenting path) mà vẫn cho n - M > 2 thì
+  đáp án là NO.
+- Dựng lại hai đường: matchL[u] = v nghĩa là trong đường đi, đỉnh kế sau u là v
+  (dùng cạnh u -> v); matchR[v] = u nghĩa là đỉnh đứng trước v là u. Điểm bắt đầu
+  của một đường là đỉnh v có matchR[v] = 0 (không có đỉnh trước). Từ mỗi điểm bắt
+  đầu, đi theo matchL cho tới khi matchL = 0 để lấy trọn một đường. Số điểm bắt đầu
+  = n - M (bằng 1 hoặc 2); nếu chỉ có 1 đường thì in đường đó và một đường rỗng "0".
+- Tính đúng đắn: tương ứng 1-1 giữa matching và tập đường đi rời đỉnh phủ hết đỉnh
+  là kết quả chuẩn của Minimum Path Cover trên DAG, số đường = n - |matching|. Do
+  đó tồn tại phân hoạch thành <= 2 đường khi và chỉ khi maximum matching >= n - 2.
+  Mỗi đỉnh nằm trong đúng một đường (mỗi đỉnh có tối đa một in-match và một
   out-match, và DAG bảo đảm không có chu trình).
 
-6. Độ phức tạp
+Lưu ý: DFS tìm augmenting path dùng stack tường minh (iterative) nên không bị tràn
+stack với đồ thị lớn.
+
+## Độ phức tạp
 - Hopcroft-Karp: O(E * sqrt(V)) = O(m * sqrt(n)) trong trường hợp xấu nhất, với
-  n <= 2e5, m <= 5e5. Thực tế nhanh hơn nhiều, đặc biệt nhờ dừng sớm ở YES.
-- Bộ nhớ O(n + m). DFS augmenting dùng stack tường minh (iterative) nên không bị
-  tràn stack với đồ thị lớn.
+  n <= 2e5, m <= 5e5; thực tế nhanh hơn nhiều nhờ dừng sớm khi có YES.
+- Bộ nhớ: O(n + m).

@@ -1,15 +1,16 @@
-Bài toán: Tree Traversals (CSES 1702)
+Tree Traversals - CSES 1702
+https://cses.fi/problemset/task/1702
 
-Đề bài:
+## Đề bài
 - Cho một cây nhị phân có n đỉnh, nhãn phân biệt từ 1..n.
 - Cho trước preorder (duyệt gốc-trái-phải) và inorder (duyệt trái-gốc-phải).
 - Yêu cầu: in ra postorder (duyệt trái-phải-gốc) của cây.
 - Ràng buộc: 1 <= n <= 1e5, dữ liệu luôn tương ứng với một cây nhị phân hợp lệ.
 
+## Ý tưởng
 Kỹ thuật: tái tạo cây (tree reconstruction) từ preorder + inorder, rồi duyệt postorder.
 
-Ý tưởng chính:
-1) Nhận xét cơ bản (divide & conquer):
+1) Nhận xét cơ bản (chia để trị):
    - Phần tử đầu tiên của preorder chính là gốc (root).
    - Trong inorder, gốc chia dãy thành phần trái = cây con trái, phần phải = cây con phải.
    - Đệ quy trên hai nửa để dựng lại toàn bộ cây.
@@ -33,6 +34,6 @@ Tính đúng đắn:
 - Thuật toán stack dựng cây mô phỏng chính xác quá trình đệ quy: khi còn đi xuống trái thì stack lớn dần; khi gặp inorder khớp nghĩa là đã hết nhánh trái và cần quay lên để gắn con phải.
 - Postorder hai stack: root,right,left đảo ngược = left,right,root, đúng định nghĩa postorder.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(n) (mỗi đỉnh vào/ra stack đúng một lần cho cả bước dựng cây lẫn bước duyệt).
 - Bộ nhớ: O(n).
