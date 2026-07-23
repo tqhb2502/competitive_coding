@@ -1,47 +1,48 @@
-Bài toán Josephus Queries (CSES 2164)
+Josephus Queries - CSES 2164
+https://cses.fi/problemset/task/2164
 
-Đề bài:
+## Đề bài
 - Có n đứa trẻ đứng thành vòng tròn, đánh số 1..n. Bắt đầu đếm từ trước số 1, cứ
-  loại đứa trẻ thứ hai (nên đứa bị loại ĐẦU TIÊN là số 2). Với mỗi truy vấn (n, k)
+  loại đứa trẻ thứ hai (nên đứa bị loại ĐẦU TIÊN là số 2). Với mỗi truy vấn (n, k),
   hãy in ra số hiệu đứa trẻ bị loại ở lượt thứ k.
-- Giới hạn: q ≤ 1e5, 1 ≤ k ≤ n ≤ 1e9. Vì n lớn nên KHÔNG thể mô phỏng O(n) mỗi
+- Giới hạn: q ≤ 1e5, 1 ≤ k ≤ n ≤ 1e9. Vì n lớn nên KHÔNG thể mô phỏng O(n) cho mỗi
   truy vấn; cần công thức O(log n) cho mỗi truy vấn.
 
-Ý tưởng (đệ quy / khử vòng theo tầng):
-- Trong vòng quét ĐẦU TIÊN quanh vòng tròn, các vị trí CHẴN 2, 4, ..., 2*floor(n/2)
-  bị loại. Đặt m = n // 2 là số lần loại trong vòng đầu.
+## Ý tưởng
+- Đệ quy / khử vòng theo tầng. Trong vòng quét ĐẦU TIÊN quanh vòng tròn, các vị trí
+  CHẴN 2, 4, ..., 2*floor(n/2) bị loại. Đặt m = n // 2 là số lần loại trong vòng đầu.
   * Nếu k ≤ m: lượt loại thứ k rơi vào vòng đầu, đáp án chính là 2*k.
   * Nếu k > m: mọi vị trí chẵn đã bị loại, những đứa còn sống chính là các vị trí
     LẺ. Ta thu nhỏ về bài toán con trên vòng tròn nhỏ hơn, rồi ánh xạ ngược lại.
 
-Ánh xạ vị trí bài toán con -> vị trí gốc (vì các đứa còn lại là số lẻ 1,3,5,...):
+- Ánh xạ vị trí bài toán con -> vị trí gốc (vì các đứa còn lại là số lẻ 1, 3, 5, ...):
   original_pos = 2 * sub - 1 (sub là vị trí trong bài toán con, tính từ 1).
 
-Hai trường hợp theo parity của n (r = k - m là chỉ số loại trong vòng nhỏ):
-- n CHẴN (n = 2m): những đứa còn lại là 1,3,...,n-1 (đúng m đứa). Đứa vừa loại là
-  n, tiếp theo bỏ qua 1 rồi loại 3 => đây LẠI đúng là bài toán gốc "bỏ đứa đầu,
-  loại đứa thứ hai" trên m đứa. Vậy solve(n,k) = 2*solve(m, r) - 1.
-- n LẺ (n = 2m+1): những đứa còn lại là 1,3,...,n (m+1 đứa). Đứa vừa loại là n-1,
-  kế đó n bị bỏ qua rồi số 1 bị loại NGAY.
-  * Nếu r == 1: đáp án là số 1 (vị trí gốc = 2*1-1 = 1).
-  * Nếu r > 1: sau khi loại số 1, phần còn lại (3,5,...,n) trở thành bài toán gốc
-    "bỏ đứa đầu, loại đứa thứ hai" trên m đứa. Khi đó
-    solve(n,k) = 2*(1 + solve(m, r-1)) - 1 = 1 + 2*solve(m, r-1).
+- Hai trường hợp theo parity của n (r = k - m là chỉ số loại trong vòng nhỏ):
+  * n CHẴN (n = 2m): những đứa còn lại là 1, 3, ..., n-1 (đúng m đứa). Đứa vừa loại
+    là n, tiếp theo bỏ qua 1 rồi loại 3 => đây LẠI đúng là bài toán gốc "bỏ đứa đầu,
+    loại đứa thứ hai" trên m đứa. Vậy solve(n, k) = 2*solve(m, r) - 1.
+  * n LẺ (n = 2m+1): những đứa còn lại là 1, 3, ..., n (m+1 đứa). Đứa vừa loại là
+    n-1, kế đó n bị bỏ qua rồi số 1 bị loại NGAY.
+    - Nếu r == 1: đáp án là số 1 (vị trí gốc = 2*1-1 = 1).
+    - Nếu r > 1: sau khi loại số 1, phần còn lại (3, 5, ..., n) trở thành bài toán
+      gốc "bỏ đứa đầu, loại đứa thứ hai" trên m đứa. Khi đó
+      solve(n, k) = 2*(1 + solve(m, r-1)) - 1 = 1 + 2*solve(m, r-1).
 
-Cài đặt lặp (khử đệ quy) bằng phép biến đổi tuyến tính answer = A + B*sub:
-- Khởi tạo A = 0, B = 1.
-- Mỗi tầng: m = n//2.
-  * k ≤ m       -> trả về A + B*(2*k).
-  * n chẵn      -> A -= B; B *= 2; n = m;  k = r.        (vì 2*sub - 1)
-  * n lẻ, r==1  -> trả về A + B.                          (số 1)
-  * n lẻ, r>1   -> A += B; B *= 2; n = m; k = r-1.        (vì 1 + 2*sub)
-Mỗi tầng n giảm đi khoảng một nửa nên có tối đa ~log2(n) tầng.
+- Cài đặt lặp (khử đệ quy) bằng phép biến đổi tuyến tính answer = A + B*sub:
+  * Khởi tạo A = 0, B = 1.
+  * Mỗi tầng: m = n // 2.
+    - k ≤ m       -> trả về A + B*(2*k).
+    - n chẵn      -> A -= B; B *= 2; n = m; k = r.        (vì 2*sub - 1)
+    - n lẻ, r==1  -> trả về A + B.                        (số 1)
+    - n lẻ, r>1   -> A += B; B *= 2; n = m; k = r-1.      (vì 1 + 2*sub)
+  * Mỗi tầng n giảm đi khoảng một nửa nên có tối đa ~log2(n) tầng.
 
-Tính đúng đắn: mỗi bước mô tả CHÍNH XÁC trạng thái vòng tròn sau vòng quét đầu và
-điểm bắt đầu đếm tiếp (dựa vào parity của n), nên phép quy nạp theo n cho ra đúng
-số hiệu đứa trẻ bị loại ở lượt k.
+- Tính đúng đắn: mỗi bước mô tả CHÍNH XÁC trạng thái vòng tròn sau vòng quét đầu và
+  điểm bắt đầu đếm tiếp (dựa vào parity của n), nên phép quy nạp theo n cho ra đúng
+  số hiệu đứa trẻ bị loại ở lượt k.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(log n) mỗi truy vấn => tổng O(q log n) ~ 1e5 * 30 = 3e6 phép tính.
 - Bộ nhớ: O(1) thêm cho mỗi truy vấn (chỉ lưu danh sách kết quả để in một lần).
 

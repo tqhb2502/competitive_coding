@@ -1,9 +1,3 @@
-# Bracket Sequences II - https://cses.fi/problemset/task/2187
-# Đếm số dãy ngoặc hợp lệ độ dài n có prefix cho trước, modulo 1e9+7.
-# Lattice path + reflection principle:
-#   sau prefix ta ở độ cao b, còn m = n - k bước, đi về 0 không xuống dưới 0.
-#   kết quả = C(m, (m-b)/2) - C(m, (m+b+2)/2) (mod p).
-
 import sys
 
 
@@ -15,12 +9,13 @@ def main():
 
     MOD = 10 ** 9 + 7
 
-    # n lẻ -> không thể cân bằng
+    # Bước 1: n lẻ thì không thể cân bằng, đáp án là 0.
     if n % 2 == 1:
         sys.stdout.write("0\n")
         return
 
-    # Tính balance của prefix; nếu âm tại bất kỳ vị trí nào -> 0
+    # Bước 2: tính balance của prefix (mỗi '(' là +1, mỗi ')' là -1); nếu âm
+    # tại bất kỳ vị trí nào thì prefix không hợp lệ, đáp án là 0.
     OPEN = ord("(")
     bal = 0
     ok = True
@@ -37,13 +32,13 @@ def main():
         sys.stdout.write("0\n")
         return
 
+    # Bước 3: sau prefix ta ở độ cao b, còn m = n - k bước đi về 0 không xuống
+    # dưới 0.
     b = bal
     m = n - k
 
-    # Nếu không thể đi về 0: b > m hoặc chênh lệch lẻ -> C tự trả 0, nhưng
-    # ta vẫn tính bình thường qua hàm comb.
-
-    # Tiền xử lý factorial tới n
+    # Tiền xử lý factorial và inverse factorial theo modulo tới n (nghịch đảo
+    # dùng Fermat vì MOD là số nguyên tố).
     fact = [1] * (n + 1)
     for i in range(1, n + 1):
         fact[i] = fact[i - 1] * i % MOD
@@ -52,16 +47,18 @@ def main():
     for i in range(n, 0, -1):
         inv_fact[i - 1] = inv_fact[i] * i % MOD
 
+    # Tổ hợp C(N, R), trả 0 nếu R nằm ngoài khoảng [0, N].
     def comb(N, R):
         if R < 0 or R > N:
             return 0
         return fact[N] * inv_fact[R] % MOD * inv_fact[N - R] % MOD
 
-    # (m - b) phải chẵn và >= 0 để có đường đi
+    # (m - b) phải chẵn và >= 0 thì mới có đường đi hợp lệ.
     if (m - b) % 2 != 0 or m - b < 0:
         sys.stdout.write("0\n")
         return
 
+    # Reflection principle: số đường tự do trừ số đường chạm mức -1.
     ans = (comb(m, (m - b) // 2) - comb(m, (m + b + 2) // 2)) % MOD
     sys.stdout.write(str(ans % MOD) + "\n")
 

@@ -1,9 +1,3 @@
-# Graph Paths I - https://cses.fi/problemset/task/1723
-# Đếm số walk (đường đi có thể lặp cạnh) độ dài đúng k từ đỉnh 1 đến đỉnh n,
-# kết quả modulo 1e9+7. Dùng matrix exponentiation của ma trận kề.
-# Tối ưu bằng kỹ thuật "bignum packing": mỗi hàng ma trận được đóng gói thành
-# một số nguyên lớn, mỗi phần tử chiếm SHIFT bit -> nhân ma trận nhanh hơn.
-
 import sys
 
 

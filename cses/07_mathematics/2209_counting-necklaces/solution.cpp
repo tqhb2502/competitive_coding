@@ -3,6 +3,7 @@
 
 constexpr long long MOD = 1'000'000'007LL;
 
+// Lũy thừa modulo (modular exponentiation): tính base^exponent mod MOD.
 long long modular_power(long long base, long long exponent) {
     long long result = 1;
     base %= MOD;
@@ -16,6 +17,7 @@ long long modular_power(long long base, long long exponent) {
     return result;
 }
 
+// Euler totient phi(value) qua phân tích thừa số nguyên tố (factorization).
 int euler_phi(int value) {
     int result = value;
     int remaining = value;
@@ -41,6 +43,7 @@ int main() {
     int pearl_count, color_count;
     std::cin >> pearl_count >> color_count;
 
+    // Tìm tất cả ước d của n bằng cách duyệt tới sqrt(n).
     std::vector<int> divisors;
     for (int divisor = 1; divisor <= pearl_count / divisor; ++divisor) {
         if (pearl_count % divisor != 0) {
@@ -52,6 +55,7 @@ int main() {
         }
     }
 
+    // Bổ đề Burnside: cộng dồn phi(d) * m^(n/d) trên mọi ước d của n.
     long long fixed_sum = 0;
     for (const int divisor : divisors) {
         const long long term =
@@ -63,6 +67,7 @@ int main() {
         }
     }
 
+    // Chia cho n dưới modulo bằng modular inverse theo Fermat.
     const long long answer =
         fixed_sum * modular_power(pearl_count, MOD - 2) % MOD;
     std::cout << answer << '\n';

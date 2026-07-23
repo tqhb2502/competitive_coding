@@ -1,41 +1,44 @@
-Bài toán: Stair Game (CSES 1099)
+Stair Game - CSES 1099
+https://cses.fi/problemset/task/1099
 
+## Đề bài
+Có n bậc thang đánh số 1..n, mỗi bậc k chứa p[k] quả bóng. Mỗi lượt người chơi
+chọn một bậc k (với k khác 1) đang có ít nhất 1 bóng và chuyển một số lượng bóng
+bất kỳ từ bậc k xuống bậc k-1. Ai đi được nước cuối cùng sẽ thắng. Bậc 1 là đáy
+(sink): bóng rơi vào bậc 1 sẽ không bao giờ di chuyển được nữa vì luật cấm chọn
+k = 1. Với mỗi test case, hãy xác định người đi trước ("first") hay người đi sau
+("second") thắng khi cả hai chơi tối ưu.
+
+## Ý tưởng
 Đây là biến thể Staircase Nim (Nim trên cầu thang) của lý thuyết trò chơi
 Sprague-Grundy.
-
-Mô tả: có n bậc thang đánh số 1..n, mỗi bậc k có p[k] quả bóng. Mỗi lượt người
-chơi chọn bậc k (với k != 1) đang có ít nhất 1 bóng và chuyển một số bóng bất kỳ
-từ bậc k xuống bậc k-1. Ai đi nước cuối cùng sẽ thắng. Bậc 1 là "đáy" (sink):
-bóng rơi vào bậc 1 sẽ không bao giờ di chuyển được nữa (vì luật cấm k = 1).
-
-Ý tưởng (Staircase Nim):
 - Xét khoảng cách của mỗi bậc tới sink (bậc 1). Bậc 1 có khoảng cách 0 (chẵn),
   bậc 2 khoảng cách 1 (lẻ), bậc 3 khoảng cách 2 (chẵn), ...
 - Các bậc ở khoảng cách LẺ tới sink chính là các bậc có chỉ số 1-indexed CHẴN:
-  bậc 2, 4, 6, ...
-- Kết quả trò chơi chỉ phụ thuộc vào XOR số bóng trên các bậc khoảng cách lẻ đó.
+  bậc 2, 4, 6, ... Kết quả trò chơi chỉ phụ thuộc vào XOR số bóng trên các bậc
+  khoảng cách lẻ này.
 
 Tại sao đúng (lập luận chiến lược đối xứng):
 - Coi số bóng trên các bậc khoảng cách lẻ như một ván Nim thường.
 - Khi đối thủ chuyển bóng từ bậc khoảng cách lẻ xuống bậc khoảng cách chẵn, đó
   đúng là một nước Nim thật sự trên tập bậc lẻ.
-- Khi đối thủ chuyển x bóng từ bậc khoảng cách chẵn xuống bậc khoảng cách lẻ,
-  ta luôn có thể "sao chép" bằng cách chuyển đúng x bóng đó tiếp xuống bậc khoảng
-  cách chẵn phía dưới, giữ nguyên giá trị XOR trên tập bậc lẻ. Nhờ đó nếu XOR ban
-  đầu bằng 0 thì người đi sau luôn khôi phục được thế cân bằng và người đi trước
-  cuối cùng hết nước -> người đi sau thắng. Ngược lại nếu XOR != 0 người đi trước
-  có nước biến nó về 0 và thắng.
+- Khi đối thủ chuyển x bóng từ bậc khoảng cách chẵn xuống bậc khoảng cách lẻ, ta
+  luôn có thể "sao chép" bằng cách chuyển đúng x bóng đó tiếp xuống bậc khoảng
+  cách chẵn phía dưới, giữ nguyên giá trị XOR trên tập bậc lẻ. Nhờ đó nếu XOR
+  ban đầu bằng 0 thì người đi sau luôn khôi phục được thế cân bằng và người đi
+  trước cuối cùng hết nước -> người đi sau thắng. Ngược lại nếu XOR khác 0 thì
+  người đi trước có nước biến nó về 0 và thắng.
 
 Công thức: gọi X = XOR của p[i] với mọi i (1-indexed) mà i chẵn.
-  - Nếu X != 0 -> in "first".
-  - Nếu X == 0 -> in "second".
+  - Nếu X khác 0 -> in "first".
+  - Nếu X bằng 0 -> in "second".
 
 Kiểm tra ví dụ:
-  [0,2,1]  -> p2 = 2                -> X = 2 != 0 -> first.
-  [1,1,1,1]-> p2 ^ p4 = 1 ^ 1 = 0   -> X = 0      -> second.
-  [5,3]    -> p2 = 3                -> X = 3 != 0 -> first.
+  [0,2,1]   -> p2 = 2               -> X = 2 khác 0 -> first.
+  [1,1,1,1] -> p2 ^ p4 = 1 ^ 1 = 0  -> X = 0        -> second.
+  [5,3]     -> p2 = 3               -> X = 3 khác 0 -> first.
 
-Độ phức tạp:
-- Thời gian: O(tong n) trên tất cả test case (tong n <= 2*10^5), chỉ duyệt tuyến
+## Độ phức tạp
+- Thời gian: O(tổng n) trên tất cả test case (tổng n <= 2*10^5), chỉ duyệt tuyến
   tính và XOR.
 - Bộ nhớ: O(1) thêm (đọc toàn bộ input một lần rồi xử lý theo con trỏ).

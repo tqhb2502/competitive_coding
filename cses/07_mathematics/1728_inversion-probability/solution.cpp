@@ -11,6 +11,8 @@ namespace {
 constexpr std::uint64_t BIG_BASE = 1'000'000'000ULL;
 constexpr std::uint64_t DECIMAL_SCALE = 1'000'000ULL;
 
+// Số nguyên lớn không dấu (big integer) để cộng dồn các phân số một cách chính
+// xác, tránh sai số của số thực khi tính kỳ vọng.
 class BigUnsigned {
 public:
     explicit BigUnsigned(std::uint64_t value = 0) {
@@ -95,12 +97,17 @@ private:
     std::vector<std::uint32_t> digits_;
 };
 
+// In numerator / denominator làm tròn 6 chữ số thập phân theo kiểu half-even
+// (banker's rounding): nhân tử số với 10^6 rồi tìm nhị phân giá trị nguyên
+// low sao cho low <= (tử số * 10^6) / mẫu số, sau đó xử lý trường hợp đúng nửa.
 void print_half_even(const BigUnsigned& numerator,
                      const BigUnsigned& denominator,
                      const std::uint64_t upper_scaled) {
+    // Nhân tử số với 10^6 để chuyển việc làm tròn về so sánh số nguyên.
     BigUnsigned scaled = numerator;
     scaled.multiply(DECIMAL_SCALE);
 
+    // Tìm nhị phân phần nguyên lớn nhất low mà denominator * low <= scaled.
     std::uint64_t low = 0;
     std::uint64_t high = upper_scaled;
     while (low < high) {
@@ -114,6 +121,8 @@ void print_half_even(const BigUnsigned& numerator,
         }
     }
 
+    // So sánh với điểm giữa để làm tròn: nếu vượt nửa thì tăng, nếu đúng nửa
+    // thì làm tròn về số chẵn (half-even).
     BigUnsigned twice_scaled = scaled;
     twice_scaled.multiply(2);
     BigUnsigned midpoint = denominator;
@@ -141,8 +150,9 @@ int main() {
         std::cin >> range;
     }
 
-    // D is L^2, where L is the lcm of all ranges.  Build D directly from
-    // the largest prime exponent present in any range.
+    // Mẫu số chung D = L^2, với L là lcm của mọi range. Dựng D trực tiếp từ số
+    // mũ nguyên tố lớn nhất xuất hiện trong bất kỳ range nào (mỗi nguyên tố lấy
+    // mũ gấp đôi để có L^2).
     std::array<int, 101> maximum_exponent{};
     for (const int range : ranges) {
         int remaining = range;
@@ -172,15 +182,20 @@ int main() {
         }
     }
 
+    // Linearity of expectation: cộng dồn P(x_i > x_j) trên mọi cặp i < j.
     BigUnsigned numerator(0);
     for (std::size_t i = 0; i < ranges.size(); ++i) {
         for (std::size_t j = i + 1; j < ranges.size(); ++j) {
+            // Số cặp thỏa u > v tính bằng công thức đóng: m = min(r_j, r_i - 1),
+            // count = m * r_i - m * (m + 1) / 2.
             const long long upper = std::min(ranges[j], ranges[i] - 1);
             if (upper <= 0) {
                 continue;
             }
             const long long favorable =
                 upper * ranges[i] - upper * (upper + 1) / 2;
+            // Xác suất cặp này = favorable / (r_i * r_j); quy về mẫu số chung D
+            // rồi cộng D / (r_i * r_j) * favorable vào tử số.
             const int pair_denominator = ranges[i] * ranges[j];
             BigUnsigned term = denominator.divided_by(
                 static_cast<std::uint32_t>(pair_denominator)
@@ -190,6 +205,7 @@ int main() {
         }
     }
 
+    // Kỳ vọng tối đa là tổng số cặp n*(n-1)/2, dùng làm cận trên khi tìm nhị phân.
     const std::uint64_t maximum_inversions =
         static_cast<std::uint64_t>(n) *
         static_cast<std::uint64_t>(n - 1) / 2;

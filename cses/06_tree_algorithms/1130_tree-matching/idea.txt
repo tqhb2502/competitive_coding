@@ -1,39 +1,42 @@
-Bài toán: Tree Matching (CSES 1130)
+Tree Matching - CSES 1130
+https://cses.fi/problemset/task/1130
 
-Mô hình hóa:
-- Cho một cây gồm n đỉnh (n - 1 cạnh). Một matching là tập các cạnh sao cho mỗi
-  đỉnh là đầu mút của nhiều nhất một cạnh được chọn. Cần tìm số cạnh lớn nhất
-  trong một matching (maximum matching trên cây).
+## Đề bài
+Cho một cây gồm n đỉnh (n - 1 cạnh). Một matching là tập các cạnh sao cho mỗi
+đỉnh là đầu mút của nhiều nhất một cạnh được chọn. Hãy tìm số cạnh lớn nhất có
+thể có trong một matching (maximum matching trên cây).
 
-Thuật toán (tree DP / DP trên cây):
-- Chọn gốc là đỉnh 1. Với mỗi đỉnh u ta định nghĩa hai trạng thái:
-    dp0[u] = matching lớn nhất trong subtree của u khi u KHÔNG được ghép (không
-             nằm trong cạnh nào của matching bên trong subtree).
-    dp1[u] = matching lớn nhất trong subtree của u khi u ĐƯỢC ghép với đúng một
-             đỉnh con của nó.
-- Gọi các con của u là c1, c2, ... Ta có:
-    dp0[u] = tổng theo mọi con c của max(dp0[c], dp1[c])
-             (u không ghép, mỗi con tự tối ưu độc lập).
-    dp1[u] = dp0[u] + max theo mọi con c của ( 1 + dp0[c] - max(dp0[c], dp1[c]) )
-             (chọn một con c để ghép cạnh u-c: được thêm 1 cạnh, nhưng con c bắt
-              buộc ở trạng thái dp0[c] vì c đã bị dùng, nên ta trừ đi phần đóng
-              góp cũ max(dp0[c], dp1[c]) và cộng lại 1 + dp0[c]).
-  Nếu u là lá (không có con) thì dp1[u] = -vô cực (không thể ghép), coi như không hợp lệ.
-- Đáp án = max(dp0[1], dp1[1]).
+## Ý tưởng
+Dùng DP trên cây (tree DP). Chọn gốc là đỉnh 1. Với mỗi đỉnh u định nghĩa hai
+trạng thái:
+- dp0[u] = matching lớn nhất trong subtree của u khi u KHÔNG được ghép (u không
+  nằm trong cạnh nào của matching bên trong subtree).
+- dp1[u] = matching lớn nhất trong subtree của u khi u ĐƯỢC ghép với đúng một
+  đỉnh con của nó.
 
-Tính đúng đắn:
-- Mỗi cạnh của matching nối một đỉnh với cha hoặc con của nó. Khi xét theo hướng
-  từ gốc, mỗi cạnh được chọn có thể quy về việc một đỉnh u "ghép xuống" một con c.
-  Hai trạng thái dp0/dp1 mô tả đầy đủ: hoặc u còn tự do để cha ghép lên, hoặc u
-  đã bị dùng bởi một con. Công thức chuyển trạng thái duyệt hết mọi cách chọn con
-  để ghép và lấy tối ưu, nên cho ra maximum matching chính xác trên cây.
+Gọi các con của u là c1, c2, ... Công thức chuyển trạng thái:
+- dp0[u] = tổng theo mọi con c của max(dp0[c], dp1[c])
+  (u không ghép, mỗi con tự tối ưu độc lập).
+- dp1[u] = dp0[u] + max theo mọi con c của ( 1 + dp0[c] - max(dp0[c], dp1[c]) )
+  (chọn một con c để ghép cạnh u-c: được thêm 1 cạnh, nhưng con c bắt buộc ở
+  trạng thái dp0[c] vì c đã bị dùng, nên trừ phần đóng góp cũ max(dp0[c], dp1[c])
+  và cộng lại 1 + dp0[c]).
+- Nếu u là lá (không có con) thì dp1[u] = -vô cực (không thể ghép), coi như không
+  hợp lệ.
 
-Cài đặt tránh đệ quy:
-- Cây tới 2*10^5 đỉnh nên KHÔNG dùng DFS đệ quy (tránh RecursionError).
-- Dùng BFS/DFS lặp bằng stack để lấy thứ tự duyệt và mảng parent, sau đó xử lý DP
-  theo thứ tự ĐẢO NGƯỢC của thứ tự duyệt (bảo đảm mọi con được tính trước cha,
-  tức post-order).
+Đáp án = max(dp0[1], dp1[1]).
 
-Độ phức tạp:
+Tính đúng đắn: mỗi cạnh của matching nối một đỉnh với cha hoặc con của nó. Khi
+xét theo hướng từ gốc, mỗi cạnh được chọn quy về việc một đỉnh u "ghép xuống"
+một con c. Hai trạng thái dp0/dp1 mô tả đầy đủ: hoặc u còn tự do để cha ghép lên,
+hoặc u đã bị dùng bởi một con. Công thức chuyển trạng thái duyệt hết mọi cách
+chọn con để ghép và lấy tối ưu, nên cho ra maximum matching chính xác trên cây.
+
+Cài đặt tránh đệ quy: cây có tới 2*10^5 đỉnh nên KHÔNG dùng DFS đệ quy (tránh tràn
+stack / RecursionError). Dùng BFS/DFS lặp bằng stack để lấy thứ tự duyệt và mảng
+parent, sau đó xử lý DP theo thứ tự ĐẢO NGƯỢC của thứ tự duyệt (bảo đảm mọi con
+được tính trước cha, tức post-order).
+
+## Độ phức tạp
 - Thời gian: O(n) (mỗi cạnh/đỉnh được xét số lần hằng số).
 - Bộ nhớ: O(n) cho danh sách kề, mảng parent, order, dp0, dp1.

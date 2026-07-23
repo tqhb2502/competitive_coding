@@ -1,73 +1,76 @@
 Divisor Analysis - CSES 2182
+https://cses.fi/problemset/task/2182
 
-BÀI TOÁN
-Cho số N dưới dạng phân tích thừa số nguyên tố N = tích x_i^{k_i} (n cặp (x_i, k_i)).
-Cần in ra ba giá trị modulo p = 1e9+7:
+## Đề bài
+Cho số N dưới dạng phân tích thừa số nguyên tố N = tích x_i^{k_i} (gồm n cặp
+(x_i, k_i)). Cần in ra ba giá trị theo modulo p = 1e9+7:
   1) số lượng ước của N,
   2) tổng tất cả các ước của N,
   3) tích tất cả các ước của N.
-Ràng buộc: 1 <= n <= 1e5, 2 <= x_i <= 1e6 (các x_i đôi một khác nhau), 1 <= k_i <= 1e9.
-Lưu ý: chỉ có 78498 số nguyên tố <= 1e6 nên n thực tế bị chặn bởi con số này.
+Ràng buộc: 1 <= n <= 1e5, 2 <= x_i <= 1e6 (các x_i đôi một khác nhau),
+1 <= k_i <= 1e9. Vì chỉ có 78498 số nguyên tố <= 1e6 nên n thực tế bị chặn bởi
+con số này.
 
-CÔNG THỨC
-
+## Ý tưởng
 1) Số lượng ước
    Mỗi ước tương ứng với cách chọn số mũ a_i thỏa 0 <= a_i <= k_i, nên
        D = tích (k_i + 1).
-   Tính trực tiếp modulo p.
+   Tính trực tiếp theo modulo p.
 
 2) Tổng các ước
    Tổng ước là tích của các chuỗi hình học (geometric series):
        S = tích_i ( 1 + x_i + x_i^2 + ... + x_i^{k_i} )
          = tích_i ( x_i^{k_i+1} - 1 ) / ( x_i - 1 ).
-   Với mỗi i dùng nghịch đảo modulo: nghịch đảo của (x_i - 1) mod p. Vì 2 <= x_i
-   <= 1e6 < p nên x_i - 1 nằm trong [1, 1e6-1], không bao giờ chia hết cho p, do đó
-   nghịch đảo luôn tồn tại (không cần xét trường hợp đặc biệt x_i == 1 mod p).
+   Với mỗi i dùng nghịch đảo modulo: nghịch đảo của (x_i - 1) mod p. Vì
+   2 <= x_i <= 1e6 < p nên x_i - 1 nằm trong [1, 1e6-1], không bao giờ chia hết
+   cho p, do đó nghịch đảo luôn tồn tại (không cần xét trường hợp đặc biệt
+   x_i == 1 mod p).
 
-   Tối ưu quan trọng (tránh TLE): thay vì gọi pow(x_i - 1, p-2, p) cho từng i (mỗi
-   lần là một phép lũy thừa nặng ~30 bước), ta nghịch đảo HÀNG LOẠT bằng thủ thuật
+   Tối ưu quan trọng: thay vì gọi pow(x_i - 1, p-2, p) cho từng i (mỗi lần là một
+   phép lũy thừa nặng ~30 bước), ta nghịch đảo hàng loạt bằng thủ thuật
    Montgomery. Đặt d_i = (x_i - 1) mod p:
      - Tính tiền tố prefix[i] = d_0 * d_1 * ... * d_{i-1} và tích toàn bộ acc.
-     - Nghịch đảo tích toàn bộ bằng ĐÚNG MỘT phép pow: inv_acc = pow(acc, p-2, p).
+     - Nghịch đảo tích toàn bộ bằng đúng một phép pow: inv_acc = pow(acc, p-2, p).
      - Quét ngược để lấy từng nghịch đảo: inv(d_i) = inv_acc * prefix[i],
        rồi cập nhật inv_acc *= d_i.
-   Như vậy toàn bộ n nghịch đảo chỉ tốn 1 phép pow + O(n) phép nhân thay vì n phép
-   pow. Với pure Python và n ~ 78498 điều này giảm đáng kể thời gian chạy.
+   Như vậy toàn bộ n nghịch đảo chỉ tốn 1 phép pow cộng O(n) phép nhân thay vì n
+   phép pow.
 
 3) Tích các ước
    Công thức kinh điển: tích các ước = N^{D/2}, với D là số ước.
-   Chứng minh nhanh: ghép cặp ước d với N/d, mỗi cặp có tích = N, có D/2 cặp.
+   Chứng minh nhanh: ghép cặp ước d với N/d, mỗi cặp có tích bằng N, có D/2 cặp.
    Viết theo từng thừa số nguyên tố:
        tích ước = tích_i x_i^{E_i},  với E_i = k_i * D / 2.
    (Tổng số mũ của x_i trên tất cả các ước = (0+1+...+k_i) * D/(k_i+1)
     = k_i(k_i+1)/2 * D/(k_i+1) = k_i * D / 2.)
 
    Vấn đề: D/2 có thể không nguyên (khi D lẻ, tức N là số chính phương). Ta luôn
-   giữ số mũ ở dạng NGUYÊN rồi mới rút gọn:
-     - Nếu D chẵn (tồn tại k_i lẻ, khi đó k_i+1 chẵn): chia đôi đúng MỘT thừa số
+   giữ số mũ ở dạng nguyên rồi mới rút gọn:
+     - Nếu D chẵn (tồn tại k_i lẻ, khi đó k_i+1 chẵn): chia đôi đúng một thừa số
        chẵn (k_j+1) của D để được số nguyên D/2, phần còn lại giữ nguyên. Khi đó
        E_i = k_i * (D/2).
      - Nếu D lẻ (mọi k_i đều chẵn): D/2 không nguyên nhưng k_i/2 nguyên, nên
        E_i = (k_i/2) * D.
 
-   Rút gọn số mũ bằng Fermat modulo PHI = p - 1: vì gcd(x_i, p) = 1 (x_i nguyên tố
-   và x_i < p) nên x_i^E = x_i^{E mod (p-1)} (mod p). Lưu ý KHÔNG thể chia 2 trực
-   tiếp modulo PHI vì PHI = 1e9+6 là số chẵn (2 không khả nghịch mod PHI), do đó
-   phải chia đôi trên số nguyên như trên trước khi lấy mod.
+   Rút gọn số mũ bằng Fermat theo modulo PHI = p - 1: vì gcd(x_i, p) = 1 (x_i là
+   số nguyên tố và x_i < p) nên x_i^E = x_i^{E mod (p-1)} (mod p). Lưu ý không thể
+   chia 2 trực tiếp theo modulo PHI vì PHI = 1e9+6 là số chẵn (2 không khả nghịch
+   mod PHI), do đó phải chia đôi trên số nguyên như trên trước khi lấy mod.
 
-TÍNH ĐÚNG ĐẮN
+Tính đúng đắn:
 - D, S đúng theo định nghĩa chuẩn.
 - Với tích ước, số mũ E_i luôn là số nguyên không âm (nhờ kỹ thuật chia đôi trên
   số nguyên), sau đó rút gọn mod (p-1) hoàn toàn hợp lệ do điều kiện gcd = 1.
-- Nghịch đảo hàng loạt cho cùng kết quả với việc nghịch đảo riêng lẻ (chỉ khác cách
-  tổ chức phép nhân), nên không ảnh hưởng tính đúng đắn.
+- Nghịch đảo hàng loạt cho cùng kết quả với việc nghịch đảo riêng lẻ (chỉ khác
+  cách tổ chức phép nhân), nên không ảnh hưởng tính đúng đắn.
 
-ĐỘ PHỨC TẠP
-- Thời gian: O(n log(maxK)). Mỗi thừa số chỉ còn HAI phép pow nặng (một cho
+LƯU Ý TLE: đọc input một lần bằng sys.stdin.buffer.read().split(), in kết quả một
+lần. Nhờ nghịch đảo hàng loạt, mỗi thừa số chỉ còn hai phép pow nặng cộng vài
+phép nhân, nên với pure Python cho giới hạn này không có nguy cơ TLE đáng kể.
+
+## Độ phức tạp
+- Thời gian: O(n log(maxK)). Mỗi thừa số chỉ còn hai phép pow nặng (một cho
   x^{k+1} ở phần tổng, một cho x^E ở phần tích) cộng vài phép nhân; phần nghịch
   đảo chỉ tốn 1 phép pow chung cho toàn bộ. Với n ~ 78498 tổng khoảng vài triệu
   phép nhân modulo, chạy dưới ~0.5s bằng pure CPython.
 - Bộ nhớ: O(n) lưu các cặp (x_i, k_i) và các mảng phụ cho nghịch đảo hàng loạt.
-
-Đọc input một lần bằng sys.stdin.buffer.read().split(), in kết quả một lần.
-Không có nguy cơ TLE đáng kể với pure Python cho giới hạn này.

@@ -1,29 +1,34 @@
 #include <iostream>
 
+// Trả về số hiệu (1-indexed) của đứa trẻ bị loại ở lượt thứ k trên vòng tròn n đứa.
+// Khử đệ quy theo tầng: mỗi tầng thu vòng tròn về nửa kích thước, đồng thời giữ phép
+// biến đổi tuyến tính answer = offset + scale * sublabel để ánh xạ ngược về nhãn gốc.
 long long kth_removed(long long n, long long k) {
-    // The final original label is maintained as offset + scale * sublabel.
     long long offset = 0;
     long long scale = 1;
 
     while (true) {
+        // m = số đứa bị loại trong vòng quét đầu (các vị trí chẵn).
         const long long first_round = n / 2;
+        // Nếu k rơi vào vòng quét đầu, đáp án là vị trí chẵn thứ k => 2*k.
         if (k <= first_round) {
             return offset + scale * (2 * k);
         }
 
+        // r = chỉ số loại trong vòng nhỏ (chỉ còn các vị trí lẻ sống sót).
         const long long remaining_k = k - first_round;
         if ((n & 1LL) == 0) {
-            // Odd survivors 1,3,... map a sublabel x to 2*x-1.
+            // n chẵn: các đứa còn lại 1,3,... ánh xạ sublabel x thành 2*x-1.
             offset -= scale;
             scale *= 2;
             n = first_round;
             k = remaining_k;
         } else {
-            // After the even labels, label 1 is removed next.
+            // n lẻ: sau khi loại hết vị trí chẵn thì số 1 bị loại ngay tiếp theo.
             if (remaining_k == 1) {
                 return offset + scale;
             }
-            // Remaining labels 3,5,... map a sublabel x to 2*x+1.
+            // Phần còn lại 3,5,... ánh xạ sublabel x thành 2*x+1.
             offset += scale;
             scale *= 2;
             n = first_round;

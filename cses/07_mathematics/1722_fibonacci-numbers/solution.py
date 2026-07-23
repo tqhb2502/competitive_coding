@@ -1,17 +1,18 @@
-# Fibonacci Numbers - https://cses.fi/problemset/task/1722
-# Tính F(n) mod 1e9+7 với n <= 10^18 bằng fast doubling, O(log n).
 import sys
 
 MOD = 10 ** 9 + 7
 
 
 def fib_pair(n):
-    # Trả về (F(n), F(n+1)) mod MOD bằng fast doubling.
+    # Fast doubling: trả về cặp (F(n), F(n+1)) mod MOD.
     if n == 0:
         return (0, 1)
-    a, b = fib_pair(n >> 1)  # a = F(k), b = F(k+1) với k = n // 2
+    # a = F(k), b = F(k+1) với k = n // 2
+    a, b = fib_pair(n >> 1)
+    # Hai đẳng thức fast doubling
     c = (a * ((2 * b - a) % MOD)) % MOD          # F(2k)
     d = (a * a + b * b) % MOD                     # F(2k+1)
+    # Nếu bit hiện tại là 1 thì dịch thêm một bước Fibonacci
     if n & 1:
         return (d, (c + d) % MOD)                 # (F(2k+1), F(2k+2))
     else:

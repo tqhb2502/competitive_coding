@@ -1,6 +1,3 @@
-# Fixed-Length Paths II - https://cses.fi/problemset/task/2081
-# Đếm số đường đi (path) trong cây có số cạnh nằm trong [k1, k2].
-# Kỹ thuật: Centroid Decomposition + two-pointer đếm cặp có tổng depth trong khoảng.
 import sys
 
 
@@ -11,22 +8,24 @@ def main():
     k1 = int(data[pos]); pos += 1
     k2 = int(data[pos]); pos += 1
 
+    # Danh sách kề của cây
     adj = [[] for _ in range(n + 1)]
     for _ in range(n - 1):
         a = int(data[pos]); b = int(data[pos + 1]); pos += 2
         adj[a].append(b)
         adj[b].append(a)
 
-    removed = bytearray(n + 1)
-    subsize = [0] * (n + 1)
-    par = [0] * (n + 1)
-    cpar = [0] * (n + 1)
-    depthv = [0] * (n + 1)
+    removed = bytearray(n + 1)   # đỉnh đã bị chọn làm centroid và xóa
+    subsize = [0] * (n + 1)      # kích thước cây con trong component hiện tại
+    par = [0] * (n + 1)          # cha khi duyệt component để tính size
+    cpar = [0] * (n + 1)         # cha khi duyệt depth từ centroid
+    depthv = [0] * (n + 1)       # depth (số cạnh) từ centroid tới mỗi đỉnh
 
     k1m1 = k1 - 1
 
     def count_leq(arr, X):
         # Số cặp không thứ tự (i < j) có arr[i] + arr[j] <= X, arr đã sắp tăng.
+        # Two-pointer O(len).
         l = 0
         r = len(arr) - 1
         c = 0
@@ -39,14 +38,14 @@ def main():
         return c
 
     ans = 0
-    stack = [1]
+    stack = [1]   # các component chờ xử lý (đại diện bởi một đỉnh bất kỳ)
 
     while stack:
         start = stack.pop()
         if removed[start]:
             continue
 
-        # --- Tính component + subtree size khi root tại start (iterative) ---
+        # --- Duyệt component (iterative) và tính subtree size khi root tại start ---
         comp = []
         par[start] = 0
         st = [start]
@@ -58,6 +57,7 @@ def main():
                 if not removed[v] and v != pu:
                     par[v] = u
                     st.append(v)
+        # Duyệt ngược thứ tự phát hiện để cộng size từ lá lên gốc
         for u in reversed(comp):
             s = 1
             pu = par[u]
@@ -67,7 +67,7 @@ def main():
             subsize[u] = s
         total = len(comp)
 
-        # --- Tìm centroid ---
+        # --- Tìm centroid: đi về phía cây con có kích thước > total/2 ---
         u = start
         p = 0
         while True:
@@ -84,14 +84,15 @@ def main():
             u = best
         c = u
 
-        # --- Tính đóng góp của các path đi qua centroid c ---
-        # D_all gồm centroid (depth 0) + tất cả node trong component (depth tính từ c).
-        # contrib = count_range(D_all) - sum_child count_range(child)  (inclusion-exclusion).
+        # --- Đóng góp của các path đi qua centroid c (inclusion-exclusion) ---
+        # D_all = centroid (depth 0) + mọi node trong component (depth tính từ c).
+        # contrib = count_range(D_all) - sum_child count_range(child).
         D_all = [0]
         contrib = 0
         for nb in adj[c]:
             if removed[nb]:
                 continue
+            # DFS iterative trong một cây con của c để lấy mảng depth
             cpar[nb] = c
             depthv[nb] = 1
             st2 = [nb]
@@ -108,14 +109,16 @@ def main():
                         depthv[v] = dx + 1
                         st2.append(v)
             child.sort()
+            # Trừ đi các cặp cùng một cây con (đường đi thật giữa chúng không qua c)
             if len(child) >= 2:
                 contrib -= count_leq(child, k2) - count_leq(child, k1m1)
             D_all += child
+        # count_range trên toàn bộ D_all rồi cộng vào đáp số
         D_all.sort()
         contrib += count_leq(D_all, k2) - count_leq(D_all, k1m1)
         ans += contrib
 
-        # --- Xóa centroid, đẩy các component con vào stack ---
+        # --- Xóa centroid, đẩy các component con vào stack để đệ quy ---
         removed[c] = 1
         for nb in adj[c]:
             if not removed[nb]:

@@ -1,36 +1,21 @@
-# Counting Paths - CSES 1136
-# https://cses.fi/problemset/task/1136
-#
-# Với mỗi đường đi (a, b) trên cây, ta cần cộng 1 cho mỗi đỉnh nằm trên đường đi.
-# Kỹ thuật "difference on tree" (prefix-sum trên cây):
-#   diff[a]  += 1
-#   diff[b]  += 1
-#   diff[lca]        -= 1
-#   diff[parent[lca]]-= 1   (nếu lca không phải gốc)
-# Sau đó đáp án của mỗi đỉnh = tổng diff trên toàn bộ subtree của đỉnh đó.
-#
-# LCA được tính offline bằng thuật toán Tarjan (union-find) => gần tuyến tính.
-# Tất cả duyệt cây đều ITERATIVE (không dùng đệ quy) để tránh tràn stack.
-
 import sys
 from collections import deque
 
 
 def main():
     data = sys.stdin.buffer.read().split()
-    # chuyển nhanh sang int
     it = iter(data)
     n = int(next(it))
     m = int(next(it))
 
-    # danh sách kề
+    # Đọc cây: danh sách kề vô hướng gồm n - 1 cạnh
     adj = [[] for _ in range(n + 1)]
     for _ in range(n - 1):
         a = int(next(it)); b = int(next(it))
         adj[a].append(b)
         adj[b].append(a)
 
-    # BFS gốc tại 1: parent, children, thứ tự duyệt (order)
+    # BFS gốc tại 1: dựng parent, children và thứ tự duyệt (order)
     parent = [0] * (n + 1)
     children = [[] for _ in range(n + 1)]
     order = []
@@ -40,7 +25,6 @@ def main():
     while dq:
         u = dq.popleft()
         order.append(u)
-        pu = parent[u]
         for v in adj[u]:
             if not visited[v]:
                 visited[v] = 1
@@ -48,10 +32,10 @@ def main():
                 children[u].append(v)
                 dq.append(v)
 
-    # đọc các đường đi (query)
+    # Đọc các đường đi (truy vấn); qlist[u] = danh sách (đầu kia, chỉ số truy vấn)
     pathA = [0] * m
     pathB = [0] * m
-    qlist = [[] for _ in range(n + 1)]  # qlist[u] = danh sách các (đầu kia, chỉ số truy vấn)
+    qlist = [[] for _ in range(n + 1)]
     for qi in range(m):
         a = int(next(it)); b = int(next(it))
         pathA[qi] = a
@@ -59,7 +43,7 @@ def main():
         qlist[a].append((b, qi))
         qlist[b].append((a, qi))
 
-    # ---- Tarjan offline LCA ----
+    # ---- Tarjan offline LCA (DSU union theo size + nén đường đi) ----
     dsu = list(range(n + 1))
     size = [1] * (n + 1)
     ancestor = [0] * (n + 1)
@@ -77,7 +61,7 @@ def main():
             x = nxt
         return root
 
-    # DFS lặp bằng stack frame [node, parent, next_child_index]
+    # DFS lặp: mỗi frame là [node, parent, chỉ số con kế tiếp]
     stack = [[1, 0, 0]]
     ancestor[1] = 1  # make_set(1)
     while stack:
@@ -86,12 +70,13 @@ def main():
         ci = frame[2]
         ch = children[u]
         if ci < len(ch):
+            # Còn con chưa duyệt: make_set(v) rồi đi xuống con đó
             v = ch[ci]
             frame[2] = ci + 1
             ancestor[v] = v  # make_set(v)
             stack.append([v, u, 0])
         else:
-            # hoàn tất u
+            # Hoàn tất u: trả lời mọi truy vấn có đầu kia đã hoàn tất (black)
             black[u] = 1
             for w, qi in qlist[u]:
                 if black[w]:
@@ -99,7 +84,7 @@ def main():
             stack.pop()
             pu = frame[1]
             if pu:
-                # union(pu, u)
+                # union(pu, u) rồi gán lại ancestor của tập cho cha pu
                 ra = find(pu)
                 rb = find(u)
                 if ra != rb:
@@ -109,7 +94,7 @@ def main():
                     size[ra] += size[rb]
                 ancestor[find(pu)] = pu
 
-    # ---- difference on tree ----
+    # ---- Difference on tree: đánh dấu hiệu cho từng đường đi qua LCA ----
     diff = [0] * (n + 1)
     for qi in range(m):
         a = pathA[qi]
@@ -122,8 +107,8 @@ def main():
         if pl:
             diff[pl] -= 1
 
-    # ---- tổng subtree bằng cách cộng ngược thứ tự BFS ----
-    val = diff  # tái sử dụng mảng
+    # ---- Cộng tổng subtree bằng cách duyệt ngược thứ tự BFS (con dồn lên cha) ----
+    val = diff  # tái sử dụng mảng diff
     for i in range(len(order) - 1, -1, -1):
         u = order[i]
         p = parent[u]

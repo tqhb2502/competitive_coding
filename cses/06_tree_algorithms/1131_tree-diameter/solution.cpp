@@ -10,6 +10,7 @@ int main() {
     int n;
     std::cin >> n;
 
+    // Lưu cây bằng adjacency list, mỗi cạnh có độ dài 1.
     std::vector<std::vector<int>> adj(n + 1);
     for (int i = 0; i < n - 1; ++i) {
         int a, b;
@@ -18,6 +19,7 @@ int main() {
         adj[b].push_back(a);
     }
 
+    // BFS từ source, trả về (node xa nhất, khoảng cách xa nhất).
     const auto farthest_from = [&](const int source) {
         std::vector<int> distance(n + 1, -1);
         std::queue<int> queue;
@@ -41,6 +43,8 @@ int main() {
         return std::pair<int, int>{farthest, distance[farthest]};
     };
 
+    // Double BFS (two-sweep): lần 1 tìm một đầu mút của đường kính,
+    // lần 2 từ đầu mút đó đo ra độ dài đường kính.
     const int endpoint = farthest_from(1).first;
     std::cout << farthest_from(endpoint).second << '\n';
     return 0;

@@ -1,6 +1,3 @@
-# Permutation Rounds - https://cses.fi/problemset/task/3398
-# Số vòng (rounds) để mảng trở lại trạng thái sorted lần đầu tiên = LCM độ dài các cycle.
-# In kết quả modulo 10^9+7.
 import sys
 
 
@@ -14,7 +11,8 @@ def main():
 
     MOD = 10 ** 9 + 7
 
-    # Tìm độ dài các cycle của permutation
+    # Tách hoán vị thành các cycle: duyệt i -> p[i] và đánh dấu visited.
+    # Đáp án là bậc của hoán vị = LCM độ dài các cycle.
     visited = bytearray(n + 1)
     cycle_lengths = []
     for i in range(1, n + 1):
@@ -27,7 +25,7 @@ def main():
                 length += 1
             cycle_lengths.append(length)
 
-    # Smallest prime factor (SPF) sieve tới n
+    # SPF sieve (smallest prime factor) tới n để factorize nhanh mỗi độ dài cycle
     max_len = n
     spf = list(range(max_len + 1))
     i = 2
@@ -38,7 +36,8 @@ def main():
                     spf[j] = i
         i += 1
 
-    # LCM mod p: lấy số mũ lớn nhất cho mỗi prime trên tất cả cycle length
+    # LCM qua phân tích thừa số: với mỗi prime lấy số mũ lớn nhất
+    # xuất hiện trên tất cả các độ dài cycle
     prime_exp = {}
     for L in cycle_lengths:
         x = L
@@ -51,6 +50,7 @@ def main():
             if cnt > prime_exp.get(pr, 0):
                 prime_exp[pr] = cnt
 
+    # LCM mod p = tích của prime^(số mũ lớn nhất) theo modulo MOD
     ans = 1
     for pr, e in prime_exp.items():
         ans = (ans * pow(pr, e, MOD)) % MOD

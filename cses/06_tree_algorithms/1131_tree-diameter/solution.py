@@ -1,9 +1,3 @@
-# Tree Diameter - CSES 1131
-# https://cses.fi/problemset/task/1131
-# Thuật toán: double BFS (two-sweep). BFS lần 1 từ node bất kỳ để tìm một
-# đầu mút của đường kính, BFS lần 2 từ đầu mút đó để đo độ dài đường kính.
-# Toàn bộ iterative (không đệ quy) để an toàn với cây tới 2*10^5 node.
-
 import sys
 from collections import deque
 
@@ -42,6 +36,7 @@ def main():
         adj[pos[a]] = b; pos[a] += 1
         adj[pos[b]] = a; pos[b] += 1
 
+    # BFS iterative (không đệ quy) trả về (node xa nhất, khoảng cách xa nhất).
     def bfs(src):
         dist = [-1] * (n + 1)
         dist[src] = 0
@@ -61,10 +56,13 @@ def main():
                     q.append(w)
         return far_node, far_dist
 
+    # Trường hợp đặc biệt: cây một node, không có cạnh nên đường kính = 0.
     if n == 1:
         sys.stdout.buffer.write(b"0\n")
         return
 
+    # Double BFS (two-sweep): lần 1 tìm một đầu mút u của đường kính,
+    # lần 2 từ u đo ra độ dài đường kính.
     u, _ = bfs(1)
     _, diameter = bfs(u)
 

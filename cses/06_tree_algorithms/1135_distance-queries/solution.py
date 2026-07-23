@@ -1,10 +1,3 @@
-# Distance Queries — CSES 1135
-# https://cses.fi/problemset/task/1135
-#
-# Tree distance via LCA (binary lifting):
-#   dist(a, b) = depth[a] + depth[b] - 2 * depth[LCA(a, b)]
-# parent/depth computed by iterative BFS (no recursion; n up to 2e5).
-
 import sys
 
 
@@ -14,7 +7,7 @@ def main():
     n = int(data[idx]); idx += 1
     q = int(data[idx]); idx += 1
 
-    # Store raw edges first (build CSR adjacency afterwards).
+    # Đọc trước các cạnh thô rồi mới dựng danh sách kề dạng CSR.
     edges_a = [0] * (n - 1) if n > 1 else []
     edges_b = [0] * (n - 1) if n > 1 else []
     deg = [0] * (n + 1)
@@ -25,18 +18,18 @@ def main():
         deg[a] += 1
         deg[b] += 1
 
-    # Build CSR adjacency.
+    # Dựng danh sách kề CSR: start[] là offset, adj[] chứa các đỉnh kề.
     start = [0] * (n + 2)
     for v in range(1, n + 1):
         start[v + 1] = start[v] + deg[v]
     adj = [0] * (2 * (n - 1)) if n > 1 else []
-    pos = start[:]  # copy write cursors
+    pos = start[:]  # con trỏ ghi cho từng đỉnh
     for i in range(n - 1):
         a = edges_a[i]; b = edges_b[i]
         adj[pos[a]] = b; pos[a] += 1
         adj[pos[b]] = a; pos[b] += 1
 
-    # Iterative BFS from node 1 to get parent and depth.
+    # BFS lặp từ đỉnh 1 để tính parent[] và depth[], tránh đệ quy.
     depth = [0] * (n + 1)
     parent = [0] * (n + 1)
     visited = bytearray(n + 1)
@@ -58,14 +51,14 @@ def main():
                 depth[w] = du + 1
                 order[qt] = w; qt += 1
 
-    # Binary lifting table.
+    # Bảng binary lifting: up[k][v] = tổ tiên thứ 2^k của v.
     LOG = 1
     while (1 << LOG) < n:
         LOG += 1
     if LOG < 1:
         LOG = 1
 
-    up = [parent]  # up[0] = parent
+    up = [parent]  # up[0] = parent trực tiếp
     for k in range(1, LOG):
         prev = up[k - 1]
         cur = [0] * (n + 1)
@@ -77,7 +70,7 @@ def main():
     for _ in range(q):
         a = int(data[idx]); b = int(data[idx + 1]); idx += 2
         da = depth[a]; db = depth[b]
-        # Bring the deeper one up.
+        # Đưa đỉnh sâu hơn lên cùng độ sâu với đỉnh còn lại.
         if da < db:
             a, b = b, a
             da, db = db, da
@@ -89,15 +82,18 @@ def main():
             diff >>= 1
             k += 1
         if a == b:
+            # Đã trùng nhau: b chính là LCA.
             l = a
         else:
+            # Nhảy đồng thời hai đỉnh lên bước lớn nhất mà chúng vẫn khác nhau.
             for k in range(LOG - 1, -1, -1):
                 ua = up[k][a]
                 ub = up[k][b]
                 if ua != ub:
                     a = ua
                     b = ub
-            l = parent[a]
+            l = parent[a]  # parent chung là LCA
+        # Khoảng cách = depth[a] + depth[b] - 2 * depth[LCA].
         out.append(da + db - 2 * depth[l])
 
     sys.stdout.buffer.write(("\n".join(map(str, out)) + ("\n" if out else "")).encode())

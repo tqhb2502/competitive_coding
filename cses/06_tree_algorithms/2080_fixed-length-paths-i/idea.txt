@@ -1,7 +1,10 @@
 Fixed-Length Paths I - CSES 2080
+https://cses.fi/problemset/task/2080
 
-Bài toán: Cho một cây n đỉnh, đếm số đường đi (path) gồm ĐÚNG k cạnh.
+## Đề bài
+Cho một cây gồm n đỉnh. Hãy đếm số đường đi (path) trong cây có ĐÚNG k cạnh.
 
+## Ý tưởng
 MÔ HÌNH HÓA
 - Root cây tại đỉnh 1. Mỗi đường đi trong cây có một đỉnh cao nhất duy nhất,
   chính là LCA của hai đầu mút. Ta đếm mỗi đường đi đúng một lần tại LCA của nó.
@@ -41,7 +44,7 @@ VÌ SAO ĐÚNG
   child chỉ được thừa kế chứ không tự ghép với chính nó nên không có đường đi
   nào bị đếm lặp; các cặp cross-child luôn có idx >= 1 nên được đếm chính xác.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian O(n), bộ nhớ O(n). Đây là thuật toán tối ưu về mặt tiệm cận (nhanh
   hơn centroid decomposition O(n log n)).
 

@@ -1,37 +1,36 @@
-Bài toán: Moving Robots (CSES 1726)
+Moving Robots - CSES 1726
+https://cses.fi/problemset/task/1726
 
-Đề bài:
+## Đề bài
 - Bàn cờ 8x8, ban đầu mỗi ô có đúng 1 robot (tổng cộng 64 robot).
-- Mỗi robot di chuyển độc lập k bước. Mỗi bước nó chọn ĐỀU (uniform) một trong các
-  hướng trái/phải/lên/xuống mà nó ĐI ĐƯỢC (không ra ngoài bàn). Vì vậy số hướng hợp lệ
+- Mỗi robot di chuyển độc lập k bước. Mỗi bước nó chọn đều (uniform) một trong các
+  hướng trái/phải/lên/xuống mà nó đi được (không ra ngoài bàn). Vì vậy số hướng hợp lệ
   phụ thuộc vị trí: ô góc có 2 hướng, ô cạnh có 3 hướng, ô trong có 4 hướng.
-- Nhiều robot có thể cùng đứng trên một ô. Cần tính KỲ VỌNG số ô rỗng sau k bước.
+- Nhiều robot có thể cùng đứng trên một ô. Cần tính kỳ vọng số ô rỗng sau k bước.
 - Ràng buộc: 1 <= k <= 100.
 
-Ý tưởng - linearity of expectation:
-- E[số ô rỗng] = tổng trên mọi ô s của P(ô s rỗng).
+## Ý tưởng
+- Dùng linearity of expectation: E[số ô rỗng] = tổng trên mọi ô s của P(ô s rỗng).
 - Gọi p_k(i -> s) là xác suất một robot xuất phát tại ô i kết thúc tại ô s sau k bước.
-- Các robot di chuyển độc lập, nên xác suất ô s KHÔNG có robot nào là:
+- Các robot di chuyển độc lập, nên xác suất ô s không có robot nào là:
       P(ô s rỗng) = tích trên mọi ô xuất phát i của (1 - p_k(i -> s)).
 - Đáp số = tổng trên mọi ô s của P(ô s rỗng).
 
-Tính p_k(i -> s):
-- Đây là một random walk với ma trận chuyển T, trong đó T[u][v] = 1/deg(u) nếu v kề u,
-  ngược lại bằng 0 (deg(u) là số hướng hợp lệ tại u). Ta cần T^k.
-- Cách làm: với mỗi ô xuất phát i giữ một vector phân bố dist[i][.] (độ dài 64),
+- Cách tính p_k(i -> s): đây là random walk với ma trận chuyển T, trong đó
+  T[u][v] = 1/deg(u) nếu v kề u, ngược lại bằng 0 (deg(u) là số hướng hợp lệ tại u).
+  Ta cần T^k. Với mỗi ô xuất phát i giữ một vector phân bố dist[i][.] (độ dài 64),
   khởi tạo dist[i][i] = 1. Mỗi bước cập nhật: mỗi ô u có xác suất p sẽ chia đều p/deg(u)
-  sang từng ô kề v (dồn vào new[i][v]). Sau k bước dist[i][s] = p_k(i -> s).
+  sang từng ô kề v (dồn vào new[i][v]). Sau k bước ta có dist[i][s] = p_k(i -> s).
 
-Vì sao đúng:
-- Kỳ vọng của tổng bằng tổng kỳ vọng (linearity of expectation) nên tách được theo từng ô s.
-- Với một ô s cố định, biến cố "robot xuất phát tại i không ở s" là độc lập giữa các i
-  (các robot di chuyển độc lập), nên xác suất tất cả đều không ở s là tích các (1 - p_k(i->s)).
+- Vì sao đúng: kỳ vọng của tổng bằng tổng kỳ vọng nên tách được theo từng ô s. Với một
+  ô s cố định, biến cố "robot xuất phát tại i không ở s" là độc lập giữa các i (các robot
+  di chuyển độc lập), nên xác suất tất cả đều không ở s là tích các (1 - p_k(i -> s)).
 
-Độ phức tạp:
-- Mỗi bước, với một vector xuất phát, tổng công việc = số ô (64) + tổng bậc các ô
-  (số cạnh có hướng = 224). Có 64 vector xuất phát và k bước, nên tổng ~ 64 * k * (64 + 224)
-  ~ 1.8 triệu phép toán khi k = 100. Bộ nhớ O(64*64) số thực. Rất nhanh, không lo TLE.
+- Xuất kết quả: in đáp số với "%.6f" (làm tròn tới 6 chữ số thập phân). Định dạng float
+  của Python dùng round-half-to-even, khớp yêu cầu đề "rounding half to even".
 
-Xuất kết quả:
-- In đáp số với "%.6f" (làm tròn tới 6 chữ số thập phân). Định dạng float của Python dùng
-  round-half-to-even, khớp yêu cầu đề "rounding half to even".
+## Độ phức tạp
+- Thời gian: mỗi bước, với một vector xuất phát, tổng công việc = số ô (64) cộng tổng bậc
+  các ô (số cạnh có hướng = 224). Có 64 vector xuất phát và k bước, nên tổng khoảng
+  64 * k * (64 + 224) ~ 1.8 triệu phép toán khi k = 100. Rất nhanh, không lo TLE.
+- Bộ nhớ: O(64 * 64) số thực.

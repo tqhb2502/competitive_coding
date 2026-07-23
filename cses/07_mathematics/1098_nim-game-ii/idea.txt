@@ -1,37 +1,41 @@
-Bài toán: Nim Game II (CSES 1098)
+Nim Game II - CSES 1098
+https://cses.fi/problemset/task/1098
 
-Đây là một biến thể của trò chơi Nim với luật lấy que bị giới hạn.
-Có n đống que, hai người chơi lần lượt đi. Mỗi lượt, người chơi chọn một
-đống không rỗng và lấy đi 1, 2 hoặc 3 que. Ai lấy que cuối cùng thì thắng
-(normal play convention).
+## Đề bài
+Có nhiều ván chơi. Mỗi ván có n đống que, hai người chơi lần lượt đi.
+Mỗi lượt, người chơi chọn một đống không rỗng và lấy đi 1, 2 hoặc 3 que.
+Người lấy que cuối cùng sẽ thắng (normal play convention). Với mỗi ván,
+hãy xác định người đi trước ("first") hay người đi sau ("second") thắng
+khi cả hai chơi tối ưu.
 
-Ý tưởng: dùng lý thuyết trò chơi Sprague-Grundy.
-- Mỗi đống là một trò chơi con độc lập. Trạng thái tổng là tổng (game sum)
-  của các trò chơi con, và giá trị Grundy của tổng bằng XOR của các giá trị
-  Grundy thành phần.
-- Với một đống kích thước x và luật lấy 1, 2 hoặc 3 que (đây chính là trò
-  chơi "subtraction game" với tập lấy {1,2,3}), giá trị Grundy là:
-        grundy(x) = x mod 4
-  Chứng minh nhanh bằng quy nạp / mex:
-    grundy(0) = 0 (thua, không đi được nữa)
+## Ý tưởng
+Dùng lý thuyết trò chơi Sprague-Grundy. Mỗi đống là một trò chơi con độc
+lập, giá trị Grundy của toàn cục bằng XOR các giá trị Grundy thành phần.
+
+Với một đống kích thước x và luật lấy 1, 2 hoặc 3 que (đây là "subtraction
+game" với tập lấy {1,2,3}), giá trị Grundy là:
+      grundy(x) = x mod 4
+Chứng minh nhanh bằng quy nạp với hàm mex:
+    grundy(0) = 0 (đã thua, không còn nước đi)
     grundy(x) = mex{ grundy(x-1), grundy(x-2), grundy(x-3) }
-  Từ đó grundy(0..)= 0,1,2,3,0,1,2,3,... tức là x mod 4.
+Suy ra dãy grundy(0..) = 0,1,2,3,0,1,2,3,... tức là chính x mod 4.
 
 Kết luận:
-- Tính XOR của (x_i mod 4) trên tất cả các đống.
-- Nếu XOR khác 0 thì trạng thái ban đầu là "N-position" (người đi trước,
-  first, thắng). Nếu XOR bằng 0 thì là "P-position" (người đi trước thua,
-  nên second thắng).
+- Tính XOR của (x_i mod 4) trên tất cả các đống của một ván.
+- Nếu XOR khác 0 thì đây là "N-position", người đi trước ("first") thắng.
+- Nếu XOR bằng 0 thì đây là "P-position", người đi sau ("second") thắng.
 
-Kiểm tra ví dụ:
-- [5,7,2,5] -> 1^3^2^1 = 1 != 0 -> first.
-- [4,1]     -> 0^1     = 1 != 0 -> first.
-- [4,4,4]   -> 0^0^0   = 0      -> second.
+Kiểm tra nhanh với ví dụ:
+- [5,7,2,5] -> 1^3^2^1 = 1 khác 0 -> first.
+- [4,1]     -> 0^1     = 1 khác 0 -> first.
+- [4,4,4]   -> 0^0^0   = 0        -> second.
 
-Độ phức tạp:
-- Thời gian: O(tổng n) để đọc và XOR tất cả các số. Với tổng n <= 2*10^5
-  thì rất nhanh.
-- Bộ nhớ: O(1) ngoài phần đọc input.
+## Độ phức tạp
+- Thời gian: O(tổng n) để đọc và XOR toàn bộ các số, rất nhanh với giới
+  hạn tổng n <= 2*10^5.
+- Bộ nhớ: O(1) ngoài phần lưu input.
 
-Ghi chú cài đặt: đọc toàn bộ input bằng sys.stdin.buffer.read().split() và
-xuất một lần bằng sys.stdout.write để đủ nhanh với t và n lớn.
+Ghi chú cài đặt: đọc toàn bộ input một lần và xuất kết quả một lần để đủ
+nhanh khi t và n lớn.
+</content>
+</invoke>

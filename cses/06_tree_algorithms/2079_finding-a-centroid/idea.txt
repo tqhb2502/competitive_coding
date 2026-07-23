@@ -1,41 +1,39 @@
-Bài toán: Finding a Centroid (CSES 2079)
+Finding a Centroid - CSES 2079
+https://cses.fi/problemset/task/2079
 
-Mục tiêu:
-Tìm một "centroid" của cây: một đỉnh mà khi chọn nó làm gốc (root), mọi
-subtree con của nó đều có kích thước tối đa floor(n/2) đỉnh. Tương đương:
-khi xóa đỉnh đó, mọi thành phần liên thông còn lại có kích thước <= floor(n/2).
+## Đề bài
+Cho một cây có n đỉnh và n-1 cạnh vô hướng. Hãy tìm một "centroid" của cây:
+đỉnh mà khi xóa nó đi thì mọi thành phần liên thông còn lại đều có kích thước
+tối đa floor(n/2) đỉnh. Chỉ cần in ra MỘT centroid bất kỳ (mỗi cây luôn tồn
+tại một hoặc hai centroid).
 
+## Ý tưởng
 Mô hình hóa cây:
-- Cây có n đỉnh, n-1 cạnh vô hướng. Lưu đồ thị bằng adjacency list.
-- Chọn gốc bất kỳ, ở đây chọn đỉnh 1.
+- Lưu đồ thị bằng adjacency list, chọn gốc bất kỳ (ở đây chọn đỉnh 1).
 
-Thuật toán:
-1. Duyệt cây bằng iterative DFS (dùng stack tường minh, KHÔNG đệ quy để
-   tránh RecursionError khi n tới 2*10^5). Trong lúc duyệt tính:
+Các bước:
+1. Duyệt cây bằng iterative DFS (dùng stack tường minh, KHÔNG đệ quy để tránh
+   tràn stack khi n tới 2*10^5). Trong lúc duyệt lưu:
    - parent[u]: cha của u.
-   - order: thứ tự duyệt (preorder).
-2. Tính size[u] (số đỉnh trong subtree gốc u) bằng cách duyệt ngược mảng
-   order và cộng dồn size[u] vào size[parent[u]].
-3. Với mỗi đỉnh u, nếu ta xóa u thì các thành phần liên thông là:
+   - order: thứ tự preorder.
+2. Tính size[u] (số đỉnh trong subtree gốc u) bằng cách duyệt ngược mảng order
+   và cộng dồn size[u] vào size[parent[u]].
+3. Với mỗi đỉnh u, khi xóa u thì các thành phần liên thông gồm:
    - Mỗi subtree con: size[v] với v là con của u (parent[v] == u).
-   - Phần "phía trên" u: n - size[u].
-   Đỉnh u là centroid khi và chỉ khi tất cả các thành phần này <= floor(n/2).
-   Duyệt qua các đỉnh, đỉnh đầu tiên thỏa mãn chính là centroid cần in ra.
+   - Phần "phía trên" u chứa gốc: n - size[u].
+   Đỉnh u là centroid khi và chỉ khi mọi thành phần này đều <= floor(n/2).
+   Duyệt các đỉnh và in ra đỉnh đầu tiên thỏa mãn.
 
 Vì sao đúng:
-- Định lý: mọi cây luôn tồn tại centroid (một hoặc hai đỉnh). Điều kiện
-  "mọi thành phần khi xóa u đều <= floor(n/2)" đúng là định nghĩa centroid.
-- Với cây rooted, khi xóa u các thành phần chính là các subtree con của u
-  (kích thước size[v]) và phần còn lại chứa gốc (kích thước n - size[u]).
-  Ta kiểm tra trực tiếp điều kiện này nên kết quả chắc chắn hợp lệ.
-- Bài chỉ yêu cầu in ra MỘT centroid bất kỳ, nên in đỉnh đầu tiên thỏa mãn.
+- Điều kiện "mọi thành phần khi xóa u đều <= floor(n/2)" chính là định nghĩa
+  centroid, và mọi cây luôn tồn tại centroid nên vòng lặp chắc chắn tìm được.
+- Với cây rooted, khi xóa u các thành phần đúng là các subtree con của u
+  (kích thước size[v]) và phần còn lại chứa gốc (kích thước n - size[u]), nên
+  việc kiểm tra trực tiếp cho kết quả hợp lệ.
 
 Trường hợp đặc biệt:
 - n = 1: không có cạnh, centroid là đỉnh 1.
 
-Độ phức tạp:
-- Thời gian: O(n) cho DFS, tính size, và kiểm tra centroid (tổng bậc = 2(n-1)).
+## Độ phức tạp
+- Thời gian: O(n) cho DFS, tính size và kiểm tra centroid (tổng bậc = 2(n-1)).
 - Bộ nhớ: O(n) cho adjacency list, parent, size, order.
-
-Với n <= 2*10^5 và thuật toán O(n), giải pháp pure Python chạy dư sức trong
-giới hạn thời gian; không có rủi ro TLE đáng kể.

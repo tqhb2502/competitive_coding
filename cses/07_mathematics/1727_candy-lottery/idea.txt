@@ -1,38 +1,44 @@
-Bài toán: Candy Lottery (CSES 1727)
+Candy Lottery - CSES 1727
+https://cses.fi/problemset/task/1727
 
-Đề bài: Có n đứa trẻ, mỗi đứa nhận độc lập một số nguyên ngẫu nhiên trong đoạn
-[1, k] với phân phối đều (uniform). Cần tính kỳ vọng (expected value) của giá trị
-lớn nhất trong số n số đó.
+## Đề bài
+Có n đứa trẻ, mỗi đứa nhận độc lập một số nguyên ngẫu nhiên trong đoạn [1, k]
+theo phân phối đều (uniform). Hãy tính kỳ vọng (expected value) của giá trị lớn
+nhất trong số n số đó.
 
-Ý tưởng:
-Gọi M = max của n số. M nhận giá trị nguyên trong [1, k].
+## Ý tưởng
+Gọi M là giá trị lớn nhất của n số; M nhận giá trị nguyên trong [1, k].
 
-Xét hàm phân phối tích lũy (CDF): xác suất để MỘT đứa trẻ nhận không quá m viên kẹo
-là m/k (vì có m giá trị 1..m trong tổng số k giá trị). Do n đứa trẻ độc lập nên:
+Xét hàm phân phối tích lũy (CDF): xác suất để MỘT đứa trẻ nhận không quá m viên
+kẹo là m/k (có m giá trị 1..m trên tổng số k giá trị). Vì n đứa trẻ độc lập nên:
     P(M <= m) = (m/k)^n
-
-Từ đó xác suất M đúng bằng m:
+Suy ra xác suất M đúng bằng m:
     P(M = m) = P(M <= m) - P(M <= m-1) = (m/k)^n - ((m-1)/k)^n
 
-Kỳ vọng:
-    E[M] = sum_{m=1}^{k} m * P(M = m)
-         = sum_{m=1}^{k} m * ((m/k)^n - ((m-1)/k)^n)
+Kỳ vọng theo định nghĩa:
+    E[M] = sum_{m=1}^{k} m * ((m/k)^n - ((m-1)/k)^n)
 
-Cách khác tương đương (dùng công thức E[X] = sum P(X >= v) cho biến không âm):
+Dùng công thức E[X] = sum_{v>=1} P(X >= v) cho biến không âm, ta được dạng gọn
+hơn và tương đương:
     E[M] = sum_{v=1}^{k} P(M >= v) = sum_{v=1}^{k} (1 - ((v-1)/k)^n)
-Cả hai cho cùng kết quả; code dùng công thức theo P(M = m).
+         = k - sum_{value=1}^{k-1} (value/k)^n
+Code cài đặt theo công thức cuối cùng này.
+
+Để tránh sai số dấu phẩy động, code tính bằng số học chính xác trên số nguyên
+lớn (lớp BigUnsigned, biểu diễn theo cơ số 1e9):
+    - Mẫu số  denominator = k^n
+    - Tử số   numerator   = k^(n+1) - sum_{value=1}^{k-1} value^n
+    - Khi đó  E[M] = numerator / denominator (đúng bằng k - sum (value/k)^n).
+Kết quả được in với 6 chữ số thập phân, làm tròn theo kiểu half-even (banker's
+rounding) qua tìm kiếm nhị phân trên số nguyên (sai số cho phép ~1e-6).
 
 Kiểm chứng ví dụ n=2, k=3:
     m=1: 1*((1/3)^2 - 0)        = 1/9
     m=2: 2*((2/3)^2 - (1/3)^2)  = 6/9
     m=3: 3*(1 - (2/3)^2)        = 15/9
-    Tổng = 22/9 = 2.444444  (khớp đáp án).
+    Tổng = 22/9 = 2.444444 (khớp đáp án).
 
-Tính đúng đắn: các biến độc lập nên CDF của max là tích các CDF, tức (m/k)^n.
-Công thức kỳ vọng theo định nghĩa nên chính xác. Dùng số thực double (float 64-bit)
-là quá đủ vì k, n <= 100 và luỹ thừa (m/k)^n với m/k <= 1 không gây tràn số.
-
-Độ phức tạp: O(k) phép tính luỹ thừa (mỗi luỹ thừa O(log n) hoặc dùng pow), tổng thể
-O(k log n) thời gian, O(1) bộ nhớ. Với n, k <= 100 thì chạy tức thời.
-
-Kết quả in ra làm tròn 6 chữ số thập phân bằng "%.6f" (sai số cho phép ~1e-6).
+## Độ phức tạp
+Thời gian O(k) lần lũy thừa số nguyên, mỗi lũy thừa là O(n) phép nhân số lớn với
+độ dài O(n log k) chữ số, đủ nhanh khi n, k <= 100 (chạy tức thời). Bộ nhớ O(n log k)
+cho các số nguyên lớn.

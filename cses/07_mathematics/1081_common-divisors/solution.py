@@ -1,10 +1,8 @@
-# Common Divisors - https://cses.fi/problemset/task/1081
-# Đáp án = ước d lớn nhất sao cho có ít nhất 2 phần tử của mảng chia hết cho d.
-# Đếm số bội của mỗi d bằng harmonic sieve: sum(cnt[d::d]) ở tốc độ C.
 import sys
 
 
 def main():
+    # Đọc toàn bộ dữ liệu; M là giá trị lớn nhất xuất hiện trong mảng.
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
     M = 0
@@ -15,17 +13,20 @@ def main():
         if v > M:
             M = v
 
+    # cnt[v] = số phần tử của mảng có giá trị đúng bằng v.
     cnt = [0] * (M + 1)
     for v in ints:
         cnt[v] += 1
 
-    # Duyệt d từ lớn xuống nhỏ; d đầu tiên có >= 2 bội là đáp án.
+    # Harmonic sieve: duyệt ước d từ lớn xuống nhỏ, số phần tử chia hết cho d là
+    # sum(cnt[d::d]) (cộng cnt tại d, 2d, 3d, ...) tính ở tốc độ C.
+    # d đầu tiên có >= 2 bội chính là gcd lớn nhất của một cặp -> đáp án.
     for d in range(M, 0, -1):
         if sum(cnt[d::d]) >= 2:
             sys.stdout.write(str(d))
             return
 
-    # n >= 2 nên luôn tìm thấy ở trên; phòng hờ.
+    # Vì n >= 2 nên luôn tìm thấy ở trên; nhánh này chỉ để phòng hờ.
     sys.stdout.write("1")
 
 

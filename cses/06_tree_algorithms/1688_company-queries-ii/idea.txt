@@ -1,41 +1,39 @@
-Company Queries II - https://cses.fi/problemset/task/1688
+Company Queries II - CSES 1688
+https://cses.fi/problemset/task/1688
 
-MÔ HÌNH HÓA
-- Có n nhân viên tạo thành một cây phân cấp, employee 1 là gốc (general director).
-  Với mỗi i từ 2..n, boss của i là e_i với ràng buộc 1 <= e_i <= i-1,
-  nghĩa là boss luôn có chỉ số NHỎ HƠN nhân viên đó.
-- Mỗi query (a, b): tìm "lowest common boss" của a và b, chính là
-  Lowest Common Ancestor (LCA) của a và b trên cây.
+## Đề bài
+- Một công ty có n nhân viên tạo thành cây phân cấp, nhân viên 1 là gốc (giám đốc).
+  Với mỗi i từ 2..n, sếp trực tiếp của i là e_i, thỏa 1 <= e_i <= i-1 (chỉ số sếp
+  luôn nhỏ hơn chỉ số nhân viên).
+- Có q truy vấn; mỗi truy vấn (a, b) hỏi "sếp chung thấp nhất" của a và b, chính là
+  tổ tiên chung gần nhất Lowest Common Ancestor (LCA) của a và b trên cây.
 
-THUẬT TOÁN: Binary lifting (nâng nhị phân) để tính LCA
-1. Vì e_i <= i-1 nên khi duyệt i tăng dần từ 2..n, boss của i đã được xử lý.
+## Ý tưởng
+Dùng binary lifting (nâng nhị phân) để tính LCA.
+1. Vì e_i <= i-1 nên khi duyệt i tăng dần từ 2..n, sếp của i đã được xử lý trước.
    Do đó tính depth[i] = depth[e_i] + 1 ngay trong vòng lặp, không cần DFS.
-   parent[1] = 1 (gốc tự trỏ vào chính nó để phép nâng luôn dừng ở gốc),
-   depth[1] = 0.
+   parent[1] = 1 (gốc tự trỏ chính nó để phép nâng luôn dừng ở gốc), depth[1] = 0.
 2. Xây bảng up với LOG = số bit của n. up[0][v] = parent[v]; và
-   up[k][v] = up[k-1][ up[k-1][v] ] là tổ tiên thứ 2^k của v.
-   Bảng được dựng bằng vòng lặp lặp đi lặp lại (iterative), KHÔNG đệ quy.
+   up[k][v] = up[k-1][ up[k-1][v] ] là tổ tiên thứ 2^k của v. Bảng dựng bằng vòng
+   lặp (iterative), KHÔNG đệ quy.
 3. Trả lời LCA(a, b):
-   - Đưa nút sâu hơn lên cùng độ sâu với nút kia bằng cách nâng theo các bit
-     của hiệu độ sâu (diff = depth[a] - depth[b]).
+   - Đưa nút sâu hơn lên cùng độ sâu với nút kia bằng cách nâng theo các bit của
+     hiệu độ sâu (diff = depth[a] - depth[b]).
    - Nếu sau đó a == b thì đó chính là LCA.
    - Ngược lại, nâng đồng thời cả a và b từ bit cao xuống thấp: nếu
      up[k][a] != up[k][b] thì nâng cả hai lên. Kết thúc, parent[a] là LCA.
 
-TÍNH ĐÚNG ĐẮN
-- Việc nâng nút sâu hơn theo biểu diễn nhị phân của hiệu độ sâu đưa hai nút về
-  cùng mức mà vẫn giữ nguyên quan hệ tổ tiên.
-- Ở bước nâng đồng thời, ta luôn dừng ngay DƯỚI LCA: sau vòng lặp, a và b là
-  hai con thuộc hai nhánh khác nhau ngay dưới LCA, nên parent[a] là tổ tiên
-  chung thấp nhất. Nếu ban đầu a đã là tổ tiên của b (hoặc ngược lại) thì bước
-  cân bằng độ sâu đã cho a == b và ta trả lời trực tiếp.
+Tính đúng đắn: bước cân bằng độ sâu đưa hai nút về cùng mức mà vẫn giữ quan hệ tổ
+tiên; bước nâng đồng thời luôn dừng ngay DƯỚI LCA (a, b là hai con thuộc hai nhánh
+khác nhau ngay dưới LCA), nên parent[a] là tổ tiên chung thấp nhất. Nếu ban đầu a
+đã là tổ tiên của b (hoặc ngược lại) thì bước cân bằng đã cho a == b và trả lời trực tiếp.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Tiền xử lý: O(n log n) thời gian và O(n log n) bộ nhớ cho bảng up.
-- Mỗi query: O(log n). Tổng: O((n + q) log n).
+- Mỗi truy vấn: O(log n). Tổng: O((n + q) log n).
 - Với n, q <= 2e5 và log n ~ 18, tổng thao tác khoảng vài triệu.
 
-LƯU Ý TLE: Trong pure Python trên CSES, phần dựng bảng up (~n*log n) và q query
-mỗi query O(log n) có thể chậm; với n, q = 2e5 có nguy cơ TLE. Thuật toán vẫn
-đúng; đã tối ưu bằng đọc input một lần, cache biến cục bộ và tránh đệ quy.
-Nếu cần, chạy bằng PyPy sẽ an toàn.
+LƯU Ý TLE: Trong pure Python trên CSES, phần dựng bảng up (~n*log n) và q truy vấn
+mỗi truy vấn O(log n) có thể chậm; với n, q = 2e5 có nguy cơ TLE. Thuật toán vẫn
+đúng; đã tối ưu bằng đọc input một lần, cache biến cục bộ và tránh đệ quy. Nếu cần,
+chạy bằng PyPy sẽ an toàn.

@@ -1,9 +1,3 @@
-# Path Queries II - https://cses.fi/problemset/task/2134
-# Heavy-Light Decomposition (HLD) + iterative max segment tree.
-# Hỗ trợ: cập nhật giá trị 1 đỉnh (point update) và truy vấn giá trị LỚN NHẤT
-# trên đường đi giữa hai đỉnh a, b (path max query).
-# Tất cả duyệt cây đều ITERATIVE (không dùng đệ quy) để tránh RecursionError.
-
 import sys
 
 
@@ -17,13 +11,14 @@ def main():
     for i in range(1, n + 1):
         val[i] = int(data[ip]); ip += 1
 
+    # Danh sách kề của cây vô hướng.
     adj = [[] for _ in range(n + 1)]
     for _ in range(n - 1):
         a = int(data[ip]); b = int(data[ip + 1]); ip += 2
         adj[a].append(b)
         adj[b].append(a)
 
-    # --- Iterative DFS: parent, depth, pre-order ---
+    # --- DFS ITERATIVE từ gốc: tính parent, depth và thứ tự pre-order ---
     parent = [0] * (n + 1)
     depth = [0] * (n + 1)
     order = []
@@ -42,7 +37,7 @@ def main():
                 depth[v] = du + 1
                 stack.append(v)
 
-    # --- subtree size + heavy child (xử lý theo thứ tự ngược pre-order) ---
+    # --- Tính subtree size và chọn heavy child (duyệt ngược thứ tự pre-order) ---
     size = [1] * (n + 1)
     size[0] = 0
     heavy = [0] * (n + 1)
@@ -53,7 +48,7 @@ def main():
             if size[u] > size[heavy[p]]:
                 heavy[p] = u
 
-    # --- Decomposition: gán head (đầu chain) và pos (vị trí trong segment tree) ---
+    # --- Decomposition: gán head (đầu chain) và pos (vị trí trên segment tree) ---
     head = [0] * (n + 1)
     posn = [0] * (n + 1)
     timer = 0
@@ -68,10 +63,10 @@ def main():
             pu = parent[u]
             for v in adj[u]:
                 if v != pu and v != hv:
-                    stack.append((v, v))  # con nhẹ -> chain mới
-            u = hv  # đi theo con nặng để chain liên tục
+                    stack.append((v, v))  # light child mở đầu một chain mới
+            u = hv  # đi theo heavy child để các vị trí trong chain liên tiếp
 
-    # --- Iterative max segment tree trên mảng theo pos ---
+    # --- Iterative max segment tree trên mảng sắp theo pos ---
     S = 1
     while S < n:
         S <<= 1
@@ -86,6 +81,7 @@ def main():
     for _ in range(q):
         t = data[ip]; ip += 1
         if t == b'1':
+            # Loại 1: point update đỉnh s thành x, cập nhật max dọc lên gốc.
             s = int(data[ip]); x = int(data[ip + 1]); ip += 2
             p = posn[s] + S
             tree[p] = x
@@ -95,14 +91,16 @@ def main():
                 tree[p] = a1 if a1 > a2 else a2
                 p >>= 1
         else:
+            # Loại 2: max trên đường đi (a, b) bằng cách leo qua các chain.
             a = int(data[ip]); b = int(data[ip + 1]); ip += 2
             res = 0
             ha = head[a]; hb = head[b]
             while ha != hb:
+                # Luôn nhảy đỉnh có head sâu hơn để tiến về LCA.
                 if depth[ha] < depth[hb]:
                     a, b = b, a
                     ha, hb = hb, ha
-                # truy vấn [pos[ha], pos[a]]
+                # Truy vấn max trên đoạn [pos[ha], pos[a]] (inline segment tree).
                 l = posn[ha] + S
                 r = posn[a] + S + 1
                 while l < r:
@@ -118,7 +116,7 @@ def main():
                     r >>= 1
                 a = parent[ha]
                 ha = head[a]
-            # cùng chain
+            # Hai đỉnh đã cùng chain: lấy max trên đoạn giữa chúng.
             if depth[a] > depth[b]:
                 a, b = b, a
             l = posn[a] + S

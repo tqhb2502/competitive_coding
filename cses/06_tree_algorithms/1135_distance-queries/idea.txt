@@ -1,42 +1,37 @@
-Distance Queries — CSES 1135
+Distance Queries - CSES 1135
+https://cses.fi/problemset/task/1135
 
-MÔ HÌNH:
-Cho một cây (tree) có n đỉnh, gốc chọn tùy ý (ở đây chọn đỉnh 1). Với mỗi truy vấn
-(a, b) ta cần khoảng cách trên cây giữa a và b, tức số cạnh trên đường đi duy nhất
-nối a và b.
+## Đề bài
+Cho một cây gồm n đỉnh và n-1 cạnh. Có q truy vấn, mỗi truy vấn cho hai đỉnh
+(a, b) và yêu cầu tính khoảng cách trên cây giữa chúng, tức số cạnh trên đường
+đi duy nhất nối a và b.
 
-Ý TƯỞNG CHÍNH:
-Gọi depth[x] là độ sâu của đỉnh x (số cạnh từ gốc tới x, depth[root] = 0). Gọi
-l = LCA(a, b) là tổ tiên chung thấp nhất (Lowest Common Ancestor). Đường đi từ a
-tới b luôn đi lên tới l rồi đi xuống b, nên:
+## Ý tưởng
+Chọn gốc tùy ý (ở đây chọn đỉnh 1). Gọi depth[x] là độ sâu của đỉnh x (số cạnh
+từ gốc tới x, depth[gốc] = 0) và gọi l = LCA(a, b) là tổ tiên chung thấp nhất
+(Lowest Common Ancestor). Vì đường đi từ a tới b luôn đi lên tới l rồi đi xuống
+b nên:
 
     dist(a, b) = depth[a] + depth[b] - 2 * depth[l]
 
-Việc còn lại là tính LCA nhanh. Ta dùng binary lifting (nhảy nhị phân):
+Việc còn lại là tính LCA nhanh bằng binary lifting (nhảy nhị phân):
 - up[k][v] = tổ tiên thứ 2^k của v.
 - up[0][v] = parent[v]; up[k][v] = up[k-1][ up[k-1][v] ].
-- Để tìm LCA(a, b): trước tiên nâng đỉnh sâu hơn lên cùng độ sâu với đỉnh kia bằng
-  cách nhảy theo các bit của hiệu độ sâu. Nếu khi đó a == b thì đó là LCA. Ngược lại
-  nhảy cả hai đỉnh lên đồng thời bằng bước lớn nhất mà vẫn khác nhau; cuối cùng
-  parent chung là LCA.
+- Để tìm LCA(a, b): trước tiên nâng đỉnh sâu hơn lên cùng độ sâu với đỉnh kia
+  bằng cách nhảy theo các bit của hiệu độ sâu. Nếu khi đó a == b thì đó chính là
+  LCA. Ngược lại, nhảy đồng thời cả hai đỉnh lên bằng bước lớn nhất mà chúng vẫn
+  khác nhau; cuối cùng parent chung của chúng là LCA.
 
-TÍNH parent/depth:
-Vì cây có tới 2e5 đỉnh, KHÔNG dùng đệ quy (tránh RecursionError / stack overflow).
-Ta dùng BFS lặp (iterative) từ đỉnh 1 để tính parent[] và depth[] theo thứ tự tăng
-dần độ sâu.
+Tính parent[] và depth[]: vì cây có tới 2e5 đỉnh, KHÔNG dùng đệ quy (tránh tràn
+stack). Ta duyệt BFS lặp (iterative) từ đỉnh 1 theo thứ tự tăng dần độ sâu.
 
-TÍNH ĐÚNG:
-- Công thức dist đúng vì đường đi trên cây là duy nhất và đi qua LCA.
-- Binary lifting cho LCA đúng theo lập luận nhảy nhị phân kinh điển: sau khi cân bằng
-  độ sâu, hai đỉnh gặp nhau chính tại LCA; các bước nhảy lớn-nhất-mà-còn-khác-nhau
-  đưa cả hai lên ngay dưới LCA.
-
-ĐỘ PHỨC TẠP:
-- Tiền xử lý bảng up: O(n log n) thời gian và O(n log n) bộ nhớ (LOG ≈ 18 với n = 2e5).
-- Mỗi truy vấn LCA: O(log n). Tổng truy vấn: O(q log n).
+## Độ phức tạp
+- Tiền xử lý bảng up: O(n log n) thời gian và O(n log n) bộ nhớ (LOG ≈ 18 với
+  n = 2e5).
+- Mỗi truy vấn LCA: O(log n). Tổng các truy vấn: O(q log n).
 - Tổng: O((n + q) log n) thời gian, O(n log n) bộ nhớ.
 
-LƯU Ý TLE: Với n, q tới 2e5 và giới hạn 1.0s hướng tới C++, bản Python thuần có thể
-chậm; ta đã tối ưu I/O (đọc toàn bộ buffer, ghi một lần) và làm mọi thứ lặp, nhưng
-vẫn có nguy cơ TLE trên test nặng nhất khi chạy bằng CPython. PyPy (nếu được chọn)
-sẽ an toàn hơn nhiều.
+LƯU Ý TLE: Với n, q tới 2e5 và giới hạn 1.0s hướng tới C++, bản Python thuần có
+thể chậm; ta đã tối ưu I/O (đọc toàn bộ buffer, ghi một lần) và làm mọi thứ lặp,
+nhưng vẫn có nguy cơ TLE trên test nặng nhất khi chạy bằng CPython. PyPy (nếu
+được chọn) sẽ an toàn hơn nhiều.

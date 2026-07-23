@@ -1,8 +1,9 @@
-System of Linear Equations - https://cses.fi/problemset/task/3154
+System of Linear Equations - CSES 3154
+https://cses.fi/problemset/task/3154
 
-BÀI TOÁN
-Cho hệ n phương trình tuyến tính với m ẩn, mọi phép tính thực hiện modulo
-p = 1e9+7 (một số nguyên tố). Mỗi phương trình cho m hệ số a_{i,1..m} và vế
+## Đề bài
+Cho hệ n phương trình tuyến tính với m ẩn, mọi phép tính đều thực hiện modulo
+p = 1e9+7 (một số nguyên tố). Mỗi phương trình cho m hệ số a_{i,1..m} cùng vế
 phải b_i. Cần in ra m giá trị x_1..x_m (với 0 <= x_j < p) thỏa mãn tất cả các
 phương trình, hoặc in "-1" nếu hệ vô nghiệm. Ràng buộc: 1 <= n, m <= 500.
 
@@ -12,11 +13,11 @@ Ví dụ:
   1*x1 + 3*x2 + 1*x3 = 2
   => x = (2, 1000000006, 3)  (1000000006 = -1 mod p).
 
-Ý TƯỞNG CHÍNH
+## Ý tưởng
 Vì p là số nguyên tố nên tập số dư modulo p là một trường (field) GF(p): mọi
-phần tử khác 0 đều có nghịch đảo (modular inverse). Do đó ta có thể dùng
-Gaussian elimination (khử Gauss) y hệt như trên số thực, chỉ thay phép chia
-bằng phép nhân với nghịch đảo modular. Nghịch đảo tính bằng định lý Fermat:
+phần tử khác 0 đều có nghịch đảo (modular inverse). Do đó ta dùng Gaussian
+elimination (khử Gauss) y hệt như trên số thực, chỉ thay phép chia bằng phép
+nhân với nghịch đảo modular. Nghịch đảo tính bằng định lý Fermat:
   inv(a) = pow(a, p-2, p).
 
 Thuật toán:
@@ -31,11 +32,11 @@ Thuật toán:
    hàng pivot ứng với cột col:  x_col = (b - sum_{c>col} a_c * x_c) * inv(a_col).
    Các biến tự do được gán bằng 0.
 3) Kiểm chứng nghiệm vừa dựng trên HỆ GỐC: nếu thỏa mãn mọi phương trình thì in
-   ra, ngược lại hệ vô nghiệm và in "-1". Việc kiểm chứng trực tiếp này vừa
-   phát hiện vô nghiệm một cách chắc chắn, vừa là một lưới an toàn cho toàn bộ
-   quá trình khử.
+   ra, ngược lại hệ vô nghiệm và in "-1". Việc kiểm chứng trực tiếp này vừa phát
+   hiện vô nghiệm một cách chắc chắn, vừa là một lưới an toàn cho toàn bộ quá
+   trình khử.
 
-VÌ SAO ĐÚNG
+Vì sao đúng:
 - Các phép biến đổi hàng sơ cấp (đổi chỗ, nhân hàng với hằng khác 0, cộng bội
   của hàng khác) không làm thay đổi tập nghiệm, nên hệ sau khi khử tương đương
   hệ ban đầu.
@@ -43,31 +44,30 @@ VÌ SAO ĐÚNG
   chia được.
 - Đặt biến tự do = 0 cho ta MỘT nghiệm riêng hợp lệ khi hệ có nghiệm. Nếu hệ vô
   nghiệm thì không có x nào thỏa hệ gốc, nên bước kiểm chứng sẽ thất bại và ta
-  in "-1". Ngược lại nếu nghiệm dựng ra thỏa toàn bộ hệ gốc thì nó chắc chắn
-  là một nghiệm đúng.
+  in "-1". Ngược lại nếu nghiệm dựng ra thỏa toàn bộ hệ gốc thì nó chắc chắn là
+  một nghiệm đúng.
 
-MẸO TĂNG TỐC TRONG PYTHON THUẦN (bignum packing)
+Mẹo tăng tốc trong Python thuần (bignum packing):
 Khử Gauss cỡ 500x500 mod p là O(n^2 * m) ~ 1.25e8 phép toán vô hướng; nếu viết
 vòng lặp Python theo từng cột sẽ rất chậm. Thay vào đó ta ĐÓNG GÓI (pack) mỗi
 hàng (m hệ số + vế phải) thành MỘT số nguyên lớn (big integer) của Python, mỗi
 giá trị chiếm một "slot" rộng W = 72 bit (9 byte). Khi đó một phép biến đổi cả
 hàng  row_i <- row_i + mult * row_pivot  trở thành một phép nhân + cộng số lớn
 duy nhất, được CPython thực thi ở tầng C thay vì vòng lặp Python.
-
 - Ta giữ các hàng đang hoạt động ở dạng "căn chỉnh" (aligned): slot 0 luôn là hệ
   số của cột đang xét, nên đọc hệ số chỉ là (row & MASK) - O(1); sau khi khử một
   cột ta dịch phải  row >> W  để bỏ cột đó và căn chỉnh sang cột kế.
 - An toàn tràn/nhớ: trước khi dùng, hàng pivot được reduce đầy đủ (mọi slot < p
-  < 2^30), nên mỗi lần khử chỉ cộng thêm mult*slot < p*p < 2^60 vào một slot đích.
-  Một slot bị cộng dồn tối đa (số pivot) <= 500 < 2^9 lần, nên luôn < 500*2^60
-  < 2^69 < 2^72 = 2^W. Vì vậy không slot nào tràn sang slot bên cạnh (cách đóng
-  gói luôn hợp lệ) và  >> W  loại bỏ cột đã xong một cách sạch sẽ. Các hàng pivot
-  đã reduce đọc lại đúng số dư.
+  < 2^30), nên mỗi lần khử chỉ cộng thêm mult*slot < p*p < 2^60 vào một slot
+  đích. Một slot bị cộng dồn tối đa (số pivot) <= 500 < 2^9 lần, nên luôn <
+  500*2^60 < 2^69 < 2^72 = 2^W. Vì vậy không slot nào tràn sang slot bên cạnh
+  (cách đóng gói luôn hợp lệ) và  >> W  loại bỏ cột đã xong một cách sạch sẽ.
+  Các hàng pivot đã reduce đọc lại đúng số dư.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n^2 * m) phép toán trên slot, thực hiện qua ~O(n * rank) phép toán
-  số lớn (mỗi phép O(số slot còn lại)). Với n = m = 500 là khoảng 1.25e8 thao tác
-  slot cấp thấp.
+  số lớn (mỗi phép O(số slot còn lại)). Với n = m = 500 là khoảng 1.25e8 thao
+  tác slot cấp thấp.
 - Bộ nhớ: O(n * m) - lưu ma trận gốc để kiểm chứng cùng các hàng đã đóng gói,
   khoảng vài chục MB, thoải mái trong 512 MB.
 

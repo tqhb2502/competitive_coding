@@ -1,30 +1,16 @@
-# Fixed-Length Paths I  (CSES 2080)
-# https://cses.fi/problemset/task/2080
-#
-# Count the number of paths in a tree consisting of exactly k edges.
-#
-# Approach: O(n) long-path (heavy-path) decomposition.
-#   Root the tree. For each vertex v keep cnt[v][d] = number of vertices at
-#   distance d below v in subtree(v). Every path has a unique LCA L; it is
-#   either a vertical path with L as an endpoint (length k, counted via the
-#   number of descendants of L at distance k), or it joins two different
-#   children of L (counted while merging children of L).
-#   Using long-path decomposition the heavy child's cnt array is inherited in
-#   O(1) (shared memory with an index offset), and only the light children are
-#   iterated, giving total O(n) time and O(n) memory.
-
 import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần rồi chuyển sang int (một lần convert ở tầng C).
     data = sys.stdin.buffer.read().split()
     if not data:
         return
-    ints = list(map(int, data))          # one C-level conversion of all tokens
+    ints = list(map(int, data))
     n = ints[0]
     k = ints[1]
 
-    # Build adjacency list.
+    # Dựng danh sách kề (cây vô hướng).
     adj = [[] for _ in range(n + 1)]
     pos = 2
     for _ in range(n - 1):
@@ -36,7 +22,8 @@ def main():
         sys.stdout.buffer.write(b"0\n")
         return
 
-    # Iterative DFS from root 1: compute parent and a preorder list.
+    # DFS ITERATIVE từ root 1 (dùng stack tường minh, tránh RecursionError):
+    # tính parent[] và danh sách preorder order[].
     parent = [0] * (n + 1)
     order = []
     order_append = order.append
@@ -52,11 +39,12 @@ def main():
                 parent[v] = u
                 st.append(v)
 
-    # height[v] = number of edges on the longest downward path from v.
-    # heavy[v]  = child of v that attains that height (0 if v is a leaf).
+    # height[v] = số cạnh của đường đi xuống dài nhất từ v.
+    # heavy[v]  = con đạt được height đó (0 nếu v là lá).
+    # Duyệt đảo preorder nên con luôn được xử lý trước cha.
     height = [0] * (n + 1)
     heavy = [0] * (n + 1)
-    for u in reversed(order):          # children come before their parent here
+    for u in reversed(order):
         p = parent[u]
         if p:
             h = height[u] + 1
@@ -64,16 +52,16 @@ def main():
                 height[p] = h
                 heavy[p] = u
 
-    # Light-children lists (all children except the heavy one) and the memory
-    # pool.  Each heavy chain (top t .. deepest leaf) gets a contiguous block of
-    # size height[t]+1.  Vertex at chain offset j uses Dptr[v] = base + j, so
-    # cnt[v][i] = D[Dptr[v] + i] and Dptr[v] = Dptr[heavy[v]] - 1.
+    # Dựng danh sách light child (mọi con trừ heavy child) và memory pool.
+    # Mỗi heavy chain (đỉnh đầu chuỗi .. lá sâu nhất) chiếm một đoạn liên tiếp
+    # kích thước height[đầu]+1. Đỉnh v tại offset j có Dptr[v] = base + j, nên
+    # cnt[v][i] = D[Dptr[v] + i] và Dptr[v] = Dptr[heavy[v]] - 1 (thừa kế O(1)).
     light = [None] * (n + 1)
     Dptr = [0] * (n + 1)
     pool = 0
     for v in order:
         p = parent[v]
-        if v == 1 or heavy[p] != v:    # v is the top of a heavy chain / a light child
+        if v == 1 or heavy[p] != v:    # v là đỉnh đầu một heavy chain (light child)
             if v != 1:
                 lp = light[p]
                 if lp is None:
@@ -92,34 +80,34 @@ def main():
 
     ans = 0
     base_idx = k - 1
-    # Process vertices bottom-up (reverse preorder): all children of u are done
-    # before u, and the heavy child's cnt array already sits in shared memory.
+    # Duyệt bottom-up (đảo preorder): mọi con của u đã xong trước u, và mảng cnt
+    # của heavy child đã sẵn nằm chung vùng nhớ với u.
     for u in reversed(order):
         du = Dptr[u]
         hu = height[u]
-        D[du] = 1                      # cnt[u][0] = u itself; inherits heavy child
+        D[du] = 1                      # cnt[u][0] = u; đã thừa kế cnt của heavy child
         lu = light[u]
         if lu is None:
             if k <= hu:
                 ans += D[du + k]
             continue
-        for c in lu:                   # light children only
+        for c in lu:                   # chỉ light child
             dc = Dptr[c]
             ch = height[c]
-            # Pairing: a node at distance h in c is at distance h+1 from u; pair it
-            # with an earlier-merged node at distance idx = k-(h+1) (idx >= 1 so that
-            # u itself is excluded and both endpoints stay strictly below u).
+            # Pairing: đỉnh cách c là h thì cách u là h+1; ghép với một đỉnh đã
+            # gộp trước cách u đúng idx = k-(h+1). Điều kiện idx >= 1 loại bỏ
+            # chính u và giữ hai đầu mút đều nằm thực sự dưới u.
             for h in range(ch + 1):
                 idx = base_idx - h
                 if idx < 1:
-                    break              # idx only decreases as h grows
+                    break              # idx chỉ giảm khi h tăng
                 if idx <= hu:
                     ans += D[dc + h] * D[du + idx]
-            # Merge child c into u's cnt array.
+            # Merge cnt[c] vào cnt[u] (dịch lên một khoảng cách).
             dd = du + 1
             for h in range(ch + 1):
                 D[dd + h] += D[dc + h]
-        # Vertical paths with u as an endpoint and length exactly k.
+        # Đường đi thẳng đứng nhận u làm đầu mút, dài đúng k.
         if k <= hu:
             ans += D[du + k]
 

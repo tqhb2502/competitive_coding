@@ -1,17 +1,22 @@
-Bài toán: Tree Diameter (CSES 1131)
-Tìm đường kính của cây (diameter) = khoảng cách lớn nhất giữa hai node bất kỳ.
+Tree Diameter - CSES 1131
+https://cses.fi/problemset/task/1131
 
-MÔ HÌNH HÓA:
-- Cây có n node, n-1 cạnh, không có trọng số (mỗi cạnh dài 1).
+## Đề bài
+Cho một cây có n node và n-1 cạnh (mỗi cạnh dài 1). Hãy tìm đường kính của
+cây (diameter), tức là khoảng cách lớn nhất giữa hai node bất kỳ.
+
+## Ý tưởng
+Mô hình hóa:
+- Cây có n node, n-1 cạnh, không trọng số nên mỗi cạnh có độ dài 1.
 - Lưu đồ thị bằng adjacency list. Vì n có thể tới 2*10^5 nên dùng biểu diễn
   dạng CSR (compressed sparse row) hoặc list các list để duyệt nhanh.
 
-THUẬT TOÁN (double BFS / two-sweep):
+Thuật toán double BFS (two-sweep):
 1. Chọn một node bất kỳ (ví dụ node 1), chạy BFS để tìm node u xa nó nhất.
 2. Chạy BFS lần thứ hai xuất phát từ u, tìm node v xa u nhất.
 3. Khoảng cách dist(u, v) chính là đường kính của cây.
 
-TÍNH ĐÚNG ĐẮN:
+Tính đúng đắn:
 - Bổ đề kinh điển: với một cây bất kỳ, node xa nhất tính từ một node tùy ý
   luôn là một trong hai đầu mút của một đường kính nào đó. Do đó BFS lần 1 từ
   một node bất kỳ chắc chắn cho ra một đầu mút u của đường kính. BFS lần 2 từ u
@@ -21,15 +26,13 @@ TÍNH ĐÚNG ĐẮN:
   mút của một đường kính thì tồn tại đường đi dài hơn (s, t), mâu thuẫn. Vì thế u
   là một đầu mút của đường kính, và BFS từ u tìm được đường kính đầy đủ.
 
-CÀI ĐẶT:
-- Đọc toàn bộ input bằng sys.stdin.buffer.read().split() cho nhanh.
-- BFS dùng hàng đợi (collections.deque hoặc mảng chỉ số) và mảng dist, TUYỆT ĐỐI
-  KHÔNG dùng đệ quy để tránh RecursionError với cây tới 2*10^5 node.
+Cài đặt:
+- Đọc toàn bộ input một lần cho nhanh.
+- BFS dùng hàng đợi và mảng dist, TUYỆT ĐỐI KHÔNG dùng đệ quy để tránh
+  RecursionError với cây tới 2*10^5 node.
 - Mỗi BFS trả về (node xa nhất, khoảng cách xa nhất).
 - Trường hợp đặc biệt n = 1: không có cạnh, đường kính = 0.
 
-ĐỘ PHỨC TẠP:
+## Độ phức tạp
 - Thời gian: O(n) cho mỗi lần BFS, tổng O(n).
 - Bộ nhớ: O(n) cho adjacency list và các mảng phụ.
-
-Với n <= 2*10^5 và thuật toán O(n), giải pháp chạy tốt trong pure Python.

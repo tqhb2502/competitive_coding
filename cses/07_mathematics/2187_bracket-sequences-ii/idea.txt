@@ -1,44 +1,48 @@
-Bài toán: Đếm số dãy ngoặc hợp lệ (balanced bracket sequence) độ dài n có
-tiền tố (prefix) cho trước gồm k ký tự. Kết quả lấy modulo 1e9+7.
+Bracket Sequences II - CSES 2187
+https://cses.fi/problemset/task/2187
 
-Ý TƯỞNG (lattice path / reflection principle):
+## Đề bài
+Đếm số dãy ngoặc hợp lệ (balanced bracket sequence) độ dài n có tiền tố
+(prefix) cho trước gồm k ký tự. Kết quả lấy modulo 1e9+7.
 
-Coi mỗi ký tự '(' là bước +1, mỗi ký tự ')' là bước -1. Một dãy ngoặc hợp lệ
-tương ứng với một đường đi (path) bắt đầu từ độ cao 0, không bao giờ xuống dưới
-0 (prefix balance >= 0 tại mọi vị trí), và kết thúc ở độ cao 0.
+## Ý tưởng
+Dùng lattice path và reflection principle. Coi mỗi ký tự '(' là bước +1, mỗi
+ký tự ')' là bước -1. Một dãy ngoặc hợp lệ tương ứng với một đường đi (path)
+bắt đầu từ độ cao 0, không bao giờ xuống dưới 0 (prefix balance >= 0 tại mọi
+vị trí), và kết thúc ở độ cao 0.
 
-Bước 1: Nếu n lẻ thì không thể cân bằng -> đáp án 0.
+Bước 1: Nếu n lẻ thì không thể cân bằng, đáp án là 0.
 
-Bước 2: Quét prefix, tính balance b = (số '(') - (số ')'). Nếu tại bất kỳ vị trí
-nào balance < 0 thì prefix đã không hợp lệ -> đáp án 0. Sau prefix ta ở độ cao
-b và đã dùng k ký tự.
+Bước 2: Quét prefix, tính balance b = (số '(') - (số ')'). Nếu tại bất kỳ vị
+trí nào balance < 0 thì prefix đã không hợp lệ, đáp án là 0. Sau prefix ta ở
+độ cao b và đã dùng k ký tự.
 
 Bước 3: Còn m = n - k bước phải điền, sao cho đi từ độ cao b về độ cao 0 mà
 KHÔNG xuống dưới 0. Đây là bài đếm số đường đi không âm (non-negative paths).
 
 Công thức reflection principle:
-  - Số đường đi TỰ DO (không ràng buộc) từ b về 0 trong m bước:
-        gọi số bước xuống d, số bước lên u; u + d = m và b + u - d = 0
-        => u = (m - b)/2, d = (m + b)/2. Số cách = C(m, (m - b)/2).
+  - Số đường đi TỰ DO (không ràng buộc) từ b về 0 trong m bước: gọi số bước
+    xuống d, số bước lên u; u + d = m và b + u - d = 0, suy ra u = (m - b)/2,
+    d = (m + b)/2. Số cách là C(m, (m - b)/2).
   - Số đường đi "chạm" mức -1 (tức có lúc xuống dưới 0): phản chiếu điểm xuất
     phát b qua mức -1 thành điểm -2 - b. Số đường tự do từ -2 - b về 0 là
-        C(m, (m + b + 2)/2).
-  - Vậy số đường đi hợp lệ = C(m, (m - b)/2) - C(m, (m + b + 2)/2)  (mod p).
+    C(m, (m + b + 2)/2).
+  - Vậy số đường đi hợp lệ = C(m, (m - b)/2) - C(m, (m + b + 2)/2) (mod p).
 
 Nếu (m - b) < 0 hoặc lẻ thì C = 0 (không có đường). Do n chẵn nên m và b luôn
 cùng tính chẵn lẻ, nhưng hàm comb vẫn tự trả 0 khi tham số ngoài miền.
 
-Kiểm chứng ví dụ: n = 6, prefix "(()" -> b = 1, m = 3.
+Kiểm chứng ví dụ: n = 6, prefix "(()" cho b = 1, m = 3.
   C(3, 1) - C(3, 3) = 3 - 1 = 2. Đúng với đáp án mẫu.
 
-CÀI ĐẶT:
+Cài đặt:
   - Tiền xử lý factorial fact[0..n] và inverse factorial inv_fact[0..n] theo
-    modulo p = 1e9+7. inv_fact[n] = pow(fact[n], p-2, p) (Fermat, p nguyên tố),
-    rồi truy hồi ngược inv_fact[i-1] = inv_fact[i] * i % p.
+    modulo p = 1e9+7. inv_fact[n] = pow(fact[n], p-2, p) (Fermat, p nguyên
+    tố), rồi truy hồi ngược inv_fact[i-1] = inv_fact[i] * i % p.
   - C(N, R) = fact[N] * inv_fact[R] % p * inv_fact[N-R] % p, trả 0 nếu R ngoài
     khoảng [0, N].
 
-ĐỘ PHỨC TẠP:
+## Độ phức tạp
   - Thời gian: O(n) cho tiền xử lý factorial và quét prefix.
   - Bộ nhớ: O(n) cho mảng factorial (n <= 1e6).
 

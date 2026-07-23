@@ -4,6 +4,7 @@
 
 constexpr long long MOD = 1'000'000'007LL;
 
+// Lũy thừa nhanh base^exponent theo modulo MOD
 long long modular_power(long long base, int exponent) {
     long long result = 1;
     while (exponent > 0) {
@@ -27,6 +28,8 @@ int main() {
         std::cin >> permutation[position];
     }
 
+    // Tách hoán vị thành các cycle: duyệt i -> p[i] và đánh dấu visited.
+    // Đáp án là bậc của hoán vị = LCM độ dài các cycle.
     std::vector<int> cycle_lengths;
     std::vector<char> visited(n + 1, false);
     for (int start = 1; start <= n; ++start) {
@@ -43,6 +46,7 @@ int main() {
         cycle_lengths.push_back(length);
     }
 
+    // SPF sieve (smallest prime factor) tới n để factorize nhanh mỗi độ dài cycle
     std::vector<int> smallest_prime_factor(n + 1, 0);
     for (int value = 2; value <= n; ++value) {
         if (smallest_prime_factor[value] != 0) {
@@ -59,6 +63,8 @@ int main() {
         }
     }
 
+    // LCM qua phân tích thừa số: với mỗi prime lấy số mũ lớn nhất
+    // xuất hiện trên tất cả các độ dài cycle
     std::vector<int> maximum_exponent(n + 1, 0);
     for (int length : cycle_lengths) {
         while (length > 1) {
@@ -74,6 +80,7 @@ int main() {
         }
     }
 
+    // LCM mod p = tích của prime^(số mũ lớn nhất) theo modulo MOD
     long long answer = 1;
     for (int prime = 2; prime <= n; ++prime) {
         if (maximum_exponent[prime] > 0) {

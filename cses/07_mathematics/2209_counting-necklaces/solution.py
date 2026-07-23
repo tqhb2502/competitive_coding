@@ -1,11 +1,8 @@
-# Counting Necklaces - https://cses.fi/problemset/task/2209
-# Bổ đề Burnside trên nhóm cyclic C_n:
-#   answer = (1/n) * sum_{d | n} phi(d) * m^(n/d)  (mod 1e9+7)
 import sys
 
 
 def euler_phi(x):
-    # Tính Euler totient phi(x) bằng phân tích thừa số nguyên tố.
+    # Euler totient phi(x) qua phân tích thừa số nguyên tố (factorization).
     result = x
     temp = x
     p = 2
@@ -36,6 +33,7 @@ def main():
                 divisors.append(n // i)
         i += 1
 
+    # Bổ đề Burnside: answer = (1/n) * sum_{d | n} phi(d) * m^(n/d).
     total = 0
     for d in divisors:
         total = (total + euler_phi(d) * pow(m, n // d, MOD)) % MOD

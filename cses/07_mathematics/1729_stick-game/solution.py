@@ -1,16 +1,3 @@
-# Stick Game - CSES 1729
-# https://cses.fi/problemset/task/1729
-#
-# Game theory (subtraction game). For each heap size i (1..n) print 'W' if the
-# player to move wins, else 'L'.
-#   win[0] = False (losing: cannot move, previous player took the last stick).
-#   win[i] = True  iff exists p in P with p <= i and win[i-p] = False.
-#
-# Forward-marking implementation: scan i = 0..n; when win[i] is still unset it is
-# a losing state, so mark all i+p (p in P) as winning. Because we scan in
-# increasing order, every j < i has already propagated its marks before we read i.
-# Complexity: O(n + (#losing)*k), memory O(n + maxp).
-
 import sys
 
 
@@ -21,10 +8,10 @@ def main():
     moves = tuple(int(data[2 + i]) for i in range(k))
     maxp = max(moves)
 
-    # win[i] == 1 -> winning state; 0 -> losing (default).
-    # Extend by maxp so win[i + p] is always a valid index (no bound checks).
+    # win[i] == 1 -> thế THẮNG; 0 -> thế THUA (giá trị mặc định).
+    # Nới rộng thêm maxp để chỉ số win[i + p] luôn hợp lệ, khỏi cần kiểm tra biên.
     win = bytearray(n + maxp + 1)
-    res = bytearray(n)  # output chars for positions 1..n
+    res = bytearray(n)  # ký tự kết quả cho các vị trí 1..n
 
     W = 87  # ord('W')
     L = 76  # ord('L')
@@ -32,12 +19,14 @@ def main():
     mv = moves
     w = win
     r = res
+    # Lan truyền tiến: duyệt i tăng dần nên khi đọc win[i] mọi thế thua j < i đã
+    # đánh dấu xong các thế thắng của nó.
     for i in range(n + 1):
         if w[i]:
-            # i >= 1 here because win[0] starts at 0 (losing)
+            # Thế THẮNG (i >= 1 vì win[0] mặc định 0 là thế thua).
             r[i - 1] = W
         else:
-            # i is a losing state -> every i+p is a winning state
+            # Thế THUA: mọi trạng thái i + p (p thuộc P) đều là thế THẮNG.
             for p in mv:
                 w[i + p] = 1
             if i:

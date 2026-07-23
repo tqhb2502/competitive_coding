@@ -1,40 +1,35 @@
-Bài toán: Với mỗi node của cây, tìm khoảng cách LỚN NHẤT từ node đó tới một
-node bất kỳ khác trong cây.
+Tree Distances I - CSES 1132
+https://cses.fi/problemset/task/1132
 
-MÔ HÌNH HÓA
-- Cây có n node và n-1 cạnh, mỗi cạnh có trọng số 1 (khoảng cách = số cạnh trên
-  đường đi ngắn nhất giữa hai node, mà trong cây thì đường đi này là duy nhất).
-- Lưu đồ thị bằng adjacency list. Để chạy nhanh, dùng cách biểu diễn CSR
-  (compressed sparse row) bằng array phẳng thay vì list of lists.
+## Đề bài
+Cho một cây gồm n node và n-1 cạnh. Với MỖI node của cây, hãy tìm khoảng cách
+LỚN NHẤT từ node đó tới một node bất kỳ khác trong cây. Khoảng cách giữa hai
+node là số cạnh trên đường đi (duy nhất) nối chúng.
 
-Ý TƯỞNG CHÍNH (diameter endpoints)
-- Node xa nhất tính từ MỘT node bất kỳ luôn là một trong hai đầu mút của đường
-  kính (diameter) của cây. Đây là tính chất quan trọng của cây.
-- Hệ quả: với BẤT KỲ node v nào, node xa nhất tính từ v cũng luôn là một trong
-  hai đầu mút của diameter. Do đó khoảng cách lớn nhất từ v = max(khoảng cách từ
-  v tới đầu mút A, khoảng cách từ v tới đầu mút B).
+## Ý tưởng
+- Mô hình hóa: cây có n node, mỗi cạnh trọng số 1. Lưu đồ thị bằng adjacency
+  list; để chạy nhanh có thể biểu diễn dạng CSR (compressed sparse row) bằng
+  các mảng phẳng thay cho list of lists.
+- Tính chất mấu chốt (diameter endpoints): với BẤT KỲ node v nào, node xa nhất
+  tính từ v luôn là một trong hai đầu mút của đường kính (diameter) của cây.
+  Do đó khoảng cách lớn nhất từ v = max(khoảng cách từ v tới đầu mút A,
+  khoảng cách từ v tới đầu mút B).
+- Chứng minh (phản chứng): gọi (A, B) là hai đầu mút của một đường kính, và w
+  là node xa nhất từ v. Có thể chỉ ra đường đi từ v tới w phải "gặp" đường kính,
+  và w bắt buộc là A hoặc B; nếu không ta ghép được một đường đi dài hơn
+  diameter, mâu thuẫn. Vậy max(distA[v], distB[v]) là khoảng cách xa nhất từ v.
+- Thuật toán:
+  1. BFS từ một node bất kỳ (chọn node 1) -> tìm node A xa nhất; A là một đầu
+     mút của diameter.
+  2. BFS từ A -> mảng distA[] (khoảng cách từ A tới mọi node). Node xa nhất từ
+     A chính là đầu mút còn lại B.
+  3. BFS từ B -> mảng distB[].
+  4. Đáp án của node v = max(distA[v], distB[v]).
+- Vì mọi cạnh trọng số 1 nên BFS cho ra khoảng cách ngắn nhất. BFS chạy kiểu
+  ITERATIVE (queue là mảng + hai con trỏ head/tail) để tránh đệ quy sâu gây
+  stack overflow khi n lớn (tối đa 2*10^5).
 
-THUẬT TOÁN
-1. BFS từ một node bất kỳ (chọn node 1) -> tìm node A xa nhất. A là một đầu mút
-   của diameter.
-2. BFS từ A -> mảng distA[] (khoảng cách từ A tới mọi node). Node xa nhất từ A
-   chính là đầu mút còn lại B.
-3. BFS từ B -> mảng distB[].
-4. Đáp án của node v = max(distA[v], distB[v]).
-
-Vì trọng số cạnh đều bằng 1 nên BFS cho ra khoảng cách ngắn nhất. Thực hiện BFS
-theo kiểu ITERATIVE (dùng queue là array + hai con trỏ head/tail) để tránh đệ quy
-sâu gây stack overflow với n lớn (tối đa 2*10^5).
-
-TẠI SAO ĐÚNG
-- Gọi (A, B) là hai đầu mút của một đường kính. Với một node v bất kỳ, giả sử
-  node xa nhất từ v là w. Có thể chứng minh bằng phản chứng rằng đường đi từ v
-  tới w phải "gặp" đường kính, và w bắt buộc phải là A hoặc B; nếu không, ta có
-  thể ghép để tạo ra một đường đi dài hơn diameter -> mâu thuẫn. Vì vậy
-  max(distA[v], distB[v]) chính là khoảng cách xa nhất từ v.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 - Thời gian: O(n) cho mỗi lần BFS, tổng cộng 3 lần BFS -> O(n).
 - Bộ nhớ: O(n) cho adjacency list dạng CSR và các mảng khoảng cách.
-
-Với n = 2*10^5, thuật toán O(n) hoàn toàn nằm trong giới hạn, kể cả Python thuần.
+- Với n = 2*10^5, thuật toán O(n) nằm gọn trong giới hạn, kể cả Python thuần.

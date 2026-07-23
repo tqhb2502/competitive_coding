@@ -1,14 +1,3 @@
-# Counting Coprime Pairs - https://cses.fi/problemset/task/2417
-# Đếm số cặp (i, j), i < j, sao cho gcd(x_i, x_j) = 1.
-#
-# Ý tưởng: dùng hàm Mobius.
-#   Gọi cnt[d] = số phần tử chia hết cho d.
-#   Số cặp mà CẢ HAI phần tử đều chia hết cho d là C(cnt[d], 2).
-#   Theo Mobius inversion, số cặp coprime = sum_d mu(d) * C(cnt[d], 2).
-#
-# cnt[d] = sum(freq[d], freq[2d], freq[3d], ...)  (tính bằng slicing sum, tốc độ C).
-# mu(d) tính bằng sàng nguyên tố.
-
 import sys
 
 
@@ -18,9 +7,11 @@ def main():
         return
     n = int(data[0])
     if n < 2:
+        # Không đủ hai phần tử thì không có cặp nào.
         sys.stdout.write("0\n")
         return
 
+    # Đọc các giá trị, đồng thời tìm maxv để giới hạn kích thước sàng.
     vals = data[1:1 + n]
     maxv = 0
     ivals = [0] * n
@@ -30,13 +21,14 @@ def main():
         if v > maxv:
             maxv = v
 
+    # freq[v] = số lần giá trị v xuất hiện.
     freq = [0] * (maxv + 1)
     for v in ivals:
         freq[v] += 1
 
     N = maxv
 
-    # --- Sàng Eratosthenes (đánh dấu số nguyên tố) ---
+    # Sàng Eratosthenes: đánh dấu số nguyên tố đến N.
     sieve = bytearray([1]) * (N + 1)
     sieve[0] = 0
     if N >= 1:
@@ -46,20 +38,21 @@ def main():
         if sieve[i]:
             sieve[i * i::i] = bytearray(len(range(i * i, N + 1, i)))
 
-    # --- Hàm Mobius mu[] ---
+    # Hàm Mobius mu[]:
     # mu[m] = (-1)^(số ước nguyên tố phân biệt) nếu m squarefree, ngược lại = 0.
     mu = [1] * (N + 1)
     mu[0] = 0
     for p in range(2, N + 1):
         if sieve[p]:
-            # đổi dấu tất cả bội của p (mỗi ước nguyên tố gộp một lần)
+            # Đổi dấu tất cả bội của p (gộp một ước nguyên tố phân biệt).
             mu[p::p] = [-v for v in mu[p::p]]
             pp = p * p
             if pp <= N:
-                # số không squarefree (chia hết cho p^2) -> mu = 0
+                # Số chia hết cho p^2 -> không squarefree -> mu = 0.
                 mu[pp::pp] = [0] * len(range(pp, N + 1, pp))
 
-    # --- Tổng Mobius: ans = sum_d mu[d] * C(cnt[d], 2) ---
+    # ans = sum_d mu[d] * C(cnt[d], 2), với cnt[d] = số phần tử chia hết cho d.
+    # Chỉ xét d có mu[d] != 0; cnt[d] tính bằng slicing sum (chạy ở tốc độ C).
     ans = 0
     fr = freq
     md = mu

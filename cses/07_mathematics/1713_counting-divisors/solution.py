@@ -1,6 +1,3 @@
-# Counting Divisors - https://cses.fi/problemset/task/1713
-# Đếm số ước số của từng x bằng smallest prime factor (SPF) sieve, sau đó
-# phân tích thừa số nguyên tố: số ước = tích (exponent + 1).
 import sys
 
 
@@ -15,7 +12,8 @@ def main():
 
     maxv = max(nums)
 
-    # smallest prime factor sieve up to maxv
+    # smallest prime factor sieve: spf[i] là ước nguyên tố nhỏ nhất của i.
+    # Khởi tạo spf[i] = i, rồi với mỗi nguyên tố i đánh dấu các bội chưa chạm.
     spf = list(range(maxv + 1))
     i = 2
     while i * i <= maxv:
@@ -26,6 +24,8 @@ def main():
                     spf[j] = i
         i += 1
 
+    # Với mỗi x: liên tục chia cho spf[x] để lấy số mũ e của từng nguyên tố,
+    # số ước là tích các (e + 1).
     out = []
     append = out.append
     for x in nums:

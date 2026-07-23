@@ -1,8 +1,3 @@
-# Subtree Queries - CSES 1137
-# https://cses.fi/problemset/task/1137
-# Euler tour (iterative DFS) để làm phẳng subtree thành một đoạn liên tiếp,
-# sau đó dùng BIT (Fenwick tree) cho point update + range sum.
-
 import sys
 
 
@@ -16,7 +11,7 @@ def main():
     for i in range(1, n + 1):
         val[i] = int(data[idx]); idx += 1
 
-    # Danh sách kề
+    # Danh sách kề của cây.
     adj = [[] for _ in range(n + 1)]
     for _ in range(n - 1):
         a = int(data[idx]); idx += 1
@@ -24,8 +19,8 @@ def main():
         adj[a].append(b)
         adj[b].append(a)
 
-    # Iterative DFS từ gốc 1 để tính tin, tout (Euler tour theo tin).
-    # Khi "vào" một node ta gán tin; khi "ra" (đã duyệt hết con) ta gán tout.
+    # DFS lặp từ gốc 1 để tính Euler tour: gán tin khi "vào" node, gán tout khi
+    # "ra" (đã duyệt hết con). Subtree của node u ứng với đoạn [tin[u], tout[u]].
     tin = [0] * (n + 1)
     tout = [0] * (n + 1)
     parent = [0] * (n + 1)
@@ -45,13 +40,13 @@ def main():
                 visited[v] = True
                 parent[v] = u
                 timer += 1
-                tin[v] = timer
+                tin[v] = timer  # gán tin cho con khi vừa đi vào
                 order_stack.append(v)
         else:
-            tout[u] = timer
+            tout[u] = timer  # gán tout khi mọi con đã được thăm
             order_stack.pop()
 
-    # BIT 1-indexed trên miền [1, n] (theo tin).
+    # BIT (Fenwick tree) 1-indexed trên miền [1, n] theo tin.
     bit = [0] * (n + 1)
 
     def update(i, delta):
@@ -66,7 +61,7 @@ def main():
             i -= i & (-i)
         return s
 
-    # Khởi tạo BIT bằng giá trị node tại vị trí tin.
+    # Khởi tạo BIT: đặt giá trị của mỗi node tại vị trí tin.
     for i in range(1, n + 1):
         update(tin[i], val[i])
 
@@ -74,11 +69,13 @@ def main():
     for _ in range(q):
         t = data[idx]; idx += 1
         if t == b'1':
+            # Đổi giá trị node s: cập nhật điểm với delta = giá trị mới - giá trị cũ.
             s = int(data[idx]); idx += 1
             x = int(data[idx]); idx += 1
             update(tin[s], x - val[s])
             val[s] = x
         else:
+            # Tổng subtree của s = tổng đoạn [tin[s], tout[s]].
             s = int(data[idx]); idx += 1
             out.append(prefix(tout[s]) - prefix(tin[s] - 1))
 

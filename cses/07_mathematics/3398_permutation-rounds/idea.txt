@@ -1,34 +1,41 @@
-Bài toán: Permutation Rounds (CSES 3398)
+Permutation Rounds - CSES 3398
+https://cses.fi/problemset/task/3398
 
-Ý tưởng:
-- Cho hoán vị p trên [1..n]. Mỗi vòng (round), phần tử ở vị trí i chuyển theo quy tắc
-  của hoán vị. Sau k vòng, ta áp dụng hoán vị p đúng k lần (p^k). Mảng trở lại trạng
-  thái sorted lần đầu tiên khi p^k = identity, tức k là bậc (order) của hoán vị p.
-- Bậc của một hoán vị = LCM (bội chung nhỏ nhất) của độ dài tất cả các cycle. Lý do:
-  một cycle độ dài L trở về vị trí ban đầu sau đúng bội của L vòng, nên toàn bộ hoán vị
-  trở về identity sau đúng LCM của các L.
+## Đề bài
+Cho một hoán vị p trên các số [1..n]. Mỗi vòng (round) ta áp dụng hoán vị p
+một lần lên mảng. Hãy tìm số vòng nhỏ nhất để mảng trở lại trạng thái đã sắp
+xếp (sorted) lần đầu tiên. In kết quả theo modulo 10^9+7.
+
+## Ý tưởng
+- Sau k vòng, ta đã áp dụng hoán vị p đúng k lần (p^k). Mảng trở lại trạng thái
+  sorted lần đầu tiên khi p^k = identity, tức k chính là bậc (order) của hoán
+  vị p.
+- Bậc của một hoán vị bằng LCM (bội chung nhỏ nhất) độ dài tất cả các cycle. Lý
+  do: một cycle độ dài L trở về vị trí ban đầu sau đúng bội của L vòng, nên toàn
+  bộ hoán vị trở về identity sau đúng LCM của các L.
 
 Cách tính:
-1. Tách hoán vị thành các cycle bằng cách duyệt i -> p[i], đánh dấu visited. Tổng độ
-   dài các cycle bằng n.
-2. Kết quả là LCM của các độ dài cycle, nhưng LCM có thể rất lớn nên phải tính modulo
-   10^9+7. Không thể lấy mod trong lúc gom LCM (mất tính chia hết), nên ta tính LCM
-   bằng cách phân tích thừa số nguyên tố:
-   - Dùng SPF sieve (smallest prime factor) tới n để factorize nhanh mỗi độ dài cycle
-     (mỗi độ dài <= n).
-   - Với mỗi prime, lấy số mũ (exponent) lớn nhất xuất hiện trên tất cả các cycle length.
-   - LCM mod p = tích của prime^(max exponent) mod p, dùng pow(pr, e, MOD).
+1. Tách hoán vị thành các cycle bằng cách duyệt i -> p[i] và đánh dấu visited.
+   Tổng độ dài các cycle bằng n.
+2. Kết quả là LCM của các độ dài cycle, nhưng LCM có thể rất lớn nên phải tính
+   theo modulo 10^9+7. Không thể lấy mod trong lúc gom LCM (sẽ mất tính chia
+   hết), nên ta tính LCM bằng cách phân tích thừa số nguyên tố:
+   - Dùng SPF sieve (smallest prime factor) tới n để factorize nhanh mỗi độ dài
+     cycle (mỗi độ dài đều <= n).
+   - Với mỗi prime, lấy số mũ (exponent) lớn nhất xuất hiện trên tất cả các độ
+     dài cycle.
+   - LCM mod p = tích của prime^(số mũ lớn nhất) mod p, dùng pow(pr, e, MOD).
 
 Tính đúng đắn:
-- LCM = tích trên mọi prime của prime^(max mũ trong tất cả các số). Đây là định nghĩa
-  chuẩn của LCM qua phân tích thừa số, nên kết quả (trước khi mod) là chính xác; việc
-  lấy mod chỉ áp dụng ở bước nhân cuối cùng nên đúng.
-- Trường hợp hoán vị identity: tất cả cycle độ dài 1, không có prime nào, LCM = 1, đáp
-  án = 1 (sau 1 vòng vẫn sorted).
+- LCM = tích trên mọi prime của prime^(số mũ lớn nhất trong tất cả các số). Đây
+  là định nghĩa chuẩn của LCM qua phân tích thừa số, nên kết quả (trước khi lấy
+  mod) là chính xác; việc lấy mod chỉ áp dụng ở bước nhân cuối cùng nên vẫn đúng.
+- Trường hợp hoán vị identity: tất cả cycle độ dài 1, không có prime nào, LCM = 1,
+  đáp án = 1 (sau 1 vòng mảng vẫn sorted).
 
-Độ phức tạp:
+## Độ phức tạp
 - SPF sieve: O(n log log n).
 - Tách cycle: O(n).
-- Factorize tổng cộng: O(n log n) trong trường hợp xấu nhất (thực tế nhỏ hơn nhiều).
-- Bộ nhớ: O(n) cho mảng spf, visited, p.
+- Factorize tổng cộng: O(n log n) trong trường hợp xấu nhất (thực tế nhỏ hơn).
+- Bộ nhớ: O(n) cho các mảng spf, visited, p.
 - Với n <= 2*10^5, chạy nhanh trong pure Python stdlib, không có rủi ro TLE.

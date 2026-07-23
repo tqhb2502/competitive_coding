@@ -1,58 +1,55 @@
-Bài toán: Fixed-Length Paths II (CSES 2081)
-Cho một cây n đỉnh. Đếm số đường đi (path, không có thứ tự, giữa hai đỉnh phân
-biệt) có số cạnh nằm trong đoạn [k1, k2]. Với n lên tới 2·10^5.
+Fixed-Length Paths II - CSES 2081
+https://cses.fi/problemset/task/2081
 
-Ý tưởng tổng quát: Centroid Decomposition
-------------------------------------------
-Mọi đường đi trong cây, khi ta chọn centroid c của component hiện tại, hoặc là
-đi qua c, hoặc là nằm hoàn toàn trong một trong các cây con sau khi bỏ c. Vì vậy:
-- Ở mỗi centroid c ta đếm tất cả các path ĐI QUA c (hoặc có một đầu là c),
-- Sau đó xóa c và đệ quy (iterative, dùng stack) trên từng component con. Mỗi
-  đỉnh chỉ làm centroid đúng một lần, và tổng kích thước các component qua mọi
-  mức là O(n log n).
+## Đề bài
+Cho một cây gồm n đỉnh. Hãy đếm số đường đi (path, không phân biệt thứ tự hai
+đầu mút, giữa hai đỉnh phân biệt) có số cạnh nằm trong đoạn [k1, k2]. Giới hạn
+n lên tới 2·10^5.
 
-Đếm path đi qua centroid c
---------------------------
-Với centroid c, tính depth (khoảng cách theo số cạnh) từ c tới mọi đỉnh trong
-component bằng một DFS iterative. Một path đi qua c gồm hai "nửa" từ c tới hai
-đỉnh u, v nằm ở HAI cây con khác nhau, độ dài = depth[u] + depth[v]. Path có một
-đầu là chính c ứng với việc coi c là một đỉnh depth 0.
+## Ý tưởng
+Dùng Centroid Decomposition. Với mỗi component hiện tại, chọn centroid c thì mọi
+đường đi hoặc đi qua c (có thể một đầu chính là c), hoặc nằm trọn trong một cây
+con sau khi bỏ c. Vì vậy tại mỗi centroid ta chỉ đếm các path ĐI QUA c, rồi xóa
+c và đệ quy (cài đặt iterative bằng stack) trên từng component con. Mỗi đỉnh làm
+centroid đúng một lần và tổng kích thước các component qua mọi mức là O(n log n).
 
-Đặt count_range(D) = số cặp không thứ tự {u,v} (u≠v) trong multiset depth D có
+Đếm path đi qua centroid c: bằng một DFS iterative, tính depth (khoảng cách theo
+số cạnh) từ c tới mọi đỉnh trong component. Một path đi qua c gồm hai "nửa" tới
+hai đỉnh u, v ở HAI cây con khác nhau, độ dài = depth[u] + depth[v]; path có một
+đầu là c ứng với việc coi c là một đỉnh depth 0.
+
+Đặt count_range(D) = số cặp không thứ tự {u, v} (u ≠ v) trong multiset depth D có
 depth[u] + depth[v] ∈ [k1, k2]. Dùng inclusion-exclusion:
 
     contrib(c) = count_range(D_all) - Σ_child count_range(D_child)
 
-trong đó D_all = [0] ∪ (tất cả depth của các đỉnh trong component tính từ c), còn
-D_child là các depth của những đỉnh thuộc một cây con của c. count_range(D_all)
-đếm mọi cặp (kể cả cặp cùng một cây con — không hợp lệ vì đường đi thật giữa
-chúng không qua c). Ta trừ đi count_range(D_child) của từng cây con để loại các
-cặp cùng cây con. Centroid c (depth 0) là "cây con" một phần tử nên các cặp
-(c, u) được giữ lại, đúng với các path một đầu là c dài depth[u].
+với D_all = [0] ∪ (mọi depth trong component tính từ c), còn D_child là các depth
+của những đỉnh thuộc một cây con của c. count_range(D_all) đếm cả những cặp cùng
+một cây con (không hợp lệ vì path thật giữa chúng không qua c), nên ta trừ đi
+count_range(D_child) của từng cây con để loại. Centroid c (depth 0) đóng vai như
+một "cây con" một phần tử, nên các cặp (c, u) được giữ lại, đúng với path một đầu
+là c dài depth[u].
 
-Đếm số cặp có tổng trong [k1, k2] — two-pointer
------------------------------------------------
-Với mảng depth đã sort tăng dần, count_leq(arr, X) = số cặp i<j có
-arr[i]+arr[j] ≤ X, tính bằng two-pointer O(len). Khi đó
-count_range(arr) = count_leq(arr, k2) - count_leq(arr, k1-1).
-(k1 ≥ 1 nên k1-1 ≥ 0, luôn hợp lệ.)
+Đếm số cặp có tổng trong [k1, k2] bằng two-pointer: với mảng depth đã sort tăng
+dần, count_leq(arr, X) = số cặp i < j có arr[i] + arr[j] ≤ X, tính bằng
+two-pointer O(len). Khi đó count_range(arr) = count_leq(arr, k2) - count_leq(arr,
+k1-1). (Vì k1 ≥ 1 nên k1-1 ≥ 0, luôn hợp lệ.)
 
-Vì sao đúng: mỗi path hợp lệ đi qua đúng một centroid duy nhất (centroid ở mức
-cao nhất trong cây phân rã mà nó chứa cả hai đầu mút ở hai nhánh khác nhau, hoặc
-một đầu chính là centroid đó). Tại centroid đó path được đếm đúng một lần nhờ
-inclusion-exclusion ở trên; ở các centroid khác nó không thỏa (hai đầu cùng một
-cây con nên bị trừ, hoặc không thuộc component).
+Vì sao đúng: mỗi path hợp lệ được đếm đúng tại một centroid duy nhất — centroid ở
+mức cao nhất trong cây phân rã mà chứa cả hai đầu mút ở hai nhánh khác nhau (hoặc
+có một đầu chính là centroid đó). Ở đó nó được đếm một lần nhờ inclusion-exclusion
+phía trên; ở các centroid khác nó không thỏa (hai đầu cùng cây con nên bị trừ,
+hoặc không thuộc component).
 
-Độ phức tạp
------------
+## Độ phức tạp
 - Tổng kích thước component qua mọi mức của centroid decomposition: O(n log n).
 - Mỗi mức: DFS tính size, tìm centroid, DFS tính depth, sort các mảng và
-  two-pointer. Sort chiếm O(s log s) mỗi centroid ⇒ tổng O(n log^2 n).
+  two-pointer. Bước sort tốn O(s log s) mỗi centroid ⇒ tổng O(n log^2 n).
 - Bộ nhớ: O(n) cho adjacency và các mảng phụ (dùng lại giữa các centroid).
 
-Kiểm tra ví dụ: cây 1-2, 2-3, 3-4, 3-5; k1=2, k2=3 ⇒ đáp số 6 (khớp).
-
 LƯU Ý TLE: Đây là centroid decomposition thuần Python với O(n log^2 n). Với
-n = 2·10^5 các vòng lặp DFS/two-pointer ở mức bytecode Python có thể vượt giới
+n = 2·10^5, các vòng lặp DFS/two-pointer ở mức bytecode Python có thể vượt giới
 hạn thời gian của CSES (vốn đặt theo C++). Thuật toán ĐÚNG; nếu TLE thì cần cài
 lại bằng C++ hoặc dùng PyPy. Không dùng thư viện bên thứ ba (chỉ stdlib).
+</content>
+</invoke>

@@ -1,14 +1,19 @@
-Bài toán: Đếm số lưới n x n với mỗi ô tô đen hoặc trắng, coi hai lưới là
-GIỐNG NHAU nếu một lưới có thể xoay (rotation) để trùng với lưới kia. In ra
-kết quả modulo 10^9 + 7. Ràng buộc: 1 <= n <= 10^9.
+Counting Grids - CSES 2210
+https://cses.fi/problemset/task/2210
 
-Ý tưởng: Đây là bài đếm số cấu hình dưới tác động của nhóm đối xứng, giải bằng
+## Đề bài
+Đếm số lưới n x n mà mỗi ô được tô đen hoặc trắng, coi hai lưới là GIỐNG NHAU
+nếu có thể xoay (rotation) một lưới để trùng khớp với lưới kia. In ra kết quả
+modulo 10^9 + 7. Ràng buộc: 1 <= n <= 10^9.
+
+## Ý tưởng
+Đây là bài đếm số cấu hình phân biệt dưới tác động của nhóm đối xứng, giải bằng
 Burnside's lemma (bổ đề Burnside).
 
-Nhóm G ở đây là nhóm xoay của hình vuông C4 = {xoay 0 độ, 90 độ, 180 độ, 270 độ},
-với |G| = 4. Theo Burnside's lemma:
+Nhóm G là nhóm xoay của hình vuông C4 = {xoay 0 độ, 90 độ, 180 độ, 270 độ}, với
+|G| = 4. Theo Burnside's lemma:
 
-    số lưới phân biệt = (1/|G|) * tổng theo g thuộc G của |Fix(g)|
+    số lưới phân biệt = (1 / |G|) * tổng theo g thuộc G của |Fix(g)|
 
 trong đó Fix(g) là số cách tô màu bất biến (không đổi) dưới phép xoay g. Một cách
 tô là bất biến dưới g khi và chỉ khi mọi ô trong cùng một orbit (quỹ đạo) của g
@@ -20,28 +25,29 @@ Tính số orbit cho từng phép xoay trên lưới n x n (tổng số ô = n^2
    Fix(id) = 2^(n^2).
 
 2) Xoay 90 độ (và 270 độ, đối xứng nên bằng nhau):
-   - n chẵn: mọi ô nằm trong orbit kích thước 4 => n^2/4 orbit.
-     Fix = 2^(n^2/4).
-   - n lẻ: ô trung tâm cố định (orbit kích thước 1), các ô còn lại trong orbit
-     kích thước 4 => (n^2 - 1)/4 + 1 orbit = (n^2 + 3)/4 orbit.
-     Fix = 2^((n^2+3)/4).
+   - n chẵn: mọi ô nằm trong orbit kích thước 4 => n^2 / 4 orbit.
+     Fix = 2^(n^2 / 4).
+   - n lẻ: ô trung tâm cố định (orbit kích thước 1), các ô còn lại nằm trong
+     orbit kích thước 4 => (n^2 - 1) / 4 + 1 = (n^2 + 3) / 4 orbit.
+     Fix = 2^((n^2 + 3) / 4).
 
 3) Xoay 180 độ:
-   - n chẵn: mọi ô trong orbit kích thước 2 => n^2/2 orbit. Fix = 2^(n^2/2).
-   - n lẻ: ô trung tâm cố định, còn lại orbit kích thước 2
-     => (n^2 - 1)/2 + 1 orbit = (n^2 + 1)/2 orbit. Fix = 2^((n^2+1)/2).
+   - n chẵn: mọi ô nằm trong orbit kích thước 2 => n^2 / 2 orbit.
+     Fix = 2^(n^2 / 2).
+   - n lẻ: ô trung tâm cố định, các ô còn lại nằm trong orbit kích thước 2
+     => (n^2 - 1) / 2 + 1 = (n^2 + 1) / 2 orbit. Fix = 2^((n^2 + 1) / 2).
 
-Kết quả = ( Fix(id) + 2*Fix(90) + Fix(180) ) / 4.
+Kết quả = ( Fix(id) + 2 * Fix(90) + Fix(180) ) / 4.
 
-Vì làm việc modulo p = 10^9 + 7 (số nguyên tố), phép chia cho 4 được thay bằng
-nhân với modular inverse của 4 = pow(4, p-2, p) theo định lý Fermat nhỏ.
+Vì tính toán trên modulo p = 10^9 + 7 (số nguyên tố), phép chia cho 4 được thay
+bằng nhân với modular inverse của 4 = pow(4, p - 2, p) theo định lý Fermat nhỏ.
 
-Các số mũ (exponent) là số nguyên chính xác cỡ tối đa ~10^18 (Python xử lý big
-integer tự nhiên), còn phép 2^exponent dùng pow(2, exponent, p) là modular
-exponentiation O(log exponent).
+Các số mũ (exponent) là số nguyên chính xác cỡ tối đa ~10^18, còn phép 2^exponent
+dùng modular exponentiation O(log exponent).
 
 Kiểm tra n = 4 (chẵn): Fix(id) = 2^16 = 65536, Fix(90) = Fix(270) = 2^4 = 16,
 Fix(180) = 2^8 = 256. Tổng = 65536 + 32 + 256 = 65824; chia 4 = 16456 (đúng).
 
-Độ phức tạp: O(log(n^2)) cho vài phép pow modular, bộ nhớ O(1). Rất nhanh,
-không có rủi ro TLE.
+## Độ phức tạp
+Thời gian O(log(n^2)) cho vài phép pow modular, bộ nhớ O(1). Rất nhanh, không có
+rủi ro TLE.

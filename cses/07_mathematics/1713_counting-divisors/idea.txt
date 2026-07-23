@@ -1,10 +1,11 @@
-Counting Divisors - https://cses.fi/problemset/task/1713
+Counting Divisors - CSES 1713
+https://cses.fi/problemset/task/1713
 
-Bài toán:
+## Đề bài
 Cho n số nguyên x (1 <= n <= 10^5, 1 <= x <= 10^6). Với mỗi x, in ra số lượng
 ước số của x.
 
-Ý tưởng chính:
+## Ý tưởng
 Nếu x có phân tích thừa số nguyên tố x = p1^a1 * p2^a2 * ... * pk^ak thì số ước
 số của x là (a1 + 1) * (a2 + 1) * ... * (ak + 1). Đây là công thức đếm ước số
 chuẩn: mỗi ước số ứng với việc chọn số mũ của từng nguyên tố trong khoảng
@@ -17,6 +18,7 @@ factor sieve (SPF sieve):
   j = i*i, i*i + i, ... và gán spf[j] = i nếu spf[j] vẫn bằng j (chưa được đánh
   dấu). Chỉ cần duyệt i tới sqrt(maxv) vì mọi hợp số <= maxv đều có ước nguyên
   tố <= sqrt(maxv).
+
 Sau khi có spf, phân tích mỗi x bằng cách liên tục lấy p = spf[x], đếm số mũ e
 của p (chia x cho p tới khi hết), rồi nhân kết quả với (e + 1). Lặp tới khi
 x == 1.
@@ -30,7 +32,7 @@ Vì sao đúng:
 - Việc chia lần lượt cho ước nguyên tố nhỏ nhất cho ra đúng phân tích thừa số
   nguyên tố duy nhất, từ đó áp dụng công thức nhân (ai + 1).
 
-Độ phức tạp:
+## Độ phức tạp
 - Xây SPF sieve: tổng số phép gán ~ maxv * sum(1/p) với p là nguyên tố
   <= sqrt(maxv), xấp xỉ O(maxv * log log maxv). Với maxv = 10^6 chỉ khoảng vài
   triệu phép, chấp nhận được.

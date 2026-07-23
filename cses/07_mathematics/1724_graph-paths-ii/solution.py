@@ -1,11 +1,3 @@
-# Graph Paths II - https://cses.fi/problemset/task/1724
-# Tìm đường đi (walk) có trọng số NHỎ NHẤT từ node 1 đến node n dùng ĐÚNG K cạnh.
-# Matrix exponentiation trên (min, +) tropical semiring (min-plus).
-#
-# ( M^k )[i][j] = trọng số nhỏ nhất của walk i->j dùng đúng k cạnh, trong đó
-# phép nhân ma trận được thay bằng min-plus:  C[i][j] = min_l ( A[i][l] + B[l][j] ).
-# Vì chỉ cần hàng 0 của M^k nên ta chỉ lũy thừa (squaring) ma trận O(log k) lần,
-# còn phân tích bit thì nhân vào một VECTOR (O(n^2)) thay vì ma trận (O(n^3)).
 import sys
 from operator import add
 

@@ -1,9 +1,3 @@
-# Tree Distances I - https://cses.fi/problemset/task/1132
-# For each node, find the maximum distance to any other node.
-# The farthest node from any node is always one of the two diameter endpoints.
-# So: BFS to find endpoint A, BFS from A -> distA and endpoint B, BFS from B -> distB.
-# Answer[v] = max(distA[v], distB[v]).  All BFS are iterative (no recursion).
-
 import sys
 
 
@@ -16,7 +10,8 @@ def main():
         sys.stdout.buffer.write(b"0\n")
         return
 
-    # Build CSR adjacency using flat arrays for speed.
+    # Xây dựng adjacency dạng CSR bằng các mảng phẳng để chạy nhanh:
+    # deg[v] = bậc của node v; us/vs lưu tạm các cạnh đã đọc.
     deg = [0] * (n + 1)
     us = [0] * (n - 1)
     vs = [0] * (n - 1)
@@ -27,16 +22,19 @@ def main():
         deg[a] += 1
         deg[b] += 1
 
+    # start[] là mảng offset của CSR; adj[] chứa danh sách kề nối tiếp nhau.
     start = [0] * (n + 2)
     for v in range(1, n + 1):
         start[v + 1] = start[v] + deg[v]
     adj = [0] * (2 * (n - 1))
-    pos = start[:]  # copy write positions
+    pos = start[:]  # vị trí ghi hiện tại cho từng node
     for i in range(n - 1):
         a = us[i]; b = vs[i]
         adj[pos[a]] = b; pos[a] += 1
         adj[pos[b]] = a; pos[b] += 1
 
+    # BFS iterative (queue là mảng + con trỏ head/tail) tránh đệ quy sâu.
+    # Trả về (mảng khoảng cách từ src, node xa nhất tính từ src).
     def bfs(src):
         dist = [-1] * (n + 1)
         queue = [0] * n
@@ -57,13 +55,14 @@ def main():
                     queue[tail] = w; tail += 1
         return dist, far
 
-    # Step 1: find one diameter endpoint A.
+    # Bước 1: BFS từ node bất kỳ (node 1) -> A là một đầu mút của diameter.
     _, A = bfs(1)
-    # Step 2: from A get distA and the other endpoint B.
+    # Bước 2: BFS từ A -> distA và đầu mút còn lại B của diameter.
     distA, B = bfs(A)
-    # Step 3: from B get distB.
+    # Bước 3: BFS từ B -> distB.
     distB, _ = bfs(B)
 
+    # Đáp án của mỗi node v = max(distA[v], distB[v]).
     out = [0] * n
     for v in range(1, n + 1):
         da = distA[v]

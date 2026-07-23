@@ -1,35 +1,37 @@
-Bài toán: Distinct Colors (CSES 1139)
+Distinct Colors - CSES 1139
+https://cses.fi/problemset/task/1139
 
-MÔ HÌNH:
-- Cho một cây có gốc n đỉnh, gốc là đỉnh 1. Mỗi đỉnh mang một màu c[i] (giá trị tới 1e9).
-- Với mỗi đỉnh, cần đếm số MÀU PHÂN BIỆT xuất hiện trong subtree của đỉnh đó.
+## Đề bài
+Cho một cây có gốc gồm n đỉnh, gốc là đỉnh 1. Mỗi đỉnh i mang một màu c[i]
+(giá trị có thể lớn tới 1e9). Với mỗi đỉnh, hãy đếm số MÀU PHÂN BIỆT xuất hiện
+trong subtree gốc tại đỉnh đó.
 
-THUẬT TOÁN: small-to-large merging (còn gọi là DSU on tree).
-- Với mỗi đỉnh u ta duy trì một set các màu có trong subtree của u.
+## Ý tưởng
+Dùng kỹ thuật small-to-large merging (còn gọi là DSU on tree).
+- Với mỗi đỉnh u ta duy trì một set chứa các màu có trong subtree của u.
 - Khi gộp các subtree con lại: luôn gộp set NHỎ vào set LỚN hơn (small-to-large).
   Nhờ đó tổng số phần tử bị "chuyển" trong toàn bộ quá trình là O(n log n),
   vì mỗi phần tử chỉ bị chuyển sang một set lớn hơn tối đa O(log n) lần.
 - Đáp án cho u là kích thước set của u SAU khi đã gộp mọi con và thêm màu c[u].
 
-DUYỆT CÂY KHÔNG ĐỆ QUY (tránh RecursionError với n tới 2e5):
+Duyệt cây KHÔNG đệ quy (tránh RecursionError với n tới 2e5):
 - Dùng một stack tường minh (iterative DFS) để tính parent[] và một mảng order[]
   sao cho mỗi đỉnh luôn đứng TRƯỚC các hậu duệ của nó.
-- Duyệt order theo thứ tự ĐẢO NGƯỢC (reversed): khi tới u thì mọi con của u đã được
-  xử lý xong và đã gộp set của chúng vào set của u. Ta thêm màu c[u], ghi nhận đáp án,
-  rồi gộp set của u vào set của parent[u] theo quy tắc small-to-large.
+- Duyệt order theo thứ tự ĐẢO NGƯỢC (reversed): khi tới u thì mọi con của u đã
+  được xử lý xong và đã gộp set của chúng vào set của u. Ta thêm màu c[u], ghi
+  nhận đáp án, rồi gộp set của u vào set của parent[u] theo quy tắc small-to-large.
 
-TÍNH ĐÚNG:
+Tính đúng:
 - Thứ tự đảo của một thứ tự "cha trước con" bảo đảm mọi con được xử lý trước cha,
   nên tại thời điểm xử lý u, set[u] chứa đúng hợp các màu của tất cả subtree con.
 - Set tự động loại trùng nên kích thước set = số màu phân biệt. Small-to-large chỉ
   đổi ĐÍCH gộp chứ không làm thay đổi TẬP hợp kết quả, nên đáp án luôn đúng.
+- Không cần nén màu (coordinate compression) vì set làm việc trực tiếp với số nguyên.
 
-ĐỘ PHỨC TẠP:
+## Độ phức tạp
 - Thời gian: O(n log n) cho các thao tác gộp set (small-to-large), cộng O(n) đọc/duyệt.
 - Bộ nhớ: O(n). Nhờ small-to-large, tại mỗi thời điểm mỗi màu chỉ nằm trong đúng một
   set "sống", nên tổng phần tử của các set đang tồn tại không vượt quá n.
-
-Không cần nén màu (coordinate compression) vì set làm việc trực tiếp với số nguyên.
 
 LƯU Ý TLE: n tới 2e5 với hằng số của set trong CPython có thể chạm giới hạn thời gian
 trên CSES (giới hạn nhắm cho C++). Thuật toán O(n log n) là đúng và tối ưu về mặt lý

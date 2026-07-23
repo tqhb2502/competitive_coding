@@ -1,32 +1,32 @@
-Bài toán: Sum of Divisors (CSES 1082)
-Tính S = sum_{i=1..n} sigma(i) mod 1e9+7, với sigma(i) là tổng các ước của i.
+Sum of Divisors - CSES 1082
+https://cses.fi/problemset/task/1082
+
+## Đề bài
+Cho số nguyên n. Gọi sigma(i) là tổng tất cả các ước của i. Hãy tính tổng
+S = sigma(1) + sigma(2) + ... + sigma(n), rồi lấy phần dư khi chia cho 1e9+7.
 Ràng buộc: 1 <= n <= 1e12.
 
-Ý tưởng chính:
-- Đổi thứ tự tính tổng. Thay vì với mỗi i cộng tất cả ước của nó, ta xét từng
-  ước d và đếm nó xuất hiện trong bao nhiêu số i <= n. Một số d là ước của
-  chính xác các bội của d không vượt quá n, tức là có floor(n/d) số như vậy.
-  Mỗi lần xuất hiện d đóng góp giá trị d vào tổng.
-- Do đó:
+## Ý tưởng
+- Đổi thứ tự lấy tổng: thay vì với mỗi i cộng mọi ước của nó, ta xét từng ước d
+  và đếm xem d là ước của bao nhiêu số i <= n. Ước d chia hết đúng các bội của d
+  không vượt quá n, tức là có floor(n/d) số như vậy, và mỗi lần xuất hiện d đóng
+  góp giá trị d vào tổng. Do đó:
       S = sum_{i=1..n} sigma(i) = sum_{d=1..n} d * floor(n/d).
+- Kỹ thuật divisor-block (chia khối theo thương): giá trị q = floor(n/d) chỉ nhận
+  O(sqrt(n)) giá trị phân biệt. Với mỗi khối các d liên tiếp có cùng thương q, chỉ
+  số d lớn nhất giữ nguyên q là r = floor(n/q).
+- Trong khối [l, r] (bắt đầu l = d), phần đóng góp là:
+      q * (l + (l+1) + ... + r) = q * (l + r) * (r - l + 1) / 2,
+  với tổng cấp số cộng tính theo công thức chuẩn. Bản C++ chia cho 2 bằng modular
+  inverse của 2 (INVERSE_TWO), còn bản Python dùng số nguyên tùy ý nên chia trực
+  tiếp cho 2 mà vẫn chính xác tuyệt đối, không cần modular inverse.
+- Tính đúng đắn: công thức S = sum_d d*floor(n/d) là biến đổi tổng chuẩn (đổi thứ
+  tự lấy tổng theo cặp ước d và bội i) nên luôn đúng; divisor-block chỉ gom các d
+  cùng thương q lại nên kết quả không đổi so với cộng từng d một.
 
-Kỹ thuật divisor-block (floor division blocks / phân khối theo thương):
-- Giá trị q = floor(n/d) chỉ nhận O(sqrt(n)) giá trị phân biệt. Với mỗi khối
-  các d liên tiếp có cùng q, chỉ số d lớn nhất giữ nguyên q là r = floor(n/q).
-- Trong khối [l, r] (bắt đầu l = d), đóng góp là:
-      q * (l + (l+1) + ... + r) = q * (l + r) * (r - l + 1) / 2.
-  Tổng cấp số cộng được tính bằng số nguyên lớn của Python (chính xác tuyệt đối),
-  sau đó lấy mod, nhân với q rồi lấy mod. Không cần modular inverse vì Python có
-  số nguyên tùy ý.
-
-Tính đúng đắn:
-- Công thức S = sum_d d*floor(n/d) là biến đổi tổng chuẩn (đổi thứ tự lấy tổng
-  theo cặp (ước d, bội i)), luôn đúng.
-- Divisor-block chỉ gom các d cùng thương q lại nên kết quả không đổi so với
-  cộng từng d một.
-
-Độ phức tạp:
-- Thời gian: O(sqrt(n)) khối, mỗi khối O(1) => khoảng 2e6 phép tính cho n=1e12.
+## Độ phức tạp
+- Thời gian: O(sqrt(n)) khối, mỗi khối O(1) => khoảng 2e6 phép tính cho n = 1e12.
 - Bộ nhớ: O(1).
 
-Không có rủi ro TLE: chỉ ~2 triệu vòng lặp, chạy nhanh trong Python.
+LƯU Ý TLE: không có rủi ro TLE, chỉ khoảng 2 triệu vòng lặp nên chạy nhanh kể cả
+trong Python.

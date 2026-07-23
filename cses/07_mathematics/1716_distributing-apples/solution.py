@@ -1,5 +1,3 @@
-# Distributing Apples - https://cses.fi/problemset/task/1716
-# Stars and bars: so cach chia m qua tao cho n dua tre = C(n + m - 1, m) mod 1e9+7.
 import sys
 
 
@@ -10,13 +8,13 @@ def main():
 
     MOD = 1_000_000_007
 
-    # Can C(N, m) = C(N, N - m) voi N = n + m - 1 (luu y N - m = n - 1).
+    # Stars and bars: đáp án = C(N, m) với N = n + m - 1.
     N = n + m - 1
-    # Chon chi so nho hon de it phep nhan nhat: k = min(m, n - 1).
+    # Vì C(N, m) = C(N, N - m) = C(N, n - 1), chọn chỉ số nhỏ hơn để ít phép nhân nhất.
     k = min(m, N - m)
 
-    # Tinh truc tiep C(N, k) = (N * (N-1) * ... * (N-k+1)) / k! mod MOD.
-    # Dung bien vo huong (khong cap phat mang lon) -> nhanh va it bo nho.
+    # Tính trực tiếp C(N, k) = (N * (N-1) * ... * (N-k+1)) / k! mod MOD.
+    # Dùng biến vô hướng (không cấp phát mảng lớn) nên nhanh và ít tốn bộ nhớ.
     num = 1
     for i in range(N - k + 1, N + 1):
         num = num * i % MOD
@@ -25,7 +23,7 @@ def main():
     for i in range(2, k + 1):
         den = den * i % MOD
 
-    # MOD nguyen to => nghich dao theo Fermat: inverse(den) = den^(MOD-2).
+    # MOD nguyên tố nên nghịch đảo theo định lý Fermat: inverse(den) = den^(MOD-2).
     ans = num * pow(den, MOD - 2, MOD) % MOD
 
     sys.stdout.write(str(ans) + "\n")

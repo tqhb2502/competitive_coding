@@ -1,2 +1,0 @@
-Next Prime
-https://cses.fi/problemset/task/3396

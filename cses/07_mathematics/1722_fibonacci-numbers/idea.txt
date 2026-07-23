@@ -1,30 +1,33 @@
-Bài toán: tính F(n) mod 1e9+7 với 0 <= n <= 10^18, trong đó
-F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2).
+Fibonacci Numbers - CSES 1722
+https://cses.fi/problemset/task/1722
 
-Vì n có thể lên tới 10^18 nên không thể lặp O(n). Ta cần thuật toán
-O(log n). Có hai cách phổ biến: matrix exponentiation và fast doubling.
-Ở đây dùng fast doubling vì nhanh và ít phép nhân hơn.
+## Đề bài
+Cho số n (0 <= n <= 10^18). Hãy tính số Fibonacci thứ n, tức F(n) mod 1e9+7,
+với F(0) = 0, F(1) = 1 và F(n) = F(n-1) + F(n-2).
 
-Fast doubling dựa trên các đẳng thức:
+## Ý tưởng
+Vì n có thể lên tới 10^18 nên không thể lặp O(n). Ta cần thuật toán O(log n).
+Có hai cách phổ biến là matrix exponentiation và fast doubling; ở đây dùng
+fast doubling vì nhanh và ít phép nhân hơn.
+
+Fast doubling dựa trên hai đẳng thức:
     F(2k)   = F(k) * (2*F(k+1) - F(k))
     F(2k+1) = F(k)^2 + F(k+1)^2
 
-Ý tưởng: viết hàm đệ quy (hoặc lặp theo bit) trả về cặp (F(k), F(k+1)).
+Viết hàm đệ quy trả về cặp (F(k), F(k+1)):
 - Khi biết (F(k), F(k+1)) ta tính được (F(2k), F(2k+1)) bằng hai công thức trên.
-- Duyệt các bit của n từ cao xuống thấp (hoặc đệ quy chia đôi n),
-  mỗi bước làm gấp đôi chỉ số, và nếu bit hiện tại là 1 thì dịch thêm
-  một bước Fibonacci (F(k), F(k+1)) -> (F(k+1), F(k)+F(k+1)).
-Mọi phép tính đều lấy modulo MOD = 1e9+7. Lưu ý (2*F(k+1) - F(k)) có thể
-âm sau khi trừ nên cộng thêm MOD trước khi lấy mod.
+- Đệ quy chia đôi n (tương đương duyệt các bit của n từ cao xuống thấp): mỗi
+  bước làm gấp đôi chỉ số, và nếu bit hiện tại là 1 thì dịch thêm một bước
+  Fibonacci (F(k), F(k+1)) -> (F(k+1), F(k)+F(k+1)).
+Mọi phép tính đều lấy modulo MOD = 1e9+7. Lưu ý (2*F(k+1) - F(k)) có thể âm
+sau khi trừ nên cộng thêm MOD trước khi lấy mod.
 
-Tại sao đúng: các đẳng thức fast doubling được suy ra trực tiếp từ đồng
-nhất thức Fibonacci (ví dụ từ matrix exponentiation của ma trận [[1,1],[1,0]]),
-là các công thức chuẩn và đúng với mọi k >= 0. Việc lấy modulo không ảnh
-hưởng tính đúng vì phép cộng, trừ, nhân đều tương thích với số học modulo.
+Tại sao đúng: các đẳng thức fast doubling được suy ra trực tiếp từ đồng nhất
+thức Fibonacci (ví dụ từ matrix exponentiation của ma trận [[1,1],[1,0]]), là
+các công thức chuẩn và đúng với mọi k >= 0. Việc lấy modulo không ảnh hưởng
+tính đúng vì phép cộng, trừ, nhân đều tương thích với số học modulo.
 
-Độ phức tạp:
-- Thời gian: O(log n) phép nhân số lớn (thực chất các số đã < MOD nên là
-  số nguyên 32-bit/64-bit), rất nhanh.
-- Bộ nhớ: O(log n) do đệ quy, hoặc O(1) nếu viết dạng lặp.
-
-Không có nguy cơ TLE: chỉ khoảng 60 bước cho n = 10^18.
+## Độ phức tạp
+- Thời gian: O(log n) phép nhân (các số đã < MOD nên là số nguyên 32/64-bit),
+  chỉ khoảng 60 bước cho n = 10^18 nên rất nhanh, không có nguy cơ TLE.
+- Bộ nhớ: O(log n) do đệ quy (có thể viết dạng lặp để đạt O(1)).

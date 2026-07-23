@@ -1,32 +1,31 @@
-Bài toán: tính a^(b^c) mod (10^9+7) cho n truy vấn, với 0 <= a, b, c <= 10^9.
+Exponentiation II - CSES 1712
+https://cses.fi/problemset/task/1712
 
-Ý tưởng chính (Fermat's little theorem):
-- Đặt p = 10^9 + 7. p là số nguyên tố, nên phi(p) = p - 1 = 10^9 + 6.
-- Số mũ e = b^c cực lớn (có thể tới (10^9)^(10^9)), không thể tính trực tiếp.
-- Định lý Fermat nhỏ (Fermat's little theorem): nếu gcd(a, p) = 1 thì a^(p-1) ≡ 1 (mod p).
-  Suy ra a^e ≡ a^(e mod (p-1)) (mod p) với mọi e >= 0.
-- Vì 0 <= a <= 10^9 < p và p nguyên tố, nên gcd(a, p) = 1 khi và chỉ khi a != 0.
-  Do đó với a > 0 ta dùng công thức trên.
+## Đề bài
+Cho n truy vấn, mỗi truy vấn gồm ba số a, b, c với 0 <= a, b, c <= 10^9.
+Với mỗi truy vấn, hãy tính a^(b^c) mod (10^9 + 7).
+
+## Ý tưởng
+Đặt p = 10^9 + 7. Vì p là số nguyên tố nên phi(p) = p - 1 = 10^9 + 6.
+Số mũ e = b^c cực lớn (có thể tới (10^9)^(10^9)) nên không thể tính trực tiếp.
+
+Theo định lý Fermat nhỏ (Fermat's little theorem): nếu gcd(a, p) = 1 thì
+a^(p-1) ≡ 1 (mod p), suy ra a^e ≡ a^(e mod (p-1)) (mod p) với mọi e >= 0.
+Vì 0 <= a <= 10^9 < p và p nguyên tố nên gcd(a, p) = 1 khi và chỉ khi a != 0.
 
 Cách tính:
-- Với a > 0:
-    e_mod = pow(b, c, p-1)          # b^c mod (p-1), dùng modular exponentiation (built-in pow 3 tham số)
-    kết quả = pow(a, e_mod, p)      # a^(e mod (p-1)) mod p
-  Công thức đúng với mọi e >= 0, kể cả khi e_mod = 0 (khi đó a^e ≡ 1 mod p, phù hợp vì a^(p-1) ≡ 1).
-- Trường hợp đặc biệt a = 0 (không áp dụng Fermat vì gcd(0, p) = p != 1):
-    Số mũ thật e = b^c.
-    * e = 0 khi và chỉ khi b = 0 và c >= 1  ->  0^0 = 1 (theo quy ước của bài) -> in 1.
-    * Ngược lại e > 0 (gồm b >= 1 mọi c, và b = 0 c = 0 cho 0^0 = 1 > 0) -> 0^(số dương) = 0 -> in 0.
+- Với a > 0: rút gọn số mũ e_mod = b^c mod (p-1) bằng modular exponentiation,
+  rồi lấy kết quả = a^(e_mod) mod p. Công thức đúng với mọi e >= 0, kể cả khi
+  e_mod = 0 (khi đó a^e ≡ 1 mod p, phù hợp vì a^(p-1) ≡ 1).
+- Với a = 0 (không áp dụng Fermat vì gcd(0, p) = p != 1): số mũ thật e = b^c.
+  * Nếu b = 0 và c >= 1 thì e = 0 nên 0^0 = 1 (theo quy ước của bài) -> in 1.
+  * Ngược lại e > 0 (b >= 1 với mọi c, hoặc b = 0 và c = 0) -> 0^(số dương) = 0 -> in 0.
 
-Vì sao đúng:
-- pow(b, c, p-1) cho đúng b^c mod (p-1); rồi pow(a, ·, p) cho đúng a mũ đó mod p.
-- Việc rút gọn số mũ theo mod (p-1) là hợp lệ nhờ a^(p-1) ≡ 1 (mod p) khi gcd(a,p)=1.
-- Không rơi vào "bẫy" của định lý Euler tổng quát (cần cộng thêm phi khi gcd != 1),
-  vì ở đây gcd(a, p) = 1 luôn đúng khi a > 0 (do a < p và p nguyên tố).
+Việc rút gọn số mũ theo mod (p-1) hợp lệ nhờ a^(p-1) ≡ 1 (mod p) khi gcd(a, p) = 1;
+không rơi vào bẫy của định lý Euler tổng quát (cần cộng thêm phi khi gcd != 1) vì ở
+đây gcd(a, p) = 1 luôn đúng khi a > 0 (do a < p và p nguyên tố).
 
-Độ phức tạp:
-- Mỗi truy vấn: hai lần modular exponentiation, O(log c + log e) phép nhân số lớn (thực chất số 64-bit).
-- Tổng: O(n log(max)) với n <= 10^5. Rất nhanh, không có nguy cơ TLE.
+## Độ phức tạp
+- Mỗi truy vấn: hai lần modular exponentiation, O(log c + log e) phép nhân số 64-bit.
+- Tổng: O(n log(max)) với n <= 10^5, rất nhanh, không có nguy cơ TLE.
 - Bộ nhớ: O(n) cho danh sách kết quả xuất ra.
-
-Đọc input nhanh bằng sys.stdin.buffer.read().split(), xuất một lần bằng sys.stdout.write.

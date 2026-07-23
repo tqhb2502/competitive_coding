@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// Cấu trúc Disjoint Set Union (union theo size + nén đường đi) dùng cho Tarjan
 class DisjointSet {
 public:
     explicit DisjointSet(int n) : parent_(n + 1), size_(n + 1, 1) {
@@ -51,6 +52,7 @@ int main() {
     int n, path_count;
     cin >> n >> path_count;
 
+    // Đọc cây: danh sách kề vô hướng gồm n - 1 cạnh
     vector<vector<int>> graph(n + 1);
     for (int i = 0; i < n - 1; ++i) {
         int a, b;
@@ -59,6 +61,7 @@ int main() {
         graph[b].push_back(a);
     }
 
+    // BFS lặp với gốc là đỉnh 1: dựng parent, children và thứ tự duyệt (order)
     vector<int> parent(n + 1, -1), order;
     vector<vector<int>> children(n + 1);
     order.reserve(n);
@@ -76,6 +79,7 @@ int main() {
         }
     }
 
+    // Đọc các đường đi (truy vấn LCA), lưu tại cả hai đầu để xử lý offline
     vector<int> first(path_count), second(path_count), lca(path_count);
     vector<vector<pair<int, int>>> queries(n + 1);
     for (int id = 0; id < path_count; ++id) {
@@ -84,7 +88,7 @@ int main() {
         queries[second[id]].push_back({first[id], id});
     }
 
-    // Iterative version of Tarjan's offline LCA algorithm.
+    // Thuật toán Tarjan offline LCA (bản lặp): DFS một lần kết hợp DSU
     DisjointSet dsu(n);
     vector<int> ancestor(n + 1), child_index(n + 1);
     vector<char> finished(n + 1, false);
@@ -93,6 +97,7 @@ int main() {
 
     while (!stack.empty()) {
         int node = stack.back();
+        // Còn con chưa duyệt: make_set(child) rồi đi xuống con đó
         if (child_index[node] < static_cast<int>(children[node].size())) {
             int child = children[node][child_index[node]++];
             ancestor[child] = child;
@@ -100,6 +105,7 @@ int main() {
             continue;
         }
 
+        // Hoàn tất node: trả lời mọi truy vấn có đầu kia đã hoàn tất
         finished[node] = true;
         for (auto [other, id] : queries[node]) {
             if (finished[other]) {
@@ -107,6 +113,7 @@ int main() {
             }
         }
         stack.pop_back();
+        // Gộp node vào cha rồi gán lại ancestor của tập cho cha
         if (parent[node] != 0) {
             int p = parent[node];
             dsu.unite(p, node);
@@ -114,6 +121,7 @@ int main() {
         }
     }
 
+    // Difference on tree: đánh dấu hiệu cho từng đường đi qua LCA của nó
     vector<long long> difference(n + 1);
     for (int id = 0; id < path_count; ++id) {
         int a = first[id];
@@ -127,6 +135,7 @@ int main() {
         }
     }
 
+    // Cộng tổng subtree bằng cách duyệt ngược thứ tự BFS (con dồn lên cha)
     for (int index = n - 1; index > 0; --index) {
         int node = order[index];
         difference[parent[node]] += difference[node];

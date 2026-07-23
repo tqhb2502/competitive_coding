@@ -1,37 +1,40 @@
-Bài toán: Permutation Order (CSES 3397)
+Permutation Order - CSES 3397
+https://cses.fi/problemset/task/3397
 
-Cho p(n, k) là hoán vị thứ k (theo thứ tự từ điển, đánh số từ 1) của dãy 1..n.
-Có hai loại truy vấn:
+## Đề bài
+Gọi p(n, k) là hoán vị thứ k (theo thứ tự từ điển, đánh số từ 1) của dãy 1..n.
+Xử lý t truy vấn, mỗi truy vấn thuộc một trong hai loại:
   Loại 1: cho n và k, in ra hoán vị p(n, k).
-  Loại 2: cho n và một hoán vị, tìm thứ hạng k của nó.
-
+  Loại 2: cho n và một hoán vị của 1..n, tìm thứ hạng k của hoán vị đó.
 Ràng buộc: 1 <= t <= 1000, 1 <= n <= 20, 1 <= k <= n!. Không có modulo.
-Vì n <= 20 nên n! <= 20! ~ 2.4e18 (vẫn nằm trong phạm vi số nguyên; Python xử lý số lớn tùy ý nên không lo tràn).
+Vì n <= 20 nên n! <= 20! ~ 2.4e18, vẫn nằm trong phạm vi số nguyên 64-bit không dấu;
+Python xử lý số nguyên lớn tùy ý nên không lo tràn.
 
-Ý tưởng chính: hệ cơ số giai thừa (factorial number system).
-
+## Ý tưởng
+Dùng hệ cơ số giai thừa (factorial number system).
 Tiền xử lý: fact[i] = i! cho i = 0..20.
 
-Loại 1 (k -> hoán vị) — dùng biểu diễn giai thừa của k-1:
+Loại 1 (k -> hoán vị): giải mã biểu diễn giai thừa của k-1.
   Đặt kk = k - 1 (đổi sang đánh số từ 0). Giữ danh sách available = [1, 2, ..., n]
-  đã sắp xếp tăng dần. Duyệt vị trí từ trái sang phải; tại vị trí còn i phần tử:
+  đã sắp xếp tăng dần. Duyệt vị trí từ trái sang phải; khi còn i phần tử:
       f = fact[i-1]        (số hoán vị của i-1 phần tử còn lại)
       j = kk // f          (chỉ số phần tử được chọn trong available)
       kk = kk % f
       lấy available.pop(j) đưa vào kết quả.
   Vì các phần tử nhỏ hơn tạo ra ít hoán vị hơn về mặt từ điển, phần tử thứ j (0-indexed)
-  trong danh sách đã sắp xếp chính là chữ số đầu tiên của hoán vị thứ kk. Lặp lại cho các
-  vị trí sau. Đây là thuật toán chuẩn giải mã biểu diễn giai thừa, nên đúng.
+  trong danh sách đã sắp xếp chính là chữ số kế tiếp của hoán vị thứ kk. Đây là thuật toán
+  chuẩn giải mã biểu diễn giai thừa nên cho kết quả đúng.
 
-Loại 2 (hoán vị -> k) — mã hóa ngược lại:
+Loại 2 (hoán vị -> k): mã hóa ngược lại.
   Giữ available = [1..n] đã sắp xếp. rank = 0. Duyệt hoán vị từ trái sang phải, tại vị trí
   thứ i (0-indexed) với phần tử x:
       pos = số phần tử trong available nhỏ hơn x = chỉ số của x trong danh sách đã sắp xếp
       rank += pos * fact[n-1-i]
       loại x khỏi available (available vẫn giữ thứ tự sắp xếp).
-  Cuối cùng k = rank + 1 (đổi lại về đánh số từ 1). Mỗi phần tử nhỏ hơn đứng trước sẽ
-  ứng với fact[n-1-i] hoán vị đứng trước, nên tổng cho đúng thứ hạng.
+  Cuối cùng k = rank + 1 (đổi lại về đánh số từ 1). Mỗi phần tử nhỏ hơn đứng trước ứng với
+  fact[n-1-i] hoán vị đứng trước, nên tổng cho đúng thứ hạng.
 
-Độ phức tạp: mỗi truy vấn O(n^2) do dùng list.pop / list.index trên danh sách độ dài <= 20.
+## Độ phức tạp
+Mỗi truy vấn O(n^2) do dùng list.pop / list.index trên danh sách độ dài <= 20.
 Tổng cộng O(t * n^2) <= 1000 * 400 = 4e5 phép toán. Bộ nhớ O(n).
-Đọc toàn bộ input bằng sys.stdin.buffer.read().split(), ghi output một lần. Không có nguy cơ TLE.
+Đọc toàn bộ input một lần, ghi output một lần nên không có nguy cơ TLE.

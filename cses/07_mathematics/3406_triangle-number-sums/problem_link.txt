@@ -1,2 +1,0 @@
-Triangle Number Sums
-https://cses.fi/problemset/task/3406

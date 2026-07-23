@@ -1,10 +1,3 @@
-# Path Queries (CSES 1138)
-# https://cses.fi/problemset/task/1138
-#
-# Euler tour (tin/tout) + Fenwick/BIT với kỹ thuật "điểm vào/ra":
-#   cộng +val tại tin[v], -val tại tout[v]+1  =>  path-sum(root..s) = prefix_sum(tin[s]).
-# DFS được làm theo kiểu iterative để tránh RecursionError khi n lớn.
-
 import sys
 
 
@@ -26,7 +19,8 @@ def main():
         adj[a].append(b)
         adj[b].append(a)
 
-    # Euler tour bằng DFS lặp: tính tin[], tout[], parent[]
+    # Euler tour bằng DFS lặp (tránh RecursionError khi n lớn): tính tin[], tout[], parent[].
+    # Dấu âm -v được dùng làm marker để chốt tout khi rời khỏi đỉnh v.
     tin = [0] * (n + 1)
     tout = [0] * (n + 1)
     parent = [0] * (n + 1)
@@ -36,27 +30,28 @@ def main():
         v = stack.pop()
         if v > 0:
             timer += 1
-            tin[v] = timer
-            stack.append(-v)  # marker để gán tout khi ra khỏi v
+            tin[v] = timer  # Lúc vào đỉnh v
+            stack.append(-v)  # Đẩy marker để gán tout khi ra khỏi v
             pv = parent[v]
             for u in adj[v]:
-                if u != pv:
+                if u != pv:  # Bỏ qua cạnh quay về cha
                     parent[u] = v
                     stack.append(u)
         else:
             v = -v
-            tout[v] = timer
+            tout[v] = timer  # Lúc ra khỏi đỉnh v
 
-    # BIT có chỉ số 1..size, size = n+1 (vì có thể cộng tại tout[v]+1 = n+1)
+    # BIT có chỉ số 1..size, size = n+1 (vì có thể cộng tại vị trí tout[v]+1 = n+1)
     size = n + 1
 
-    # Khởi tạo BIT trong O(n) từ mảng hiệu (difference array)
+    # Dựng mảng hiệu (difference array): mỗi đỉnh cộng +val tại tin, -val tại tout+1.
     diff = [0] * (size + 2)
     for v in range(1, n + 1):
         vv = val[v]
         diff[tin[v]] += vv
         diff[tout[v] + 1] -= vv
 
+    # Khởi tạo BIT trong O(n) từ mảng hiệu (dựng cây Fenwick trực tiếp)
     bit = [0] * (size + 1)
     for i in range(1, size + 1):
         bit[i] += diff[i]
@@ -68,6 +63,7 @@ def main():
     for _ in range(q):
         t = data[pos]; pos += 1
         if t == b'2':
+            # Truy vấn: tổng đường đi gốc -> s = prefix_sum(tin[s]) (inline vòng BIT)
             s = int(data[pos]); pos += 1
             i = tin[s]
             ssum = 0
@@ -76,11 +72,11 @@ def main():
                 i -= i & -i
             out.append(ssum)
         else:  # b'1'
+            # Cập nhật giá trị đỉnh s: cộng delta tại tin[s], -delta tại tout[s]+1
             s = int(data[pos]); pos += 1
             x = int(data[pos]); pos += 1
             delta = x - val[s]
             val[s] = x
-            # point update: +delta tại tin[s], -delta tại tout[s]+1
             i = tin[s]
             while i <= size:
                 bit[i] += delta

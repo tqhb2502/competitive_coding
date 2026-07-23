@@ -1,58 +1,59 @@
-Bài toán: Graph Paths II (CSES 1724)
-Cho đồ thị có hướng n node, m cạnh, mỗi cạnh có trọng số. Tìm đường đi (walk)
-có trọng số NHỎ NHẤT từ node 1 đến node n sử dụng ĐÚNG K cạnh. Nếu không tồn
-tại, in ra -1.
+Graph Paths II - CSES 1724
+https://cses.fi/problemset/task/1724
+
+## Đề bài
+Cho đồ thị có hướng gồm n node và m cạnh, mỗi cạnh mang một trọng số. Hãy tìm
+đường đi (walk) có tổng trọng số NHỎ NHẤT từ node 1 đến node n sử dụng ĐÚNG k
+cạnh. Nếu không tồn tại đường đi như vậy, in ra -1.
 
 Ràng buộc: 1 <= n <= 100, 1 <= m <= n(n-1), 1 <= k <= 1e9, 1 <= c <= 1e9.
-Không có modulo. Đáp án thật lớn nhất = K * max_c <= 1e9 * 1e9 = 1e18.
+Không có modulo. Đáp án thật lớn nhất bằng k * max_c <= 1e9 * 1e9 = 1e18.
 
-Ý tưởng - Matrix exponentiation trên (min, +) tropical semiring
----------------------------------------------------------------
-Đặt M là ma trận kề n x n với:
-  M[i][j] = trọng số cạnh nhỏ nhất từ i -> j  (= INF nếu không có cạnh).
+## Ý tưởng
+Dùng matrix exponentiation trên tropical semiring (min, +) hay còn gọi là
+min-plus. Đặt M là ma trận kề n x n với:
+  M[i][j] = trọng số cạnh nhỏ nhất từ i -> j (bằng INF nếu không có cạnh).
 
-Trong tropical semiring (min-plus), ta thay thế:
+Trong tropical semiring, ta thay thế:
   - phép "cộng" của semiring = min
   - phép "nhân" của semiring  = cộng số học (+)
 Khi đó phép nhân ma trận min-plus được định nghĩa:
   C[i][j] = min_l ( A[i][l] + B[l][j] ).
 
-Ý nghĩa: nếu A[i][l] = trọng số nhỏ nhất của walk i->l dùng p cạnh, và
-B[l][j] = trọng số nhỏ nhất của walk l->j dùng q cạnh, thì C[i][j] là trọng
+Ý nghĩa: nếu A[i][l] là trọng số nhỏ nhất của walk i->l dùng p cạnh, và
+B[l][j] là trọng số nhỏ nhất của walk l->j dùng q cạnh, thì C[i][j] là trọng
 số nhỏ nhất của walk i->j dùng đúng p+q cạnh. Do đó:
   ( M^k )[i][j] = trọng số nhỏ nhất của walk i->j dùng ĐÚNG k cạnh.
 
-Đáp án = ( M^k )[0][n-1] (chỉ số 0-based). Nếu >= INF thì không có walk -> -1.
+Đáp án bằng ( M^k )[0][n-1] (chỉ số 0-based). Nếu giá trị này >= INF thì không
+có walk hợp lệ, in ra -1.
+
+Tính đúng đắn: quy nạp theo số cạnh. M^1 = M đúng cho walk 1 cạnh. Giả sử M^p và
+M^q đều đúng, thì tích min-plus của chúng tính đúng trọng số nhỏ nhất của walk
+p+q cạnh vì nó lấy min trên mọi node trung gian l (chia walk thành đoạn i->l dài
+p và đoạn l->j dài q). Tính chất kết hợp (associativity) của min-plus cho phép
+dùng fast exponentiation.
 
 Tối ưu: chỉ cần HÀNG 0 của M^k. Do đó dùng fast exponentiation nhưng thay vì
 tích ma trận-ma trận ở các bit lẻ, ta nhân vào một VECTOR hàng v = e_0 (v[0]=0,
 còn lại INF): v <- v * base (O(n^2)). Chỉ các bước squaring base <- base*base
-mới là O(n^3). Nhờ vậy số phép nhân O(n^3) giảm còn ~log k (thay vì ~2 log k).
+mới tốn O(n^3). Nhờ vậy số phép nhân O(n^3) giảm còn ~log k (thay vì ~2 log k).
 
-Tính đúng đắn
--------------
-Quy nạp theo số cạnh: M^1 = M đúng cho walk 1 cạnh. Giả sử M^p và M^q đúng,
-thì tích min-plus của chúng tính đúng trọng số nhỏ nhất của walk p+q cạnh vì
-nó lấy min trên mọi node trung gian l (chia walk thành đoạn i->l dài p và đoạn
-l->j dài q). Tính chất kết hợp (associativity) của min-plus cho phép dùng fast
-exponentiation.
-
-Xử lý INF: giá trị thật tối đa là 1e18. Chọn INF = 1<<62 (~4.6e18) > 1e18.
-Khi nhân, bỏ qua node nguồn có A[i][l] = INF (không có đường). Nếu B[l][j] = INF
-thì a + INF > INF nên phép min giữ nguyên INF (cell vẫn là INF => không có đường).
+Xử lý INF: giá trị thật tối đa là 1e18. Chọn INF = 1<<62 (~4.6e18) > 1e18. Khi
+nhân, bỏ qua node nguồn có A[i][l] = INF (không có đường). Nếu B[l][j] = INF thì
+a + INF > INF nên phép min giữ nguyên INF (cell vẫn là INF, tức không có đường).
 Nhờ vậy mỗi cell luôn là số thật (<= 1e18) hoặc đúng bằng INF, tách bạch rõ ràng.
-
-Độ phức tạp
------------
-Mỗi phép squaring min-plus là O(n^3); có ~log k lần => O(n^3 * log k) thời gian,
-O(n^2) bộ nhớ. Với n=100, log k ~ 30 => ~30 phép nhân ma trận * 1e6 = ~3e7 phép
-min/cộng (cộng thêm ~30 phép vecmul O(n^2) không đáng kể).
 
 Thủ thuật tăng tốc CPython: trong matmul ta chuyển vị B rồi tính mỗi cell bằng
 min(map(add, hang_A, cot_B)); cả map và min chạy ở tầng C nên nhanh hơn nhiều so
 với vòng lặp Python. (Cách này không bỏ qua nguồn INF nên các cell "không tới
 được" mang giá trị >= INF thay vì đúng bằng INF, nhưng vẫn luôn > 1e18 nên tách
 bạch hoàn toàn với giá trị thật; đã kiểm chứng cho cùng kết quả với bản có skip.)
+
+## Độ phức tạp
+Mỗi phép squaring min-plus tốn O(n^3); có ~log k lần => O(n^3 * log k) thời gian,
+O(n^2) bộ nhớ. Với n=100, log k ~ 30 => ~30 phép nhân ma trận * 1e6 = ~3e7 phép
+min/cộng (cộng thêm ~30 phép vecmul O(n^2) không đáng kể).
 
 LƯU Ý TLE: Với n=100 và k=1e9, pure Python phải làm ~3e7 phép min-plus. Đã tối ưu
 tối đa (vector accumulation + transpose + map/min ở tầng C, ~1.6s trên máy test),

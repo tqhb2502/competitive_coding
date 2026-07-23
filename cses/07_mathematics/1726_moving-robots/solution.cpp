@@ -15,6 +15,9 @@ int main() {
 
     constexpr size_t SIDE = 8;
     constexpr size_t SQUARES = SIDE * SIDE;
+
+    // Dựng danh sách láng giềng hợp lệ cho mỗi ô; bậc của ô = số hướng đi được
+    // (ô góc 2 hướng, ô cạnh 3 hướng, ô trong 4 hướng).
     vector<vector<size_t>> neighbors(SQUARES);
     constexpr array<int, 4> row_delta{1, -1, 0, 0};
     constexpr array<int, 4> column_delta{0, 0, 1, -1};
@@ -33,11 +36,15 @@ int main() {
         }
     }
 
+    // distribution[start][.] = phân bố xác suất vị trí của robot xuất phát tại ô start;
+    // khởi tạo phân bố đặt toàn bộ xác suất tại chính ô xuất phát.
     vector<vector<double>> distribution(SQUARES, vector<double>(SQUARES));
     for (size_t start = 0; start < SQUARES; ++start) {
         distribution[start][start] = 1.0;
     }
 
+    // Mô phỏng random walk k bước: mỗi bước, xác suất tại ô square được chia đều
+    // p/deg(square) sang từng ô láng giềng (tương đương nhân với ma trận chuyển T).
     for (int step = 0; step < steps; ++step) {
         vector<vector<double>> next(SQUARES, vector<double>(SQUARES));
         for (size_t start = 0; start < SQUARES; ++start) {
@@ -52,6 +59,8 @@ int main() {
         distribution = std::move(next);
     }
 
+    // Linearity of expectation: đáp số = tổng trên mọi ô của P(ô đó rỗng); các robot
+    // di chuyển độc lập nên P(ô rỗng) = tích (1 - p_k(start -> ô)) trên mọi ô xuất phát.
     double answer = 0.0;
     for (size_t square = 0; square < SQUARES; ++square) {
         double empty_probability = 1.0;

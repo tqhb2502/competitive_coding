@@ -1,16 +1,17 @@
-Bài toán: Stick Game (CSES 1729)
+Stick Game - CSES 1729
+https://cses.fi/problemset/task/1729
 
-Đề bài:
+## Đề bài
 - Có một đống n que. Hai người chơi lần lượt bốc que; mỗi lượt được bốc một số
   lượng que thuộc tập hợp P gồm k giá trị cho trước (P luôn chứa giá trị 1).
 - Ai bốc được que cuối cùng thì thắng.
 - Với mỗi trạng thái i que (i = 1..n) cần in ra 'W' nếu người đi trước THẮNG,
-  'L' nếu người đi trước THUA (chơi tối ưu).
+  'L' nếu người đi trước THUA (cả hai chơi tối ưu).
+- Ràng buộc: 1 <= n <= 10^6, 1 <= k <= 100, 1 <= p_i <= n.
 
-Ràng buộc: 1 <= n <= 10^6, 1 <= k <= 100, 1 <= p_i <= n.
-
-Ý tưởng (game theory - subtraction game, kiểu Sprague-Grundy nhưng chỉ cần
-trạng thái thắng/thua):
+## Ý tưởng
+Đây là bài lý thuyết trò chơi tổ hợp (subtraction game, kiểu Sprague-Grundy
+nhưng chỉ cần phân loại trạng thái thắng/thua):
 - Gọi win[i] = True nếu người tới lượt ở trạng thái i que sẽ thắng.
 - Trạng thái 0 que là THUA cho người tới lượt (không bốc được gì; người trước
   đã bốc que cuối và thắng). Vậy win[0] = False (Losing).
@@ -42,13 +43,13 @@ là thế THUA với j < i; đúng lúc xử lý j (j < i) ta đã set win[j + p
 Do duyệt tăng dần nên khi đọc win[i] mọi j < i đã lan truyền xong => quyết định
 đúng.
 
-Độ phức tạp:
+Kiểm tra ví dụ: n=10, P={1,3,4} -> WLWWWWLWLW (khớp).
+
+## Độ phức tạp
 - Thời gian: O(n + (số thế thua) * k). Vì 1 thuộc P nên hai thế thua không thể
   kề nhau (nếu i thua thì i-1 phải thắng), do đó số thế thua <= n/2. Trường hợp
-  xấu nhất ~ (n/2) * k = 5*10^7 phép gán. Cộng vòng duyệt O(n).
+  xấu nhất ~ (n/2) * k = 5*10^7 phép gán, cộng vòng duyệt O(n).
 - Bộ nhớ: O(n + maxp) cho mảng byte.
-
-Kiểm tra ví dụ: n=10, P={1,3,4} -> WLWWWWLWLW (khớp).
 
 LƯU Ý TLE: Trong Python thuần, trường hợp xấu nhất ~5*10^7 phép gán mức Python
 (khi số thế thua ~ n/2 và k = 100) có thể vượt giới hạn thời gian ~1s của CSES
