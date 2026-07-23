@@ -1,22 +1,26 @@
-SWAP GAME - CSES 1670
+Swap Game - CSES 1670
+https://cses.fi/problemset/task/1670
 
-ĐỀ BÀI (tóm tắt)
-Cho bảng 3x3 là một hoán vị của 1..9. Mỗi bước được đổi hai ô kề nhau
-theo cạnh. Tìm số bước ít nhất để đưa bảng về thứ tự 1,2,...,9.
+## Đề bài
+Cho một bảng 3x3 chứa một hoán vị của các số 1..9. Mỗi bước ta được phép
+đổi chỗ hai ô kề nhau theo cạnh (ngang hoặc dọc). Tìm số bước ít nhất để
+đưa bảng về đúng thứ tự 1, 2, ..., 9.
 
-MÔ HÌNH ĐỒ THỊ VÀ BFS
-Mỗi trạng thái là một hoán vị của 9 số, nên toàn bộ đồ thị chỉ có 9! =
-362880 đỉnh. Hai trạng thái có cạnh nếu chúng khác nhau bởi một phép đổi
-ngang hoặc dọc; có 12 cặp ô như vậy.
+## Ý tưởng
+Xem mỗi trạng thái của bảng là một đỉnh của đồ thị; toàn bộ đồ thị chỉ có
+9! = 362880 đỉnh vì mỗi trạng thái là một hoán vị của 9 số. Hai trạng thái
+kề nhau (có cạnh) nếu chúng khác nhau đúng một phép đổi hai ô kề; có 12 cặp
+ô kề như vậy.
 
-Chạy BFS từ bảng ban đầu đến bảng đích. Mã hóa mỗi ô bằng 4 bit trong một
-số 64 bit; nhờ vậy có thể sinh láng giềng và lưu tập đã thăm gọn nhẹ.
+Chạy BFS từ bảng ban đầu tới bảng đích. Vì mỗi phép đổi hợp lệ tương ứng
+đúng một cạnh không trọng số, nên BFS duyệt các đỉnh theo khoảng cách tăng
+dần và khi lần đầu chạm trạng thái đích thì khoảng cách đó chính là số phép
+đổi nhỏ nhất.
 
-CHỨNG MINH
-Mỗi phép đổi hợp lệ trong đề tương ứng đúng một cạnh không trọng số của
-đồ thị, và ngược lại. BFS duyệt các đỉnh theo khoảng cách tăng dần, nên khi
-gặp trạng thái đích, khoảng cách đó là số phép đổi nhỏ nhất.
+Mỗi ô được mã hóa bằng 4 bit trong một số nguyên 64 bit; nhờ vậy việc sinh
+láng giềng chỉ là hoán đổi hai nhóm 4 bit, và tập trạng thái đã thăm được
+lưu gọn nhẹ trong một hash map.
 
-ĐỘ PHỨC TẠP
-Có tối đa 9! trạng thái và 12 cạnh sinh ra từ mỗi trạng thái. Thời gian
-O(9! * 12), bộ nhớ O(9!).
+## Độ phức tạp
+Có tối đa 9! trạng thái, mỗi trạng thái sinh 12 cạnh. Thời gian O(9! * 12),
+bộ nhớ O(9!).

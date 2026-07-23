@@ -1,2 +1,0 @@
-Water Containers Moves
-https://cses.fi/problemset/task/3213

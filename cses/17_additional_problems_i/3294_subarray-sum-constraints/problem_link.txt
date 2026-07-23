@@ -1,2 +1,0 @@
-Subarray Sum Constraints
-https://cses.fi/problemset/task/3294

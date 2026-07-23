@@ -1,30 +1,26 @@
-STACK WEIGHTS - CSES 2425
+Stack Weights - CSES 2425
+https://cses.fi/problemset/task/2425
 
-ĐỀ BÀI (tóm tắt)
-Có n đồng xu có trọng lượng phân biệt nhưng chỉ biết w_1<w_2<...<w_n. Lần lượt
-đặt mỗi xu lên ngăn trái hoặc phải. Sau mỗi bước, in bên chắc chắn nặng hơn,
-hoặc ? nếu thứ tự trọng lượng chưa đủ để kết luận. Ràng buộc: n <= 2*10^5.
+## Đề bài
+Có n đồng xu trọng lượng phân biệt nhưng ta chỉ biết thứ tự w_1 < w_2 < ... < w_n.
+Lần lượt n thao tác, mỗi thao tác đặt một đồng xu lên ngăn trái hoặc ngăn phải. Sau
+mỗi thao tác, in ">" nếu ngăn trái chắc chắn nặng hơn, "<" nếu ngăn phải chắc chắn
+nặng hơn, và "?" nếu chưa đủ thông tin để kết luận. Ràng buộc: n <= 2*10^5.
 
-THUẬT TOÁN: HỆ SỐ SUFFIX VÀ SEGMENT TREE
-Đặt d_i=1 nếu xu i ở trái, -1 nếu ở phải, 0 nếu chưa đặt. Hiệu trọng lượng là
-    D = sum d_i*w_i.
-Viết y_1=w_1 và y_j=w_j-w_{j-1} với j>1. Mọi y_j đều dương, và
-    D = sum_j y_j * S_j,  S_j=sum_{i=j}^n d_i.
+## Ý tưởng
+Đặt d_i = 1 nếu xu i ở ngăn trái, d_i = -1 nếu ở ngăn phải, d_i = 0 nếu chưa đặt.
+Hiệu trọng lượng giữa hai ngăn là D = sum d_i * w_i. Viết y_1 = w_1 và y_j = w_j -
+w_{j-1} với j > 1; mọi y_j đều dương. Đổi thứ tự lấy tổng ta được
+    D = sum_j y_j * S_j,   với S_j = sum_{i=j}^n d_i.
 
-Vì vậy trái chắc chắn nặng hơn đúng khi mọi S_j>=0 và có ít nhất một S_j>0.
-Tương tự, phải chắc chắn nặng hơn đúng khi mọi S_j<=0 và có ít nhất một giá
-trị âm. Trường hợp còn lại in ?.
+Vì mọi y_j đều dương nên: ngăn trái chắc chắn nặng hơn khi mọi S_j >= 0 và có ít
+nhất một S_j > 0; ngăn phải chắc chắn nặng hơn khi mọi S_j <= 0 và có ít nhất một
+S_j < 0; các trường hợp còn lại (kể cả khi mọi S_j = 0) in "?" vì dấu của D có thể
+thay đổi tùy theo bộ y_j dương ta chọn.
 
-Khi đặt xu c với dấu d, tất cả S_1..S_c được cộng d. Dùng segment tree lazy hỗ
-trợ cộng đoạn [1,c] và đọc min/max toàn mảng sau mỗi bước.
+Khi đặt xu c với dấu d, tất cả S_1..S_c cùng được cộng thêm d. Dùng segment tree
+lazy hỗ trợ cộng đoạn [1, c] rồi đọc min và max của toàn mảng S sau mỗi thao tác
+để quyết định ký tự cần in.
 
-CHỨNG MINH ĐÚNG
-Công thức đổi biến thu được bằng cách thay w_i=y_1+...+y_i và đổi thứ tự tổng.
-Nếu tất cả hệ số S_j không âm (và có hệ số dương), D dương với mọi dãy y_j
-dương; trường hợp không dương đối xứng. Nếu các S_j có cả dấu âm lẫn dương,
-ta có thể chọn khoảng tăng y tại một hệ số bất kỳ lớn tùy ý để ép mỗi dấu của
-D, nên không thể kết luận. Nếu tất cả bằng 0 thì hai bên luôn bằng nhau và đề
-cũng yêu cầu ?. Do cây duy trì đúng mọi S_j, mỗi ký tự xuất ra là chính xác.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 O(n log n) thời gian, O(n) bộ nhớ.

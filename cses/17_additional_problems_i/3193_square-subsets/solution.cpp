@@ -7,11 +7,12 @@
 namespace {
 
 constexpr int LIMIT = 5000;
-constexpr int MAX_PRIMES = 669;
-constexpr int BLOCKS = (MAX_PRIMES + 63) / 64;
+constexpr int MAX_PRIMES = 669;              // số lượng số nguyên tố <= 5000
+constexpr int BLOCKS = (MAX_PRIMES + 63) / 64;  // số khối 64 bit cho mỗi vector
 constexpr long long MOD = 1'000'000'007LL;
-using Row = std::array<std::uint64_t, BLOCKS>;
+using Row = std::array<std::uint64_t, BLOCKS>;  // một vector bit trên GF(2)
 
+// Lũy thừa nhanh: tính 2^exponent theo modulo MOD
 long long powerOfTwo(int exponent) {
     long long result = 1;
     long long base = 2;
@@ -31,6 +32,7 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
+    // Sàng tuyến tính: smallestPrime[v] là ước nguyên tố nhỏ nhất của v
     std::array<int, LIMIT + 1> smallestPrime{};
     std::vector<int> primes;
     for (int value = 2; value <= LIMIT; ++value) {
@@ -47,6 +49,7 @@ int main() {
         }
     }
 
+    // primeIndex[p] là chỉ số bit ứng với số nguyên tố p trong vector
     std::array<int, LIMIT + 1> primeIndex{};
     primeIndex.fill(-1);
     for (std::size_t i = 0; i < primes.size(); ++i) {
@@ -55,12 +58,14 @@ int main() {
 
     int n = 0;
     std::cin >> n;
-    std::array<Row, MAX_PRIMES> basis{};
-    int rank = 0;
+    std::array<Row, MAX_PRIMES> basis{};  // cơ sở của không gian con đã dựng
+    int rank = 0;                          // hạng r của hệ vector đầu vào
 
     for (int item = 0; item < n; ++item) {
         int value = 0;
         std::cin >> value;
+
+        // Biến value thành vector parity: bật bit của mỗi số nguyên tố có số mũ lẻ
         Row row{};
         while (value > 1) {
             const int prime = smallestPrime[static_cast<std::size_t>(value)];
@@ -76,6 +81,7 @@ int main() {
             }
         }
 
+        // Khử Gauss trên bit: giảm row từ bit cao xuống thấp theo cơ sở hiện có
         for (int bit = static_cast<int>(primes.size()) - 1; bit >= 0; --bit) {
             const std::uint64_t mask =
                 std::uint64_t{1} << static_cast<unsigned int>(bit % 64);
@@ -83,11 +89,13 @@ int main() {
                 continue;
             }
             Row& pivot = basis[static_cast<std::size_t>(bit)];
+            // Nếu chưa có pivot cho bit này thì row là vector cơ sở mới -> tăng hạng
             if ((pivot[static_cast<std::size_t>(bit / 64)] & mask) == 0U) {
                 pivot = row;
                 ++rank;
                 break;
             }
+            // Ngược lại XOR với pivot để triệt tiêu bit cao rồi tiếp tục
             for (int block = 0; block < BLOCKS; ++block) {
                 row[static_cast<std::size_t>(block)] ^=
                     pivot[static_cast<std::size_t>(block)];
@@ -95,6 +103,7 @@ int main() {
         }
     }
 
+    // Kernel có chiều n - rank nên số tập con hợp lệ là 2^(n-rank)
     std::cout << powerOfTwo(n - rank) << '\n';
     return 0;
 }

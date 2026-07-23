@@ -1,26 +1,26 @@
-BUBBLE SORT ROUNDS I - CSES 3151
+Bubble Sort Rounds I - CSES 3151
+https://cses.fi/problemset/task/3151
 
-ĐỀ BÀI (tóm tắt)
-Mỗi vòng bubble sort quét mảng từ trái sang phải và đổi mọi cặp kề nhau
-đang sai thứ tự. Tính số vòng cần để mảng được sắp xếp. Ràng buộc: n <= 2*10^5.
+## Đề bài
+Mỗi vòng bubble sort quét mảng từ trái sang phải và hoán đổi mọi cặp kề nhau
+đang sai thứ tự. Hãy tính số vòng cần thiết để mảng được sắp xếp hoàn toàn.
+Ràng buộc: n <= 2*10^5.
 
-ĐỘ DỊCH SANG TRÁI
-Trong một vòng quét từ trái sang phải, một phần tử có thể bị đổi với phần
-tử ngay bên trái nhiều nhất một lần. Do đó nó dịch sang trái nhiều nhất
-một vị trí mỗi vòng.
+## Ý tưởng
+Trong một vòng quét từ trái sang phải, mỗi phần tử chỉ bị đổi với phần tử ngay
+bên trái nó nhiều nhất một lần, nên nó dịch sang trái nhiều nhất một vị trí mỗi
+vòng. Do đó số vòng cần thiết bằng khoảng cách dịch trái lớn nhất của một phần
+tử nào đó.
 
-Để xử lý các giá trị bằng nhau đúng như bubble sort (không đổi hai phần tử
-bằng nhau), sắp xếp các cặp (giá trị, vị trí ban đầu). Khi cặp của phần tử
-ở vị trí original đứng tại vị trí sorted, nó phải dịch sang trái
+Để xử lý các giá trị bằng nhau đúng như bubble sort (không hoán đổi hai phần tử
+bằng nhau), ta sắp xếp các cặp (giá trị, vị trí ban đầu). Nếu phần tử ở vị trí
+ban đầu original được đưa về vị trí đích sorted, nó phải dịch sang trái một đoạn
   original - sorted
-vị trí nếu hiệu này dương. Đáp án là hiệu lớn nhất.
+khi hiệu này dương. Đáp án chính là hiệu lớn nhất trên toàn bộ các phần tử.
 
-CHỨNG MINH
-Vì mỗi phần tử dịch trái tối đa một ô mỗi vòng, cần ít nhất giá trị cực
-đại nói trên. Sau r vòng bubble sort, mỗi phần tử còn chưa ở vị trí ổn định
-sẽ được đổi sang trái một lần trong vòng nếu vẫn có phần tử lớn hơn đứng
-trước nó. Vì thế sau đúng max(original-sorted) vòng, mọi phần tử đã đi đủ
-khoảng cách sang trái cần thiết và mảng đã sắp xếp.
+Chứng minh: vì mỗi phần tử dịch trái tối đa một ô mỗi vòng nên cần ít nhất giá
+trị cực đại nói trên. Ngược lại, sau đúng max(original - sorted) vòng, mọi phần
+tử đều đã đi đủ khoảng cách sang trái cần thiết và mảng đã được sắp xếp.
 
-ĐỘ PHỨC TẠP
-Thời gian O(n log n), bộ nhớ O(n).
+## Độ phức tạp
+Thời gian O(n log n) do sắp xếp, bộ nhớ O(n).

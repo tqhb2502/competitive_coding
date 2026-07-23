@@ -1,28 +1,26 @@
-DISTINCT VALUES SUM - CSES 3150
+Distinct Values Sum - CSES 3150
+https://cses.fi/problemset/task/3150
 
-ĐỀ BÀI (tóm tắt)
-Với mỗi mảng con liên tiếp, gọi d(a,b) là số giá trị phân biệt trong mảng con.
-Tính tổng d(a,b) trên tất cả mảng con. Ràng buộc: n <= 2*10^5.
+## Đề bài
+Cho mảng gồm n phần tử. Với mỗi mảng con liên tiếp [a, b], gọi d(a, b) là số
+giá trị phân biệt trong mảng con đó. Hãy tính tổng d(a, b) trên tất cả các mảng
+con. Ràng buộc n <= 2*10^5, kết quả có thể lớn nên dùng số nguyên 64 bit.
 
-ĐẾM ĐÓNG GÓP
-Xét phần tử x_i (chỉ số từ 1) và gọi last là vị trí xuất hiện gần nhất
-trước i của cùng giá trị, hoặc 0 nếu chưa có.
+## Ý tưởng
+Đếm đóng góp theo từng vị trí. Xét phần tử tại vị trí i (đánh chỉ số từ 1) và
+gọi last là vị trí xuất hiện gần nhất trước i của cùng một giá trị, hoặc 0 nếu
+chưa từng xuất hiện.
 
-x_i là lần xuất hiện đầu tiên của giá trị này trong mảng con [a,b] khi và chỉ khi
-  last < a <= i <= b.
-Có i-last cách chọn a và n-i+1 cách chọn b. Vì mỗi giá trị phân biệt
-trong một mảng con được tính đúng một lần tại lần xuất hiện đầu tiên, ta cộng
-  (i-last) * (n-i+1)
+Phần tử tại i là lần xuất hiện đầu tiên của giá trị này trong mảng con [a, b]
+khi và chỉ khi last < a <= i <= b. Khi đó có (i - last) cách chọn a và
+(n - i + 1) cách chọn b. Vì mỗi giá trị phân biệt trong một mảng con chỉ được
+đếm đúng một lần tại lần xuất hiện đầu tiên của nó, ta cộng vào đáp án lượng
+  (i - last) * (n - i + 1)
 cho mỗi vị trí i.
 
-CHỨNG MINH
-Với mỗi cặp (mảng con, giá trị có trong mảng con), lần xuất hiện đầu tiên của
-giá trị đó là một vị trí i duy nhất thỏa điều kiện trên. Ngược lại mọi lựa chọn
-được công thức đếm đều tạo ra đúng một cặp như vậy. Do đó tổng đóng góp bằng
-chính tổng cần tìm.
+Để tra cứu last theo giá trị, ta nén tọa độ bằng cách sắp xếp một bản sao của
+mảng rồi dùng lower_bound, sau đó lưu vị trí xuất hiện gần nhất của mỗi giá trị
+đã nén trong một mảng thay cho bảng băm.
 
-Để lưu last, nén tọa độ các giá trị bằng cách sắp xếp một bản sao của mảng,
-rồi dùng mảng vị trí thay cho bảng băm.
-
-ĐỘ PHỨC TẠP
-Thời gian O(n log n), bộ nhớ O(n). Kết quả dùng số nguyên 64 bit.
+## Độ phức tạp
+Thời gian O(n log n) do sắp xếp và tra cứu nhị phân, bộ nhớ O(n).

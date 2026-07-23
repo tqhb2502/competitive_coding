@@ -1,42 +1,38 @@
-LETTER PAIR MOVE GAME - CSES 2427
+Letter Pair Move Game - CSES 2427
+https://cses.fi/problemset/task/2427
 
-ĐỀ BÀI (tóm tắt)
-Có 2n ô, trong đó đúng hai ô trống kề nhau và có n-1 chữ A, n-1 chữ B. Mỗi
-bước chọn hai chữ kề nhau, chuyển nguyên thứ tự của chúng vào hai ô trống. Hãy
-đưa mọi A về trước mọi B bằng không quá 1000 bước, hoặc in -1.
-Ràng buộc: n <= 100; nếu có lời giải thì có lời giải không quá 10n bước.
+## Đề bài
+Có 2n ô xếp thành một hàng: đúng hai ô trống kề nhau, các ô còn lại chứa n-1 chữ
+'A' và n-1 chữ 'B'. Mỗi bước ta chọn hai chữ kề nhau rồi chuyển nguyên thứ tự
+của chúng vào hai ô trống (để lại hai ô trống mới ngay tại vị trí vừa lấy). Hãy
+đưa dãy về dạng mọi 'A' đứng trước mọi 'B' bằng không quá 1000 bước; nếu không
+thể thì in -1. Ràng buộc n <= 100; khi có lời giải thì luôn tồn tại lời giải
+không quá 10n bước. Đây là bài chấm đặc biệt: in số bước rồi in trạng thái sau
+mỗi bước.
 
-THUẬT TOÁN
-Xét một đoạn hoạt động [L,R] còn cân bằng số A/B và chứa cặp ô trống.
+## Ý tưởng
+Kỹ thuật thu nhỏ đoạn (shrinking window) kết hợp BFS cho đoạn nhỏ ở cuối.
 
-Khi độ dài lớn hơn 8 (tham số q>4), cố định một A ở L và một B ở R:
-1. Nếu cần, dùng một cặp chữ đệm để giải phóng cặp đầu đoạn; chuyển cặp đầu vào
-   chỗ trống để đưa chỗ trống về L. Chuyển một cặp bắt đầu bằng A vào đó.
-2. Làm đối xứng ở cuối: đưa chỗ trống về R-1 rồi chuyển vào đó một cặp kết thúc
-   bằng B.
+Xét đoạn đang xử lý [L, R] luôn cân bằng số 'A'/'B' và chứa cặp ô trống.
 
-Mỗi lần thu nhỏ dùng nhiều nhất 5 bước. Với q>=5, luôn có cặp đệm và cặp bắt
-đầu bằng A/kết thúc bằng B cần thiết: ngoài hai ô trống và vùng biên bị cấm vẫn
-còn ít nhất hai cặp chữ kề; một cặp trống chỉ có thể chặn hậu tố của một A hoặc
-tiền tố của một B. Sau đó không đụng hai đầu nữa và tiếp tục với [L+1,R-1].
+Khi độ dài đoạn còn lớn hơn 8, ta cố định một 'A' tại L và một 'B' tại R:
+- Đưa cặp ô trống về đầu đoạn (vị trí L). Nếu cặp đầu đoạn đang dính ô trống, dùng
+  một cặp chữ đệm bất kỳ bên trong để giải phóng trước. Sau đó chuyển vào L một
+  cặp bắt đầu bằng 'A'.
+- Làm đối xứng ở cuối đoạn: đưa cặp ô trống về R-1 rồi chuyển vào đó một cặp kết
+  thúc bằng 'B'.
+- Mỗi lần thu nhỏ tốn tối đa 5 bước, sau đó tiếp tục với đoạn [L+1, R-1]. Vì đoạn
+  vẫn đủ dài nên luôn tồn tại cặp đệm và cặp 'A?'/'?B' cần thiết. Chữ 'A' đã đặt ở
+  L và chữ 'B' đã đặt ở R không bị đụng tới nữa nên giữ nguyên.
 
-Khi còn tối đa 8 ô (q<=4), chạy BFS trên toàn bộ trạng thái của đoạn nhỏ. Mỗi
-cạnh BFS là đúng một nước đi hợp lệ; dừng ở trạng thái mà chuỗi sau khi bỏ dấu
-chấm có dạng A...AB...B. BFS cũng tự nhận biết các trường hợp nhỏ vô nghiệm.
+Khi độ dài đoạn còn tối đa 8 ô, chạy BFS trên toàn bộ trạng thái của đoạn nhỏ:
+mỗi cạnh là đúng một nước đi hợp lệ, dừng khi đạt dạng A...AB...B (bỏ qua vị trí
+hai ô trống). BFS cũng tự nhận biết các trường hợp nhỏ vô nghiệm; khi đó in -1.
 
-CHỨNG MINH ĐÚNG
-Ở bước thu nhỏ, nước đi cuối phía trái đặt A tại L; mọi nước tiếp theo chỉ dùng
-nguồn và đích bên trong nên A này không đổi. Tương tự, phía phải đặt và giữ B
-tại R. Phần trong mất đúng một A và một B, vẫn có hai ô trống kề nhau, nên giữ
-nguyên dạng bài toán. Quy nạp đưa bài toán về q<=4. BFS duyệt toàn bộ và chỉ các
-nước hợp lệ, nên nếu tìm thấy đích thì chuỗi nước đi là đúng; nếu không có đích
-thì trường hợp nhỏ thật sự vô nghiệm. Ghép các đầu A, lời giải phần trong và các
-đầu B cho trạng thái toàn cục có mọi A trước mọi B.
+Ghép các đầu 'A', lời giải của đoạn nhỏ, và các đầu 'B' cho ra trạng thái toàn
+cục thoả yêu cầu. Tổng số bước tối đa 5(n-4)+5 < 10n và cũng nhỏ hơn 1000.
 
-Mỗi tầng lớn dùng tối đa 5 bước và BFS 8 ô cần tối đa 5 bước, tổng không quá
-5(n-4)+5 < 10n và cũng không quá 1000.
-
-ĐỘ PHỨC TẠP
-O(n^2) thời gian để tạo/in các chuỗi trạng thái (số bước O(n), mỗi chuỗi dài
-O(n)); bộ nhớ O(n^2) cho kết quả. Không gian BFS cuối là hằng số (tối đa 140
-trạng thái hợp lệ khi q=4).
+## Độ phức tạp
+Thời gian O(n^2): có O(n) bước, mỗi bước tạo và in một chuỗi trạng thái dài O(n).
+Bộ nhớ O(n^2) để lưu các trạng thái kết quả; không gian BFS cho đoạn nhỏ là hằng
+số (số trạng thái của đoạn tối đa 8 ô bị chặn).

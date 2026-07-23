@@ -1,28 +1,27 @@
-BUBBLE SORT ROUNDS II - CSES 3152
+Bubble Sort Rounds II - CSES 3152
+https://cses.fi/problemset/task/3152
 
-ĐỀ BÀI (tóm tắt)
-Cho mảng và số k. In nội dung mảng sau đúng k vòng bubble sort quét từ trái
-sang phải. Ràng buộc: n <= 2*10^5, k <= 10^9.
+## Đề bài
+Cho mảng gồm n phần tử và số k. Hãy in ra nội dung mảng sau đúng k vòng
+bubble sort quét từ trái sang phải. Ràng buộc: n <= 2*10^5, k <= 10^9,
+nên không thể mô phỏng trực tiếp.
 
-NHẬN XÉT CỬA SỔ
-Sau k vòng, dãy kết quả có thể được sinh từ trái sang phải như sau:
-  - ban đầu đưa min(n,k+1) phần tử đầu vào hàng đợi ưu tiên;
+## Ý tưởng
+Trong mỗi vòng, một phần tử chỉ có thể dịch sang trái tối đa một vị trí. Vì
+thế phần tử được đặt tại vị trí kết quả i chỉ có thể đến từ k+1 phần tử chưa
+lấy đầu tiên (cửa sổ trượt kích thước min(n, k+1)).
+
+Dựng dãy kết quả từ trái sang phải bằng hàng đợi ưu tiên:
+  - ban đầu đưa min(n, k+1) phần tử đầu vào hàng đợi;
   - lấy phần tử nhỏ nhất ra làm phần tử kết quả tiếp theo, rồi đưa phần tử
-    chưa xét tiếp theo vào hàng đợi.
+    chưa xét kế tiếp vào hàng đợi.
 
 Lưu cặp (giá trị, vị trí) để giữ thứ tự ổn định giữa các phần tử bằng nhau.
+Một vòng bubble đẩy phần tử lớn hơn vượt qua mọi phần tử nhỏ hơn mà nó gặp,
+nên sau k vòng, trong k+1 ứng viên nói trên phần tử nhỏ nhất sẽ đứng trước.
+Bỏ nó ra và thêm phần tử tiếp theo tạo lại đúng bài toán cho vị trí kế tiếp;
+quy nạp theo vị trí cho thấy hàng đợi tạo chính xác mảng sau k vòng.
 
-CHỨNG MINH
-Trong mỗi vòng, một phần tử chỉ có thể dịch sang trái một vị trí. Vì thế sau
-k vòng, phần tử đặt tại vị trí kết quả i chỉ có thể đến từ k+1 phần tử
-chưa lấy đầu tiên.
-
-Một vòng bubble đẩy phần tử lớn hơn qua phải qua tất cả phần tử nhỏ hơn
-mà nó gặp. Lặp k vòng bảo đảm rằng trong k+1 ứng viên nói trên, phần tử nhỏ
-nhất sẽ đứng trước các phần tử còn lại. Bỏ nó ra và thêm phần tử tiếp
-theo tạo đúng cùng bài toán cho vị trí kế tiếp. Quy nạp theo vị trí cho thấy thuật
-toán hàng đợi tạo chính xác mảng sau k vòng.
-
-ĐỘ PHỨC TẠP
-Hàng đợi có tối đa min(n,k+1) phần tử. Thời gian O(n log(min(n,k+1))),
-bộ nhớ O(n). Khi k >= n, thuật toán chỉ sắp xếp toàn bộ mảng.
+## Độ phức tạp
+Hàng đợi có tối đa min(n, k+1) phần tử. Thời gian O(n log(min(n, k+1))),
+bộ nhớ O(n). Khi k >= n, thuật toán chỉ đơn giản là sắp xếp toàn bộ mảng.

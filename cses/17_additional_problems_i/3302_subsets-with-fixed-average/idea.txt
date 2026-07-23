@@ -1,27 +1,29 @@
-SUBSETS WITH FIXED AVERAGE - CSES 3302
+Subsets with Fixed Average - CSES 3302
+https://cses.fi/problemset/task/3302
 
-ĐỀ BÀI (tóm tắt)
-Đếm các subset không rỗng có trung bình đúng bằng a, modulo 10^9+7.
-Ràng buộc: n <= 500, a,x_i <= 500.
+## Đề bài
+Cho một dãy gồm n số nguyên. Đếm số dãy con (subset) không rỗng có giá trị
+trung bình đúng bằng a, kết quả lấy theo modulo 10^9+7.
+Ràng buộc: n <= 500 và các giá trị a, x_i <= 500.
 
-THUẬT TOÁN: ĐỔI VỀ TỔNG 0 VÀ DP HAI PHÍA
-Đặt y_i=x_i-a. Một subset có trung bình a khi và chỉ khi tổng y_i bằng 0.
-Tách các trị y dương, trị âm (lấy trị tuyệt đối) và z số 0.
+## Ý tưởng
+Đổi biến y_i = x_i - a. Một dãy con có trung bình bằng a khi và chỉ khi tổng
+các y_i của nó bằng 0. Ta tách các phần tử thành ba nhóm: nhóm y dương, nhóm y
+âm (lấy trị tuyệt đối) và z phần tử bằng 0.
 
-Tính dpPos[s]: số subset các số dương có tổng s, và dpNeg[s]: số subset độ
-lớn các số âm có tổng s, bằng knapsack 0/1. Chỉ cần s tới
-L=min(tổng dương, tổng độ lớn âm). Ghép một subset dương và một subset âm có
-cùng tổng s; các phần tử 0 có 2^z cách chọn độc lập. Do đó
-    answer = 2^z * sum_{s=0}^L dpPos[s]*dpNeg[s] - 1.
-Trừ 1 để bỏ subset hoàn toàn rỗng.
+Dùng knapsack 0/1 để tính:
+- dpPos[s]: số dãy con của nhóm dương có tổng bằng s.
+- dpNeg[s]: số dãy con của nhóm âm có tổng trị tuyệt đối bằng s.
+Chỉ cần xét s tới L = min(tổng dương, tổng độ lớn âm). Một dãy con có tổng 0 là
+ghép một dãy con dương và một dãy con âm cùng tổng s; mỗi phần tử 0 được chọn
+hoặc không một cách độc lập, cho 2^z cách. Do đó:
+    answer = 2^z * sum_{s=0}^{L} dpPos[s] * dpNeg[s] - 1.
+Trừ 1 để loại đi dãy con hoàn toàn rỗng.
 
-CHỨNG MINH ĐÚNG
-Sau phép dịch, điều kiện trung bình tương đương chính xác với tổng bằng 0. Với
-mỗi subset, phần dương có tổng s duy nhất và phần âm có độ lớn tổng cũng bằng s;
-ngược lại mọi cặp như vậy tạo tổng 0. DP đếm đúng mọi lựa chọn của từng phía,
-còn mỗi phần tử 0 được chọn hoặc không độc lập. Đây là một song ánh, ngoại trừ
-lựa chọn không lấy phần tử nào được loại bằng phép trừ cuối.
+Đây là một song ánh: phần dương của một dãy con tổng-0 có tổng s duy nhất, phần
+âm có độ lớn tổng cũng bằng s; ngược lại mọi cặp như vậy đều tạo tổng 0. DP đếm
+đúng mọi lựa chọn của từng phía, còn các phần tử 0 chọn độc lập.
 
-ĐỘ PHỨC TẠP
-Gọi L<=249500. Thời gian O(nL), bộ nhớ O(L); khi hai phía cân bằng, số vòng lặp
-thực tế không quá khoảng 6.25*10^7.
+## Độ phức tạp
+Gọi L <= 249500. Thời gian O(n*L), bộ nhớ O(L); khi hai phía cân bằng thì số
+vòng lặp thực tế không quá khoảng 6.25*10^7.

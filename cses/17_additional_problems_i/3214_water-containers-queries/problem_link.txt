@@ -1,2 +1,0 @@
-Water Containers Queries
-https://cses.fi/problemset/task/3214

@@ -1,21 +1,21 @@
-MULTIPLICATION TABLE - CSES 2422
+Multiplication Table - CSES 2422
+https://cses.fi/problemset/task/2422
 
-ĐỀ BÀI (tóm tắt)
-Cho n lẻ. Sắp xếp n^2 giá trị i*j của bảng nhân n x n và tìm phần tử ở
-giữa, tức phần tử thứ (n^2+1)/2. Ràng buộc: n < 10^6.
+## Đề bài
+Cho n lẻ. Xét bảng nhân n x n với phần tử tại hàng i cột j bằng i*j. Sắp xếp
+toàn bộ n^2 giá trị theo thứ tự không giảm và in ra phần tử ở giữa, tức phần
+tử thứ (n^2+1)/2. Ràng buộc: n < 10^6.
 
-TÌM NHỊ PHÂN THEO GIÁ TRỊ
-Với một giá trị limit, hàng i có
-  min(n, floor(limit/i))
-phần tử không vượt quá limit. Cộng trên n hàng cho hàm count(limit).
-Hàm này không giảm, nên tìm nhị phân giá trị nhỏ nhất sao cho
-  count(limit) >= (n^2+1)/2.
-
-CHỨNG MINH
-count(limit) đếm chính xác số phần tử trong dãy đã sắp xếp không lớn hơn
-limit. Theo định nghĩa thống kê thứ k, giá trị nhỏ nhất có ít nhất k phần tử
-không lớn hơn nó chính là phần tử thứ k. Do đó tìm nhị phân trả về đúng
+## Ý tưởng
+Tìm nhị phân theo giá trị. Với một giá trị limit cho trước, hàng i có đúng
+min(n, floor(limit/i)) phần tử không vượt quá limit; cộng trên n hàng ta được
+hàm count(limit) đếm số phần tử của bảng không lớn hơn limit. Hàm này không
+giảm theo limit, nên ta tìm nhị phân giá trị nhỏ nhất limit sao cho
+count(limit) >= (n^2+1)/2.
+Vì count(limit) đếm chính xác số phần tử trong dãy đã sắp xếp không lớn hơn
+limit, giá trị nhỏ nhất có ít nhất (n^2+1)/2 phần tử không lớn hơn nó chính là
 trung vị cần tìm.
 
-ĐỘ PHỨC TẠP
-Thời gian O(n log(n^2)), bộ nhớ O(1). Tính n^2 và số lượng bằng số nguyên 64 bit.
+## Độ phức tạp
+Thời gian O(n log(n^2)), bộ nhớ O(1). Dùng số nguyên 64 bit để tính n^2 và
+số lượng phần tử tránh tràn số.

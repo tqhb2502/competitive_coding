@@ -1,30 +1,25 @@
-SORTING METHODS - CSES 1162
+Sorting Methods - CSES 1162
+https://cses.fi/problemset/task/1162
 
-ĐỀ BÀI (tóm tắt)
-Với một hoán vị 1..n, tính số bước ít nhất để sắp tăng theo bốn loại thao tác:
-đổi hai phần tử kề; đổi hai phần tử bất kỳ; chuyển một phần tử tới vị trí bất
-kỳ; chuyển một phần tử ra đầu. Ràng buộc: n <= 2*10^5.
+## Đề bài
+Cho một hoán vị của các số 1..n. Với bốn loại thao tác khác nhau, hãy tính số
+bước ít nhất để sắp xếp hoán vị thành dãy tăng dần:
+1. Đổi chỗ hai phần tử kề nhau.
+2. Đổi chỗ hai phần tử bất kỳ.
+3. Chuyển một phần tử tới vị trí bất kỳ.
+4. Chuyển một phần tử ra đầu dãy.
+In ra bốn đáp án tương ứng trên cùng một dòng. Ràng buộc: n <= 2*10^5.
 
-THUẬT TOÁN
-1. Đổi kề: đáp án là số nghịch thế, đếm bằng Fenwick tree.
-2. Đổi bất kỳ: trong mỗi chu trình độ dài l của hoán vị cần l-1 lần đổi, nên đáp
-   án là n trừ số chu trình.
-3. Chuyển tới vị trí bất kỳ: giữ nguyên một dãy con tăng dài nhất (LIS), chuyển
-   mọi phần tử khác; đáp án n-LIS.
-4. Chuyển ra đầu: các phần tử không chuyển phải là một hậu tố k,k+1,...,n của
-   thứ tự đích và đã xuất hiện theo đúng thứ tự. Quét hoán vị từ phải sang trái,
-   lần lượt tìm n,n-1,...; số giá trị chưa tìm được là đáp án.
+## Ý tưởng
+1. Đổi kề: đáp án là số nghịch thế (inversions) của hoán vị, đếm bằng Fenwick
+   tree — mỗi thao tác đổi kề làm số nghịch thế thay đổi đúng 1.
+2. Đổi bất kỳ: mỗi chu trình độ dài l của hoán vị cần đúng l-1 lần đổi để tách,
+   nên đáp án là n trừ đi số chu trình.
+3. Chuyển tới vị trí bất kỳ: giữ nguyên một dãy con tăng dài nhất (LIS) rồi chèn
+   từng phần tử còn lại vào đúng chỗ, nên đáp án là n trừ độ dài LIS.
+4. Chuyển ra đầu: các phần tử không phải chuyển bắt buộc là một hậu tố giá trị
+   liên tiếp k, k+1, ..., n đã xuất hiện đúng thứ tự. Quét hoán vị từ phải sang
+   trái, lần lượt tìm n, n-1, ...; số giá trị chưa tìm được chính là đáp án.
 
-CHỨNG MINH ĐÚNG
-1. Một đổi kề thay đổi số nghịch thế đúng 1, và bubble sort đạt đúng số đó.
-2. Một lần đổi tăng số chu trình nhiều nhất 1; mỗi chu trình l phần tử tách được
-   bằng l-1 lần, nên công thức tối ưu.
-3. Những phần tử không chuyển giữ thứ tự tương đối và phải tăng, nên tối đa LIS;
-   giữ một LIS rồi chèn các phần tử còn lại đạt n-LIS.
-4. Mọi phần tử được chuyển đều nằm trước các phần tử không chuyển, nên phần giữ
-   lại bắt buộc là hậu tố giá trị liên tiếp và đúng thứ tự. Quét phải-trái tìm
-   hậu tố dài nhất ấy; chuyển các giá trị còn lại ra đầu theo thứ tự phù hợp sẽ
-   đạt đúng số bước tính được.
-
-ĐỘ PHỨC TẠP
-O(n log n) thời gian, O(n) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n log n) do Fenwick tree và LIS, bộ nhớ O(n).

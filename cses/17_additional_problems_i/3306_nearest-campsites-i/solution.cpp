@@ -11,6 +11,7 @@ struct Point {
     int y;
 };
 
+// Fenwick tree lưu giá trị lớn nhất theo tiền tố (prefix max)
 class FenwickMaximum {
 public:
     explicit FenwickMaximum(int size) : tree_(static_cast<size_t>(size) + 1, NEGATIVE_INFINITY) {}
@@ -37,6 +38,10 @@ private:
     vector<int> tree_;
 };
 
+// Xử lý một góc phần tư ứng với hướng dấu (signX, signY).
+// Biến đổi mọi điểm thành X = signX*x, Y = signY*y; trong góc này khoảng cách
+// Manhattan bằng X_query + Y_query - (X_site + Y_site), nên cần tìm điểm trại có
+// X_site + Y_site lớn nhất thỏa X_site <= X_query và Y_site <= Y_query.
 void processQuadrant(const vector<Point>& reserved, const vector<Point>& freeCampsites,
                      int signX, int signY, vector<int>& answers) {
     vector<int> reservedOrder(reserved.size());
@@ -50,11 +55,13 @@ void processQuadrant(const vector<Point>& reserved, const vector<Point>& freeCam
     auto queryX = [&](int index) {
         return signX * freeCampsites[static_cast<size_t>(index)].x;
     };
+    // Sắp xếp điểm trại và truy vấn theo X tăng dần để quét theo thứ tự
     sort(reservedOrder.begin(), reservedOrder.end(),
          [&](int first, int second) { return reservedX(first) < reservedX(second); });
     sort(queryOrder.begin(), queryOrder.end(),
          [&](int first, int second) { return queryX(first) < queryX(second); });
 
+    // Nén tọa độ Y của các điểm trại để đánh chỉ số cho Fenwick tree
     vector<int> yCoordinates;
     yCoordinates.reserve(reserved.size());
     for (const Point& point : reserved) {
@@ -69,6 +76,7 @@ void processQuadrant(const vector<Point>& reserved, const vector<Point>& freeCam
         int transformedQueryX = signX * freeCampsites[static_cast<size_t>(queryIndex)].x;
         int transformedQueryY = signY * freeCampsites[static_cast<size_t>(queryIndex)].y;
 
+        // Thêm mọi điểm trại có X_site <= X_query vào Fenwick tree
         while (added < reservedOrder.size()
                && reservedX(reservedOrder[added]) <= transformedQueryX) {
             int siteIndex = reservedOrder[added];
@@ -80,11 +88,13 @@ void processQuadrant(const vector<Point>& reserved, const vector<Point>& freeCam
             ++added;
         }
 
+        // Truy vấn prefix trên Y <= Y_query để lấy X_site + Y_site lớn nhất
         int count = static_cast<int>(upper_bound(yCoordinates.begin(), yCoordinates.end(),
                                                  transformedQueryY)
                                      - yCoordinates.begin());
         int bestSiteSum = fenwick.queryPrefix(count);
         if (bestSiteSum != FenwickMaximum::NEGATIVE_INFINITY) {
+            // Lấy min qua các góc để có khoảng cách gần nhất của điểm trống
             answers[static_cast<size_t>(queryIndex)] =
                 min(answers[static_cast<size_t>(queryIndex)],
                     transformedQueryX + transformedQueryY - bestSiteSum);
@@ -108,6 +118,7 @@ int main() {
         cin >> point.x >> point.y;
     }
 
+    // Quét đủ bốn hướng dấu; mỗi cặp điểm luôn thuộc ít nhất một góc
     vector<int> answers(static_cast<size_t>(m), INT_MAX);
     for (int signX : {-1, 1}) {
         for (int signY : {-1, 1}) {
@@ -115,5 +126,6 @@ int main() {
         }
     }
 
+    // Đáp án là khoảng cách lớn nhất trên tất cả các điểm trại trống
     cout << *max_element(answers.begin(), answers.end()) << '\n';
 }

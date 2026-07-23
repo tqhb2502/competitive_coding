@@ -1,27 +1,24 @@
-MAXIMUM BUILDING I - CSES 1147
+Maximum Building I - CSES 1147
+https://cses.fi/problemset/task/1147
 
-ĐỀ BÀI (tóm tắt)
-Cho lưới n*m gồm ô trống và cây. Tìm diện tích hình chữ nhật lớn nhất chỉ gồm
-ô trống. Ràng buộc: n,m <= 1000.
+## Đề bài
+Cho lưới kích thước n*m gồm các ô trống ('.') và các ô có cây ('*'). Hãy tìm
+diện tích của hình chữ nhật lớn nhất chỉ chứa toàn ô trống. Ràng buộc n, m <= 1000.
 
-THUẬT TOÁN
-Duyệt từng hàng. heights[c] là số ô trống liên tiếp theo chiều dọc kết thúc tại
-hàng hiện tại. Khi gặp '.', tăng heights[c]; khi gặp '*', đặt về 0. Nếu coi
-heights là histogram, mọi hình chữ nhật có cạnh dưới ở hàng hiện tại tương ứng
-với một hình chữ nhật trong histogram.
+## Ý tưởng
+Duyệt lần lượt từng hàng và duy trì mảng height[c] là số ô trống liên tiếp theo
+chiều dọc kết thúc tại hàng hiện tại ở cột c. Khi gặp ô '.' thì tăng height[c],
+khi gặp ô '*' thì đặt height[c] về 0. Coi mỗi hàng như một biểu đồ cột
+(histogram): mọi hình chữ nhật ô trống có cạnh dưới nằm ở hàng hiện tại tương
+ứng đúng với một hình chữ nhật bên trong histogram này.
 
-Tìm hình chữ nhật lớn nhất trong mỗi histogram bằng stack chỉ số có chiều cao
-không giảm. Khi gặp cột thấp hơn, pop một chiều cao h; từ sau chỉ số còn lại
-trên stack tới trước cột hiện tại là bề rộng lớn nhất mà h làm chiều cao nhỏ
-nhất. Thêm một cột sentinel cao 0 để pop hết cuối hàng.
+Với mỗi histogram, tìm hình chữ nhật lớn nhất bằng một stack các chỉ số cột có
+chiều cao không giảm (monotonic stack). Khi gặp một cột thấp hơn, ta pop từng
+chiều cao h ra khỏi stack; bề rộng lớn nhất mà h còn làm chiều cao nhỏ nhất kéo
+dài từ ngay sau chỉ số còn lại trên stack tới trước cột hiện tại. Thêm một cột
+biên (sentinel) cao 0 ở cuối để pop hết mọi thanh còn lại. Lấy giá trị lớn nhất
+qua tất cả các hàng chính là đáp án cho toàn lưới.
 
-CHỨNG MINH ĐÚNG
-Mọi hình chữ nhật ô trống có một hàng dưới cùng; tại hàng đó, mỗi cột của nó có
-height ít nhất bằng chiều cao hình. Thuật toán histogram xét đúng khoảng rộng
-tối đa cho từng thanh khi thanh bị pop, nên xét một hình có diện tích không nhỏ
-hơn hình chữ nhật ấy. Ngược lại, mọi diện tích histogram tạo ra dùng các cột có
-height đủ lớn, do đó là một vùng ô trống thật. Lấy lớn nhất trên mọi hàng cho
-đúng đáp án toàn lưới.
-
-ĐỘ PHỨC TẠP
-O(nm) thời gian vì mỗi cột vào/ra stack một lần mỗi hàng, O(m) bộ nhớ.
+## Độ phức tạp
+Thời gian O(n*m) vì mỗi cột được đẩy vào và lấy ra khỏi stack đúng một lần mỗi
+hàng. Bộ nhớ O(m).

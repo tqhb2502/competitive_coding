@@ -1,33 +1,29 @@
-WATER CONTAINERS MOVES - CSES 3213
+Water Containers Moves - CSES 3213
+https://cses.fi/problemset/task/3213
 
-ĐỀ BÀI (tóm tắt)
-Hai bình A,B có dung tích a,b, ban đầu rỗng. Mỗi bước được đổ đầy, đổ bỏ hoặc
-rót giữa hai bình (khi rót phải làm đầy bình nhận hoặc làm rỗng bình cho).
-Cần để A chứa x đơn vị và tối thiểu hóa tổng lượng nước được di chuyển; in một
-chuỗi thao tác tối ưu hoặc -1. Ràng buộc: a,b,x <= 1000.
+## Đề bài
+Hai bình A và B có dung tích a và b, ban đầu đều rỗng. Mỗi bước có thể: đổ đầy
+một bình, đổ bỏ hết một bình, hoặc rót từ bình này sang bình kia (rót cho tới
+khi bình nhận đầy hoặc bình cho rỗng). Cần đưa bình A về đúng x đơn vị nước sao
+cho tổng lượng nước đã di chuyển qua tất cả các bước là nhỏ nhất. In ra số bước,
+tổng lượng nước di chuyển, rồi dãy thao tác tối ưu; nếu không thể thì in -1.
+Ràng buộc: a, b, x <= 1000.
 
-THUẬT TOÁN: DIJKSTRA TRÊN TRẠNG THÁI HAI BÌNH
-Trạng thái (u,v) là lượng nước hiện có trong A,B. Sáu thao tác hợp lệ tạo cạnh:
-đổ đầy có chi phí bằng lượng thêm vào, đổ bỏ có chi phí bằng lượng bỏ đi, và
-rót có chi phí bằng lượng thực sự chuyển. Bỏ qua thao tác chuyển 0 đơn vị.
+## Ý tưởng
+Mô hình hóa bằng Dijkstra trên đồ thị trạng thái. Mỗi trạng thái (u, v) là lượng
+nước hiện có trong A và B. Sáu thao tác hợp lệ sinh ra các cạnh: đổ đầy có chi
+phí bằng lượng nước thêm vào, đổ bỏ có chi phí bằng lượng bỏ đi, và rót có chi
+phí bằng lượng thực sự chuyển; bỏ qua các thao tác di chuyển 0 đơn vị.
 
-Chạy Dijkstra từ (0,0), lưu trạng thái cha và loại thao tác trên mỗi lần relax.
-Khi lấy khỏi hàng đợi một trạng thái (x,v), khoảng cách của nó là nhỏ nhất; lần
-ngược các cha để in lời giải. Kiểm tra trước điều kiện cần và đủ
-    x <= a và x chia hết gcd(a,b).
+Chạy Dijkstra từ (0, 0), lưu trạng thái cha và loại thao tác mỗi lần cập nhật
+(relax). Khi lấy một trạng thái có A = x ra khỏi hàng đợi thì khoảng cách của nó
+đã là nhỏ nhất; lần ngược theo cha để dựng lại dãy thao tác tối ưu. Điều kiện
+cần và đủ để có lời giải là x <= a và x chia hết cho gcd(a, b).
 
-Mặc dù mảng khoảng cách có (a+1)(b+1) ô, mọi trạng thái đến được sau một thao
-tác đều có ít nhất một bình rỗng hoặc đầy, nên thực tế chỉ O(a+b) trạng thái
-được đưa vào hàng đợi.
+Dù mảng khoảng cách có (a+1)(b+1) ô, mọi trạng thái đến được sau một thao tác
+đều có ít nhất một bình rỗng hoặc một bình đầy, nên thực tế chỉ O(a+b) trạng
+thái được đưa vào hàng đợi.
 
-CHỨNG MINH ĐÚNG
-Mỗi chuỗi thao tác hợp lệ tương ứng đúng một đường đi từ (0,0), và tổng trọng
-số cạnh đúng bằng tổng lượng nước đã di chuyển. Ngược lại mọi cạnh được sinh
-ra là một thao tác hợp lệ theo đề. Vì trọng số dương, Dijkstra tìm đường có
-tổng trọng số nhỏ nhất tới tập trạng thái A=x; lưu cha tái dựng đúng đường đó.
-Định lý hai bình cho biết các lượng đo được là đúng các bội của gcd(a,b) nằm
-trong dung tích bình, nên phép kiểm tra bất khả thi là chính xác.
-
-ĐỘ PHỨC TẠP
-Giới hạn tổng quát O(ab log(ab)) thời gian và O(ab) bộ nhớ; số trạng thái thực
-sự đến được là O(a+b).
+## Độ phức tạp
+Theo giới hạn tổng quát là O(ab log(ab)) thời gian và O(ab) bộ nhớ; số trạng thái
+thực sự đến được chỉ là O(a+b).

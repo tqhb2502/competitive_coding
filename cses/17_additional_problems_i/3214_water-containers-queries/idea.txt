@@ -1,21 +1,26 @@
-WATER CONTAINERS QUERIES - CSES 3214
+Water Containers Queries - CSES 3214
+https://cses.fi/problemset/task/3214
 
-ĐỀ BÀI (tóm tắt)
-Với nhiều bộ (a,b,x), kiểm tra có thể dùng hai bình dung tích a,b để cuối cùng
-bình A chứa x đơn vị hay không. Ràng buộc: 1000 truy vấn, a,b,x <= 10^9.
+## Đề bài
+Cho nhiều truy vấn, mỗi truy vấn gồm ba số (a, b, x): hai bình rỗng có dung
+tích lần lượt là a và b. Với các thao tác đổ đầy một bình, đổ bỏ hết một bình,
+hoặc rót từ bình này sang bình kia cho tới khi bình nguồn cạn hoặc bình đích
+đầy, hãy kiểm tra có thể làm cho bình A chứa đúng x đơn vị nước hay không. In
+ra "YES" nếu được, ngược lại in ra "NO". Có tối đa 1000 truy vấn, các giá trị
+a, b, x tối đa 10^9.
 
-THUẬT TOÁN
-Đặt g=gcd(a,b). Câu trả lời là YES đúng khi
-    x <= a và x chia hết cho g.
+## Ý tưởng
+Đặt g = gcd(a, b). Câu trả lời là "YES" khi và chỉ khi x <= a và x chia hết
+cho g.
 
-CHỨNG MINH ĐÚNG
-Ban đầu cả hai lượng là bội của g. Mọi lần đổ đầy, đổ bỏ và rót đều bảo toàn
-tính chất các lượng là bội của g, nên x phải chia hết g; đồng thời A không thể
-chứa quá a.
+Ban đầu cả hai lượng nước đều là bội của g. Mọi thao tác đổ đầy, đổ bỏ hay rót
+đều bảo toàn tính chất "lượng nước trong mỗi bình là bội của g", nên x bắt buộc
+phải chia hết cho g; đồng thời bình A không thể chứa quá dung tích a của nó.
 
-Chiều ngược lại là định lý hai bình: thuật toán Euclid thực hiện bằng các lần
-đổ đầy/rót/đổ bỏ tạo được mọi bội của gcd(a,b) không vượt quá dung tích của
-bình đích. Do x là một bội như vậy và x<=a, có thể đưa A về đúng x.
+Chiều ngược lại là định lý hai bình (Bézout): bằng thuật toán Euclid, chuỗi các
+lần đổ đầy / rót / đổ bỏ tạo ra được mọi bội của gcd(a, b) không vượt quá dung
+tích bình đích. Vì x là một bội như vậy và x <= a, ta luôn đưa được bình A về
+đúng x.
 
-ĐỘ PHỨC TẠP
-O(log(min(a,b))) thời gian và O(1) bộ nhớ cho mỗi truy vấn.
+## Độ phức tạp
+O(log(min(a, b))) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

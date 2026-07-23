@@ -1,2 +1,0 @@
-Distinct Values Splits
-https://cses.fi/problemset/task/3190

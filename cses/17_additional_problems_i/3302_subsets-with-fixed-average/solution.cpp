@@ -7,14 +7,17 @@ namespace {
 
 constexpr int MOD = 1'000'000'007;
 
+// Knapsack 0/1: đếm số dãy con của "values" theo từng giá trị tổng, giới hạn ở
+// "limit". ways[s] = số cách chọn dãy con có tổng đúng bằng s.
 std::vector<int> subsetSums(const std::vector<int>& values, int limit) {
     std::vector<int> ways(static_cast<std::size_t>(limit) + 1U, 0);
-    ways[0] = 1;
+    ways[0] = 1;  // dãy con rỗng ứng với tổng 0
     int currentMaximum = 0;
     for (const int value : values) {
         if (value > limit) {
-            continue;
+            continue;  // phần tử vượt limit không thể góp vào tổng <= limit
         }
+        // duyệt tổng giảm dần để mỗi phần tử chỉ dùng tối đa một lần
         const int nextMaximum = std::min(limit, currentMaximum + value);
         for (int sum = nextMaximum; sum >= value; --sum) {
             int updated = ways[static_cast<std::size_t>(sum)] +
@@ -29,6 +32,7 @@ std::vector<int> subsetSums(const std::vector<int>& values, int limit) {
     return ways;
 }
 
+// Lũy thừa nhanh: tính 2^exponent theo modulo MOD.
 long long powerOfTwo(int exponent) {
     long long result = 1;
     long long base = 2;
@@ -51,6 +55,9 @@ int main() {
     int n = 0;
     int targetAverage = 0;
     std::cin >> n >> targetAverage;
+
+    // Đổi biến y = x - a rồi tách theo dấu: nhóm dương, nhóm âm (lấy trị tuyệt
+    // đối) và đếm số phần tử bằng 0. Trung bình bằng a tương đương tổng y bằng 0.
     std::vector<int> positive;
     std::vector<int> negative;
     int zeroCount = 0;
@@ -72,16 +79,20 @@ int main() {
         }
     }
 
+    // Chỉ cần xét tổng tới L = min(tổng dương, tổng độ lớn âm).
     const int limit = std::min(positiveSum, negativeSum);
     const std::vector<int> positiveWays = subsetSums(positive, limit);
     const std::vector<int> negativeWays = subsetSums(negative, limit);
 
+    // Ghép dãy con dương và dãy con âm có cùng tổng s để có tổng y bằng 0.
     long long pairedWays = 0;
     for (int sum = 0; sum <= limit; ++sum) {
         pairedWays = (pairedWays +
                       static_cast<long long>(positiveWays[static_cast<std::size_t>(sum)]) *
                           negativeWays[static_cast<std::size_t>(sum)]) % MOD;
     }
+
+    // Mỗi phần tử 0 chọn độc lập (2^z cách); trừ 1 để bỏ dãy con hoàn toàn rỗng.
     long long answer = pairedWays * powerOfTwo(zeroCount) % MOD;
     answer = (answer - 1 + MOD) % MOD;
     std::cout << answer << '\n';

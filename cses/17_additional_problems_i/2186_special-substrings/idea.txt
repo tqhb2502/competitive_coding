@@ -1,32 +1,28 @@
-SPECIAL SUBSTRINGS - CSES 2186
+Special Substrings - CSES 2186
+https://cses.fi/problemset/task/2186
 
-ĐỀ BÀI (tóm tắt)
-Cho một xâu dài n. Một substring là đặc biệt nếu mọi ký tự có xuất hiện trong
-TOÀN BỘ XÂU ĐẦU VÀO đều xuất hiện cùng số lần trong substring. Đếm số substring
-đặc biệt. Đây là điểm dễ nhầm: ký tự vắng trong substring vẫn phải có tần suất
-bằng các ký tự còn lại; vì vậy một substring đặc biệt không rỗng phải chứa tất
-cả các loại ký tự của xâu gốc.
+## Đề bài
+Cho một xâu độ dài n gồm các chữ cái thường a..z. Một substring được gọi là đặc
+biệt nếu mọi loại ký tự có xuất hiện trong TOÀN BỘ xâu đầu vào đều xuất hiện với
+cùng số lần trong substring đó. Cần đếm số substring đặc biệt.
+Lưu ý dễ nhầm: một ký tự vắng mặt trong substring vẫn phải có tần suất bằng các
+ký tự còn lại, nên một substring đặc biệt khác rỗng buộc phải chứa đủ tất cả các
+loại ký tự của xâu gốc, mỗi loại xuất hiện cùng số lần.
 Ràng buộc: n <= 2*10^5, bảng chữ cái a..z.
 
-THUẬT TOÁN: VECTOR HIỆU CỦA PREFIX COUNT
-Nén k ký tự phân biệt của xâu thành các chỉ số 0..k-1. Với prefix kết thúc ở i,
-gọi C_i[c] là số lần ký tự c đã xuất hiện. Ta lưu khóa
-    K_i[c] = C_i[c] - C_i[0]  (c = 1..k-1).
-Khóa của prefix r và prefix l-1 bằng nhau khi và chỉ khi
-    C_r[c]-C_{l-1}[c] = C_r[0]-C_{l-1}[0]
-với mọi c. Đây chính là điều kiện substring [l,r] có cùng tần suất cho tất cả
-k ký tự.
-
-Duyệt các prefix từ trái sang phải. Bảng băm lưu số prefix trước đó có từng
-khóa; số đó được cộng vào đáp án. Khóa vector được so sánh đầy đủ, nên va chạm
+## Ý tưởng
+Nén k ký tự phân biệt của xâu thành các chỉ số 0..k-1. Với mỗi prefix kết thúc
+tại vị trí i, gọi C_i[c] là số lần ký tự c đã xuất hiện. Ta lưu một khóa vector
+    K_i[c] = C_i[c] - C_i[0]   (c = 1..k-1),
+tức là hiệu của prefix count so với ký tự mốc 0.
+Hai prefix r và l-1 có cùng khóa khi và chỉ khi
+    C_r[c] - C_{l-1}[c] = C_r[0] - C_{l-1}[0]   với mọi c,
+đây chính là điều kiện substring [l, r] có cùng tần suất cho tất cả k ký tự, tức
+substring đó là đặc biệt. Mỗi substring ứng với duy nhất một cặp prefix.
+Duyệt các prefix từ trái sang phải, dùng một bảng băm (hash map) đếm số prefix
+trước đó có từng khóa; với mỗi prefix mới, cộng số lần đã gặp khóa hiện tại vào
+đáp án rồi tăng bộ đếm của khóa đó. Khóa vector được so sánh đầy đủ nên va chạm
 của hàm băm không thể làm sai kết quả.
 
-CHỨNG MINH ĐÚNG
-Theo đẳng thức trên, hai prefix có cùng khóa đúng khi hiệu số lần xuất hiện của
-mọi ký tự so với ký tự mốc không đổi. Tương đương, đoạn nằm giữa hai prefix đã
-tăng mọi bộ đếm một lượng bằng nhau, nên và chỉ nên đoạn đó là đặc biệt. Mỗi
-substring ứng với duy nhất một cặp prefix, vì vậy phép cộng tần suất khóa đếm
-đúng mỗi substring một lần.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 Thời gian kỳ vọng O(26*n), bộ nhớ O(26*n).

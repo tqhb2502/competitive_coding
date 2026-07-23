@@ -1,26 +1,26 @@
-SUBARRAY SUM CONSTRAINTS - CSES 3294
+Subarray Sum Constraints - CSES 3294
+https://cses.fi/problemset/task/3294
 
-ĐỀ BÀI (tóm tắt)
-Cần dựng mảng x_1..x_n thỏa m phương trình tổng đoạn (l,r,s), hoặc báo không
-tồn tại. Mọi phần tử xuất ra phải nằm trong [-10^15,10^15].
+## Đề bài
+Dựng mảng x_1..x_n thỏa m ràng buộc dạng (l, r, s), nghĩa là tổng đoạn
+x_l + ... + x_r phải bằng s. Nếu tồn tại thì in "YES" rồi in mảng, ngược lại
+in "NO". Mọi phần tử phải nằm trong đoạn [-10^15, 10^15].
 Ràng buộc: n <= 5000, m <= 2*10^5, |s| <= 10^9.
 
-THUẬT TOÁN: ĐỒ THỊ HIỆU CỦA PREFIX SUM
-Đặt P_0=0 và P_i=x_1+...+x_i. Mỗi ràng buộc trở thành
+## Ý tưởng
+Đặt tiền tố P_0 = 0 và P_i = x_1 + ... + x_i (prefix sum). Khi đó mỗi ràng buộc
+trở thành hiệu hai tiền tố:
     P_r - P_{l-1} = s.
-Tạo cạnh từ l-1 đến r có độ lệch s và cạnh ngược có độ lệch -s. Trong mỗi
-thành phần liên thông, chọn một đỉnh có thế 0 rồi BFS để gán
-    P[v] = P[u] + delta(u,v).
-Nếu gặp một đỉnh đã gán giá trị khác, hệ vô nghiệm. Nếu mọi cạnh nhất quán,
-in x_i=P_i-P_{i-1}.
+Dựng đồ thị trên các đỉnh 0..n: mỗi ràng buộc thêm cạnh từ l-1 tới r mang độ
+lệch s và cạnh ngược từ r tới l-1 mang độ lệch -s. Trong mỗi thành phần liên
+thông, neo một đỉnh có thế 0 rồi BFS để gán
+    P[v] = P[u] + delta(u, v).
+Nếu tới một đỉnh đã gán mà giá trị mới khác giá trị cũ thì hệ mâu thuẫn, in "NO".
+Nếu mọi cạnh nhất quán thì in "YES" cùng x_i = P_i - P_{i-1}.
 
-CHỨNG MINH ĐÚNG
-Nếu BFS báo mâu thuẫn, hai đường trong cùng thành phần ép một prefix sum nhận
-hai giá trị khác nhau, nên không thể có nghiệm. Nếu không mâu thuẫn, với mỗi
-cạnh ràng buộc BFS bảo đảm P[r]=P[l-1]+s, do đó mảng hiệu x thỏa mọi tổng đoạn.
-Các thành phần độc lập có thể cùng được neo ở 0. Trên một đường đơn, trị tuyệt
-đối thế không quá n*10^9, nên hiệu hai thế liên tiếp nhỏ hơn 10^15 theo giới
-hạn đề.
+Các thành phần liên thông độc lập nên đều được neo ở 0. Trên đường đơn trị tuyệt
+đối của thế không vượt quá n*10^9, nên hiệu hai thế liên tiếp nhỏ hơn 10^15,
+luôn thỏa giới hạn đề.
 
-ĐỘ PHỨC TẠP
-Thời gian O(n+m), bộ nhớ O(n+m).
+## Độ phức tạp
+Thời gian O(n + m), bộ nhớ O(n + m).

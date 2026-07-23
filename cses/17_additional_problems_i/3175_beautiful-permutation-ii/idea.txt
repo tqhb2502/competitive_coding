@@ -1,39 +1,30 @@
-BEAUTIFUL PERMUTATION II - CSES 3175
+Beautiful Permutation II - CSES 3175
+https://cses.fi/problemset/task/3175
 
-ĐỀ BÀI (tóm tắt)
-Hoán vị của 1..n là đẹp nếu không có hai phần tử kề nhau nào chênh lệch 1.
-Hãy in hoán vị đẹp nhỏ nhất theo thứ tự từ điển. Ràng buộc: n <= 10^6.
+## Đề bài
+Một hoán vị của các số 1..n được gọi là đẹp nếu không có hai phần tử kề nhau
+nào chênh lệch đúng 1. Hãy in ra hoán vị đẹp nhỏ nhất theo thứ tự từ điển; nếu
+không tồn tại thì in "NO SOLUTION". Với n = 1 đáp án là [1]; với n = 2 hoặc
+n = 3 không có đáp án. Ràng buộc: n <= 10^6.
 
-MẪU THAM LAM
-Khi còn đủ các số phía sau, liên tục chọn số nhỏ nhất chưa dùng mà không
-chênh 1 với số trước. Dãy vô hạn thu được chia thành các khối 5:
-  a, a+2, a+4, a+1, a+3       (a = 1, 6, 11, ...).
+## Ý tưởng
+Dùng chiến lược tham lam: khi còn đủ số phía sau, liên tục chọn số nhỏ nhất
+chưa dùng mà không chênh 1 với số vừa đặt. Dãy vô hạn thu được lặp theo khối 5
+phần tử với các độ lệch cố định:
+  a, a+2, a+4, a+1, a+3   (a = 1, 6, 11, ...).
+Trong mỗi khối các chênh lệch liên tiếp là 2, 2, 3, 2 và chỗ nối giữa hai khối
+cũng là 2, nên không bao giờ chênh 1.
 
-Nếu n mod 5 là 0 hoặc 1, lấy n phần tử đầu của dãy này. Với các số dư
-khác, giữ n-4 phần tử đầu rồi xếp bốn giá trị còn lại như sau:
-  n mod 5 = 2:  n-5, n-1, n-3, n
-  n mod 5 = 3:  n-2, n,   n-4, n-1
-  n mod 5 = 4:  n-2, n,   n-3, n-1
+Xét n theo số dư khi chia cho 5:
+- Nếu n mod 5 bằng 0 hoặc 1: lấy đúng n phần tử đầu của dãy vô hạn.
+- Nếu khác: giữ n-4 phần tử đầu rồi ghép bốn giá trị cuối theo bảng cố định:
+    n mod 5 = 2:  n-5, n-1, n-3, n
+    n mod 5 = 3:  n-2, n,   n-4, n-1
+    n mod 5 = 4:  n-2, n,   n-3, n-1
+Mỗi cách ghép đuôi là cách hoàn thành nhỏ nhất theo từ điển mà vẫn hợp lệ (mọi
+lựa chọn nhỏ hơn đều chênh 1 hoặc để lại hai số cuối chênh 1), nên toàn bộ kết
+quả là hoán vị đẹp nhỏ nhất theo từ điển. Công thức số dư 4 cũng cho đúng đáp
+án n = 4 là 2, 4, 1, 3.
 
-Trường hợp n=1 có đáp án [1]; n=2,3 không có đáp án. Công thức số dư 4
-cũng cho đúng đáp án n=4 là 2,4,1,3.
-
-CHỨNG MINH TÍNH HỢP LỆ
-Trong mỗi khối 5, các chênh lệch liên tiếp là 2,2,3,2; giữa hai khối
-cũng là 2. Kiểm tra trực tiếp bốn phần tử cuối trong từng trường hợp cho thấy
-chênh lệch trong phần đuôi và tại chỗ nối đều không phải 1. Mỗi số 1..n xuất
-hiện đúng một lần, nên kết quả là hoán vị đẹp.
-
-CHỨNG MINH NHỎ NHẤT TỪ ĐIỂN
-Ở mỗi vị trí trước bốn phần tử cuối, mẫu trên chọn đúng giá trị nhỏ
-nhất chưa dùng và hợp lệ; công thức phần đuôi cung cấp một cách hoàn thành,
-nên không thể giảm bất kỳ vị trí nào trong prefix.
-
-Khi chỉ còn bốn số, thử các số còn lại theo thứ tự tăng dần cho từng
-lớp số dư 2,3,4: các lựa chọn nhỏ hơn công thức hoặc chênh 1 với phần tử
-trước, hoặc để lại hai số cuối chênh 1. Bốn thứ tự đã nêu là các cách
-hoàn thành đầu tiên theo từ điển. Với số dư 0,1 không cần sửa đuôi.
-Vì vậy toàn bộ hoán vị là nhỏ nhất theo từ điển.
-
-ĐỘ PHỨC TẠP
-Thời gian O(n), bộ nhớ phụ O(1) nếu in trực tiếp.
+## Độ phức tạp
+Thời gian O(n) để sinh và in dãy, bộ nhớ phụ O(1) vì in trực tiếp.

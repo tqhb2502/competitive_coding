@@ -11,6 +11,8 @@ int main() {
 
     int n, m;
     cin >> n >> m;
+
+    // position[x] = vị trí của giá trị x trong mảng thứ nhất (hoán vị của 1..n)
     vector<int> position(n + 1, -1);
     for (int i = 0; i < n; ++i) {
         int value;
@@ -18,7 +20,9 @@ int main() {
         position[value] = i;
     }
 
-    vector<pair<int, int>> sequence;
+    // Duyệt mảng thứ hai; chỉ giữ giá trị cũng có ở mảng thứ nhất (x <= n) và
+    // thay bằng vị trí của nó. LCS của hai hoán vị trở thành LIS trên dãy vị trí.
+    vector<pair<int, int>> sequence;  // (vị trí trong mảng một, giá trị gốc)
     sequence.reserve(min(n, m));
     for (int i = 0; i < m; ++i) {
         int value;
@@ -28,29 +32,32 @@ int main() {
         }
     }
 
+    // Patience sorting tìm LIS chặt tăng theo thành phần vị trí.
     const int length = static_cast<int>(sequence.size());
-    vector<int> predecessor(length, -1);
-    vector<int> tailValue;
-    vector<int> tailIndex;
+    vector<int> predecessor(length, -1);  // truy vết phần tử liền trước trong LIS
+    vector<int> tailValue;                // đuôi nhỏ nhất của LIS cho mỗi độ dài
+    vector<int> tailIndex;                // chỉ số phần tử tạo ra mỗi đuôi
     tailValue.reserve(length);
     tailIndex.reserve(length);
 
     for (int i = 0; i < length; ++i) {
         const int current = sequence[i].first;
+        // Tìm vị trí chèn: đuôi đầu tiên >= current sẽ bị thay thế.
         const int place = static_cast<int>(
             lower_bound(tailValue.begin(), tailValue.end(), current) - tailValue.begin());
         if (place > 0) {
             predecessor[i] = tailIndex[place - 1];
         }
         if (place == static_cast<int>(tailValue.size())) {
-            tailValue.push_back(current);
+            tailValue.push_back(current);  // kéo dài LIS thêm một đơn vị
             tailIndex.push_back(i);
         } else {
-            tailValue[place] = current;
+            tailValue[place] = current;    // hạ đuôi để mở rộng về sau
             tailIndex[place] = i;
         }
     }
 
+    // Truy vết ngược từ đuôi của LIS dài nhất rồi đảo lại để đúng thứ tự.
     vector<int> answer;
     int currentIndex = tailIndex.back();
     while (currentIndex != -1) {

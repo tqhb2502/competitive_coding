@@ -1,27 +1,26 @@
-SHORTEST SUBSEQUENCE - CSES 1087
+Shortest Subsequence - CSES 1087
+https://cses.fi/problemset/task/1087
 
-ĐỀ BÀI (tóm tắt)
-Cho xâu DNA chỉ gồm A, C, G, T. Hãy tìm xâu ngắn nhất không phải là
-dãy con (subsequence) của xâu đã cho. Nếu có nhiều đáp án, in bất kỳ đáp án nào.
-Ràng buộc: n <= 10^6.
+## Đề bài
+Cho một xâu DNA chỉ gồm bốn ký tự A, C, G, T. Hãy tìm xâu ngắn nhất
+mà không phải là dãy con (subsequence) của xâu đã cho. Nếu có nhiều đáp án,
+in ra bất kỳ đáp án nào. Ràng buộc: n <= 10^6.
 
-THUẬT TOÁN THAM LAM
-Quét từ trái sang phải và chia xâu thành các khối ngắn nhất liên tiếp, mỗi khối
-chứa đủ cả bốn ký tự. Khi ký tự hiện tại hoàn tất một khối, thêm chính ký
-tự đó vào đáp án, rồi xóa tập đã gặp.
+## Ý tưởng
+Dùng thuật toán tham lam (greedy). Quét xâu từ trái sang phải và chia nó
+thành các khối liên tiếp ngắn nhất, mỗi khối chứa đủ cả bốn ký tự khác nhau.
+Mỗi khi ký tự hiện tại làm khối trở nên đầy đủ (đủ cả bốn loại), ta thêm
+chính ký tự đó vào đáp án rồi bắt đầu đếm lại cho khối tiếp theo.
 
-Sau khối đầy đủ cuối cùng còn một đoạn dư không chứa đủ bốn ký tự. Chọn
-một ký tự không xuất hiện trong đoạn dư và thêm nó vào cuối đáp án.
+Sau khối đầy đủ cuối cùng thường còn một đoạn dư không đủ cả bốn ký tự.
+Ta chọn một ký tự không xuất hiện trong đoạn dư đó và thêm vào cuối đáp án.
 
-CHỨNG MINH
-Giả sử có q khối đầy đủ. Mọi xâu DNA có độ dài q đều là dãy con:
-ta lần lượt lấy ký tự thứ i trong khối đầy đủ thứ i. Vì vậy đáp án phải
-dài ít nhất q+1.
+Chứng minh: giả sử có q khối đầy đủ. Mọi xâu DNA độ dài q đều là dãy con
+(lần lượt lấy ký tự thứ i từ khối đầy đủ thứ i), nên đáp án phải dài ít nhất
+q+1. Với xâu ta xây dựng, ký tự thứ i là ký tự hoàn tất khối i; muốn khớp nó
+ta phải đi tới cuối khối i, và sau q ký tự chỉ còn lại đoạn dư. Ký tự cuối
+đã chọn không có trong đoạn dư nên không thể khớp, vậy đáp án dài đúng q+1
+và do đó là ngắn nhất.
 
-Với xâu ta xây dựng, ký tự thứ i là ký tự cuối cùng hoàn tất khối i.
-Muốn khớp nó sau khi đã khớp i-1 ký tự trước, ta phải đi đến ít nhất cuối
-khối i. Sau q ký tự, chỉ còn đoạn dư; ký tự cuối đã chọn không có
-trong đoạn này nên không thể khớp. Đáp án dài q+1 và do đó là ngắn nhất.
-
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 Thời gian O(n), bộ nhớ O(1) ngoài xâu kết quả.
