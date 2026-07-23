@@ -1,14 +1,16 @@
-SOS Bit Problem (CSES 1654)
+SOS Bit Problem - CSES 1654
+https://cses.fi/problemset/task/1654
 
-Kỹ thuật: SOS DP (Sum over Subsets / Superset), hay còn gọi là biến đổi zeta trên
-mạng các bitmask.
-
-Đề bài: Cho n số nguyên. Với mỗi phần tử x, cần đếm ba giá trị trong toàn bộ mảng:
+## Đề bài
+Cho n số nguyên. Với mỗi phần tử x, cần đếm ba giá trị trong toàn bộ mảng:
   1) Số phần tử y sao cho x | y = x  (tức y là submask của x, mọi bit của y đều nằm trong x).
   2) Số phần tử y sao cho x & y = x  (tức x là submask của y, y là supermask của x).
   3) Số phần tử y sao cho x & y != 0 (y chia sẻ ít nhất một bit chung với x).
 
-Ý tưởng chính:
+## Ý tưởng
+Kỹ thuật: SOS DP (Sum over Subsets / Superset), hay còn gọi là biến đổi zeta trên
+mạng các bitmask.
+
 - Vì x_i <= 10^6 < 2^20 nên ta dùng B = 20 bit, kích thước bảng SZ = 2^20 = 1048576.
 - Gọi cnt[mask] = số phần tử của mảng bằng đúng mask.
 - sub[mask] = tổng cnt trên mọi submask của mask (subset-sum). Sau SOS DP,
@@ -17,8 +19,8 @@ mạng các bitmask.
   sup[mask] chính là số phần tử y là supermask của mask.
 
 Trả lời cho từng x:
-  1) x | y = x  <=>  y submask x           => đáp án = sub[x].
-  2) x & y = x  <=>  x submask y (y supermask x) => đáp án = sup[x].
+  1) x | y = x  <=>  y submask x                  => đáp án = sub[x].
+  2) x & y = x  <=>  x submask y (y supermask x)  => đáp án = sup[x].
   3) x & y != 0. Lấy phần bù: x & y = 0 nghĩa là y không có bit chung với x,
      tức y là submask của complement(x) = (~x) & (SZ-1).
      Số y có x & y = 0 là sub[complement(x)], nên đáp án = n - sub[complement(x)].
@@ -34,7 +36,7 @@ Tính đúng đắn:
 - Phần bù cho câu 3 là song ánh: y có x & y = 0 khi và chỉ khi y là submask của
   complement(x) trong không gian B bit, nên đếm bằng sub[complement(x)] là chính xác.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: O(B * 2^B) cho mỗi phép biến đổi SOS (hai phép), tổng ~ 2 * 20 * 2^20
   ~ 4.2 * 10^7 phép, cộng O(n) đọc/ghi. Rất nhanh trong giới hạn.
 - Bộ nhớ: O(2^B) cho hai mảng int (mỗi mảng ~4 MB), tổng khoảng 8 MB.

@@ -1,2 +1,0 @@
-Distinct Sums Grid
-https://cses.fi/problemset/task/3424

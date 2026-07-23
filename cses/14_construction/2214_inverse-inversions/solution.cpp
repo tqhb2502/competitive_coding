@@ -1,37 +1,31 @@
-// Inverse Inversions - CSES 2214
-// https://cses.fi/problemset/task/2214
-//
-// Xay dung hoan vi cua 1..n co dung k inversion.
-// Tham lam tu trai sang phai, gia tri chua dung luon la doan lien tuc [lo, hi].
-// Nghiem luon ton tai vi 0 <= k <= n(n-1)/2, khong co truong hop IMPOSSIBLE.
-
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
     long long n, k;
-    // Doc n va k
+    // Đọc n và số nghịch thế cần đạt k
     if (scanf("%lld %lld", &n, &k) != 2) return 0;
 
     vector<int> res;
     res.reserve((size_t)n);
 
+    // Tham lam từ trái sang phải; các giá trị chưa dùng luôn là đoạn liên tục [lo, hi]
     long long lo = 1, hi = n;
     while (lo <= hi) {
         if (k <= 0) {
-            // Xa phan con lai theo thu tu tang dan (them 0 inversion)
+            // Xả phần còn lại theo thứ tự tăng dần (thêm 0 nghịch thế)
             for (long long v = lo; v <= hi; ++v) res.push_back((int)v);
             break;
         }
-        long long m = hi - lo + 1;      // so gia tri chua dung
+        long long m = hi - lo + 1;      // số giá trị chưa dùng
         if (k >= m - 1) {
-            // Dat gia tri lon nhat -> tao them m-1 inversion
+            // Đặt giá trị lớn nhất -> tạo thêm đúng m-1 nghịch thế
             res.push_back((int)hi);
             hi--;
             k -= (m - 1);
         } else {
-            // 0 < k < m-1: dat lo+k de dong gop dung k inversion,
-            // phan con lai xep tang dan (tru gia tri da dung)
+            // 0 < k < m-1: đặt lo+k để đóng góp đúng k nghịch thế,
+            // phần còn lại xếp tăng dần (trừ giá trị đã dùng)
             long long chosen = lo + k;
             res.push_back((int)chosen);
             for (long long v = lo; v <= hi; ++v)
@@ -41,7 +35,7 @@ int main() {
         }
     }
 
-    // Xuat ket qua voi buffer nhanh
+    // Xuất kết quả với buffer nhanh
     string out;
     out.reserve(res.size() * 7 + 1);
     char buf[16];

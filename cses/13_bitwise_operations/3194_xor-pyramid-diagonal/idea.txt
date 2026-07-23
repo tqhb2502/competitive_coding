@@ -1,25 +1,26 @@
-Bài toán: Xor Pyramid Diagonal (CSES 3194)
+Xor Pyramid Diagonal - CSES 3194
+https://cses.fi/problemset/task/3194
 
-Kỹ thuật: SOS DP (sum/XOR over subsets) kết hợp định lý Lucas mod 2 (tam giác
-Sierpinski).
-
-Mô tả bài toán:
+## Đề bài
 - Dòng đáy của kim tự tháp XOR gồm n số a[0..n-1].
 - Mỗi phần tử ở dòng trên bằng XOR của hai phần tử ngay dưới nó, nên mỗi dòng
-  trên có ít hơn dòng dưới một phần tử. Tổng cộng có đúng n dòng, dòng đỉnh có 1
-  phần tử.
+  trên có ít hơn dòng dưới đúng một phần tử. Tổng cộng có đúng n dòng, dòng đỉnh
+  chỉ còn 1 phần tử.
 - Cần in phần tử trái nhất (leftmost) của từng dòng, theo thứ tự từ dưới lên trên.
 
-Ý tưởng chính:
+## Ý tưởng
+Kỹ thuật: SOS DP (XOR over subsets) kết hợp định lý Lucas modulo 2 (tam giác
+Sierpinski).
+
 - Phần tử trái nhất của dòng thứ k (k = 0 là dòng đáy) là tổ hợp XOR của các phần
-  tử đáy: leftmost(k) = XOR các a[i] mà hệ số nhị thức C(k, i) là lẻ, với
-  i chạy từ 0 tới k.
+  tử đáy: leftmost(k) = XOR các a[i] mà hệ số nhị thức C(k, i) là lẻ, với i chạy
+  từ 0 tới k.
   Lý do: mỗi lần đi lên một dòng, phần tử = XOR hai phần tử dưới, tương đương phép
   cộng trên GF(2). Sau k bước, hệ số của a[i] chính là C(k, i) mod 2.
 - Theo định lý Lucas modulo 2: C(k, i) là lẻ khi và chỉ khi i là submask (mặt nạ
   con) của k, tức (i AND k) == i.
-- Do đó leftmost(k) = XOR của tất cả a[i] với i là submask của k. Vì mọi submask
-  i của k đều thỏa i <= k <= n-1 nên chỉ số luôn hợp lệ.
+- Do đó leftmost(k) = XOR của tất cả a[i] với i là submask của k. Vì mọi submask i
+  của k đều thỏa i <= k <= n-1 nên chỉ số luôn hợp lệ.
 
 Cách tính hiệu quả:
 - Đây chính là bài toán XOR over subsets. Dùng SOS DP:
@@ -38,6 +39,7 @@ Tính đúng đắn:
 - Các mask >= n được khởi tạo 0 nên không đóng góp, khớp với việc a[i] chỉ tồn tại
   với i < n (và mọi submask cần thiết đều < n).
 
-Độ phức tạp:
-- Thời gian: O(2^B * B) = O(n log n) trong trường hợp xấu (khoảng 2^18 * 18 ~ 4.7M
-  phép toán). Bộ nhớ: O(2^B) số nguyên 32-bit.
+## Độ phức tạp
+- Thời gian: O(2^B * B) = O(n log n) trong trường hợp xấu nhất (khoảng 2^18 * 18 ~
+  4.7M phép toán).
+- Bộ nhớ: O(2^B) số nguyên 32-bit.

@@ -1,50 +1,50 @@
-Bài toán: Chess Tournament (CSES 1697)
+Chess Tournament - CSES 1697
+https://cses.fi/problemset/task/1697
 
---- Phát biểu ---
-Có n người chơi. Người thứ i muốn chơi đúng x_i ván. Mỗi cặp người chỉ được
-chơi với nhau tối đa MỘT ván (và tất nhiên không tự chơi với chính mình).
-Hãy dựng một tập các ván đấu (các cặp) sao cho mỗi người chơi đúng số ván mong
-muốn, hoặc in "IMPOSSIBLE" nếu không thể.
+## Đề bài
+Có n người chơi. Người thứ i muốn chơi đúng x_i ván. Mỗi cặp người chỉ được chơi
+với nhau tối đa MỘT ván (và tất nhiên không tự chơi với chính mình). Hãy dựng một
+tập các ván đấu (các cặp) sao cho mỗi người chơi đúng số ván mong muốn, hoặc in
+"IMPOSSIBLE" nếu không thể.
 
-Đây chính là bài toán "realize degree sequence" của một đồ thị đơn (simple
-graph): xây một simple graph mà bậc của đỉnh i đúng bằng x_i. Ta dùng thuật
-toán Havel–Hakimi.
+Đây chính là bài toán "realize degree sequence" của một đồ thị đơn (simple graph):
+xây một đồ thị đơn mà bậc của đỉnh i đúng bằng x_i. Ta dùng thuật toán Havel–Hakimi.
 
---- Điều kiện / khi nào IMPOSSIBLE ---
-- Tổng bậc phải chẵn (mỗi ván đóng góp 2 vào tổng bậc). Nếu tổng x_i lẻ => IMPOSSIBLE.
-- Trong quá trình Havel–Hakimi, nếu đỉnh có bậc còn lại lớn nhất d mà số đỉnh
-  khác còn nhu cầu (bậc > 0) nhỏ hơn d thì không đủ đối thủ để nối => IMPOSSIBLE.
+Khi nào IMPOSSIBLE:
+- Tổng bậc phải chẵn (mỗi ván đóng góp 2 vào tổng bậc). Nếu tổng x_i lẻ thì IMPOSSIBLE.
+- Trong quá trình Havel–Hakimi, nếu đỉnh có bậc còn lại lớn nhất d mà số đỉnh khác
+  còn nhu cầu (bậc > 0) nhỏ hơn d thì không đủ đối thủ để nối, dẫn tới IMPOSSIBLE.
   (Trường hợp x_i > n-1 cũng bị bắt tự nhiên tại đây.)
 
---- Ý tưởng construction (Havel–Hakimi bằng max-heap) ---
+## Ý tưởng
+Construction Havel–Hakimi bằng max-heap:
 1. Đưa mọi người có x_i > 0 vào một max-heap các cặp (bậc còn lại, chỉ số).
 2. Lặp: lấy người u có bậc còn lại d lớn nhất ra khỏi heap. Vì u đang có bậc lớn
    nhất, ta nối u với đúng d người có bậc còn lại lớn nhất tiếp theo:
-   - Lấy ra d người kế tiếp từ heap (nếu heap không đủ d người => IMPOSSIBLE).
-   - Với mỗi người v vừa lấy: ghi nhận ván đấu (u, v), giảm bậc của v đi 1,
-     rồi đẩy v trở lại heap nếu bậc còn lại > 0.
+   - Lấy ra d người kế tiếp từ heap (nếu heap không đủ d người thì IMPOSSIBLE).
+   - Với mỗi người v vừa lấy: ghi nhận ván đấu (u, v), giảm bậc của v đi 1, rồi
+     đẩy v trở lại heap nếu bậc còn lại > 0.
    - u sau bước này có bậc 0 nên không đẩy lại (đã thỏa mãn hoàn toàn).
 3. Khi heap rỗng (hoặc đỉnh lấy ra có bậc 0) thì dừng.
 
---- Vì sao construction hợp lệ ---
-- Định lý Havel–Hakimi bảo đảm: dãy bậc là graphical khi và chỉ khi quy trình
-  "nối đỉnh bậc lớn nhất với các đỉnh bậc lớn kế tiếp" luôn thực hiện được. Nếu
-  đến một bước không đủ đối thủ thì dãy không graphical => IMPOSSIBLE.
-- Không có ván trùng: khi u được xử lý làm "đỉnh chính", u được nối với d người
-  KHÁC NHAU (mỗi người lấy ra khỏi heap một lần cho lần xử lý này) nên không nối
-  đôi cùng một cặp trong cùng bước. Sau bước đó bậc của u về 0 nên u bị loại khỏi
-  heap; do vậy về sau không đỉnh nào có thể nối lại với u => giữa mọi cặp có tối
-  đa 1 ván.
+Vì sao construction hợp lệ:
+- Định lý Havel–Hakimi bảo đảm: dãy bậc là graphical khi và chỉ khi quy trình "nối
+  đỉnh bậc lớn nhất với các đỉnh bậc lớn kế tiếp" luôn thực hiện được. Nếu đến một
+  bước không đủ đối thủ thì dãy không graphical, dẫn tới IMPOSSIBLE.
+- Không có ván trùng: khi u được xử lý làm "đỉnh chính", u được nối với d người KHÁC
+  NHAU (mỗi người lấy ra khỏi heap một lần cho lần xử lý này) nên không nối đôi cùng
+  một cặp trong cùng bước. Sau bước đó bậc của u về 0 nên u bị loại khỏi heap; do vậy
+  về sau không đỉnh nào có thể nối lại với u, giữa mọi cặp có tối đa 1 ván.
 - Không tự nối: u không nằm trong nhóm d người lấy ra (u đã bị pop trước đó).
 - Mỗi người kết thúc với đúng x_i ván vì bậc chỉ giảm đúng số lần cần thiết.
 
---- Độ phức tạp ---
-Gọi k = số ván = (sum x_i)/2 <= 1e5. Mỗi ván tương ứng đúng một lần pop + tối đa
-một lần push của người "hàng xóm" trên heap, cộng với các thao tác pop đỉnh chính.
-Tổng thao tác heap là O(k log n). Với n <= 1e5 và sum x_i <= 2e5, thuật toán chạy
-rất nhanh, bộ nhớ O(n + k).
+Định dạng xuất:
+Dòng 1: k (số ván). k dòng tiếp theo: hai chỉ số người chơi (1-indexed) của mỗi ván.
+Nếu không dựng được: in đúng chuỗi "IMPOSSIBLE". Cho phép nhiều đáp án hợp lệ khác
+nhau (special judge), nên đáp án không cần trùng với ví dụ.
 
---- Định dạng xuất ---
-Dòng 1: k (số ván). k dòng tiếp theo: hai chỉ số người chơi (1-indexed) của mỗi
-ván. Nếu không dựng được: in đúng chuỗi "IMPOSSIBLE". Cho phép nhiều đáp án hợp lệ
-khác nhau (special judge), nên đáp án không cần trùng với ví dụ.
+## Độ phức tạp
+Gọi k = số ván = (sum x_i)/2 <= 1e5. Mỗi ván tương ứng đúng một lần pop cộng với
+tối đa một lần push của người "hàng xóm" trên heap, cộng với các thao tác pop đỉnh
+chính. Tổng thao tác heap là O(k log n). Với n <= 1e5 và sum x_i <= 2e5, thuật toán
+chạy rất nhanh, bộ nhớ O(n + k).

@@ -1,12 +1,3 @@
-// And Subset Count (CSES 3141)
-// https://cses.fi/problemset/task/3141
-//
-// Với mỗi k = 0..n, đếm số tập con không rỗng có bitwise AND = k (mod 1e9+7).
-// Kỹ thuật: superset-sum SOS DP + Möbius inversion trên lưới tập con bit.
-//   g[m]        = số phần tử là superset của mask m  (SOS superset sum)
-//   atleast[m]  = 2^{g[m]} - 1  = số tập con không rỗng có AND là superset của m
-//   exact[k]    = superset Möbius inversion của atleast
-
 #include <bits/stdc++.h>
 using namespace std;
 

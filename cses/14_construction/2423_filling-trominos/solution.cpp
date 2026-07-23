@@ -1,24 +1,8 @@
-// Filling Trominos - CSES 2423
-// https://cses.fi/problemset/task/2423
-//
-// Tile an n x m grid with L-trominoes (three squares in an L shape) and print a
-// letter grid where two edge-adjacent squares share a letter iff they belong to
-// the same tromino. Print YES/NO.
-//
-// Feasibility (verified by brute force for all small boards, matches the known
-// theorem): a solution exists iff
-//   (n*m) % 3 == 0  AND  min(n,m) >= 2  AND  NOT ( min(n,m) == 3 && max(n,m) odd )
-//
-// Construction: since 3 | n*m we have 3 | n or 3 | m. Orient the board so the
-// number of columns m is a multiple of 3, then tile with 2x3 / 3x2 blocks; the
-// only irreducible "both dimensions odd" base case is a hardcoded 5x9 tiling.
-// Finally color the trominoes greedily (adjacency graph has max degree <= 8, so
-// <= 9 letters suffice).
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// Hardcoded L-tromino tiling of a 5x9 rectangle (ids 1..15, each id = one L).
+// Cách lát cố định (hardcode) của hình chữ nhật 5x9 bằng L-tromino:
+// id 1..15, mỗi id ứng với đúng một mảnh L. Đây là trường hợp cơ sở bất khả quy.
 static const int P59[5][9] = {
     {1, 1, 2, 3, 3, 4, 4, 5, 5},
     {1, 2, 2, 3, 6, 4, 7, 7, 5},
@@ -26,8 +10,9 @@ static const int P59[5][9] = {
     {8, 11, 9, 12, 13, 13, 14, 10, 15},
     {11, 11, 12, 12, 13, 14, 14, 15, 15}};
 
-int NID; // running tromino id counter (unique per placed tromino)
+int NID; // bộ đếm id tromino (mỗi mảnh đặt xuống mang một id duy nhất)
 
+// Gán cùng một id cho 3 ô tạo thành một L-tromino.
 inline void put3(vector<vector<int>> &A, int id,
                  int r0, int c0, int r1, int c1, int r2, int c2) {
     A[r0][c0] = id;
@@ -35,19 +20,19 @@ inline void put3(vector<vector<int>> &A, int id,
     A[r2][c2] = id;
 }
 
-// 2x3 block at rows r,r+1 and cols c..c+2 -> two L-trominoes.
+// Khối 2x3 tại hàng r, r+1 và cột c..c+2 -> tách thành 2 L-tromino.
 void place2x3(vector<vector<int>> &A, int r, int c) {
     put3(A, ++NID, r, c, r, c + 1, r + 1, c);
     put3(A, ++NID, r, c + 2, r + 1, c + 1, r + 1, c + 2);
 }
 
-// 3x2 block at rows r..r+2 and cols c,c+1 -> two L-trominoes.
+// Khối 3x2 tại hàng r..r+2 và cột c, c+1 -> tách thành 2 L-tromino.
 void place3x2(vector<vector<int>> &A, int r, int c) {
     put3(A, ++NID, r, c, r, c + 1, r + 1, c);
     put3(A, ++NID, r + 1, c + 1, r + 2, c, r + 2, c + 1);
 }
 
-// 5x6 block: 2x6 strip (two 2x3) on top + 3x6 strip (three 3x2) below.
+// Khối 5x6: dải 2x6 (hai khối 2x3) ở trên + dải 3x6 (ba khối 3x2) ở dưới.
 void place5x6(vector<vector<int>> &A, int r, int c) {
     place2x3(A, r, c);
     place2x3(A, r, c + 3);
@@ -56,7 +41,7 @@ void place5x6(vector<vector<int>> &A, int r, int c) {
     place3x2(A, r + 2, c + 4);
 }
 
-// 5x9 base case using the hardcoded pattern.
+// Khối cơ sở 5x9 dùng cách lát cố định P59 (cấp id mới cho từng mảnh).
 void place5x9(vector<vector<int>> &A, int r, int c) {
     int mp[16];
     for (int k = 1; k <= 15; k++) mp[k] = ++NID;
@@ -65,31 +50,32 @@ void place5x9(vector<vector<int>> &A, int r, int c) {
             A[r + i][c + j] = mp[P59[i][j]];
 }
 
-// Build a tiling of an n x m board with 3 | m (feasible, n >= 2).
+// Xây dựng cách lát lưới n x m với điều kiện 3 | m (đã bảo đảm có nghiệm, n >= 2).
 void build(vector<vector<int>> &A, int n, int m) {
     if (n % 2 == 0) {
-        // Even height: pack 2x3 blocks over 2-row strips.
+        // Số hàng chẵn: phủ các khối 2x3 theo từng dải 2 hàng.
         for (int r = 0; r < n; r += 2)
             for (int c = 0; c < m; c += 3)
                 place2x3(A, r, c);
     } else if (m % 2 == 0) {
-        // Odd height, even width: 3-row band of 3x2 blocks + 2-row strips below.
+        // Hàng lẻ, cột chẵn: băng 3 hàng đầu lát bằng khối 3x2, dưới là các dải 2 hàng.
         for (int c = 0; c < m; c += 2)
             place3x2(A, 0, c);
         for (int r = 3; r < n; r += 2)
             for (int c = 0; c < m; c += 3)
                 place2x3(A, r, c);
     } else {
-        // Odd height and odd width (m is an odd multiple of 3, n >= 5).
-        for (int r = 5; r < n; r += 2) // 2-row strips below the top 5 rows
+        // Hàng lẻ và cột lẻ (m là bội lẻ của 3, n >= 5).
+        for (int r = 5; r < n; r += 2) // các dải 2 hàng phía dưới băng 5 hàng đầu
             for (int c = 0; c < m; c += 3)
                 place2x3(A, r, c);
-        for (int c = 0; c < m - 9; c += 6) // 5x6 blocks on the left of the top band
+        for (int c = 0; c < m - 9; c += 6) // các khối 5x6 ở bên trái băng trên cùng
             place5x6(A, 0, c);
-        place5x9(A, 0, m - 9); // irreducible 5x9 base on the right
+        place5x9(A, 0, m - 9); // khối cơ sở bất khả quy 5x9 ở bên phải
     }
 }
 
+// Kiểm tra điều kiện có nghiệm.
 bool feasible(int R, int C) {
     if ((long long)R * C % 3 != 0) return false;
     int mn = min(R, C), mx = max(R, C);
@@ -116,7 +102,7 @@ int main() {
         }
         out += "YES\n";
 
-        // Orient so working width is a multiple of 3; prefer even working height.
+        // Xoay lưới sao cho chiều rộng làm việc chia hết cho 3; ưu tiên chiều cao chẵn.
         bool canDirect = (C % 3 == 0);
         bool canTrans = (R % 3 == 0);
         bool transpose;
@@ -124,33 +110,33 @@ int main() {
             transpose = false;
         else if (canTrans && !canDirect)
             transpose = true;
-        else { // both dims divisible by 3: try to make working height even
+        else { // cả hai chiều đều chia hết cho 3: cố gắng để chiều cao làm việc chẵn
             if (R % 2 == 0) transpose = false;
             else if (C % 2 == 0) transpose = true;
             else transpose = false;
         }
 
-        int n = transpose ? C : R; // working rows
-        int m = transpose ? R : C; // working cols (3 | m)
+        int n = transpose ? C : R; // số hàng làm việc
+        int m = transpose ? R : C; // số cột làm việc (3 | m)
 
         NID = 0;
         vector<vector<int>> A(n, vector<int>(m, 0));
         build(A, n, m);
 
-        // Map back to output orientation (R x C) of tromino ids.
+        // Ánh xạ ngược id tromino về hướng xuất ra R x C.
         vector<vector<int>> G(R, vector<int>(C, 0));
         for (int i = 0; i < R; i++)
             for (int j = 0; j < C; j++)
                 G[i][j] = transpose ? A[j][i] : A[i][j];
 
-        // Collect cells per tromino id.
+        // Thu thập các ô theo từng id tromino.
         vector<vector<pair<int, int>>> cells(NID + 1);
         for (int i = 0; i < R; i++)
             for (int j = 0; j < C; j++)
                 cells[G[i][j]].push_back({i, j});
 
-        // Greedy proper coloring of the tromino adjacency graph.
-        vector<int> col(NID + 1, 0); // 0 = uncolored, else letter index 1..26
+        // Tô màu tham lam hợp lệ trên đồ thị kề của các tromino.
+        vector<int> col(NID + 1, 0); // 0 = chưa tô, ngược lại là chỉ số chữ cái 1..26
         static const int dx[4] = {-1, 1, 0, 0};
         static const int dy[4] = {0, 0, -1, 1};
         for (int id = 1; id <= NID; id++) {
@@ -163,12 +149,13 @@ int main() {
                     if (oid != id && col[oid] != 0) used[col[oid]] = true;
                 }
             }
+            // Chọn chữ cái nhỏ nhất chưa bị các tromino kề cạnh dùng.
             int c = 1;
             while (used[c]) c++;
             col[id] = c;
         }
 
-        // Emit the letter grid.
+        // In lưới chữ cái kết quả.
         for (int i = 0; i < R; i++) {
             for (int j = 0; j < C; j++)
                 out += char('A' + col[G[i][j]] - 1);

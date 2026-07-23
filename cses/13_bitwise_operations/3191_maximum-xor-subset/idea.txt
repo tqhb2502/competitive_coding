@@ -1,16 +1,16 @@
-Bài toán: Maximum Xor Subset (CSES 3191)
+Maximum Xor Subset - CSES 3191
+https://cses.fi/problemset/task/3191
 
-Đề bài: Cho một mảng gồm n số nguyên. Tìm giá trị XOR lớn nhất có thể đạt
-được khi lấy XOR của một tập con bất kỳ của mảng (tập con có thể rỗng, cho
-kết quả 0).
+## Đề bài
+Cho một mảng gồm n số nguyên. Tìm giá trị XOR lớn nhất có thể đạt được khi lấy
+XOR của một tập con bất kỳ của mảng (tập con có thể rỗng, cho kết quả 0).
 
+## Ý tưởng
 Kỹ thuật: XOR linear basis (cơ sở tuyến tính trên trường GF(2)).
 
-Ý tưởng chính:
-- Coi mỗi số nguyên như một vector nhị phân trên GF(2) (mỗi bit là một tọa
-  độ). Tập tất cả các giá trị XOR của mọi tập con của mảng chính là không
-  gian con (span) sinh bởi các vector này. Phép XOR đóng vai trò cộng vector
-  modulo 2.
+- Coi mỗi số nguyên như một vector nhị phân trên GF(2) (mỗi bit là một tọa độ).
+  Tập tất cả các giá trị XOR của mọi tập con của mảng chính là không gian con
+  (span) sinh bởi các vector này. Phép XOR đóng vai trò cộng vector modulo 2.
 - Ta xây dựng một linear basis: mảng basis[b] lưu một vector có bit cao nhất
   đúng bằng b. Với mỗi số x của mảng, ta duyệt các bit từ cao xuống thấp; nếu
   bit đang xét của x đang bật thì:
@@ -19,19 +19,19 @@ Kỹ thuật: XOR linear basis (cơ sở tuyến tính trên trường GF(2)).
   Nếu x bị khử về 0 thì nó phụ thuộc tuyến tính vào cơ sở hiện có (không thêm).
 - Sau khi có cơ sở, giá trị XOR lớn nhất được tìm tham lam: khởi tạo ans = 0,
   duyệt b từ cao xuống thấp, nếu (ans ^ basis[b]) > ans thì lấy ans ^= basis[b].
-  Vì basis[b] là vector duy nhất có bit cao nhất là b, việc bật thêm bit b
-  luôn làm tăng giá trị, nên chiến lược tham lam cho kết quả tối ưu.
+  Vì basis[b] là vector duy nhất có bit cao nhất là b, việc bật thêm bit b luôn
+  làm tăng giá trị, nên chiến lược tham lam cho kết quả tối ưu.
 
 Tính đúng đắn:
-- Span của các vector đầu vào bằng span của basis (bất biến được giữ trong
-  suốt quá trình chèn vì mỗi lần chỉ XOR với các vector đã thuộc span). Do đó
-  mọi giá trị đạt được từ tập con đều biểu diễn được bằng XOR của một tập con
-  các phần tử basis, và ngược lại.
-- Chiến lược tham lam từ bit cao xuống thấp cho giá trị lớn nhất: mỗi bậc chỉ
-  có tối đa một phần tử cơ sở khống chế bit đó, nên lựa chọn bật bit cao luôn
-  vượt trội mọi tổ hợp ở các bit thấp hơn.
+- Span của các vector đầu vào bằng span của basis (bất biến được giữ trong suốt
+  quá trình chèn vì mỗi lần chỉ XOR với các vector đã thuộc span). Do đó mọi giá
+  trị đạt được từ tập con đều biểu diễn được bằng XOR của một tập con các phần tử
+  basis, và ngược lại.
+- Chiến lược tham lam từ bit cao xuống thấp cho giá trị lớn nhất: mỗi bậc chỉ có
+  tối đa một phần tử cơ sở khống chế bit đó, nên lựa chọn bật bit cao luôn vượt
+  trội mọi tổ hợp ở các bit thấp hơn.
 
-Độ phức tạp:
+## Độ phức tạp
 - Số bit B = 30 (vì x_i <= 10^9 < 2^30).
 - Thời gian: O(n * B) cho việc chèn + O(B) cho truy vấn max => O(n * B).
 - Bộ nhớ: O(B) cho mảng basis (ngoài mảng đầu vào).

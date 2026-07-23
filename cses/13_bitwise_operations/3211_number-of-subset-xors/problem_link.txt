@@ -1,2 +1,0 @@
-Number of Subset Xors
-https://cses.fi/problemset/task/3211

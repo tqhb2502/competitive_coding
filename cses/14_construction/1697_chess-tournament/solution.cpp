@@ -1,9 +1,3 @@
-// Chess Tournament - CSES 1697
-// https://cses.fi/problemset/task/1697
-//
-// Realize a degree sequence as a simple graph via Havel-Hakimi with a max-heap.
-// Moi nguoi i can choi dung x_i van, moi cap toi da 1 van, khong tu choi.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -15,7 +9,7 @@ int main() {
     if (!(cin >> n)) return 0;
 
     long long sum = 0;
-    // max-heap cac cap (bac con lai, chi so nguoi choi)
+    // Max-heap các cặp (bậc còn lại, chỉ số người chơi)
     priority_queue<pair<int, int>> pq;
     for (int i = 1; i <= n; ++i) {
         int x;
@@ -24,37 +18,40 @@ int main() {
         if (x > 0) pq.push({x, i});
     }
 
-    bool possible = (sum % 2 == 0);  // tong bac phai chan
+    bool possible = (sum % 2 == 0);  // Tổng bậc phải chẵn
     vector<pair<int, int>> edges;
     edges.reserve((size_t)(sum / 2) + 1);
 
-    // buffer tai su dung cho cac hang xom lay ra
+    // Buffer tái sử dụng cho các hàng xóm lấy ra
     vector<pair<int, int>> taken;
 
+    // Havel–Hakimi: mỗi bước lấy đỉnh chính có bậc lớn nhất
     while (possible && !pq.empty()) {
         pair<int, int> cur = pq.top();
         pq.pop();
-        int d = cur.first;      // bac con lai cua dinh chinh
+        int d = cur.first;      // Bậc còn lại của đỉnh chính
         int u = cur.second;
-        if (d == 0) break;      // khong con nhu cau
+        if (d == 0) break;      // Không còn nhu cầu
 
-        if ((int)pq.size() < d) {  // khong du doi thu de noi
+        if ((int)pq.size() < d) {  // Không đủ đối thủ để nối => IMPOSSIBLE
             possible = false;
             break;
         }
 
+        // Nối u với đúng d người có bậc còn lại lớn nhất tiếp theo
         taken.clear();
         for (int j = 0; j < d; ++j) {
             taken.push_back(pq.top());
             pq.pop();
         }
         for (const auto &pr : taken) {
-            int dv = pr.first;   // bac con lai cua hang xom (>= 1)
+            int dv = pr.first;   // Bậc còn lại của hàng xóm (>= 1)
             int v = pr.second;
             edges.push_back({u, v});
-            --dv;
-            if (dv > 0) pq.push({dv, v});
+            --dv;                // Giảm bậc của hàng xóm đi 1
+            if (dv > 0) pq.push({dv, v});  // Đẩy lại nếu vẫn còn nhu cầu
         }
+        // u đã có bậc 0 nên không đẩy lại (đã thỏa mãn hoàn toàn)
     }
 
     if (!possible) {

@@ -1,53 +1,43 @@
-Permutation Prime Sums — CSES 3423
+Permutation Prime Sums - CSES 3423
 https://cses.fi/problemset/task/3423
 
-Ý tưởng xây dựng (construction)
-================================
+## Đề bài
+Cho số nguyên n. Cần dựng hai hoán vị a và b của tập {1, 2, ..., n} sao cho
+tổng a_i + b_i là số nguyên tố tại mọi vị trí i. Bài toán luôn có lời giải nên
+không bao giờ rơi vào trường hợp IMPOSSIBLE.
 
-Bài toán: cần hai hoán vị a và b của {1..n} sao cho a_i + b_i là số nguyên
-tố (prime) với mọi vị trí i.
+## Ý tưởng
+Cố định a là hoán vị đơn vị a_i = i, khi đó chỉ cần tìm một hoán vị sigma (chính
+là b) sao cho i + sigma_i là số nguyên tố với mọi i. Xây dựng sigma bằng đệ quy
+theo khối dựa trên định đề Bertrand: với mọi số nguyên m >= 1 luôn tồn tại số
+nguyên tố p thỏa m < p <= 2m.
 
-Nhận xét quy về một hoán vị
----------------------------
-Ta cố định a là hoán vị đơn vị: a_i = i. Khi đó chỉ cần tìm MỘT hoán vị
-sigma (chính là b) sao cho i + sigma_i là prime với mọi i. Nếu tìm được
-sigma thì in a = (1, 2, ..., n) và b = sigma là xong.
+Xử lý khối [1, m] (khởi đầu m = n) như sau:
+  - Lấy p là số nguyên tố lớn nhất không vượt quá 2m; theo Bertrand thì p > m.
+  - Đặt lo = p - m, suy ra 1 <= lo <= m.
+  - Ghép đối xứng khối con [lo, m]: gán sigma_i = p - i với i chạy từ lo tới m.
+    Khi i chạy trong [lo, m] thì p - i cũng chạy trong [lo, m] (đối xứng qua
+    p/2), nên đây là song ánh của khối lên chính nó, mỗi cặp có tổng i + sigma_i
+    bằng p là số nguyên tố.
+  - Đệ quy tiếp với khối còn lại [1, lo - 1]; vì lo - 1 < m nên kích thước giảm
+    ngặt, quá trình chắc chắn dừng.
 
-Xây dựng sigma bằng đệ quy dựa trên định đề Bertrand (Bertrand's postulate)
---------------------------------------------------------------------------
-Định đề Bertrand: với mọi số nguyên m >= 1, luôn tồn tại một prime p thỏa
-m < p <= 2m.
+Mỗi bước luôn tìm được số nguyên tố p và luôn thu nhỏ được khối, nên quá trình
+phủ hết tập {1..n}. Do đó bài toán luôn có lời giải.
 
-Ta xử lý khối [1, m] (ban đầu m = n) như sau:
-  - Lấy p = prime lớn nhất không vượt quá 2m. Theo Bertrand thì p > m.
-  - Gọi lo = p - m. Vì m < p <= 2m nên 1 <= lo <= m.
-  - Ghép đối xứng khối con [lo, m]: đặt sigma_i = p - i với i chạy từ lo
-    tới m. Khi i chạy trong [lo, m] thì p - i cũng chạy trong [lo, m]
-    (đối xứng qua p/2), nên đây là một song ánh (bijection) của khối
-    [lo, m] lên chính nó. Mỗi cặp có tổng i + sigma_i = p là prime.
-  - Đệ quy tiếp với khối còn lại [1, lo - 1] (vì lo - 1 < m nên kích thước
-    giảm ngặt, đảm bảo dừng).
-
-Vì mỗi bước luôn tìm được prime p (Bertrand) và luôn thu nhỏ được khối,
-quá trình luôn kết thúc và phủ hết {1..n}. Do đó bài toán LUÔN có lời giải,
-không bao giờ IMPOSSIBLE. (Vẫn giữ nhánh IMPOSSIBLE cho đúng khuôn mẫu,
-nhưng nó không bao giờ xảy ra.)
+Vì sao cách dựng hợp lệ:
+  - a = (1..n) hiển nhiên là hoán vị.
+  - sigma là hoán vị vì các khối [lo, m] rời nhau và mỗi khối được ghép song ánh
+    lên chính nó, phủ đúng tập {1..n} một lần.
+  - Mỗi tổng i + sigma_i = p là số nguyên tố theo cách chọn.
 
 Kiểm tra các trường hợp nhỏ:
-  n = 1: m=1, p=2, sigma=[1], tổng 2 prime.
-  n = 5: p=7 -> khối [2,5] ghép 2<->5, 3<->4; còn [1,1] -> sigma_1=1.
-         b = [1,5,4,3,2], tổng với a = [2,7,7,7,7] đều prime.
+  n = 1: m = 1, p = 2, sigma = [1], tổng bằng 2 là số nguyên tố.
+  n = 5: p = 7 -> khối [2, 5] ghép 2<->5, 3<->4; còn [1, 1] -> sigma_1 = 1.
+         b = [1, 5, 4, 3, 2], tổng với a là [2, 7, 7, 7, 7] đều là số nguyên tố.
 
-Vì sao construction hợp lệ
---------------------------
-- a = (1..n) hiển nhiên là hoán vị.
-- sigma là hoán vị vì các khối [lo, m] rời nhau và mỗi khối được ghép
-  song ánh lên chính nó, phủ đúng {1..n} một lần.
-- Mỗi tổng i + sigma_i = p là prime theo cách chọn.
-
-Độ phức tạp
------------
-- Sàng nguyên tố (sieve) tới 2n: O(n log log n).
-- Tính mảng prevPrime (prime lớn nhất <= x): O(n).
+## Độ phức tạp
+- Sàng nguyên tố tới 2n: O(n log log n).
+- Tính mảng prevPrime (số nguyên tố lớn nhất <= x): O(n).
 - Gán các cặp: mỗi phần tử được gán đúng một lần, tổng O(n).
-Tổng: O(n log log n) thời gian, O(n) bộ nhớ. Với n <= 1e5 rất nhanh.
+Tổng: O(n log log n) thời gian, O(n) bộ nhớ. Với n <= 1e5 chạy rất nhanh.

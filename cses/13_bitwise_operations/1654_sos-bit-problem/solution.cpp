@@ -1,12 +1,3 @@
-// SOS Bit Problem (CSES 1654)
-// https://cses.fi/problemset/task/1654
-//
-// Với mỗi x, đếm:
-//   1) số y với x | y = x   -> y là submask của x            -> sub[x]
-//   2) số y với x & y = x   -> y là supermask của x          -> sup[x]
-//   3) số y với x & y != 0  -> n - (số y submask của ~x)     -> n - sub[(~x)&FULL]
-// Dùng SOS DP (subset-sum và superset-sum transform) trên B = 20 bit.
-
 #include <bits/stdc++.h>
 using namespace std;
 

@@ -1,8 +1,14 @@
-All Subarray Xors (CSES 3233)
+All Subarray Xors - CSES 3233
+https://cses.fi/problemset/task/3233
 
+## Đề bài
+Cho dãy gồm n số nguyên. Với mọi đoạn con (l..r) ta tính XOR của các phần tử
+trong đoạn đó. Hãy liệt kê (theo thứ tự tăng dần) tất cả các giá trị XOR PHÂN BIỆT
+mà một đoạn con nào đó có thể đạt được, cùng với số lượng các giá trị ấy.
+
+## Ý tưởng
 Kỹ thuật: Walsh-Hadamard Transform (XOR convolution) trên tập các giá trị prefix XOR.
 
-Ý tưởng chính:
 - Đặt prefix[0] = 0 và prefix[i] = x_1 ^ x_2 ^ ... ^ x_i. Khi đó XOR của đoạn con
   (l..r) bằng prefix[r] ^ prefix[l-1].
 - Do đó TẬP tất cả giá trị XOR của mọi đoạn con chính là
@@ -13,7 +19,7 @@ Kỹ thuật: Walsh-Hadamard Transform (XOR convolution) trên tập các giá t
 
 Thuật toán:
 - Xây dựng vector chỉ thị (indicator) f trên nhóm Z_2^20: f[v] = 1 nếu v là một
-  giá trị prefix PHÂN BIỆT nào đó, ngược lại 0.
+  giá trị prefix PHÂN BIỆT nào đó, ngược lại bằng 0.
 - Dùng WHT để tính XOR self-convolution g = f (*) f. Khi đó
       g[v] = số cặp CÓ THỨ TỰ (a, b) trong tập prefix phân biệt sao cho a ^ b = v.
 - Với v != 0: v đạt được <=> g[v] > 0. Vì v != 0 nên a != b, tương ứng hai chỉ số
@@ -30,7 +36,7 @@ Tính đúng đắn:
 Kiểm chứng ví dụ: dãy 5 1 5 9 -> prefix = {0,5,4,1,8} (đều phân biệt => 0 không đạt).
 Các XOR cặp: {1,4,5,8,9,12,13} đúng 7 giá trị như đáp án.
 
-Độ phức tạp:
+## Độ phức tạp
 - Thời gian: WHT O(M log M) với M = 2^20, ~2*10^7 phép; đọc dữ liệu O(n).
 - Bộ nhớ: O(M) kiểu long long ~ 8 MB (an toàn với overflow: giá trị trung gian
   <= M * |S|^2 ~ 4*10^16 < 9.2*10^18).

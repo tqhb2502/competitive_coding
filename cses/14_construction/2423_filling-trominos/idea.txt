@@ -1,36 +1,32 @@
 Filling Trominos - CSES 2423
+https://cses.fi/problemset/task/2423
 
-Bài toán
---------
-Lát kín lưới n x m bằng các L-tromino (mảnh 3 ô hình chữ L). Sau đó in ra lưới
-gồm các chữ cái A-Z sao cho: hai ô kề cạnh (chung cạnh) có cùng chữ cái KHI VÀ CHỈ
-KHI chúng thuộc cùng một tromino. Nếu không lát được thì in "NO", nếu được thì in
-"YES" rồi in lưới.
+## Đề bài
+Lát kín lưới n x m bằng các L-tromino (mảnh 3 ô hình chữ L). Sau đó in ra lưới gồm
+các chữ cái A-Z sao cho: hai ô kề cạnh (chung cạnh) có cùng chữ cái KHI VÀ CHỈ KHI
+chúng thuộc cùng một tromino. Nếu không lát được thì in "NO", nếu được thì in "YES"
+rồi in lưới.
 
-Điều kiện có nghiệm (feasibility)
----------------------------------
-Đã kiểm tra bằng brute force cho mọi lưới nhỏ (khớp với định lý đã biết): lát được
-khi và chỉ khi:
-  1. (n * m) chia hết cho 3        (mỗi tromino phủ đúng 3 ô nên diện tích phải chia hết 3)
-  2. min(n, m) >= 2                (L-tromino cần cả bề rộng lẫn bề cao >= 2)
+Điều kiện có nghiệm (đã kiểm tra bằng brute force cho mọi lưới nhỏ, khớp với định lý
+đã biết): lát được khi và chỉ khi
+  1. (n * m) chia hết cho 3   (mỗi tromino phủ đúng 3 ô nên diện tích phải chia hết 3)
+  2. min(n, m) >= 2           (L-tromino cần cả bề rộng lẫn bề cao >= 2)
   3. KHÔNG xảy ra ( min(n, m) == 3 VÀ max(n, m) lẻ )
+Giải thích điều kiện 3: với dải cao đúng 3 (ví dụ 3 x k), xét hai ô góc trái trên và
+trái dưới, mỗi ô chỉ nằm trong đúng một ô vuông 2x2 nên buộc hai cột trái nhất phải
+tạo thành một khối 3x2 "sạch"; quy nạp làm bài toán 3 x k rút về 3 x (k-2). Cơ sở
+3 x 1 không lát được, nên 3 x k lát được khi và chỉ khi k chẵn. Đó chính là các
+trường hợp 3x3, 3x5, 3x7, ... vô nghiệm.
 
-Giải thích điều kiện 3: với dải cao đúng 3 (ví dụ 3 x k), xét hai ô góc trái trên
-và trái dưới, mỗi ô chỉ nằm trong đúng một ô vuông 2x2 nên buộc hai cột trái nhất
-phải tạo thành một khối 3x2 "sạch"; quy nạp làm bài toán 3 x k rút về 3 x (k-2).
-Cơ sở 3 x 1 không lát được, nên 3 x k lát được khi và chỉ khi k chẵn. Đó chính là
-các trường hợp 3x3, 3x5, 3x7, ... vô nghiệm.
-
-Ý tưởng xây dựng (construction)
--------------------------------
+## Ý tưởng
 Vì 3 | n*m nên 3 | n hoặc 3 | m. Ta xoay (transpose) lưới sao cho số CỘT m chia hết
-cho 3 (ưu tiên để số HÀNG là số chẵn nếu có thể, nhằm tránh trường hợp khó). Khi
-đó m là bội của 3 và ta lát như sau:
+cho 3 (ưu tiên để số HÀNG là số chẵn nếu có thể, nhằm tránh trường hợp khó). Khi đó
+m là bội của 3 và ta lát như sau:
 
 - n chẵn: xếp các khối 2x3 phủ từng dải 2 hàng. Mỗi 2x3 tách thành 2 L-tromino.
 
-- n lẻ, m chẵn: ba hàng đầu là dải 3 x m lát bằng các khối 3x2 (m chẵn), phần còn
-  lại (n-3 hàng, số chẵn) lát bằng các khối 2x3 theo từng dải 2 hàng.
+- n lẻ, m chẵn: ba hàng đầu là dải 3 x m lát bằng các khối 3x2 (m chẵn), phần còn lại
+  (n-3 hàng, số chẵn) lát bằng các khối 2x3 theo từng dải 2 hàng.
 
 - n lẻ, m lẻ (m là bội lẻ của 3, và feasibility bảo đảm n >= 5): các dải 2 hàng phía
   dưới (từ hàng 5 trở đi) lát bằng khối 2x3; băng 5 hàng trên cùng gồm các khối 5x6
@@ -38,21 +34,18 @@ cho 3 (ưu tiên để số HÀNG là số chẵn nếu có thể, nhằm tránh
   cơ sở 5x9 bên phải. Khối 5x9 là trường hợp bất khả quy (không tách được thành các
   hình chữ nhật lát được nhỏ hơn) nên được hardcode một cách lát cụ thể gồm 15 L-tromino.
 
-Tô màu (coloring)
------------------
-Sau khi có phân hoạch thành các tromino (mỗi ô mang id của tromino chứa nó), ta tô
-màu tham lam (greedy) trên đồ thị kề của các tromino: mỗi tromino nhận chữ cái nhỏ
-nhất chưa bị dùng bởi các tromino kề cạnh đã tô. Một L-tromino có tối đa 8 cạnh biên
-nên bậc của đỉnh <= 8, do đó tối đa 9 chữ cái là đủ (dùng A..Z thoải mái). Cách này
-bảo đảm: hai ô kề cạnh khác tromino luôn khác chữ, còn cùng tromino thì luôn cùng chữ.
+Tô màu: sau khi có phân hoạch thành các tromino (mỗi ô mang id của tromino chứa nó),
+ta tô màu tham lam (greedy) trên đồ thị kề của các tromino: mỗi tromino nhận chữ cái
+nhỏ nhất chưa bị dùng bởi các tromino kề cạnh đã tô. Một L-tromino có tối đa 8 cạnh
+biên nên bậc của đỉnh <= 8, do đó tối đa 9 chữ cái là đủ (dùng A..Z thoải mái). Cách
+này bảo đảm: hai ô kề cạnh khác tromino luôn khác chữ, còn cùng tromino thì luôn cùng
+chữ.
 
-Tính đúng đắn
--------------
-Mọi khối (2x3, 3x2, 5x6 và 5x9) đều là phân hoạch thành các L-tromino hợp lệ và phủ
-kín đúng vùng của nó; các khối ghép lại phủ kín toàn lưới không chồng lấn. Greedy
-coloring bảo đảm ràng buộc "cùng chữ khi và chỉ khi cùng tromino" cho các ô kề cạnh.
+Tính đúng đắn: mọi khối (2x3, 3x2, 5x6 và 5x9) đều là phân hoạch thành các L-tromino
+hợp lệ và phủ kín đúng vùng của nó; các khối ghép lại phủ kín toàn lưới không chồng
+lấn. Greedy coloring bảo đảm ràng buộc "cùng chữ khi và chỉ khi cùng tromino" cho các
+ô kề cạnh.
 
-Độ phức tạp
------------
+## Độ phức tạp
 O(n*m) mỗi test (xây dựng + tô màu). Tổng thể tuyến tính theo tổng số ô trên tất cả
 các test, thừa sức với t <= 100 và n, m <= 100.

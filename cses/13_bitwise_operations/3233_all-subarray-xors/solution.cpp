@@ -1,14 +1,3 @@
-// All Subarray Xors (CSES 3233)
-// https://cses.fi/problemset/task/3233
-//
-// XOR của đoạn con (l..r) = prefix[r] ^ prefix[l-1], nên tập tất cả các giá trị
-// XOR đoạn con = { prefix[i] ^ prefix[j] : 0 <= j < i <= n }, tức tập XOR mọi cặp
-// giá trị prefix. Vì x_i <= 10^6 < 2^20 nên mọi giá trị nằm trong [0, 2^20).
-// Dùng Walsh-Hadamard Transform để tính XOR self-convolution của vector chỉ thị
-// các prefix phân biệt: g[v] = số cặp (a,b) với a^b = v.
-//  - v != 0 đạt được <=> g[v] > 0
-//  - v = 0  đạt được <=> có prefix bị lặp (distinct < n+1)
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,25 +9,25 @@ int main() {
     if (!(cin >> n)) return 0;
 
     const int LOG = 20;
-    const int M = 1 << LOG;               // 1048576 > 10^6
+    const int M = 1 << LOG;               // 1048576 > 10^6, chứa mọi giá trị prefix
 
-    vector<long long> f(M, 0);            // vừa làm marker, vừa làm mảng WHT
+    vector<long long> f(M, 0);            // vừa là vector chỉ thị, vừa là mảng WHT
 
+    // Đánh dấu các giá trị prefix PHÂN BIỆT: f[v] = 1 nếu v xuất hiện trong dãy prefix
     long long cur = 0;
     int distinct = 0;
-    // prefix[0] = 0
-    f[0] = 1;
+    f[0] = 1;                             // prefix[0] = 0
     distinct = 1;
     for (int i = 0; i < n; i++) {
         int x;
         cin >> x;
-        cur ^= x;
+        cur ^= x;                         // cur = prefix[i+1]
         if (f[cur] == 0) {
             f[cur] = 1;
             distinct++;
         }
     }
-    bool hasDup = (distinct < n + 1);     // có prefix lặp => XOR = 0 đạt được
+    bool hasDup = (distinct < n + 1);     // có prefix bị lặp => tồn tại đoạn con XOR = 0
 
     // Walsh-Hadamard Transform (thuận)
     for (int len = 1; len < M; len <<= 1) {
@@ -50,9 +39,9 @@ int main() {
             }
         }
     }
-    // pointwise square
+    // Bình phương từng điểm: tương ứng XOR self-convolution trong miền biến đổi
     for (int i = 0; i < M; i++) f[i] *= f[i];
-    // WHT nghịch (áp dụng lại, sau đó chia M). Ta không cần chia vì chỉ kiểm tra > 0.
+    // WHT nghịch (áp dụng lại). Bỏ qua bước chia M vì chỉ cần kiểm tra dấu > 0.
     for (int len = 1; len < M; len <<= 1) {
         for (int i = 0; i < M; i += (len << 1)) {
             for (int j = i; j < i + len; j++) {
@@ -66,12 +55,12 @@ int main() {
 
     // Thu thập kết quả theo thứ tự tăng dần
     vector<int> res;
-    if (hasDup) res.push_back(0);
+    if (hasDup) res.push_back(0);         // giá trị 0 chỉ đạt khi có prefix lặp
     for (int v = 1; v < M; v++) {
-        if (f[v] > 0) res.push_back(v);
+        if (f[v] > 0) res.push_back(v);   // v != 0 đạt được khi có cặp prefix cho ra v
     }
 
-    // Xuất
+    // Xuất số lượng rồi tới các giá trị
     string out;
     out.reserve(res.size() * 7 + 16);
     out += to_string((long long)res.size());

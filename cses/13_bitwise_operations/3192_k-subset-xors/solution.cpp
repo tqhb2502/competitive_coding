@@ -1,12 +1,3 @@
-// K Subset Xors - CSES 3192
-// https://cses.fi/problemset/task/3192
-//
-// Xây dựng XOR linear basis (rank r). Tập giá trị XOR phân biệt là không gian con
-// kích thước 2^r; mỗi giá trị xuất hiện đúng m = 2^(n-r) lần trong multiset đầy đủ.
-// Đưa basis về reduced echelon form, sắp xếp theo pivot tăng dần; khi đó value(i)
-// (XOR các vector được chọn bởi các bit của i) TĂNG NGHIÊM NGẶT theo i, cho ta các
-// giá trị phân biệt theo thứ tự tăng. In min(m, còn_lại) bản sao mỗi giá trị.
-
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -21,6 +12,7 @@ int main() {
     const int B = 30;              // x_i <= 1e9 < 2^30
     vector<int> basis(B, 0);
 
+    // Xây dựng XOR linear basis: basis[b] là vector có bit pivot cao nhất là b.
     for (int idx = 0; idx < n; idx++) {
         int x;
         cin >> x;
@@ -52,12 +44,15 @@ int main() {
     else m = 1LL << e;
 
     // Liệt kê các giá trị phân biệt theo thứ tự tăng dần qua value(i).
+    // value(i) = XOR các vector sb[b] với b là các bit đã bật của i; hàm này
+    // tăng nghiêm ngặt theo i, nên duyệt i = 0, 1, 2, ... cho thứ tự tăng dần.
     string out;
     out.reserve((size_t)k * 11 + 16);
 
     long long remaining = k;
     long long i = 0;
     while (remaining > 0) {
+        // Tính value(i): XOR các vector basis ứng với từng bit đã bật của i.
         long long ii = i;
         int val = 0;
         while (ii) {
@@ -65,6 +60,7 @@ int main() {
             val ^= sb[b];
             ii &= ii - 1;
         }
+        // Mỗi giá trị phân biệt lặp m lần trong multiset -> in min(m, còn_lại) bản sao.
         long long copies = min(m, remaining);
         string s = to_string(val);
         for (long long c = 0; c < copies; c++) {

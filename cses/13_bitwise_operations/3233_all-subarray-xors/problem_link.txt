@@ -1,2 +1,0 @@
-All Subarray Xors
-https://cses.fi/problemset/task/3233

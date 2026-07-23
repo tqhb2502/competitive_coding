@@ -1,14 +1,14 @@
-And Subset Count (CSES 3141)
+And Subset Count - CSES 3141
 https://cses.fi/problemset/task/3141
 
---- Đề bài ---
-Cho mảng n số nguyên (mỗi phần tử trong đoạn [0, n]). Với mỗi k từ 0 đến n, đếm
-số tập con KHÔNG rỗng sao cho phép AND (bitwise AND) của tất cả phần tử trong tập
-con đó bằng đúng k. In ra n+1 số, tất cả lấy theo modulo 1e9 + 7.
+## Đề bài
+Cho mảng n số nguyên (mỗi phần tử nằm trong đoạn [0, n]). Với mỗi k từ 0 đến n,
+đếm số tập con KHÔNG rỗng sao cho phép AND (bitwise AND) của tất cả phần tử trong
+tập con đó bằng đúng k. In ra n+1 số, tất cả lấy theo modulo 1e9 + 7.
 
---- Kỹ thuật: SOS DP (superset sum) + Möbius inversion trên lưới tập con bit ---
+## Ý tưởng
+Kỹ thuật: SOS DP (superset sum) + nghịch đảo Möbius trên lưới tập con bit.
 
-Ý tưởng chính:
 1) Gọi cnt[v] = số phần tử của mảng bằng v. Vì mọi a_i <= n < 2^18 nên ta làm việc
    trên không gian mask kích thước SIZE = 2^18 = 262144 (đủ chứa mọi giá trị và mọi
    chỉ số k = 0..n).
@@ -37,7 +37,7 @@ con đó bằng đúng k. In ra n+1 số, tất cả lấy theo modulo 1e9 + 7.
 
 5) In exact[0], exact[1], ..., exact[n].
 
---- Tính đúng đắn ---
+Tính đúng đắn:
 - Bước (2) đúng vì AND của một tập con chứa mọi bit của m khi và chỉ khi từng phần
   tử chứa mọi bit của m; nên đếm tập con thỏa "AND superset của m" quy về đếm tập con
   không rỗng của tập g[m] phần tử -> 2^{g[m]} - 1.
@@ -46,8 +46,8 @@ con đó bằng đúng k. In ra n+1 số, tất cả lấy theo modulo 1e9 + 7.
   m3:3, m4:1} và exact = {0:7, 1:4, 2:0, 3:3, 4:1} -> in "7 4 0 3 1", khớp đáp án.
 - Vì mọi a_i <= n nên AND của mọi tập con <= n, nên k = 0..n bao trùm toàn bộ.
 
---- Độ phức tạp ---
-- Thời gian: O(SIZE * B) cho mỗi SOS transform, B = 18, SIZE = 2^18 -> khoảng 4.7 triệu
-  phép toán mỗi transform, hai transform ~ 9.4 triệu. Cộng O(n) đọc dữ liệu và dựng
-  lũy thừa. Tổng thể rất nhanh, dưới 1 giây với n = 2e5.
+## Độ phức tạp
+- Thời gian: O(SIZE * B) cho mỗi SOS transform, với B = 18 và SIZE = 2^18 -> khoảng
+  4.7 triệu phép toán mỗi transform, hai transform ~ 9.4 triệu. Cộng O(n) đọc dữ liệu
+  và dựng lũy thừa. Tổng thể rất nhanh, dưới 1 giây với n = 2e5.
 - Bộ nhớ: O(SIZE) cho các mảng g và atleast (vài MB).

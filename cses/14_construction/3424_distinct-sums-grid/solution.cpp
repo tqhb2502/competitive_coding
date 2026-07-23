@@ -1,21 +1,7 @@
-// Distinct Sums Grid - CSES 3424
-// https://cses.fi/problemset/task/3424
-//
-// Build an n x n grid where each value 1..n appears exactly n times and the
-// 2n row/column sums are all distinct (or report IMPOSSIBLE).
-//
-// Idea: start from a Latin square (each value once per row/column -> every value
-// appears exactly n times, all row/column sums equal S = n(n+1)/2). Then run a
-// deterministic count-preserving local search: repeatedly swap two cells with
-// different values (a swap never changes the global multiset, so value counts
-// stay n) and keep the swap while it does not increase the number of colliding
-// sums. This quickly drives the 2n sums to be pairwise distinct.
-// n = 1,2,3 are IMPOSSIBLE (verified by exhaustive search).
-
 #include <bits/stdc++.h>
 using namespace std;
 
-// Deterministic RNG (fixed seed) so behaviour is reproducible on the judge.
+// RNG tất định (seed cố định) để hành vi tái lập chính xác trên judge.
 struct RNG {
     uint64_t s;
     RNG(uint64_t seed): s(seed) {}
@@ -26,20 +12,25 @@ struct RNG {
     int rint(int n) { return (int)(next() % (uint64_t)n); }
 };
 
-// Returns a valid grid for n>=4, empty vector meaning IMPOSSIBLE.
+// Trả về lưới hợp lệ cho n>=4; vector rỗng nghĩa là IMPOSSIBLE.
 vector<vector<int>> solve(int n) {
+    // n = 1, 2, 3 là IMPOSSIBLE (đã kiểm chứng bằng vét cạn).
     if (n <= 3) return {};
 
+    // Xuất phát từ Latin square: mỗi giá trị xuất hiện đúng n lần,
+    // mọi tổng-hàng và tổng-cột ban đầu đều bằng S = n(n+1)/2.
     vector<vector<int>> g(n, vector<int>(n));
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
             g[i][j] = ((i + j) % n) + 1;
 
+    // Tính tổng-hàng rs[i] và tổng-cột cs[j].
     vector<long long> rs(n, 0), cs(n, 0);
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++) { rs[i] += g[i][j]; cs[j] += g[i][j]; }
 
-    // count of each sum value among the 2n row/column sums; sums in [n, n*n].
+    // Đếm số lần mỗi giá trị tổng xuất hiện trong 2n tổng; tổng nằm trong [n, n*n].
+    // distinct = số giá trị tổng phân biệt hiện tại.
     int maxs = n * n + 1;
     vector<int> cnt(maxs + 1, 0);
     int distinct = 0;
@@ -49,45 +40,46 @@ vector<vector<int>> solve(int n) {
     for (int j = 0; j < n; j++) addSum(cs[j]);
 
     RNG rng(88172645463325252ULL);
-    long long cap = 200LL * n + 100000LL; // generous; converges far sooner
+    long long cap = 200LL * n + 100000LL; // giới hạn rộng rãi; thực tế hội tụ sớm hơn nhiều
     long long it = 0;
     uint64_t reseed = 1;
 
+    // Local search "bảo toàn đa tập": hoán đổi hai ô khác giá trị, giữ hoán đổi
+    // nếu nó không làm giảm distinct, lặp cho tới khi distinct = 2n.
     while (distinct < 2 * n && it < cap) {
         it++;
         int i = rng.rint(n), j = rng.rint(n), k = rng.rint(n), l = rng.rint(n);
         int a = g[i][j], b = g[k][l];
-        if (a == b) continue;
+        if (a == b) continue; // hai ô cùng giá trị: hoán đổi vô nghĩa
 
-        // Determine which sum-slots actually change.
-        bool rowChange = (i != k);   // if same row, swap keeps row sum
-        bool colChange = (j != l);   // if same column, swap keeps column sum
-        // (i==k && j==l would mean same cell => a==b already skipped)
+        // Xác định các tổng thực sự bị thay đổi bởi hoán đổi.
+        bool rowChange = (i != k);   // cùng hàng thì tổng-hàng giữ nguyên
+        bool colChange = (j != l);   // cùng cột thì tổng-cột giữ nguyên
+        // (i==k && j==l nghĩa là cùng một ô => a==b, đã bị bỏ qua ở trên)
 
-        // Save old values for potential revert.
+        // Lưu giá trị cũ để có thể hoàn tác.
         long long oldRi = rs[i], oldRk = rs[k], oldCj = cs[j], oldCl = cs[l];
 
-        // Apply swap tentatively.
-        // Cost before = 2n - distinct; we compare distinct (higher is better).
+        // Áp dụng hoán đổi thử; so sánh distinct (càng cao càng tốt).
         int distBefore = distinct;
 
-        // remove affected slots
+        // Gỡ các tổng bị ảnh hưởng khỏi bộ đếm.
         if (rowChange) { delSum(rs[i]); delSum(rs[k]); }
         if (colChange) { delSum(cs[j]); delSum(cs[l]); }
 
-        // update sums
+        // Cập nhật các tổng theo hoán đổi.
         if (rowChange) { rs[i] += (b - a); rs[k] += (a - b); }
         if (colChange) { cs[j] += (b - a); cs[l] += (a - b); }
 
-        // add back
+        // Thêm lại các tổng mới vào bộ đếm.
         if (rowChange) { addSum(rs[i]); addSum(rs[k]); }
         if (colChange) { addSum(cs[j]); addSum(cs[l]); }
 
         if (distinct >= distBefore) {
-            // accept: commit the cell swap
+            // Chấp nhận: thực hiện hoán đổi hai ô.
             g[i][j] = b; g[k][l] = a;
         } else {
-            // revert everything
+            // Hoàn tác toàn bộ.
             if (rowChange) { delSum(rs[i]); delSum(rs[k]); }
             if (colChange) { delSum(cs[j]); delSum(cs[l]); }
             rs[i] = oldRi; rs[k] = oldRk; cs[j] = oldCj; cs[l] = oldCl;
@@ -95,13 +87,13 @@ vector<vector<int>> solve(int n) {
             if (colChange) { addSum(cs[j]); addSum(cs[l]); }
         }
 
-        // Safety: if stuck for a long time, nudge with a fresh seed (rare).
+        // An toàn: nếu kẹt quá lâu, thay hạt giống mới để thoát (rất hiếm).
         if ((it & ((1 << 20) - 1)) == 0 && distinct < 2 * n) {
             reseed++;
             rng = RNG(88172645463325252ULL * reseed + 12345ULL);
         }
     }
-    return g; // distinct == 2n by construction for n>=4
+    return g; // với n>=4, distinct == 2n theo cách xây dựng
 }
 
 int main() {
@@ -109,7 +101,7 @@ int main() {
     for (int n = 1; n <= 1000; n++) {
         auto g = solve(n);
         if (n <= 3) { if (!g.empty()) { printf("n=%d expected IMPOSSIBLE\n", n); return 1; } continue; }
-        // verify counts
+        // kiểm tra số lần xuất hiện của mỗi giá trị
         vector<int> c(n + 1, 0);
         bool bad = false;
         for (auto &row : g) for (int x : row) { if (x < 1 || x > n) bad = true; else c[x]++; }
@@ -127,7 +119,7 @@ int main() {
     if (scanf("%d", &n) != 1) return 0;
     auto g = solve(n);
     if (g.empty()) { printf("IMPOSSIBLE\n"); return 0; }
-    // fast output
+    // xuất kết quả nhanh
     string out;
     out.reserve((size_t)n * n * 4);
     char buf[16];

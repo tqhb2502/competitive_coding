@@ -1,44 +1,42 @@
-Xor Pyramid Row (CSES 3195)
+Xor Pyramid Row - CSES 3195
 https://cses.fi/problemset/task/3195
 
---- Kỹ thuật ---
+## Đề bài
+Kim tự tháp XOR có n hàng: hàng đáy (hàng thứ n tính từ trên xuống) chính là
+mảng a cho trước gồm n số. Mỗi số ở hàng trên bằng XOR của hai số ngay bên
+dưới trái và dưới phải. Hãy in ra k số của hàng thứ k tính từ trên xuống
+(hàng này có đúng k phần tử).
+
+## Ý tưởng
 Tính chẵn/lẻ của hệ số nhị thức (Lucas mod 2) kết hợp với phép biến đổi kiểu
 SOS (Sum Over Subsets) trên XOR.
 
---- Bài toán ---
-Kim tự tháp XOR có n hàng: hàng đáy (hàng thứ n tính từ trên xuống) có n số
-chính là mảng a cho trước. Mỗi số ở hàng trên bằng XOR của hai số ngay bên
-dưới trái và dưới phải. Cần in ra k số của hàng thứ k tính từ trên xuống
-(hàng này có đúng k phần tử).
-
---- Ý tưởng chính ---
 Từ hàng đáy (n phần tử) đi lên tới hàng thứ k (k phần tử) ta phải đi lên
-m = n - k mức. Mỗi mức là phép "hiệu XOR": c'[i] = c[i] XOR c[i+1].
-Áp dụng m lần, phần tử thứ i của hàng đích là:
+m = n - k mức. Mỗi mức là phép "hiệu XOR": c'[i] = c[i] XOR c[i+1]. Áp dụng
+m lần, phần tử thứ i của hàng đích là:
 
     r[i] = XOR_{j=0..m} ( C(m, j) mod 2 ) * a[i + j]
 
-Theo định lý Lucas cho modulo 2: C(m, j) là số lẻ khi và chỉ khi j là
-submask (tập con bit) của m, tức (j AND m) == j. Vậy:
+Theo định lý Lucas cho modulo 2: C(m, j) là số lẻ khi và chỉ khi j là submask
+(tập con bit) của m, tức (j AND m) == j. Vậy:
 
     r[i] = XOR_{ j là submask của m } a[i + j]
 
-Vì tập các submask của m bằng tích Descartes trên từng bit bật của m
-(mỗi bit bật ở vị trí p đóng góp offset 0 hoặc 2^p, các offset độc lập và
-không đè lên nhau), nên ta có thể tách phép XOR theo submask thành chuỗi
-biến đổi theo từng bit (giống SOS DP):
+Vì tập các submask của m bằng tích Descartes trên từng bit bật của m (mỗi bit
+bật ở vị trí p đóng góp offset 0 hoặc 2^p, các offset độc lập và không đè lên
+nhau), nên ta có thể tách phép XOR theo submask thành chuỗi biến đổi theo từng
+bit (giống SOS DP):
 
     Với mỗi bit p bật trong m (offset o = 2^p):
         c[i] = c[i] XOR c[i + o]   với mọi i hợp lệ
 
 Sau khi xử lý hết các bit của m, c[i] = XOR các a[i+j] với j chạy trên mọi
-submask của m. Duyệt i theo chiều tăng dần cho phép cập nhật tại chỗ vì
-c[i+o] (chỉ số lớn hơn) vẫn còn là giá trị gốc khi ta đọc nó.
+submask của m. Duyệt i theo chiều tăng dần cho phép cập nhật tại chỗ vì c[i+o]
+(chỉ số lớn hơn) vẫn còn là giá trị gốc khi ta đọc nó. Mỗi biến đổi làm giảm
+số phần tử hợp lệ đi o; tổng các offset đúng bằng m nên độ dài cuối cùng là
+n - m = k, chính là số phần tử cần in.
 
-Mỗi biến đổi làm giảm số phần tử hợp lệ đi o; tổng các offset đúng bằng m,
-nên độ dài cuối cùng là n - m = k, chính là số phần tử cần in.
-
---- Tính đúng đắn ---
+Tính đúng đắn:
 - Phép đi lên một mức là biến đổi tuyến tính trên GF(2); đi lên m mức cho hệ số
   đúng bằng C(m, j) mod 2 (khai triển kiểu nhị thức của toán tử hiệu).
 - Lucas mod 2 quy hệ số lẻ về điều kiện submask, và tính nhân được của tập
@@ -46,10 +44,10 @@ nên độ dài cuối cùng là n - m = k, chính là số phần tử cần in
 - Đã kiểm tra tay với ví dụ: n=8, k=5, m=3 (=0b11, mọi C(3,j) đều lẻ) nên
   r[i] = a[i]^a[i+1]^a[i+2]^a[i+3], cho ra 1 10 5 1 8 đúng như đề.
 
---- Độ phức tạp ---
-- Thời gian: O(n * popcount(m)) = O(n log n) (popcount(m) <= 18 với n <= 2*10^5).
-- Bộ nhớ: O(n) cho mảng a (cập nhật tại chỗ).
-
---- Ghi chú cài đặt ---
+Ghi chú cài đặt:
 - a[i] <= 10^9 < 2^30 nên XOR không tràn kiểu 32-bit; dùng int/long long đều ổn.
 - k = n (m = 0): không biến đổi, in nguyên hàng đáy.
+
+## Độ phức tạp
+- Thời gian: O(n * popcount(m)) = O(n log n) (popcount(m) <= 18 với n <= 2*10^5).
+- Bộ nhớ: O(n) cho mảng a (cập nhật tại chỗ).

@@ -1,2 +1,0 @@
-Maximum Xor Subset
-https://cses.fi/problemset/task/3191

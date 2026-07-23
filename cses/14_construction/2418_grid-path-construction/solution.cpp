@@ -1,40 +1,21 @@
-// Grid Path Construction - CSES 2418
-// https://cses.fi/problemset/task/2418
-//
-// Build a Hamiltonian path on an n x m grid from a=(y1,x1) to b=(y2,x2)
-// (visit every cell exactly once, moving U/D/L/R). Print YES + the move
-// string, or NO if impossible.
-//
-// Feasibility (predicate feasibleRegion):
-//   - checkerboard color condition (necessary), plus
-//   - the "thin 2-strip" cut exception (F2), plus
-//   - a per-cut color-counting condition applied to every vertical/horizontal
-//     cut. For a cut, the two sides are covered by subpaths whose endpoints
-//     are the crossing cells and the real endpoints; a color-parity count
-//     forces the number of color-0/color-1 crossing cells, which must be
-//     realizable. This exactly characterizes solvability (verified vs brute
-//     force for all grids up to 6x6 and many thin/large grids).
-//
-// Construction (build): peel endpoint-free 2-line boundary strips (which can
-// always be re-inserted through a guaranteed perpendicular edge of the inner
-// path) to shrink toward the endpoints; use a single-crossing split between
-// the endpoints as a fallback; brute-force small residual cores (<=20 cells).
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef pair<int, int> pii;
 
+// Màu bàn cờ của ô (r,c): (r+c) mod 2.
 inline int par(int r, int c) {
     return (r + c) & 1;
 }
 
 // ------------------------------------------------------------------
-// Feasibility of a rectangular region [r0..r1] x [c0..c1] with endpoints s,t.
+// Kiểm tra tính khả thi của miền chữ nhật [r0..r1] x [c0..c1] với hai đầu mút s,t.
 // ------------------------------------------------------------------
 bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc) {
     int H = r1 - r0 + 1, W = c1 - c0 + 1;
     long long area = (long long)H * W;
     int cornerpar = (r0 + c0) & 1;
+    // Điều kiện màu: diện tích chẵn thì s,t phải KHÁC màu; diện tích lẻ thì cả
+    // hai đều phải bằng màu góc (màu đa số).
     if (area % 2 == 0) {
         if (par(sr, sc) == par(tr, tc))
             return false;
@@ -42,12 +23,13 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
         if (par(sr, sc) != cornerpar || par(tr, tc) != cornerpar)
             return false;
     }
-    // F2: thin strip, endpoints share the interior line -> disconnects.
+    // Ngoại lệ dải mỏng (F2): dải 2 hàng và s,t cùng một cột nằm trong (không
+    // phải cột biên) thì miền bị cắt đôi; đối xứng cho dải 2 cột.
     if (H == 2 && sc == tc && sc > c0 && sc < c1)
         return false;
     if (W == 2 && sr == tr && sr > r0 && sr < r1)
         return false;
-    // vertical cuts (between column j and j+1)
+    // Lát cắt dọc (giữa cột j và j+1): điều kiện đếm-màu theo mỗi lát cắt.
     for (int j = c0; j < c1; j++) {
         int c0cnt = 0, c1cnt = 0;
         for (int col = c0; col <= j; col++)
@@ -57,7 +39,8 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
                 else
                     c1cnt++;
             }
-        int D = c0cnt - c1cnt;
+        int D = c0cnt - c1cnt;  // hiệu (số ô màu 0 - số ô màu 1) của phần trái
+        // Đếm đầu mút thật (s,t) nằm bên trái lát cắt, theo từng màu.
         int eL0 = 0, eL1 = 0, eL = 0;
         if (sc <= j) {
             eL++;
@@ -73,6 +56,7 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
             else
                 eL1++;
         }
+        // a,b: số ô màu 0/1 trên cột j (các ô có thể "băng qua" lát cắt).
         int a = 0, b = 0;
         for (int r = r0; r <= r1; r++) {
             if (par(r, j) == 0)
@@ -80,10 +64,11 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
             else
                 b++;
         }
+        // Chọn số ô băng qua k và số ô băng qua màu 0/1 sao cho hiệu D bị ép khớp.
         int kmin = (eL == 0) ? 2 : 1;
         bool ok = false;
         for (int k = kmin; k <= H; k++) {
-            if (((k - eL) & 1))
+            if (((k - eL) & 1))  // k phải cùng chẵn/lẻ với số đầu mút thật bên trái
                 continue;
             int num = 2 * D - (eL0 - eL1) + k;
             if (num & 1)
@@ -99,7 +84,7 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
         if (!ok)
             return false;
     }
-    // horizontal cuts (between row i and i+1)
+    // Lát cắt ngang (giữa hàng i và i+1): đối xứng với lát cắt dọc.
     for (int i = r0; i < r1; i++) {
         int c0cnt = 0, c1cnt = 0;
         for (int rr = r0; rr <= i; rr++)
@@ -155,12 +140,13 @@ bool feasibleRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int 
 }
 
 // ------------------------------------------------------------------
-// Brute force (with connectivity pruning) for small residual cores.
+// Brute force (có cắt tỉa liên thông) cho lõi nhỏ còn lại.
 // ------------------------------------------------------------------
 static int DR[] = {-1, 1, 0, 0}, DC[] = {0, 0, -1, 1};
 int BR0, BR1, BC0, BC1, BTR, BTC, BAREA;
 char bvis[55][55];
 vector<pii> bpath;
+// Sau khi đặt một ô, kiểm tra phần chưa thăm vẫn liên thông và còn chứa đích t.
 bool breach(int r, int c) {
     static char seen[55][55];
     for (int a = BR0; a <= BR1; a++)
@@ -191,6 +177,7 @@ bool breach(int r, int c) {
                 rem++;
     return cnt == rem && tgt;
 }
+// DFS thử mọi hướng, cắt tỉa bằng breach.
 bool bdfs(int r, int c, int cnt) {
     bvis[r][c] = 1;
     bpath.push_back({r, c});
@@ -233,7 +220,8 @@ vector<pii> bruteRegion(int r0, int r1, int c0, int c1, int sr, int sc, int tr, 
 
 const int THRESH = 20;
 
-// 2-row strip [topRow,botRow]: path from (botRow,ca) to (botRow,cb) covering all, |ca-cb|=1.
+// Dải 2 hàng [topRow,botRow]: đường "rắn bò" phủ trọn dải, đi từ (botRow,ca) tới
+// (botRow,cb) với |ca-cb|=1.
 vector<pii> stripRows(int topRow, int botRow, int c0, int c1, int ca, int cb) {
     vector<pii> sp;
     int lc = min(ca, cb);
@@ -254,7 +242,8 @@ vector<pii> stripRows(int topRow, int botRow, int c0, int c1, int ca, int cb) {
     }
     return sp;
 }
-// 2-col strip [leftCol,rightCol]: path from (ra,rightCol) to (rb,rightCol) covering all, |ra-rb|=1.
+// Dải 2 cột [leftCol,rightCol]: đường "rắn bò" phủ trọn dải, đi từ (ra,rightCol)
+// tới (rb,rightCol) với |ra-rb|=1.
 vector<pii> stripCols(int leftCol, int rightCol, int r0, int r1, int ra, int rb) {
     vector<pii> sp;
     int tr_ = min(ra, rb);
@@ -276,8 +265,10 @@ vector<pii> stripCols(int leftCol, int rightCol, int r0, int r1, int ra, int rb)
     return sp;
 }
 
+// Xây dựng đường đi cho miền chữ nhật, đệ quy thu nhỏ về phía hai đầu mút.
 vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc) {
     int H = r1 - r0 + 1, W = c1 - c0 + 1;
+    // Miền 1 hàng: đi thẳng.
     if (H == 1) {
         vector<pii> res;
         int st = (tc >= sc) ? 1 : -1;
@@ -288,6 +279,7 @@ vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc
         }
         return res;
     }
+    // Miền 1 cột: đi thẳng.
     if (W == 1) {
         vector<pii> res;
         int st = (tr >= sr) ? 1 : -1;
@@ -298,11 +290,14 @@ vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc
         }
         return res;
     }
+    // Miền đủ nhỏ: brute force.
     if (H * W <= THRESH)
         return bruteRegion(r0, r1, c0, c1, sr, sc, tr, tc);
     int mnR = min(sr, tr), mxR = max(sr, tr), mnC = min(sc, tc), mxC = max(sc, tc);
 
-    // --- peel endpoint-free 2-line boundary strips (feasibility preserving) ---
+    // --- Bóc dải biên dày 2 KHÔNG chứa đầu mút (giữ nguyên tính khả thi) ---
+    // Giải đệ quy miền trong, rồi chèn dải "rắn bò" vào giữa một cạnh ngang/dọc
+    // của đường đi miền trong nằm sát biên vừa bóc.
     if (H >= 4 && W >= 3 && mnR >= r0 + 2 && feasibleRegion(r0 + 2, r1, c0, c1, sr, sc, tr, tc)) {
         auto inner = build(r0 + 2, r1, c0, c1, sr, sc, tr, tc);
         for (int i = 0; i + 1 < (int)inner.size(); i++)
@@ -360,7 +355,9 @@ vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc
             }
     }
 
-    // --- single-crossing split between the two endpoints ---
+    // --- Không bóc được: tách một lát cắt đơn giữa hai đầu mút ---
+    // s một phía, t phía kia, nối qua đúng một cạnh băng cắt; chọn vị trí cắt và
+    // hàng/cột băng qua sao cho hai miền con đều khả thi, rồi đệ quy hai phía.
     if (sc != tc) {
         int lc = sc, rc = tc, lr = sr, rr = tr;
         if (sc > tc) {
@@ -388,6 +385,7 @@ vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc
                 vector<pii> full = L;
                 for (auto& p : Rp)
                     full.push_back(p);
+                // Đảo chiều nếu s không nằm ở phía trái (để đường đi bắt đầu ở s).
                 if (!(sr == lr && sc == lc))
                     reverse(full.begin(), full.end());
                 return full;
@@ -425,7 +423,7 @@ vector<pii> build(int r0, int r1, int c0, int c1, int sr, int sc, int tr, int tc
                 return full;
             }
     }
-    return {};  // unreachable for feasible inputs
+    return {};  // không thể xảy ra với đầu vào khả thi
 }
 
 int main() {
@@ -438,13 +436,16 @@ int main() {
     while (t--) {
         int n, m, y1, x1, y2, x2;
         cin >> n >> m >> y1 >> x1 >> y2 >> x2;
+        // Đổi về chỉ số 0.
         int sr = y1 - 1, sc = x1 - 1, tr = y2 - 1, tc = x2 - 1;
+        // Không khả thi -> in NO.
         if (!feasibleRegion(0, n - 1, 0, m - 1, sr, sc, tr, tc)) {
             out += "NO\n";
             continue;
         }
         auto path = build(0, n - 1, 0, m - 1, sr, sc, tr, tc);
         out += "YES\n";
+        // Chuyển dãy ô liên tiếp thành hướng: hàng giảm=U, tăng=D, cột giảm=L, tăng=R.
         string mv;
         mv.reserve(path.size());
         for (size_t i = 1; i < path.size(); i++) {

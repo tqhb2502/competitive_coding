@@ -1,19 +1,19 @@
-GRID PATH CONSTRUCTION - CSES 2418
+Grid Path Construction - CSES 2418
 https://cses.fi/problemset/task/2418
 
-ĐỀ BÀI (tóm tắt)
+## Đề bài
 Có t test. Mỗi test cho lưới n x m và hai ô a=(y1,x1), b=(y2,x2). Cần xây một
 đường đi (Hamiltonian path) đi qua MỖI ô đúng một lần, bắt đầu ở a và kết thúc ở
-b, mỗi bước sang ô kề cạnh (U/D/L/R). In "YES" và xâu hướng đi, hoặc "NO" nếu
+b, mỗi bước sang ô kề cạnh (U/D/L/R). In "YES" cùng xâu hướng đi, hoặc "NO" nếu
 không tồn tại. Ràng buộc: t<=100, n,m<=50, a khác b. Chấp nhận mọi đáp án hợp lệ
 (special judge).
 
-Ý TƯỞNG TỔNG QUÁT
+## Ý tưởng
 Tô màu bàn cờ: màu của ô (r,c) là (r+c) mod 2. Đường đi luân phiên màu, nên có
-điều kiện màu (color condition) cần thiết. Ngoài ra còn có các trường hợp ngoại
-lệ (giống đặc trưng Itai-Papadimitriou-Szwarcfiter cho lưới chữ nhật).
+điều kiện màu (color condition) cần thiết. Ngoài ra còn các trường hợp ngoại lệ
+(giống đặc trưng Itai-Papadimitriou-Szwarcfiter cho lưới chữ nhật).
 
-1) KIỂM TRA TÍNH KHẢ THI (predicate feasibleRegion)
+1) Kiểm tra tính khả thi (predicate feasibleRegion)
 Với một miền chữ nhật và cặp đầu mút s,t:
   - Điều kiện màu:
       + nếu diện tích chẵn: s và t phải KHÁC màu;
@@ -24,14 +24,14 @@ Với một miền chữ nhật và cặp đầu mút s,t:
     Một lát cắt chia miền thành hai phần; phần trái được phủ bởi một số đường con
     mà đầu mút là các ô "băng qua" lát cắt cộng với các đầu mút thật s,t nằm bên
     trái. Do mỗi đường con luân phiên màu, hiệu (số ô màu 0 - số ô màu 1) của phần
-    trái bị ÉP đúng bằng (số đầu-mút màu0 - số đầu-mút màu1)/2. Ta chọn số ô băng
+    trái bị ÉP đúng bằng (số đầu-mút màu 0 - số đầu-mút màu 1)/2. Ta chọn số ô băng
     qua k (đúng chẵn/lẻ theo số đầu mút thật bên trái) và bao nhiêu ô băng qua là
     màu 0/1; nếu tồn tại lựa chọn hợp lệ thì lát cắt "ổn". Nếu có lát cắt nào
     không ổn -> không khả thi.
   Điều kiện này ĐÚNG (đã kiểm tra vét cạn với brute force cho mọi lưới tới 6x6 và
   nhiều lưới dải/lớn): predicate đúng khi và chỉ khi tồn tại đường đi.
 
-2) XÂY DỰNG ĐƯỜNG ĐI (build) - đệ quy thu nhỏ miền
+2) Xây dựng đường đi (build) - đệ quy thu nhỏ miền
   - Nếu miền là 1 hàng hoặc 1 cột: đi thẳng (chỉ khả thi khi s,t là hai đầu mút).
   - Nếu miền nhỏ (<=20 ô): brute force có cắt tỉa liên thông (connectivity prune).
   - "Bóc" (peel) một dải biên dày 2 KHÔNG chứa đầu mút: ví dụ bóc 2 hàng trên khi
@@ -39,7 +39,7 @@ Với một miền chữ nhật và cặp đầu mút s,t:
     LUÔN có ít nhất một cạnh ngang ở hàng trên cùng của nó (vì nếu không, mọi ô
     hàng trên phải là đầu mút của đường - vô lí khi bề rộng >=3). Ta chèn dải 2
     hàng vào giữa cạnh ngang đó bằng một đường "rắn bò" (serpentine) phủ trọn dải
-    và nối lại. Chỉ bóc khi miền trong vẫn còn KHẢ THI (kiểm tra bằng predicate).
+    rồi nối lại. Chỉ bóc khi miền trong vẫn còn KHẢ THI (kiểm tra bằng predicate).
     Đối xứng cho dải dưới/trái/phải. Việc bóc thu nhỏ miền về phía hai đầu mút.
   - Nếu không bóc được: tách một lát cắt giữa s và t (single-crossing split): s ở
     một phía, t ở phía kia, nối qua đúng một cạnh băng cắt; chọn vị trí cắt và
@@ -50,9 +50,9 @@ Với một miền chữ nhật và cặp đầu mút s,t:
   mọi lưới tới 12x12 và ngẫu nhiên/có cấu trúc cho lưới tới 50x50: luôn ra đường
   đi hợp lệ đúng khi predicate báo khả thi.
 
-3) IN KẾT QUẢ
+3) In kết quả
   Chuyển dãy ô liên tiếp thành hướng: hàng giảm=U, tăng=D, cột giảm=L, tăng=R.
 
-ĐỘ PHỨC TẠP
+## Độ phức tạp
 Mỗi test: bóc/tách tuyến tính theo kích thước, brute chỉ ở lõi <=20 ô. Thực nghiệm
 ~1 ms cho 50x50; 100 test 50x50 khoảng 0.1 s. Thoải mái trong giới hạn.

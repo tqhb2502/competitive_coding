@@ -1,24 +1,23 @@
-Distinct Sums Grid — CSES 3424
+Distinct Sums Grid - CSES 3424
 https://cses.fi/problemset/task/3424
 
-1. Đề bài
+## Đề bài
 - Cho n. Hãy điền một lưới n×n sao cho:
   (a) mỗi số nguyên trong 1..n xuất hiện đúng n lần trong lưới (tổng n·n ô);
   (b) tập gồm n tổng-hàng và n tổng-cột có đúng 2n giá trị phân biệt
       (tức là tất cả 2n tổng đôi một khác nhau).
 - Nếu không tồn tại, in "IMPOSSIBLE". Chấp nhận mọi lời giải hợp lệ (special judge).
 - Ràng buộc: 1 ≤ n ≤ 1000.
+- Khi nào IMPOSSIBLE:
+  + n = 1: ô duy nhất vừa là hàng vừa là cột → chỉ 1 tổng, không thể đạt 2n = 2.
+  + n = 2: muốn 2 tổng-hàng khác nhau thì buộc một hàng là {1,1}, hàng kia {2,2},
+    khi đó hai cột đều bằng 3 → không thể đủ 4 tổng phân biệt.
+  + n = 3: kiểm tra vét cạn toàn bộ 9!/(3!·3!·3!) = 1680 cách sắp xếp → không có nghiệm.
+  + Với mọi n ≥ 4 đều tồn tại nghiệm (đã kiểm chứng bằng chương trình cho toàn bộ n ≤ 1000).
+  => Chỉ in IMPOSSIBLE khi n ∈ {1, 2, 3}.
 
-2. Khi nào IMPOSSIBLE
-- n = 1: ô duy nhất vừa là hàng vừa là cột → chỉ 1 tổng, không thể đạt 2n = 2.
-- n = 2: muốn 2 tổng-hàng khác nhau thì buộc một hàng là {1,1}, hàng kia {2,2},
-  khi đó hai cột đều bằng 3 → không thể đủ 4 tổng phân biệt.
-- n = 3: kiểm tra vét cạn toàn bộ 9!/(3!·3!·3!) = 1680 cách sắp xếp → không có nghiệm.
-- Với mọi n ≥ 4 đều tồn tại nghiệm (đã kiểm chứng bằng chương trình cho toàn bộ n ≤ 1000).
-=> Chỉ in IMPOSSIBLE khi n ∈ {1, 2, 3}.
-
-3. Ý tưởng xây dựng (n ≥ 4)
-- Xuất phát từ một Latin square: g[i][j] = ((i + j) mod n) + 1.
+## Ý tưởng
+- Xây dựng cho n ≥ 4. Xuất phát từ một Latin square: g[i][j] = ((i + j) mod n) + 1.
   Mỗi giá trị xuất hiện đúng một lần trên mỗi hàng và mỗi cột → xuất hiện đúng n lần
   toàn lưới (thoả điều kiện (a)). Mọi tổng-hàng và tổng-cột đều bằng S = n(n+1)/2.
 - Sau đó chạy local search "bảo toàn đa tập": lặp lại việc chọn hai ô có giá trị khác nhau
@@ -30,16 +29,15 @@ https://cses.fi/problemset/task/3424
   Lặp cho tới khi distinct = 2n → thoả điều kiện (b).
 - Dùng RNG với hạt giống (seed) cố định nên toàn bộ quá trình là deterministic,
   tái lập chính xác trên judge.
+- Vì sao đúng và vì sao hội tụ:
+  + Tính hợp lệ giá trị: swap luôn giữ mỗi số đúng n lần → (a) luôn đúng.
+  + Không gian giá trị của tổng nằm trong [n, n²] rất rộng so với 2n tổng cần tách,
+    nên có rất nhiều "chỗ trống" để đẩy các tổng ra khác nhau; local search hội tụ rất
+    nhanh và không mắc kẹt. Đã kiểm tra bằng máy: với seed cố định, MỌI n từ 1..1000 đều
+    cho ra lưới hợp lệ (verify lại số lần xuất hiện và 2n tổng phân biệt).
+    Vì n ≤ 1000, việc kiểm tra vét cạn toàn bộ khoảng n này đảm bảo tính đúng đắn.
 
-4. Vì sao đúng và vì sao hội tụ
-- Tính hợp lệ giá trị: swap luôn giữ mỗi số đúng n lần → (a) luôn đúng.
-- Không gian giá trị của tổng nằm trong [n, n²] rất rộng so với 2n tổng cần tách,
-  nên có rất nhiều "chỗ trống" để đẩy các tổng ra khác nhau; local search hội tụ rất
-  nhanh và không mắc kẹt. Đã kiểm tra bằng máy: với seed cố định, MỌI n từ 1..1000 đều
-  cho ra lưới hợp lệ (verify lại số lần xuất hiện và 2n tổng phân biệt).
-  Vì n ≤ 1000, việc kiểm tra vét cạn toàn bộ khoảng n này đảm bảo tính đúng đắn.
-
-5. Độ phức tạp
+## Độ phức tạp
 - Khởi tạo Latin square và tính tổng: O(n²).
 - Mỗi bước local search cập nhật O(1) (chỉ đụng vài tổng, dùng mảng đếm số lần mỗi tổng
   và biến distinct cập nhật tăng dần). Số bước hội tụ trên thực tế cỡ O(n)~O(n log n).

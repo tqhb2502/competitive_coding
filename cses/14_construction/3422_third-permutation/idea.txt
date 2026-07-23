@@ -1,49 +1,39 @@
-Third Permutation — CSES 3422
+Third Permutation - CSES 3422
 https://cses.fi/problemset/task/3422
 
-Ý tưởng xây dựng (construction)
-================================
+## Đề bài
 
-Bài toán: cho hai hoán vị a và b của {1..n} với a_i != b_i tại mọi vị trí i.
-Cần dựng hoán vị thứ ba c sao cho c_i != a_i và c_i != b_i tại mọi i. Nếu
-không tồn tại thì in "IMPOSSIBLE".
+Cho hai hoán vị a và b của {1..n} thoả a_i != b_i tại mọi vị trí i. Cần dựng
+hoán vị thứ ba c sao cho c_i != a_i và c_i != b_i tại mọi i. Nếu không tồn tại
+thì in "IMPOSSIBLE".
 
-Mô hình hoá bằng bipartite matching
------------------------------------
-Xét đồ thị hai phía: một bên là các vị trí (position), một bên là các giá trị
-(value). Vị trí i được phép nhận mọi giá trị TRỪ a_i và b_i. Vì a_i != b_i nên
-mỗi vị trí bị cấm đúng 2 giá trị, tức bậc (degree) cho phép là n-2. Đối ngẫu,
-mỗi giá trị v bị cấm tại đúng 2 vị trí: vị trí có a = v và vị trí có b = v (hai
-vị trí này khác nhau vì a_i != b_i). Vậy đồ thị "được phép" là (n-2)-regular
-bipartite. Một đồ thị hai phía regular với bậc >= 1 LUÔN có perfect matching
-(hệ quả định lý Hall/König). Do đó:
-
-  - n == 2: bậc cho phép = 0 => KHÔNG có lời giải => in "IMPOSSIBLE".
+Xét đồ thị hai phía: một bên là các vị trí, một bên là các giá trị; vị trí i
+được phép nhận mọi giá trị TRỪ a_i và b_i. Vì a_i != b_i nên mỗi vị trí bị cấm
+đúng 2 giá trị (bậc cho phép n-2), và đối ngẫu mỗi giá trị bị cấm tại đúng 2 vị
+trí. Đồ thị "được phép" là (n-2)-regular bipartite; đồ thị hai phía regular với
+bậc >= 1 luôn có perfect matching (hệ quả định lý Hall/König). Do đó:
+  - n == 2: bậc cho phép = 0 => không có lời giải => in "IMPOSSIBLE".
   - n >= 3: luôn tồn tại lời giải.
 
-Đây chính là điều kiện khả thi/không khả thi (feasible/impossible).
+## Ý tưởng
 
-Cấu trúc chu trình (cycle) của hoán vị pi = b o a^{-1}
-------------------------------------------------------
-Định nghĩa pi trên tập giá trị: pi(a_i) = b_i, tức pi[u] = b[a^{-1}[u]]. Vì
-a_i != b_i nên pi là một derangement (không có điểm cố định), phân rã thành các
-chu trình độ dài >= 2.
+Định nghĩa hoán vị pi trên tập giá trị: pi(a_i) = b_i, tức pi[u] = b[a^{-1}[u]].
+Vì a_i != b_i nên pi là một derangement (không có điểm cố định), phân rã thành
+các chu trình độ dài >= 2.
 
 Với một chu trình giá trị (u_0 -> u_1 -> ... -> u_{k-1} -> u_0) của pi: giá trị
 u_j ứng với vị trí i_j = a^{-1}(u_j), và tại i_j hai giá trị bị cấm chính là
 a_{i_j} = u_j và b_{i_j} = pi(u_j) = u_{j+1}. Nói cách khác vị trí i_j cấm cặp
-{u_j, u_{(j+1) mod k}}.
+{u_j, u_{(j+1) mod k}}. Xử lý từng chu trình:
 
-Xây dựng theo từng chu trình
-----------------------------
 1) Chu trình dài k >= 3: gán "xoay" (rotation) c[i_j] = u_{(j-1) mod k}. Giá trị
-   u_{j-1} khác u_j (hiển nhiên) và khác u_{j+1} (vì j-1 == j+1 mod k chỉ xảy ra
-   khi k = 2). Ánh xạ j -> j-1 là song ánh nên đây là matching hoàn hảo trong nội
-   bộ chu trình. Hợp lệ với mọi k >= 3.
+   u_{j-1} khác u_j và khác u_{j+1} (vì j-1 == j+1 mod k chỉ xảy ra khi k = 2).
+   Ánh xạ j -> j-1 là song ánh nên đây là matching hoàn hảo trong nội bộ chu
+   trình, hợp lệ với mọi k >= 3.
 
 2) Chu trình dài k == 2 (cặp {x, y}, hai vị trí P và Q đều cấm cả x lẫn y): không
-   thể tự giải trong nội bộ (cả hai vị trí đều bị cấm cả hai giá trị), phải mượn
-   giá trị từ chỗ khác. Gọi m là số chu trình 2.
+   thể tự giải trong nội bộ, phải mượn giá trị từ chỗ khác. Gọi m là số chu
+   trình 2.
 
    - m == 0: không cần làm gì thêm.
 
@@ -54,29 +44,26 @@ Xây dựng theo từng chu trình
      giá trị được dùng đúng một lần => song ánh.
 
    - m == 1: chỉ có duy nhất một chu trình 2, phải ghép nó với MỘT chu trình lớn
-     k >= 3 (chu trình này chắc chắn tồn tại khi n >= 3: các chu trình còn lại đều
-     có độ dài >= 3 và tổng độ dài = n - 2 >= 1 nên phải >= 3). Với chu trình lớn
-     có giá trị u_0..u_{k-1}, vị trí i_0..i_{k-1}, và chu trình 2 (x, y) với vị trí
-     P, Q, ta gán:
+     k >= 3 (chu trình này chắc chắn tồn tại khi n >= 3: các chu trình còn lại
+     đều có độ dài >= 3 và tổng độ dài = n - 2 >= 1 nên phải >= 3). Với chu trình
+     lớn có giá trị u_0..u_{k-1}, vị trí i_0..i_{k-1}, và chu trình 2 (x, y) với
+     vị trí P, Q, ta gán:
          c[P]     = u_0
          c[Q]     = u_1
          c[i_0]   = u_{k-1}
          c[i_1]   = x
          c[i_2]   = y
          c[i_j]   = u_{j-1}   với j = 3..k-1
-     Kiểm tra: các giá trị dùng ở nhóm gộp là {u_0,...,u_{k-1}, x, y} đúng một lần
-     (song ánh); mọi ràng buộc cấm đều thoả (u_{k-1} != u_0,u_1 vì k>=3; x,y không
-     bị cấm ở các vị trí thuộc chu trình lớn; u_0,u_1 không nằm trong {x,y}).
+     Các giá trị dùng ở nhóm gộp là {u_0,...,u_{k-1}, x, y} đúng một lần (song
+     ánh); mọi ràng buộc cấm đều thoả (u_{k-1} != u_0,u_1 vì k>=3; x,y không bị
+     cấm ở các vị trí thuộc chu trình lớn; u_0,u_1 không nằm trong {x,y}).
 
-Tính đúng đắn
--------------
 Mỗi chu trình được xử lý độc lập trừ các chu trình 2 (được gộp lại). Trong mọi
 nhánh, phép gán là song ánh giữa tập vị trí và tập giá trị của nhóm, và mọi giá
-trị gán đều nằm ngoài cặp bị cấm của vị trí tương ứng. Ghép tất cả nhóm lại cho
-một hoán vị c hợp lệ toàn cục. Với n >= 3 thuật toán luôn thành công; với n == 2
-in "IMPOSSIBLE".
+trị gán đều nằm ngoài cặp bị cấm của vị trí tương ứng, nên ghép tất cả nhóm lại
+cho một hoán vị c hợp lệ toàn cục.
 
-Độ phức tạp
------------
+## Độ phức tạp
+
 Duyệt tìm chu trình và gán giá trị đều tuyến tính: thời gian O(n), bộ nhớ O(n).
 Đủ nhanh với n <= 10^5.

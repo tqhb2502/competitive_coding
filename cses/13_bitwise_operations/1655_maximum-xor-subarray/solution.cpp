@@ -1,18 +1,14 @@
-// Maximum Xor Subarray - CSES 1655
-// https://cses.fi/problemset/task/1655
-//
-// prefix XOR + binary trie (XOR trie): tìm cặp prefix p[i] ^ p[j] lớn nhất.
-// Đoạn con [l, r] có XOR = p[r] ^ p[l-1], với p[0] = 0.
-
 #include <bits/stdc++.h>
 using namespace std;
 
-static const int BITS = 30; // x_i <= 1e9 < 2^30, xét bit 29..0
+// x_i <= 1e9 < 2^30 nên chỉ cần xét các bit 29..0
+static const int BITS = 30;
 
-// trie[node][b] = con của node theo bit b (0/1); 0 nghĩa là chưa có.
+// trie[node][b] = con của node theo bit b (0/1); giá trị 0 nghĩa là chưa có
 static int trie[6200005][2];
 int trieCnt = 1; // node 0 là gốc
 
+// chèn một prefix XOR vào trie, đi từ bit cao xuống bit thấp
 void insertVal(unsigned int x) {
     int cur = 0;
     for (int b = BITS - 1; b >= 0; --b) {
@@ -24,7 +20,7 @@ void insertVal(unsigned int x) {
     }
 }
 
-// trả về giá trị XOR lớn nhất giữa x và một giá trị đã chèn trong trie.
+// trả về giá trị XOR lớn nhất giữa x và một giá trị đã chèn trong trie
 unsigned int queryMax(unsigned int x) {
     int cur = 0;
     unsigned int res = 0;
@@ -35,7 +31,7 @@ unsigned int queryMax(unsigned int x) {
             res |= (1u << b);
             cur = trie[cur][want];
         } else {
-            cur = trie[cur][bit];
+            cur = trie[cur][bit]; // không có thì đi theo nhánh cùng bit
         }
     }
     return res;
@@ -49,13 +45,14 @@ int main() {
     if (!(cin >> n)) return 0;
 
     unsigned int prefix = 0;
-    insertVal(prefix); // p[0] = 0
+    insertVal(prefix); // chèn p[0] = 0 trước
     unsigned int best = 0;
 
+    // duyệt từng phần tử, cập nhật prefix XOR rồi truy vấn giá trị lớn nhất
     for (int i = 0; i < n; ++i) {
         unsigned int a;
         cin >> a;
-        prefix ^= a;
+        prefix ^= a; // p[i] = p[i-1] ^ a[i]
         best = max(best, queryMax(prefix));
         insertVal(prefix);
     }
