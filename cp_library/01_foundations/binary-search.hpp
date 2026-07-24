@@ -5,8 +5,8 @@ using namespace std;
 // Khi dùng: pred(x) có dạng F..F,T..T (hoặc T..T,F..F) trên [lo, hi].
 // ĐPT: O(log(hi - lo)) lần gọi pred.
 // Dùng: long long x = firstTrue(lo, hi, [&](long long m){ return check(m); });
-//        // firstTrue: x nhỏ nhất pred đúng (trả hi+1 nếu không có).
-//        // lastTrue : x lớn nhất pred đúng (trả lo-1 nếu không có).
+//        firstTrue: x nhỏ nhất pred đúng (trả hi+1 nếu không có).
+//        lastTrue : x lớn nhất pred đúng (trả lo-1 nếu không có).
 // Bẫy: pred phải đơn điệu; mid = lo + (hi-lo)/2 để tránh tràn; cả lo và hi đều được xét.
 // CSES: 1073 1085 1086 1140 1145 1162 1620 1623 1628 1664 2084 2422 3112 3273 3301 3305 3401 3404
 template <class F>

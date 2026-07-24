@@ -5,7 +5,7 @@ using namespace std;
 // Khi dùng: chỉ cần thứ tự tương đối để làm chỉ số cho Fenwick/segment tree...
 // ĐPT: build O(n log n); id/val O(log n); bộ nhớ O(n).
 // Dùng: Compress cc(vals); int r = cc.id(x); long long g = cc.val(r); int k = cc.size();
-//        // id(x) = số phần tử phân biệt < x = hạng 0-based (dùng lower_bound).
+//        id(x) = số phần tử phân biệt < x = hạng 0-based (dùng lower_bound).
 // Bẫy: id trả hạng theo lower_bound nên với x không có trong tập vẫn cho vị trí chèn.
 // CSES: 1091 1144 1163 1203 1664 1740 1741 1742 1748 2169 2184 2428 3150 3163 3190 3223 3224 3306 3307 3356 3401
 struct Compress {
