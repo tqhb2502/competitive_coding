@@ -33,10 +33,13 @@ trường hợp.
 
 3) Đáp án = 3: các trường hợp còn lại (Gauss bảo đảm luôn đủ với 3 số tam giác).
 
-Phân tích thừa số của 4n+1:
-4n+1 <= 4*10^12 + 1 (nhỏ hơn 2^42). Đọc trước toàn bộ truy vấn để lấy Nmax,
-sàng các số nguyên tố tới sqrt(4*Nmax+1), rồi chia thử 4n+1 bằng danh sách này
-cho từng truy vấn.
+Phân tích thừa số của 4n+1 (4n+1 <= 4*10^12 + 1, nhỏ hơn 2^42):
+- Bản C++ (solution.cpp): đọc trước toàn bộ truy vấn để lấy Nmax, sàng
+  Eratosthenes các số nguyên tố tới sqrt(4*Nmax+1), rồi chia thử 4n+1 bằng
+  danh sách nguyên tố này cho từng truy vấn.
+- Bản Python (solution.py): phân tích mỗi số 4n+1 độc lập bằng Pollard's rho
+  (dò chu kỳ Floyd tortoise–hare) kết hợp kiểm tra nguyên tố Miller-Rabin tất
+  định (các cơ số 2..37), không cần sàng trước.
 
 Kiểm tra ví dụ:
 - n=1: 8n+1=9=3^2 -> 1.
@@ -48,8 +51,15 @@ Kiểm tra ví dụ:
 Tất cả khớp với output mẫu.
 
 ## Độ phức tạp
+Bản C++ (solution.cpp):
 - Tiền xử lý: O(sqrt(Nmax) log log Nmax) thời gian và O(sqrt(Nmax)) bộ nhớ cho
   sàng cùng danh sách nguyên tố.
 - Mỗi truy vấn thử tối đa pi(sqrt(4n+1)) số nguyên tố, nên cận xấu nhất là
   O(sqrt(n) / log n); vòng lặp thường dừng sớm khi phần dư đã là nguyên tố.
 - Bộ nhớ còn có O(t) để lưu các truy vấn.
+
+Bản Python (solution.py):
+- Không tiền xử lý; mỗi truy vấn phân tích 4n+1 bằng Pollard's rho với chi phí
+  kỳ vọng khoảng O((4n+1)^(1/4)) cho mỗi ước, kèm Miller-Rabin để kiểm tra
+  nguyên tố. Bộ nhớ O(t + log n): O(t) để gom kết quả các truy vấn + O(log n)
+  cho đệ quy/từ điển thừa số (không kể phần đọc dữ liệu vào).

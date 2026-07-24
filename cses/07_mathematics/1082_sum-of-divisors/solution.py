@@ -12,7 +12,7 @@ def main() -> None:
     while d <= n:
         q = n // d              # thương floor(n/d) không đổi trên khối
         r = n // q              # chỉ số lớn nhất giữ nguyên thương q
-        block_sum = (d + r) * (r - d + 1) // 2   # tổng cấp số cộng d..r bằng số nguyên tùy ý
+        block_sum = (d + r) * (r - d + 1) // 2   # tổng cấp số cộng d..r tính bằng số nguyên chính xác (big int)
         ans = (ans + (q % MOD) * (block_sum % MOD)) % MOD
         d = r + 1
 

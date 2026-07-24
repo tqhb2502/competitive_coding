@@ -6,7 +6,8 @@ https://cses.fi/problemset/task/1726
 - Mỗi robot di chuyển độc lập k bước. Mỗi bước nó chọn đều (uniform) một trong các
   hướng trái/phải/lên/xuống mà nó đi được (không ra ngoài bàn). Vì vậy số hướng hợp lệ
   phụ thuộc vị trí: ô góc có 2 hướng, ô cạnh có 3 hướng, ô trong có 4 hướng.
-- Nhiều robot có thể cùng đứng trên một ô. Cần tính kỳ vọng số ô rỗng sau k bước.
+- Nhiều robot có thể cùng đứng trên một ô. Cần tính kỳ vọng số ô rỗng sau k bước,
+  in ra làm tròn tới đúng 6 chữ số thập phân (làm tròn nửa về chẵn - round half to even).
 - Ràng buộc: 1 <= k <= 100.
 
 ## Ý tưởng
@@ -26,8 +27,8 @@ https://cses.fi/problemset/task/1726
   ô s cố định, biến cố "robot xuất phát tại i không ở s" là độc lập giữa các i (các robot
   di chuyển độc lập), nên xác suất tất cả đều không ở s là tích các (1 - p_k(i -> s)).
 
-- Xuất kết quả bằng `fixed << setprecision(6)` để có đúng 6 chữ số sau dấu
-  thập phân; sai số số thực nằm trong dung sai của đề.
+- Xuất kết quả với đúng 6 chữ số thập phân (C++ dùng `fixed << setprecision(6)`,
+  Python dùng `"%.6f"`); đề yêu cầu in số làm tròn tới 6 chữ số (làm tròn nửa về chẵn).
 
 ## Độ phức tạp
 - Thời gian: mỗi bước, với một vector xuất phát, tổng công việc = số ô (64) cộng tổng bậc

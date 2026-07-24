@@ -5,7 +5,7 @@ https://cses.fi/problemset/task/1675
 Có n thành phố và m con đường hai chiều, mỗi con đường nối hai thành phố và có
 một chi phí sửa chữa. Hãy chọn một tập các con đường để sửa sao cho mọi cặp
 thành phố đều đi tới được nhau và tổng chi phí là nhỏ nhất. Nếu không thể nối
-liền thông tất cả các thành phố thì in ra "IMPOSSIBLE".
+tất cả các thành phố thành một mạng liên thông thì in ra "IMPOSSIBLE".
 
 ## Ý tưởng
 - Mô hình hóa: mỗi thành phố là một đỉnh, mỗi con đường là một cạnh vô hướng có

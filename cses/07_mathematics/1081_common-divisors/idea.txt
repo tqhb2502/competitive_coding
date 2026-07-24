@@ -29,4 +29,4 @@ Cách cài đặt hiệu quả:
 ## Độ phức tạp
 - Thời gian: tổng công việc của vòng sieve là sum_{d=1}^{M} (M/d) = M * H(M) ~
   M*ln(M), tức O(M log M); việc dừng sớm chỉ làm giảm số phép cộng thực tế.
-- Bộ nhớ: O(M) cho mảng cnt.
+- Bộ nhớ: O(n + M): O(n) cho mảng lưu toàn bộ đầu vào + O(M) cho mảng đếm cnt.

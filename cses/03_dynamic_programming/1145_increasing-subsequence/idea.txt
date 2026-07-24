@@ -26,5 +26,6 @@ Dùng kỹ thuật patience sorting (DP kết hợp binary search) chạy O(n lo
 
 ## Độ phức tạp
 - Thời gian: O(n log n) vì mỗi phần tử tốn một binary search O(log n).
-- Bộ nhớ: O(n) cho mảng tails; code C++ cập nhật ngay khi đọc nên không lưu
-  thêm mảng đầu vào.
+- Bộ nhớ: O(n) cho mảng tails. Bản Python đọc toàn bộ input một lần nên lưu
+  cả mảng token O(n), còn bản C++ đọc từng giá trị nên không giữ thêm mảng đầu
+  vào. Tổng bộ nhớ vẫn O(n) cho cả hai.

@@ -4,7 +4,8 @@ https://cses.fi/problemset/task/1727
 ## Đề bài
 Có n đứa trẻ, mỗi đứa nhận độc lập một số nguyên ngẫu nhiên trong đoạn [1, k]
 theo phân phối đều (uniform). Hãy tính kỳ vọng (expected value) của giá trị lớn
-nhất trong số n số đó.
+nhất trong số n số đó. Đáp án được chấp nhận nếu sai số tuyệt đối hoặc tương đối
+không quá 1e-6 (code in ra 6 chữ số thập phân).
 
 ## Ý tưởng
 Gọi M là giá trị lớn nhất của n số; M nhận giá trị nguyên trong [1, k].

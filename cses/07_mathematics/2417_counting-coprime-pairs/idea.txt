@@ -21,20 +21,25 @@ Vì sao đúng: với mỗi cặp có gcd = G, cặp đó được đếm trong 
 bản của Mobius, tổng này bằng 1 nếu G = 1 và bằng 0 nếu G > 1. Do đó chỉ những cặp
 có gcd = 1 được đếm đúng một lần, các cặp khác triệt tiêu.
 
-Cách tính trong code:
+Cách tính trong code (hai lời giải dùng chung công thức trên, chỉ khác cách sàng
+tính mu[]):
 1. Đọc input, dựng freq[] tới maxv = max(x_i).
-2. Dùng linear sieve để tính đồng thời danh sách nguyên tố và mu[]:
-   - nếu v là nguyên tố thì mu[v] = -1;
-   - với mỗi prime p, nếu p chia v thì mu[p*v] = 0 và dừng;
-   - nếu p không chia v thì mu[p*v] = -mu[v].
+2. Tính mu[] tới maxv:
+   - solution.cpp dùng linear sieve, tính đồng thời danh sách nguyên tố và mu[]:
+     nếu v là nguyên tố thì mu[v] = -1; với mỗi prime p, nếu p chia v thì
+     mu[p*v] = 0 và dừng, ngược lại mu[p*v] = -mu[v].
+   - solution.py dùng sàng Eratosthenes để xác định nguyên tố, khởi tạo mu[.] = 1
+     rồi với mỗi nguyên tố p: đổi dấu mu tại mọi bội của p (gộp thêm một ước
+     nguyên tố), sau đó gán mu = 0 tại mọi bội của p^2 (không squarefree).
 3. Với mỗi d có mu[d] != 0, duyệt các bội d, 2d, ... để tính cnt[d], rồi cộng
    mu[d] * C(cnt[d], 2) vào đáp án.
 
 Không cần lấy dư (modulo): đề bài yêu cầu in ra số nguyên chính xác. Đáp án lớn
-nhất khoảng C(1e5, 2) ~ 5e9, vượt 2^31 nên đáp án và số cặp trung gian dùng
-`long long`.
+nhất khoảng C(1e5, 2) ~ 5e9, vượt 2^31 nên trong C++ đáp án và số cặp trung gian
+dùng `long long` (Python dùng số nguyên vô hạn nên không cần lo tràn số).
 
 ## Độ phức tạp
-- Linear sieve: O(maxv).
-- Các vòng duyệt bội có tổng O(maxv log maxv).
+- Sàng: linear sieve O(maxv) (C++) / Eratosthenes O(maxv log log maxv) (Python).
+- Các vòng duyệt bội (gồm cả tính mu bằng slicing trong Python và tính cnt[d])
+  có tổng O(maxv log maxv) — đây là thành phần chi phối.
 - Bộ nhớ: O(n + maxv) cho mảng đầu vào, freq, mu và dữ liệu sàng.

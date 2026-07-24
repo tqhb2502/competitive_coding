@@ -3,11 +3,12 @@ https://cses.fi/problemset/task/1729
 
 ## Đề bài
 - Có một đống n que. Hai người chơi lần lượt bốc que; mỗi lượt được bốc một số
-  lượng que thuộc tập hợp P gồm k giá trị cho trước (P luôn chứa giá trị 1).
+  lượng que thuộc tập hợp P gồm k giá trị phân biệt cho trước.
 - Ai bốc được que cuối cùng thì thắng.
 - Với mỗi trạng thái i que (i = 1..n) cần in ra 'W' nếu người đi trước THẮNG,
   'L' nếu người đi trước THUA (cả hai chơi tối ưu).
-- Ràng buộc: 1 <= n <= 10^6, 1 <= k <= 100, 1 <= p_i <= n.
+- Ràng buộc: 1 <= n <= 10^6, 1 <= k <= 100, 1 <= p_1 < p_2 < ... < p_k <= n
+  (tập P KHÔNG nhất thiết chứa giá trị 1).
 
 ## Ý tưởng
 Đây là bài lý thuyết trò chơi tổ hợp (subtraction game, kiểu Sprague-Grundy
@@ -46,7 +47,8 @@ Do duyệt tăng dần nên khi đọc win[i] mọi j < i đã lan truyền xong
 Kiểm tra ví dụ: n=10, P={1,3,4} -> WLWWWWLWLW (khớp).
 
 ## Độ phức tạp
-- Thời gian: O(n + (số thế thua) * k). Vì 1 thuộc P nên hai thế thua không thể
-  kề nhau (nếu i thua thì i-1 phải thắng), do đó số thế thua <= n/2. Trường hợp
-  xấu nhất ~ (n/2) * k = 5*10^7 phép gán, cộng vòng duyệt O(n).
+- Thời gian: O(n + (số thế thua) * k). Số thế thua <= n nên xấu nhất là O(n * k)
+  ~ 10^8 phép gán khi n = 10^6, k = 100 (cộng vòng duyệt O(n)); thực tế thường
+  nhanh hơn nhiều. (Nếu P có chứa 1 thì hai thế thua không thể kề nhau nên số thế
+  thua <= n/2, nhưng đề bài không bảo đảm P chứa 1.)
 - Bộ nhớ: O(n + maxp) cho mảng byte.

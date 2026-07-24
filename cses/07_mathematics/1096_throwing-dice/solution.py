@@ -39,7 +39,7 @@ def main():
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 
-    # Trường hợp nhỏ (n <= 4): trả lời trực tiếp f(0..4).
+    # Trường hợp nhỏ (n <= 4): trả lời trực tiếp f(1..4); index 0 là chỗ giữ (n >= 1).
     if n <= 4:
         print([0, 1, 2, 4, 8][n])
         return

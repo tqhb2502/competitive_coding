@@ -12,7 +12,7 @@ mà không thể đi từ a tới b.
 Mô hình đồ thị:
 - Mỗi thành phố là một đỉnh, mỗi chuyến bay a -> b là một cạnh có hướng.
 - Xây dựng danh sách kề cho đồ thị gốc (adj) và cho đồ thị đảo chiều mọi cạnh
-  (radj, reverse graph).
+  (reverse_adj trong C++, radj trong Python).
 
 Nhận xét: đồ thị liên thông mạnh khi và chỉ khi, với một đỉnh cố định bất kỳ
 (chọn đỉnh 1), thỏa mãn đồng thời hai điều kiện:

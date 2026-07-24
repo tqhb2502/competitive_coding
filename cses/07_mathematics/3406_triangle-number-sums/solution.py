@@ -29,7 +29,8 @@ def is_prime(n):
     return True
 
 
-# Tìm một ước không tầm thường của n bằng Pollard's rho (biến thể Brent).
+# Tìm một ước không tầm thường của n bằng Pollard's rho (dò chu kỳ Floyd:
+# x đi 1 bước, y đi 2 bước mỗi vòng lặp).
 def pollard(n):
     if n % 2 == 0:
         return 2

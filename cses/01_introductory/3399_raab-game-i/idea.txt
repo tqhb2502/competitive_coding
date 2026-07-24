@@ -36,5 +36,6 @@ https://cses.fi/problemset/task/3399
 
 ## Độ phức tạp
 - Thời gian: mỗi test làm việc O(n) để dựng dãy bài. Tổng O(t * n) <= 1000 * 100 = 1e5.
-- Bộ nhớ: O(n) mỗi test.
+- Bộ nhớ: bản C++ dùng O(n) mỗi test (vector cục bộ dựng lại mỗi vòng, xuất trực tiếp);
+  còn bản Python đọc toàn bộ input một lần và gom toàn bộ output nên bộ nhớ tổng là O(t*n).
 - Khối lượng tối đa chỉ khoảng 10^5 phần tử nên không có rủi ro TLE.

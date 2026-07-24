@@ -20,7 +20,7 @@ elimination (khử Gauss) y hệt như trên số thực, chỉ thay phép chia 
 nhân với nghịch đảo modular. Nghịch đảo tính bằng định lý Fermat:
   inv(a) = pow(a, p-2, p).
 
-Thuật toán:
+Thuật toán (bản C++):
 1) Đưa hệ về dạng bậc thang theo hàng (row-echelon form) bằng khử tiến (forward
    elimination). Duyệt từng cột col = 0..m-1:
    - Tìm trong các hàng chưa dùng làm pivot một hàng có hệ số tại col khác 0
@@ -36,6 +36,20 @@ Thuật toán:
    Với cột pivot col, do hệ số pivot đã được chuẩn hóa thành 1:
        x_col = b - sum_{c>col} a_c * x_c  (mod p).
 
+Bản Python dùng cùng ý tưởng khử Gauss trên GF(p) nhưng khác ở ba điểm để chạy
+nhanh trong CPython và để đơn giản việc phát hiện vô nghiệm:
+   - Đóng gói (pack) cả một hàng (m hệ số + vế phải) vào MỘT số nguyên lớn, mỗi
+     giá trị chiếm một "slot" rộng 72 bit. Nhờ đó phép "row_i <- row_i - k*pivot"
+     trở thành một phép nhân-cộng số lớn duy nhất, tận dụng số học big-int nhanh
+     của Python (slot đủ rộng để các giá trị không tràn/cấn sang nhau). Sau mỗi
+     cột đã xử lý, các hàng hoạt động được dịch phải 72 bit để bỏ cột đó.
+   - KHÔNG chuẩn hóa hệ số pivot về 1; hàng pivot được lưu nguyên, và chỉ khi thế
+     ngược mới chia bằng cách nhân với nghịch đảo của hệ số pivot:
+       x_col = (b - sum_{c>col} a_c * x_c) * inv(pivot)  (mod p).
+   - Không kiểm tra hàng mâu thuẫn 0 = b. Thay vào đó, sau khi dựng nghiệm ứng
+     viên (biến tự do = 0), thế trực tiếp vào HỆ GỐC để kiểm chứng: nếu mọi
+     phương trình thỏa thì in nghiệm, ngược lại hệ vô nghiệm và in "-1".
+
 Vì sao đúng:
 - Các phép biến đổi hàng sơ cấp (đổi chỗ, nhân hàng với hằng khác 0, cộng bội
   của hàng khác) không làm thay đổi tập nghiệm, nên hệ sau khi khử tương đương
@@ -44,9 +58,16 @@ Vì sao đúng:
 - Một hàng 0 = b != 0 là điều kiện vô nghiệm. Nếu không có hàng mâu thuẫn, việc
   gán các biến tự do bằng 0 rồi thế ngược thỏa mọi hàng pivot, nên cho một nghiệm
   hợp lệ của hệ tương đương.
+- Cách kiểm chứng của bản Python tương đương: nếu hệ có nghiệm thì nghiệm dựng
+  từ khử Gauss thỏa cả hệ gốc; nếu vô nghiệm thì không gán nào thỏa, nên bước
+  kiểm chứng thất bại và in "-1".
 
 ## Độ phức tạp
 - Gọi r <= min(n,m) là hạng. Khử tiến tốn O(n * m * r), cộng O(r log p) để
   tính nghịch đảo các pivot và O(m^2) cho thế ngược; có thể viết gọn là
   O(n * m * min(n,m)).
+- Bản Python cùng cấp độ O(n * m * min(n,m)) nhưng thao tác trên các hàng đã
+  đóng gói thành số lớn nên mỗi lần khử một hàng là một phép big-int, hằng số
+  nhỏ hơn nhờ song song hóa theo từ máy; thêm O(n * m) cho bước kiểm chứng
+  nghiệm trên hệ gốc.
 - Bộ nhớ: O(n * m) cho ma trận mở rộng.

@@ -26,9 +26,13 @@ con số này.
    cho p, do đó nghịch đảo luôn tồn tại (không cần xét trường hợp đặc biệt
    x_i == 1 mod p).
 
-   Với mỗi thừa số, code tính trực tiếp
+   Bản C++ với mỗi thừa số tính trực tiếp
        inv(x_i - 1) = (x_i - 1)^(p-2) mod p
    bằng lũy thừa nhị phân rồi nhân với tử số.
+   Bản Python thay n phép lũy thừa nghịch đảo bằng nghịch đảo hàng loạt (thủ thuật
+   Montgomery / batch inverse): dựng mảng tiền tố các mẫu số (x_i - 1), chỉ dùng
+   đúng một phép pow(tích_toàn_bộ, p-2) rồi quét ngược để lấy từng inv(x_i - 1) với
+   O(n) phép nhân — giảm mạnh nguy cơ TLE trong Python thuần. Kết quả hai bản như nhau.
 
 3) Tích các ước
    Công thức kinh điển: tích các ước = N^{D/2}, với D là số ước.
@@ -59,5 +63,7 @@ Tính đúng đắn:
 
 ## Độ phức tạp
 - Thời gian: O(n * (log max(k_i) + log p)). Mỗi thừa số dùng lũy thừa nhị phân
-  cho tử số chuỗi hình học, nghịch đảo mẫu số và số mũ trong tích các ước.
+  cho tử số chuỗi hình học và số mũ trong tích các ước. Bản C++ nghịch đảo từng
+  mẫu số bằng một phép lũy thừa; bản Python gộp mọi nghịch đảo vào đúng một phép
+  pow (batch inverse) cộng O(n) phép nhân, nhưng độ phức tạp tổng thể không đổi.
 - Bộ nhớ: O(n) để lưu các cặp (x_i, k_i).

@@ -35,8 +35,9 @@ solution.py — thuật toán bit-song song của Myers:
   n vòng).
 - Peq[ch] là bitmask các vị trí ký tự ch xuất hiện trong P.
 - Một cột của bảng DP được nén thành các số nguyên m bit: VP/VN giữ delta dọc
-  (+1/-1) giữa hai ô liền kề theo cột, Ph/Mh giữ delta ngang, còn Xv/Xh (D0)
-  cho biết ô nào lấy giá trị theo đường chéo.
+  (+1/-1) giữa hai ô liền kề theo cột, Ph/Mh giữ delta ngang, còn Xh (D0)
+  cho biết ô nào lấy giá trị theo đường chéo; Xv là biến phụ để dựng lại các
+  delta dọc VP/VN.
 - Khởi tạo cột 0: VP = tất cả bit 1 (mỗi hàng xuống làm khoảng cách tăng 1),
   VN = 0, score = m (chính là dp[m][0]).
 - Mỗi vòng đọc một ký tự của T, cập nhật các bitmask bằng vài phép cộng/dịch/

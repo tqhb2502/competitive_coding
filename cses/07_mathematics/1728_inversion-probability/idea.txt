@@ -5,6 +5,7 @@ https://cses.fi/problemset/task/1728
 - Có mảng n phần tử, phần tử thứ i là số nguyên được chọn ngẫu nhiên đều (uniform) trong đoạn [1, r_i].
 - Một inversion là cặp chỉ số (a, b) với a < b và x_a > x_b.
 - Cần tính kỳ vọng (expected value) của số lượng inversion.
+- Kết quả in ra là số thực; sai số tuyệt đối hoặc tương đối tối đa 1e-6 được chấp nhận (code in đúng 6 chữ số thập phân).
 
 ## Ý tưởng
 - Dùng linearity of expectation (tính tuyến tính của kỳ vọng).

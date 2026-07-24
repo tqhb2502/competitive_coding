@@ -9,15 +9,15 @@ Cho n đoạn [a, b]. Với mỗi đoạn, hãy đếm:
   (2) số đoạn khác CHỨA nó.
 In ra hai dòng, mỗi dòng gồm n số theo đúng thứ tự nhập vào.
 
-Ràng buộc: 1 <= n <= 2*10^5, 1 <= x < y <= 10^9, các đoạn đôi một khác nhau.
+Ràng buộc: 1 <= n <= 2*10^5, 1 <= x <= y <= 10^9, các đoạn đôi một khác nhau.
 
 ## Ý tưởng
 Nhận xét: đoạn i chứa đoạn j khi và chỉ khi a_i <= a_j và b_j <= b_i.
 Vì mọi đoạn đôi một khác nhau nên quan hệ "chứa" là phản đối xứng: không thể có
 hai đoạn cùng chứa lẫn nhau (điều đó đòi hỏi a_i = a_j và b_i = b_j, tức trùng
-nhau). Do vậy không sợ đếm trùng hay đếm chính mình. Ngoài ra vì luôn có x < y và
-các đoạn khác nhau, nếu hai đoạn cùng a thì chắc chắn khác b (và ngược lại), giúp
-xử lý các trường hợp bằng nhau (ties) an toàn.
+nhau). Do vậy không sợ đếm trùng hay đếm chính mình. Ngoài ra vì các đoạn đôi một khác
+nhau, nếu hai đoạn cùng a thì chắc chắn khác b (và ngược lại), giúp xử lý các
+trường hợp bằng nhau (ties) an toàn.
 
 Thuật toán: sort + Fenwick tree (BIT).
 Nén tọa độ (coordinate compression) các giá trị b về rank 1..m. BIT được đánh chỉ

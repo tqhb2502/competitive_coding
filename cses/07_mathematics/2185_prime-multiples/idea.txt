@@ -27,8 +27,13 @@ Cài đặt hiệu quả (duyệt tập con có cắt tỉa):
   hay chẵn.
 
 Vì sao đúng: các a_i phân biệt và là số nguyên tố nên tích tập con = LCM, bảo đảm
-công thức bao hàm - loại trừ áp dụng chính xác. Trước khi nhân, code kiểm tra
-`prod > n / prime`; nhờ đó vừa cắt nhánh có đóng góp bằng 0, vừa tránh tràn số.
+công thức bao hàm - loại trừ áp dụng chính xác.
+
+Khác biệt cài đặt giữa hai lời giải (thuật toán giống hệt nhau):
+- solution.cpp kiểm tra `product > n / prime` TRƯỚC khi nhân; nhờ đó vừa cắt nhánh có
+  đóng góp bằng 0, vừa tránh tràn số kiểu long long.
+- solution.py nhân trực tiếp `np = prod * p` rồi kiểm tra `np <= n` (Python dùng số
+  nguyên lớn tùy ý nên không cần lo tràn số).
 
 ## Độ phức tạp
 - Số tập con có tích <= n bị chặn (k <= 20; tích 20 số nguyên tố phân biệt nhỏ nhất

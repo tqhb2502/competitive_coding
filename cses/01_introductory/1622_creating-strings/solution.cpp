@@ -15,7 +15,7 @@ int main() {
     // Sắp xếp các ký tự tăng dần để next_permutation duyệt từ hoán vị nhỏ nhất.
     sort(s.begin(), s.end());
 
-    // set tự loại các hoán vị trùng (do ký tự lặp) và giữ thứ tự từ điển.
+    // next_permutation duyệt lần lượt các hoán vị phân biệt theo thứ tự từ điển tăng dần; set chỉ để lưu kết quả (và giữ thứ tự từ điển).
     set<string> distinct_permutations;
     do {
         distinct_permutations.insert(s);
