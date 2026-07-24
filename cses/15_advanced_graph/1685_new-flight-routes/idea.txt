@@ -18,10 +18,12 @@ chu trình (strong connectivity augmentation, Eswaran-Tarjan).
     + sink   = đỉnh có out-degree 0.
 - Số cạnh tối thiểu cần thêm = max(số source, số sink). Đây là kết quả kinh điển
   Eswaran-Tarjan cho bài "strong connectivity augmentation".
-- Xây dựng nghiệm: dùng greedy DFS trên DAG. Với mỗi source, DFS toàn bộ vùng chưa
-  thăm (visited toàn cục) và ghép source đó với một sink còn tự do mà nó tới được ->
-  được các cặp matched (v_i, w_i). Các source không ghép được là extra source, các
-  sink chưa bị dùng là extra sink.
+- Xây dựng nghiệm: dùng greedy DFS trên DAG. Với mỗi source, DFS trên vùng chưa thăm
+  (visited toàn cục) và DỪNG NGAY khi gặp sink còn tự do đầu tiên mà source tới được
+  (early return), ghép chúng thành cặp -> được các cặp matched (v_i, w_i). Nếu quét
+  hết vùng chưa thăm mà không thấy sink tự do nào thì source đó thành extra source;
+  các sink chưa bị dùng là extra sink. (Trường hợp một SCC vừa là source vừa là sink
+  -> đó là SCC cô lập, tự ghép với chính nó.)
     + Nối các cặp matched thành một chu trình lớn: thêm cạnh w_i -> v_{(i+1) mod p}.
       Vì trong DAG luôn có đường đi v_i -> w_i nên chu trình này gộp mọi matched
       source/sink vào cùng một SCC lớn (gọi là Big).
@@ -30,12 +32,15 @@ chu trình (strong connectivity augmentation, Eswaran-Tarjan).
     + Phần dư (số extra source và extra sink chênh lệch) nối trực tiếp vào Big:
       extra source dư -> nhận cạnh w_0 -> extraSource; extra sink dư -> thêm cạnh
       extraSink -> v_0.
+- Mỗi cạnh giữa hai SCC ở trên khi in ra được hiện thực bằng một cặp đỉnh đại diện
+  (rep) bất kỳ thuộc hai SCC tương ứng (đỉnh đánh số từ 1).
 
 Tính đúng đắn:
 - Điều kiện đủ để toàn đồ thị liên thông mạnh: mọi source và sink của condensation
   nằm chung một SCC (Big) sau khi thêm cạnh. Khi đó mọi đỉnh u bất kỳ đều tới được
   một sink (thuộc Big) và được một source (thuộc Big) tới, nên u cũng thuộc Big.
-- Greedy DFS với visited toàn cục và "explore đầy đủ" bảo đảm hai tính chất:
+- Greedy DFS với visited toàn cục và early return (dừng ở sink tự do đầu tiên) bảo
+  đảm hai tính chất:
     (P1) mọi extra source đều tới được ít nhất một matched sink (thuộc Big);
     (P2) mọi extra sink đều được ít nhất một matched source (thuộc Big) tới.
   Kết hợp các cạnh thêm ở trên, mọi extra source/sink đều được đưa vào Big.

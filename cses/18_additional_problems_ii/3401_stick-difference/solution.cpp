@@ -59,7 +59,7 @@ public:
         long long answer = numeric_limits<long long>::max();
         process(1, 0, static_cast<int>(coordinates_.size()) - 1,
                 prefixMaximum, answer);
-        // Trường hợp cuối: sửa mọi thanh còn lại bằng phía dưới (dùng L).
+        // Trường hợp cuối: sửa mọi thanh xấu bằng phía trên, giữ cận dưới L.
         answer = min(answer,
                      static_cast<long long>(prefixMaximum) - finalLower);
         return answer;

@@ -127,7 +127,8 @@ int main() {
                 foundCount = 2;
             }
         } else {
-            // Đã có cặp đầu ở nhóm tổng khác, lấy thêm cặp thứ hai ở đây.
+            // Cặp đầu đã lấy ở một nhóm (tổng nửa trái) khác nhưng vẫn cùng
+            // tổng target; lấy thêm cặp thứ hai ở đây là đủ hai tập con.
             secondLeftMask = leftSums[leftIndex].second;
             secondRightMask = rightSums[rightBegin].second;
             foundCount = 2;

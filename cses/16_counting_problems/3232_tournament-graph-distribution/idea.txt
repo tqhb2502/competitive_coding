@@ -15,7 +15,7 @@ là số tournament liên thông mạnh trên m đỉnh có nhãn.
    và là DAG. Mọi tournament không có chu trình là một thứ tự toàn phần, nên các
    SCC luôn có một thứ tự duy nhất; mọi cạnh giữa SCC đứng trước và SCC đứng sau
    đều hướng về phía sau. Xét SCC đầu tiên có kích thước s: chọn s đỉnh, chọn một
-   cấu trúc liên thông mạnh bên trong; phần n - s đỉnh còn lại là tournament bất
+   cấu trúc liên thông mạnh bên trong; phần m - s đỉnh còn lại là tournament bất
    kỳ và toàn bộ cạnh nối đã bị ép hướng. Vì SCC đầu tiên là duy nhất, ta có
      all[m] = tổng theo s = 1..m của C(m,s) * strong[s] * all[m-s].
    Tách số hạng s = m để rút ra strong[m] trong O(m).

@@ -20,8 +20,8 @@ Ngược lại dp_mới[c] = 1.
 Nếu giá trị này bằng s thì có đúng s hình vuông đồng màu kết thúc tại ô hiện tại,
 lần lượt với cạnh 1, 2, ..., s. Cộng s vào đáp án của chữ cái tại ô đó.
 
-Chỉ cần giữ hàng dp trước cùng ba ký tự liên quan (trên, trái, chéo), nên không
-cần lưu toàn bộ lưới.
+Chỉ cần giữ hàng dp trước và hàng ký tự phía trên (cùng hàng ký tự hiện tại),
+nên không cần lưu toàn bộ lưới.
 
 ## Độ phức tạp
 - Thời gian: O(n^2).

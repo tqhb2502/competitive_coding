@@ -22,7 +22,7 @@ int main() {
     const int maximum_inversions = n * (n - 1) / 2;
     const int target = min(inversions, maximum_inversions - inversions);
 
-    // dp cuộn: previous là hàng i-1, current là hàng i. Hoán vị rỗng có 0 nghịch thế.
+    // dp cuộn: previous là hàng i-1, current là hàng i. Cơ sở previous[0]=1: hoán vị {1} có 0 nghịch thế (vòng lặp bắt đầu chèn phần tử 2).
     vector<int> previous(target + 1, 0);
     vector<int> current(target + 1, 0);
     previous[0] = 1;

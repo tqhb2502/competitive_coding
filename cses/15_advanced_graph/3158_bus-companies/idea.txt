@@ -7,7 +7,8 @@ https://cses.fi/problemset/task/3158
 - Mua một vé của công ty i (tốn c_i) cho phép ta di chuyển giữa hai thành phố
   bất kỳ trong tập của công ty đó.
 - Cần tìm chi phí rẻ nhất để đi từ Syrjälä (thành phố 1) tới mọi thành phố.
-- Đề bảo đảm luôn tới được mọi thành phố nên không cần xử lý trường hợp vô cực.
+- Nếu một thành phố không thể tới được từ thành phố 1 thì in -1 (code xử lý
+  an toàn bằng cách in -1 cho đỉnh có khoảng cách vô cực).
 
 ## Ý tưởng
 - Kỹ thuật: Dijkstra trên đồ thị mở rộng với "virtual node" (nút ảo) cho mỗi
@@ -20,7 +21,8 @@ https://cses.fi/problemset/task/3158
     + cạnh có hướng (n+i) -> a trọng số 0     (xuống xe miễn phí).
 - Đi từ thành phố a tới thành phố b bằng công ty i tương đương a -> nút ảo -> b
   với tổng chi phí c_i, đúng như định nghĩa. Mỗi lần "lên xe" mới trả thêm c_i.
-- Chạy Dijkstra từ nút 1. Đáp số là dist[1..n].
+- Chạy Dijkstra từ nút 1. Đáp số là dist[1..n]; nếu dist[i] vô cực (không tới
+  được) thì in -1.
 - Tính đúng đắn: bất kỳ đường đi thực tế nào (chuỗi vé) đều tương ứng một đường
   đi trong đồ thị mở rộng và ngược lại; chi phí bằng nhau. Do trọng số không âm,
   Dijkstra cho khoảng cách nhỏ nhất chính xác.

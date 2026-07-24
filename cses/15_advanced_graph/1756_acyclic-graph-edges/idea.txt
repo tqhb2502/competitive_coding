@@ -23,5 +23,7 @@ Tính đúng đắn:
   tức là một DAG hợp lệ.
 
 ## Độ phức tạp
-- Thời gian: O(n + m), chỉ đọc và in các cạnh (thực chất O(m)).
-- Bộ nhớ: O(1) ngoài buffer vào/ra (xử lý từng cạnh ngay khi đọc).
+- Thời gian: O(m) — chỉ đọc và định hướng từng cạnh (n được đọc nhưng không dùng đến).
+- Bộ nhớ: O(m) cho buffer đầu ra `out` (đã reserve khoảng 12·m byte): mỗi cạnh đã
+  định hướng được nối thêm vào `out`, gom hết m cạnh rồi mới ghi ra một lần bằng
+  fputs; không lưu lại danh sách cạnh đầu vào.

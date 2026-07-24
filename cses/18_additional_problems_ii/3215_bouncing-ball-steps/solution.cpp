@@ -27,8 +27,8 @@ int main() {
         Integer steps;
         cin >> rows >> columns >> steps;
 
-        // Bóng đổi hướng khi chạm biên dọc (bội của rows-1) hoặc biên ngang
-        // (bội của columns-1); dùng bù trừ để không đếm lặp lần chạm đồng thời.
+        // Bóng đổi hướng khi chạm biên trên/dưới (bội của rows-1) hoặc biên
+        // trái/phải (bội của columns-1); bù trừ để không đếm lặp lần chạm góc.
         const Integer verticalPeriod = rows - 1;
         const Integer horizontalPeriod = columns - 1;
         const Integer commonPeriod =

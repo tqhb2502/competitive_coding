@@ -28,4 +28,5 @@ cùng về 0. Hai quan hệ "phần dư bằng nhau" và "phần dư đối nhau
 tại lớp 0 và lớp g, nên bước trừ cuối bảo đảm mỗi ô được đếm đúng một lần.
 
 ## Độ phức tạp
-O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.
+O(log(min(a, b))) thời gian cho mỗi truy vấn (chi phí duy nhất là phép tính
+gcd theo thuật toán Euclid, phần còn lại là số học O(1)), O(1) bộ nhớ.

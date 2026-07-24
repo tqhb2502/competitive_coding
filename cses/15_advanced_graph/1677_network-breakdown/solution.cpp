@@ -65,8 +65,10 @@ int main() {
     vector<int> result(k);
     result[k - 1] = comps;   // số thành phần liên thông sau lần hỏng thứ k
 
-    // Xử lý NGƯỢC THỜI GIAN: thêm lại cạnh bị hỏng ở lần k, k-1, ..., 2
-    // Thêm cạnh hỏng ở lần i -> khôi phục trạng thái sau lần hỏng thứ (i-1)
+    // Xử lý NGƯỢC THỜI GIAN: thêm lại các cạnh đã hỏng theo thứ tự ngược
+    // (cạnh hỏng ở lần k, k-1, ..., 2). Với i chạy theo chỉ số 0-based: ord[i]
+    // là cạnh hỏng ở lần (i+1); thêm nó vào DSU khôi phục đúng trạng thái sau
+    // lần hỏng thứ i, và lưu kết quả đó vào result[i-1].
     for (int i = k - 1; i >= 1; i--) {
         int idx = ord[i];
         int ra = findp(ea[idx]), rb = findp(eb[idx]);
@@ -76,7 +78,7 @@ int main() {
             sz[ra] += sz[rb];
             comps--;
         }
-        result[i - 1] = comps;   // trạng thái sau lần hỏng thứ (i-1)
+        result[i - 1] = comps;   // số thành phần sau lần hỏng thứ i (lưu ở result[i-1])
     }
 
     // In k kết quả trên một dòng, cách nhau bởi dấu cách

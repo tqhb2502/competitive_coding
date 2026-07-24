@@ -25,8 +25,8 @@ int main() {
         value -= wanted;
     }
 
-    // Tổng tiền tố: prefix[i] = số đơn vị thức ăn phải chuyển qua cạnh thứ i
-    // (đây chính là các giá trị s_i cần chọn trung vị)
+    // Tổng tiền tố s_i = d_1 + ... + d_i (prefix[i] = s_i). Luồng thực qua cạnh
+    // thứ i bằng s_i - c với c là hằng số tự do; chọn c = trung vị của các s_i.
     vector<Integer> prefix(static_cast<size_t>(children));
     Integer running = 0;
     for (int index = 0; index < children; ++index) {

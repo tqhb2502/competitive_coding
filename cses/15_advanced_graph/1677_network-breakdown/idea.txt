@@ -34,7 +34,7 @@ https://cses.fi/problemset/task/1677
   ngược, ta khôi phục đúng số thành phần liên thông của mọi trạng thái.
 
 ## Độ phức tạp
-- DSU với path compression + union by size: gần như O(1) trên mỗi thao tác
+- DSU với path halving + union by size: gần như O(1) trên mỗi thao tác
   (hệ số Ackermann ngược alpha). Tổng cộng O((n + m) * alpha) cho toàn bộ
   các phép union, cộng O(m) cho việc đọc và định danh cạnh (dùng
   unordered_map). Bộ nhớ O(n + m). Đủ nhanh với n <= 1e5, m <= 2e5.

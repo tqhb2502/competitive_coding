@@ -77,7 +77,7 @@ int main() {
         }
     }
 
-    // In chi phí rẻ nhất tới các thành phố 1..n.
+    // In chi phí rẻ nhất tới các thành phố 1..n (in -1 nếu không tới được).
     string out;
     out.reserve(n * 7);
     for (int i = 1; i <= n; i++) {

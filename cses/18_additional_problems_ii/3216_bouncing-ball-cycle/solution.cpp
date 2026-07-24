@@ -5,9 +5,11 @@ using namespace std;
 
 using Integer = long long;
 
-// Kích thước giao của hai quan hệ đồng dư trên lớp tự đối (lớp 0 và lớp g).
-// Nếu một cạnh có thương chẵn thì chỉ có một lớp, ngược lại: reflected -> 2
-// lớp (0 và g), còn không thì toàn bộ divisor + 1 lớp trùng nhau.
+// Số lớp thặng dư "dư ra" (ở phần biên của đoạn) mà cả hai cạnh cùng chứa,
+// theo quan hệ đang xét (reflected = quan hệ "đối nhau"). Nếu một cạnh có
+// thương chẵn thì chỉ lớp 0 dư ra -> 1 lớp chung. Nếu cả hai thương lẻ, phần
+// dư trải trên các lớp 0..g: quan hệ "bằng nhau" trùng ở cả divisor + 1 lớp,
+// còn quan hệ "đối nhau" chỉ trùng tại lớp 0 và lớp g -> 2 lớp.
 Integer intersectionSize(bool firstOdd, bool secondOdd, Integer divisor,
                          bool reflected) {
     if (!firstOdd || !secondOdd) {

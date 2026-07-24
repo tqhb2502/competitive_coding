@@ -20,7 +20,8 @@ int main() {
     // Sắp xếp tăng dần: nghiệm tối ưu chỉ cần ghép hai phần tử kề nhau.
     sort(values.begin(), values.end());
 
-    // Xem như đường đi có size cạnh: cạnh i trọng số values[i] - values[i-1].
+    // Xem như đường đi gồm size điểm với size-1 cạnh thật: cạnh i (1 <= i < size)
+    // có trọng số values[i] - values[i-1].
     // Hai cạnh biên giả (0 và size) mang chi phí vô cùng để chặn ngoài biên.
     constexpr long long INFINITY_COST = 3'000'000'000'000'000'000LL;
     vector<long long> cost(size + 1, INFINITY_COST);

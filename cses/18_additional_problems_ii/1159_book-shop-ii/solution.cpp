@@ -44,7 +44,7 @@ int main() {
             int quotient = 0;
             for (int money = remainder; money <= budget;
                  money += cost, ++quotient) {
-                // Bỏ các chỉ số đã rơi ra khỏi cửa sổ trượt [quotient-limit].
+                // Bỏ các chỉ số đã rơi ra khỏi cửa sổ trượt [quotient-limit, quotient].
                 while (!candidates.empty() &&
                        candidates.front() < quotient - limit) {
                     candidates.pop_front();

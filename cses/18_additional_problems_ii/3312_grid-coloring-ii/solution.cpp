@@ -135,7 +135,7 @@ int main() {
     }
 
     // Với mỗi biến, nếu hai literal cùng SCC thì vô nghiệm; ngược lại chọn literal
-    // có SCC đứng sau (thứ tự SCC ngược cho một phép gán thỏa mãn 2-SAT).
+    // có số SCC lớn hơn, tức SCC đứng sau trong thứ tự tô-pô (quy tắc gán của 2-SAT).
     vector<int> selectedChoice(variables, 0);
     for (int variable = 0; variable < variables; ++variable) {
         if (component[2 * variable] == component[2 * variable + 1]) {

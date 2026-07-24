@@ -23,7 +23,7 @@ int main() {
     for (int i = 0; i <= n; ++i) {
         const long long current = height[static_cast<std::size_t>(i)];
         int left = i;
-        // Lấy ra các cột cao hơn current: chúng không thể kéo dài sang phải nữa
+        // Lấy ra các cột cao hơn hoặc bằng current: chúng không thể kéo dài sang phải nữa
         while (!stack.empty() && stack.back().first >= current) {
             const auto [oldHeight, oldLeft] = stack.back();
             stack.pop_back();
