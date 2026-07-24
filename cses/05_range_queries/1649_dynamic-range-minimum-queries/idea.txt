@@ -1,6 +1,8 @@
 Dynamic Range Minimum Queries - CSES 1649
 https://cses.fi/problemset/task/1649
 
+Tags: segment-tree
+
 ## Đề bài
 Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
   - "1 k u": gán giá trị của phần tử tại vị trí k (đánh số từ 1) bằng u.

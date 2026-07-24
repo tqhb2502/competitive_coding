@@ -5,6 +5,12 @@
 // Fenwick tree (BIT) lưu số lượng vé còn lại tại mỗi chỉ số giá đã nén.
 class FenwickTree {
 public:
+    // 1. explicit: Từ khóa ngăn chặn trình biên dịch tự động chuyển đổi kiểu dữ liệu 
+    // (implicit conversion). Bạn bắt buộc phải khởi tạo cây bằng cú pháp tường minh 
+    // như FenwickTree ft(10);
+    // 2. Cú pháp Member Initializer List (danh sách khởi tạo thành viên). 
+    // Nó khởi tạo vector có tên là tree_ với kích thước là size + 1 và 
+    // gán toàn bộ các phần tử ban đầu bằng 0.
     explicit FenwickTree(const int size) : tree_(size + 1, 0) {}
 
     // Cộng delta vào vị trí position (dùng để thêm hoặc xóa một vé).
@@ -63,6 +69,11 @@ int main() {
     }
 
     // Nén tọa độ: các mức giá vé phân biệt, sắp tăng dần.
+    // 1. Tạo một bản sao của mảng tickets và đặt tên là prices.
+    // 2. Sắp xếp toàn bộ các phần tử trong mảng prices theo thứ tự tăng dần.
+    // 3. std::unique: Dồn các phần tử trùng lặp liền kề xuống cuối mảng và 
+    //    trả về một con trỏ (iterator) chỉ định vị trí bắt đầu của các phần tử thừa đó.
+    // 4. Xóa bỏ hoàn toàn các phần tử thừa từ vị trí con trỏ đó cho đến hết mảng.
     std::vector<int> prices = tickets;
     std::sort(prices.begin(), prices.end());
     prices.erase(std::unique(prices.begin(), prices.end()), prices.end());

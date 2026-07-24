@@ -148,11 +148,7 @@ Xem nhóm [09 Offline Algorithms](../09_offline_algorithms/README.md) khi:
 Từ root repository, có thể tìm bằng:
 
 ```sh
-python3 cp_library/tools/search.py "offline"
-python3 cp_library/tools/search.py "rollback"
-python3 cp_library/tools/search.py "sweep line"
-python3 cp_library/tools/search.py --tag mo
-python3 cp_library/tools/search.py --tag cdq
+rg -n -i "offline|rollback|sweep line" cp_library
 ```
 
 ## Cần dựng nghiệm, không chỉ giá trị

@@ -1,6 +1,8 @@
 Road Reparation - CSES 1675
 https://cses.fi/problemset/task/1675
 
+Tags: dsu
+
 ## Đề bài
 Có n thành phố và m con đường hai chiều, mỗi con đường nối hai thành phố và có
 một chi phí sửa chữa. Hãy chọn một tập các con đường để sửa sao cho mọi cặp

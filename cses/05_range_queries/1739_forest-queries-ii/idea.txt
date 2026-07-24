@@ -1,6 +1,8 @@
 Forest Queries II - CSES 1739
 https://cses.fi/problemset/task/1739
 
+Tags: fenwick-2d
+
 ## Đề bài
 Cho lưới kích thước n x n, mỗi ô là cây ('*') hoặc trống ('.'). Cần xử lý q truy vấn thuộc hai loại:
 - Loại 1 "1 y x": đảo trạng thái (toggle) ô (y, x) giữa cây và trống.

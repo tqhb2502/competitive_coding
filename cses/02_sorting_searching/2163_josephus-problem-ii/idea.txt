@@ -1,6 +1,8 @@
 Josephus Problem II - CSES 2163
 https://cses.fi/problemset/task/2163
 
+Tags: segment-tree
+
 ## Đề bài
 Có n đứa trẻ được đánh số từ 1 đến n xếp thành một vòng tròn. Ta lặp lại thao tác: bỏ
 qua k đứa rồi loại đứa kế tiếp ra khỏi vòng, cứ thế cho đến khi vòng rỗng. Hãy in ra

@@ -1,6 +1,8 @@
 Tree Coin Collecting II - CSES 3149
 https://cses.fi/problemset/task/3149
 
+Tags: sparse-table
+
 ## Đề bài
 Cho một cây (không trọng số) có n đỉnh; một số đỉnh có đặt coin. Với mỗi truy vấn
 (a, b), tìm độ dài đường đi (walk) ngắn nhất bắt đầu tại a, kết thúc tại b, và đi

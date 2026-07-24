@@ -1,7 +1,7 @@
 Sliding Window Mex - CSES 3219
 https://cses.fi/problemset/task/3219
 
-Tags: sliding-window
+Tags: segment-tree, sliding-window
 
 ## Đề bài
 Cho mảng n số nguyên và cửa sổ kích thước k. Với mỗi cửa sổ gồm k phần tử

@@ -58,6 +58,6 @@ Nêu rõ:
 - worst-case và amortized complexity;
 - test rỗng, một phần tử, duplicate và hai đầu miền.
 
-Xem [mẫu entry](../_templates/entry/README.md),
+Xem [cách thêm snippet](../CONTRIBUTING.md),
 [chỉ mục theo use case](../indexes/by-use-case.md) và
-[các bẫy về indexing](../indexes/pitfalls.md#indexing-và-biên).
+[các bẫy về indexing](../indexes/pitfalls.md).

@@ -1,7 +1,7 @@
 Sliding Window Inversions - CSES 3223
 https://cses.fi/problemset/task/3223
 
-Tags: coordinate-compression, sliding-window, sorting
+Tags: coordinate-compression, fenwick, sliding-window, sorting
 
 ## Đề bài
 Cho mảng gồm n phần tử và một cửa sổ kích thước k. Với mỗi vị trí của cửa sổ khi

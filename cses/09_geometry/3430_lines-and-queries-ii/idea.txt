@@ -1,6 +1,8 @@
 Lines and Queries II - CSES 3430
 https://cses.fi/problemset/task/3430
 
+Tags: segment-tree
+
 ## Đề bài
 Xử lí n truy vấn trực tuyến (online) gồm hai loại:
 - Loại 1 "1 a b l r": thêm một đường thẳng y = a*x + b, đường này có hiệu lực

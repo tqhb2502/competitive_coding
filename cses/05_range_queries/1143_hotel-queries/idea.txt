@@ -1,6 +1,8 @@
 Hotel Queries - CSES 1143
 https://cses.fi/problemset/task/1143
 
+Tags: segment-tree
+
 ## Đề bài
 Có n khách sạn, khách sạn thứ i còn h[i] phòng trống. Có m nhóm khách xử lí
 tuần tự; nhóm thứ j cần r[j] phòng. Với mỗi nhóm, hãy tìm khách sạn có chỉ số

@@ -1,6 +1,8 @@
 Word Combinations - CSES 1731
 https://cses.fi/problemset/task/1731
 
+Tags: trie
+
 ## Đề bài
 Cho chuỗi s độ dài n và một từ điển gồm k từ. Đếm số cách ghép được chuỗi s bằng
 cách nối liên tiếp các từ trong từ điển (mỗi từ có thể dùng nhiều lần), lấy kết
@@ -31,7 +33,7 @@ Bản Python cùng thuật toán nhưng khác cài đặt: đọc toàn bộ inp
 `sys.stdin.buffer.read().split()` (giữ dữ liệu vào trong bộ nhớ, s ở dạng bytes);
 Trie lưu trong một dict với khóa gói `(node << 7) | char` trỏ tới chỉ số nút con,
 cùng mảng `is_word` kiểu bytearray. DP không giảm modulo ngay mà cộng dồn lười rồi
-mới lấy modulo lúc đọc `dp[i]` và khi in kết quả; mỗi ô dp bị chặn dưới ~5e12 (tối
+mới lấy modulo lúc đọc `dp[i]` và khi in kết quả; mỗi ô dp bị chặn trên ~5e12 (tối
 đa n phép cộng, mỗi số đã < MOD) nên không tràn.
 
 ## Độ phức tạp

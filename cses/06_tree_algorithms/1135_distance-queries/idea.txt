@@ -1,6 +1,8 @@
 Distance Queries - CSES 1135
 https://cses.fi/problemset/task/1135
 
+Tags: sparse-table
+
 ## Đề bài
 Cho một cây gồm n đỉnh và n-1 cạnh. Có q truy vấn, mỗi truy vấn cho hai đỉnh
 (a, b) và yêu cầu tính khoảng cách trên cây giữa chúng, tức số cạnh trên đường

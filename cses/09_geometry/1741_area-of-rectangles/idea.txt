@@ -1,7 +1,7 @@
 Diện tích hợp các hình chữ nhật - CSES 1741
 https://cses.fi/problemset/task/1741
 
-Tags: coordinate-compression, sorting
+Tags: coordinate-compression, lazy-segment-tree, sorting
 
 ## Đề bài
 Cho n hình chữ nhật song song với các trục toạ độ (mỗi hình cho bởi góc dưới

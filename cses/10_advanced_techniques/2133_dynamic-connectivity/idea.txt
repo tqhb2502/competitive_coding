@@ -1,6 +1,8 @@
 Dynamic Connectivity - CSES 2133
 https://cses.fi/problemset/task/2133
 
+Tags: rollback-dsu, segment-tree
+
 ## Đề bài
 Cho đồ thị vô hướng với n đỉnh và m cạnh ban đầu. Sau đó có k sự kiện, mỗi sự
 kiện là thêm một cạnh (loại 1) hoặc xóa một cạnh (loại 2). Ta phải in ra k+1 số:

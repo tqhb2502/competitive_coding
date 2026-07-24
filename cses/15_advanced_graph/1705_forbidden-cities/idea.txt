@@ -1,6 +1,8 @@
 Forbidden Cities - CSES 1705
 https://cses.fi/problemset/task/1705
 
+Tags: sparse-table
+
 ## Đề bài
 Cho đồ thị vô hướng liên thông có n đỉnh, m cạnh (đồ thị bảo đảm liên thông:
 giữa hai thành phố bất kỳ luôn tồn tại đường đi). Có q truy vấn, mỗi truy vấn

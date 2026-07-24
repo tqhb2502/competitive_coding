@@ -1,6 +1,8 @@
 Stack Weights - CSES 2425
 https://cses.fi/problemset/task/2425
 
+Tags: lazy-segment-tree
+
 ## Đề bài
 Có n đồng xu trọng lượng phân biệt nhưng ta chỉ biết thứ tự w_1 < w_2 < ... < w_n.
 Lần lượt n thao tác, mỗi thao tác đặt một đồng xu lên ngăn trái hoặc ngăn phải. Sau

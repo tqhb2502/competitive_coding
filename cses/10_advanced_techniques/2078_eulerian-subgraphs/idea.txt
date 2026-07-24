@@ -1,6 +1,8 @@
 Eulerian Subgraphs - CSES 2078
 https://cses.fi/problemset/task/2078
 
+Tags: dsu
+
 ## Đề bài
 Cho một đồ thị vô hướng gồm n đỉnh và m cạnh. Ta xét mọi tập con của tập cạnh
 (vẫn giữ lại đủ n đỉnh). Một tập con được gọi là "Eulerian subgraph" nếu trong

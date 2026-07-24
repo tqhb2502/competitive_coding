@@ -1,6 +1,8 @@
 Distinct Values Queries - CSES 1734
 https://cses.fi/problemset/task/1734
 
+Tags: fenwick
+
 ## Đề bài
 Cho một mảng gồm n số nguyên. Với mỗi truy vấn (a, b), hãy đếm số lượng
 giá trị PHÂN BIỆT (distinct) xuất hiện trong đoạn con [a, b].

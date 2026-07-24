@@ -1,6 +1,8 @@
 MST Edge Check - CSES 3407
 https://cses.fi/problemset/task/3407
 
+Tags: dsu
+
 ## Đề bài
 Cho đồ thị vô hướng có trọng số. Với mỗi cạnh (a, b, w), xác định xem cạnh
 đó có thể nằm trong MỘT cây khung nhỏ nhất (MST) nào đó hay không. In "YES"
@@ -36,5 +38,5 @@ Cài đặt:
 
 ## Độ phức tạp
 - Sắp xếp: O(m log m).
-- DSU với path compression + union by rank: gần như O(alpha) mỗi thao tác.
+- DSU với path halving + union by rank: gần như O(alpha) mỗi thao tác.
 - Tổng: O(m log m + (n + m) alpha), thoải mái với n <= 1e5, m <= 2e5.

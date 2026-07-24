@@ -1,6 +1,8 @@
 Tree Coin Collecting I - CSES 3114
 https://cses.fi/problemset/task/3114
 
+Tags: sparse-table
+
 ## Đề bài
 Cho một cây có n đỉnh, một số đỉnh có chứa đồng xu (coin). Với mỗi truy vấn (a, b),
 hãy tìm độ dài ngắn nhất của một hành trình (walk) đi từ a tới b sao cho hành trình

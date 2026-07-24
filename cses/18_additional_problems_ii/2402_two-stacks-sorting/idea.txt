@@ -1,6 +1,8 @@
 Two Stacks Sorting - CSES 2402
 https://cses.fi/problemset/task/2402
 
+Tags: dsu
+
 ## Đề bài
 Cho một hoán vị của 1..n. Lần lượt đẩy từng phần tử vào một trong hai stack,
 rồi lấy các đỉnh stack ra để tạo thành dãy tăng dần 1..n. In số hiệu stack (1

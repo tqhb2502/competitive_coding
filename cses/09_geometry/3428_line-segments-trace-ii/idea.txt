@@ -1,7 +1,7 @@
 Line Segments Trace II - CSES 3428
 https://cses.fi/problemset/task/3428
 
-Tags: two-pointers
+Tags: segment-tree, two-pointers
 
 ## Đề bài
 Cho n đoạn thẳng, mỗi đoạn có hai đầu mút nguyên (x1, y1) và (x2, y2) với

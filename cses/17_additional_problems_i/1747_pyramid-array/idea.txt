@@ -1,6 +1,8 @@
 Pyramid Array - CSES 1747
 https://cses.fi/problemset/task/1747
 
+Tags: fenwick
+
 ## Đề bài
 Cho mảng gồm n số phân biệt. Mỗi bước cho phép hoán đổi hai phần tử kề nhau. Tìm
 số bước ít nhất để biến mảng thành dạng kim tự tháp: tăng dần rồi giảm dần (được

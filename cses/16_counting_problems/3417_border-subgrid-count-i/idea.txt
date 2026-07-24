@@ -44,7 +44,7 @@ không có cập nhật nào trong lúc quét.
 Tập đã hết hiệu lực được lưu bằng bitset động. Mỗi 64 vị trí có một bộ đếm, và
 mỗi 8 word (512 vị trí) có một bộ đếm lớn. Truy vấn chọn cách rẻ hơn giữa đếm
 trực tiếp đoạn [L,q) và lấy tổng trừ đi prefix [0,L). Với n <= 3000, nó chỉ phải
-đi qua tối đa 6 khối lớn và 7 word.
+đi qua tối đa 6 khối lớn và khoảng 10 word.
 
 Để giảm cache miss, start, finish và màu của một ô được đóng gói trong một số
 32 bit (mỗi reach cần 12 bit), rồi dữ liệu của từng đường chéo được chép vào một

@@ -1,6 +1,8 @@
 Dynamic Range Sum Queries - CSES 1648
 https://cses.fi/problemset/task/1648
 
+Tags: fenwick
+
 ## Đề bài
 Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
 - "1 k u": gán giá trị của phần tử tại vị trí k thành u (cập nhật một điểm).

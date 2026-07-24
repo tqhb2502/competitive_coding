@@ -1,6 +1,8 @@
 Road Construction - CSES 1676
 https://cses.fi/problemset/task/1676
 
+Tags: dsu
+
 ## Đề bài
 Có n thành phố và ban đầu chưa có con đường nào nối chúng. Sau đó có m con
 đường lần lượt được xây dựng, con đường thứ i nối hai thành phố a và b.

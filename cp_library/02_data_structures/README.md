@@ -45,10 +45,9 @@ table chỉ dùng query chồng lấn trực tiếp cho phép idempotent.
 
 ## Yêu cầu cho entry
 
-- Ghi riêng complexity `build`, `update`, `query`, `memory`.
-- Nêu indexing, đoạn rỗng, identity và hành vi khi query ngoài miền.
-- Kiểm thử nhiều instance, nhiều lần clear/build và chuỗi thao tác đối kháng.
-- Header không giữ state global và không dùng `using namespace std;`.
+- Ghi rõ complexity `build`, `update`, `query`, `memory` ở dòng `ĐPT:`.
+- Nêu indexing (0/1-based), đoạn rỗng, identity và hành vi khi query ngoài miền.
+- Đặt tên type/hàm **duy nhất trên toàn kho** để bundle nhiều snippet không xung đột.
 
 Xem [cây quyết định truy vấn mảng](../indexes/decision-trees.md#truy-vấn-trên-mảng)
 và [bẫy cấu trúc dữ liệu](../indexes/pitfalls.md#cấu-trúc-dữ-liệu).

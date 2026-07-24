@@ -52,4 +52,5 @@ Hai bản cài đặt dùng cùng thuật toán CHT nhưng khác vài chi tiết
 
 ## Độ phức tạp
 - Thời gian: O(n log n) cho bước sắp xếp + O(n) xây hull + O(n + m) cho truy vấn.
-- Bộ nhớ: O(n).
+- Bộ nhớ: bản C++ ghi trực tiếp từng giá trị ra cout nên O(n); bản Python gom
+  toàn bộ output vào danh sách trước khi in nên O(n + m).

@@ -1,6 +1,8 @@
 MST Edge Cost - CSES 3409
 https://cses.fi/problemset/task/3409
 
+Tags: dsu, sparse-table
+
 ## Đề bài
 - Cho đồ thị vô hướng liên thông, có trọng số, đơn (n đỉnh, m cạnh).
 - Với MỖI cạnh (theo thứ tự nhập vào), tính chi phí cây khung nhỏ nhất (MST)

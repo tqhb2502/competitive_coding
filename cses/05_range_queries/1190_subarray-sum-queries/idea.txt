@@ -1,6 +1,8 @@
 Subarray Sum Queries - CSES 1190
 https://cses.fi/problemset/task/1190
 
+Tags: segment-tree
+
 ## Đề bài
 Cho một mảng gồm n số nguyên và m truy vấn. Mỗi truy vấn là một phép cập nhật một
 phần tử (point update): gán giá trị mới cho một vị trí. Sau mỗi lần cập nhật, in ra

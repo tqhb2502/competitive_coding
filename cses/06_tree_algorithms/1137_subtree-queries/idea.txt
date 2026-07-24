@@ -1,6 +1,8 @@
 Subtree Queries - CSES 1137
 https://cses.fi/problemset/task/1137
 
+Tags: fenwick
+
 ## Đề bài
 Cho một cây có gốc tại node 1 gồm n node, mỗi node mang một giá trị. Cần xử lí q
 truy vấn thuộc hai loại:

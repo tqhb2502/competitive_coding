@@ -1,7 +1,7 @@
 Salary Queries - CSES 1144
 https://cses.fi/problemset/task/1144
 
-Tags: coordinate-compression, sorting
+Tags: coordinate-compression, fenwick, sorting
 
 ## Đề bài
 Có n nhân viên, mỗi người có một mức lương ban đầu. Ta xử lí q truy vấn thuộc hai loại:

@@ -1,6 +1,8 @@
 School Excursion - CSES 1706
 https://cses.fi/problemset/task/1706
 
+Tags: dsu
+
 ## Đề bài
 Có n đứa trẻ và m yêu cầu, mỗi yêu cầu buộc hai đứa trẻ phải đi cùng một địa
 điểm. Với mỗi i = 1..n, hãy xác định liệu có thể chọn đúng i đứa trẻ đi

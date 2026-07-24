@@ -1,6 +1,8 @@
 New Roads Queries - CSES 2101
 https://cses.fi/problemset/task/2101
 
+Tags: dsu, sparse-table
+
 ## Đề bài
 Có n thành phố. Mỗi ngày d (từ 1 tới m) người ta xây thêm một con đường nối hai
 thành phố (a, b). Với mỗi truy vấn (a, b), hãy tìm ngày sớm nhất mà a và b thuộc
@@ -35,7 +37,7 @@ Sử dụng Kruskal Reconstruction Tree (cây tái tạo Kruskal) kết hợp LC
 - Truy vấn LCA chuẩn: đưa hai nút về cùng depth rồi nhảy đồng thời lên trên.
 
 ## Độ phức tạp
-- Dựng cây: O((n + m) alpha(n)) với DSU nén đường và hợp nhất.
+- Dựng cây: DSU chỉ dùng nén đường (không có hợp nhất theo hạng) nên mỗi thao tác O(log n); do đó dựng cây là O((n + m) log n).
 - Bảng binary lifting: O(N log N) với N không vượt quá 2n.
 - Mỗi truy vấn LCA: O(log N). Tổng thời gian: O((n + m + q) log n).
 - Bộ nhớ: O(N log N) cho bảng up (N không vượt quá 2n), khoảng 2n * 20 số nguyên, đủ

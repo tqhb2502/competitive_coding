@@ -1,6 +1,8 @@
 Range Updates and Sums - CSES 1735
 https://cses.fi/problemset/task/1735
 
+Tags: lazy-segment-tree
+
 ## Đề bài
 Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc ba loại:
   1 a b x : cộng x vào mọi phần tử trong đoạn [a, b]        (range add)

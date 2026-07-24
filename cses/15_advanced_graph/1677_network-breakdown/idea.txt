@@ -1,6 +1,8 @@
 Network Breakdown - CSES 1677
 https://cses.fi/problemset/task/1677
 
+Tags: dsu
+
 ## Đề bài
 - Mạng gồm n máy tính và m kết nối (cạnh vô hướng, tối đa một kết nối giữa
   hai máy). Có k lần hỏng, mỗi lần hỏng làm mất một kết nối cụ thể (a, b).

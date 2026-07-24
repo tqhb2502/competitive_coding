@@ -1,208 +1,100 @@
 #!/usr/bin/env python3
-"""Validate the format and catalog vocabulary of CSES Tags lines."""
+"""Validator nhẹ cho dòng ``Tags:`` trong ``cses/**/idea.txt`` (không cần catalog).
 
-import argparse
-import json
+Từ vựng hợp lệ = {tên file ``.hpp`` trong ``cp_library/<nhóm>/``} hợp với các dòng
+trong ``tools/tag_vocab.txt``. Mỗi bài đã gắn tag phải có >= 1 tag là id snippet
+(kỹ thuật cốt lõi). Chỉ kiểm format/vị trí/từ vựng, không kiểm ngữ nghĩa.
+"""
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Set
 
-
-TAG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-TAG_LIKE_PATTERN = re.compile(r"^\s*tags\s*:", re.IGNORECASE)
-CSES_URL_PATTERN = re.compile(
-    r"^https://cses\.fi/problemset/task/[0-9]+/?$"
-)
-
-
-class TagError(Exception):
-    """Raised when the catalog or a CSES Tags line is invalid."""
-
-
-def _read_catalog(path: Path) -> List[Dict[str, Any]]:
+# Console Windows mặc định cp1252 không mã hoá được tiếng Việt -> ép UTF-8 để không vỡ.
+for _stream in (sys.stdout, sys.stderr):
     try:
-        with path.open("r", encoding="utf-8") as input_file:
-            catalog = json.load(input_file)
-    except (OSError, UnicodeError, json.JSONDecodeError) as error:
-        raise TagError("cannot read {}: {}".format(path, error))
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
 
-    if not isinstance(catalog, dict) or catalog.get("schema_version") != 1:
-        raise TagError("{} is not a schema v1 catalog".format(path))
-    entries = catalog.get("entries")
-    if not isinstance(entries, list) or not all(
-        isinstance(entry, dict) for entry in entries
-    ):
-        raise TagError("{}: entries must be a list of objects".format(path))
-    return entries
+TAG_LINE = re.compile(r"^\s*tags\s*:", re.IGNORECASE)
+URL_LINE = re.compile(r"^https://cses\.fi/problemset/task/[0-9]+/?$")
+TAG_TOKEN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+PREFIX = "Tags: "
 
 
-def _tag_vocabulary(
-    entries: Sequence[Dict[str, Any]]
-) -> tuple[Set[str], Set[str]]:
-    allowed: Set[str] = set()
-    entry_ids: Set[str] = set()
-    for entry in entries:
-        entry_id = entry.get("id")
-        tags = entry.get("tags")
-        if not isinstance(entry_id, str) or not TAG_PATTERN.fullmatch(entry_id):
-            raise TagError("catalog contains an invalid entry id")
-        if not isinstance(tags, list) or not all(
-            isinstance(tag, str) and TAG_PATTERN.fullmatch(tag) for tag in tags
-        ):
-            raise TagError(
-                "catalog entry {!r} contains invalid tags".format(entry_id)
-            )
-        allowed.add(entry_id)
-        entry_ids.add(entry_id)
-        allowed.update(tags)
-    return allowed, entry_ids
+def load_vocabulary(lib_root):
+    ids = {hpp.stem for hpp in lib_root.glob("[0-9][0-9]_*/*.hpp")}
+    modifiers = set()
+    vocab_file = lib_root / "tools" / "tag_vocab.txt"
+    if vocab_file.is_file():
+        for line in vocab_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                modifiers.add(line)
+    return ids, ids | modifiers
 
 
-def _validate_idea(
-    path: Path, allowed: Set[str], entry_ids: Set[str]
-) -> int:
-    try:
-        lines = path.read_text(encoding="utf-8").splitlines()
-    except (OSError, UnicodeError) as error:
-        raise TagError("{}: cannot read file: {}".format(path, error))
-
-    tag_indices = [
-        index for index, line in enumerate(lines)
-        if TAG_LIKE_PATTERN.match(line)
-    ]
-    if not tag_indices:
-        return 0
-    if len(tag_indices) != 1:
-        raise TagError("{}: expected at most one Tags line".format(path))
-
-    index = tag_indices[0]
-    prefix = "Tags: "
-    if not lines[index].startswith(prefix):
-        raise TagError(
-            "{}: use the exact prefix 'Tags: '".format(path)
-        )
-    url_indices = [
-        line_index for line_index, line in enumerate(lines)
-        if CSES_URL_PATTERN.fullmatch(line)
-    ]
-    if len(url_indices) != 1:
-        raise TagError("{}: Tags line must appear after the problem URL".format(path))
-    url_index = url_indices[0]
-    if (
-        index != url_index + 2
-        or lines[url_index + 1] != ""
-        or index + 2 >= len(lines)
-        or lines[index + 1] != ""
-        or not lines[index + 2].startswith("## ")
-    ):
-        raise TagError(
-            "{}: Tags must be one blank line after the problem URL and one "
-            "blank line before the first section".format(path)
-        )
-    raw_tags = lines[index][len(prefix):]
-    if not raw_tags:
-        raise TagError("{}: Tags list must not be empty".format(path))
-
-    tags = raw_tags.split(", ")
-    canonical = "Tags: {}".format(", ".join(sorted(set(tags))))
-    if lines[index] != canonical:
-        raise TagError(
-            "{}: Tags must be unique, sorted, and separated by ', '; expected {!r}"
-            .format(path, canonical)
-        )
-
-    invalid = [tag for tag in tags if not TAG_PATTERN.fullmatch(tag)]
-    if invalid:
-        raise TagError(
-            "{}: invalid tag syntax: {}".format(path, ", ".join(invalid))
-        )
-    unknown = [tag for tag in tags if tag not in allowed]
-    if unknown:
-        raise TagError(
-            "{}: tags are not present in the CP catalog: {}".format(
-                path, ", ".join(unknown)
-            )
-        )
-    if not any(tag in entry_ids for tag in tags):
-        raise TagError(
-            "{}: include at least one canonical catalog entry id".format(path)
-        )
-    return len(tags)
+def validate(text, ids, allowed):
+    lines = text.split("\n")
+    tag_lines = [i for i, ln in enumerate(lines) if TAG_LINE.match(ln)]
+    if not tag_lines:
+        return []  # chưa gắn tag vẫn hợp lệ
+    if len(tag_lines) > 1:
+        return ["có nhiều hơn một dòng Tags"]
+    idx = tag_lines[0]
+    line = lines[idx]
+    if not line.startswith(PREFIX):
+        return ["dòng tag phải bắt đầu đúng bằng {!r}".format(PREFIX)]
+    urls = [i for i, ln in enumerate(lines) if URL_LINE.match(ln)]
+    if len(urls) != 1:
+        return ["cần đúng một dòng URL cses"]
+    u = urls[0]
+    placed = (idx == u + 2 and lines[u + 1] == "" and idx + 2 < len(lines)
+              and lines[idx + 1] == "" and lines[idx + 2].startswith("## "))
+    if not placed:
+        return ["dòng Tags sai vị trí (đúng: URL, trống, Tags, trống, dòng '## ')"]
+    tags = line[len(PREFIX):].split(", ")
+    errs = []
+    if not tags or any(t == "" for t in tags):
+        return ["danh sách tag rỗng hoặc lỗi phân tách"]
+    if line != PREFIX + ", ".join(sorted(set(tags))):
+        errs.append("tag phải tăng dần theo từ điển, không trùng, phân tách bằng ', '")
+    for t in tags:
+        if not TAG_TOKEN.match(t):
+            errs.append("tag không hợp lệ: {!r}".format(t))
+        elif t not in allowed:
+            errs.append("tag ngoài từ vựng: {!r}".format(t))
+    if not any(t in ids for t in tags):
+        errs.append("cần >= 1 tag là id snippet (kỹ thuật cốt lõi)")
+    return errs
 
 
-def _parse_arguments(arguments: Optional[Sequence[str]]) -> argparse.Namespace:
-    default_library = Path(__file__).resolve().parents[1]
-    parser = argparse.ArgumentParser(
-        description=(
-            "Validate the format and catalog vocabulary of Tags lines in "
-            "CSES idea.txt files."
-        )
-    )
-    parser.add_argument(
-        "--repository-root",
-        type=Path,
-        default=default_library.parent,
-        help="repository root containing cses/ and cp_library/",
-    )
-    parser.add_argument(
-        "--catalog",
-        type=Path,
-        default=default_library / "indexes" / "catalog.json",
-        help="generated CP library catalog",
-    )
-    return parser.parse_args(arguments)
-
-
-def main(arguments: Optional[Sequence[str]] = None) -> int:
-    options = _parse_arguments(arguments)
-    repository_root = options.repository_root.resolve()
-    cses_root = repository_root / "cses"
+def main():
+    lib_root = Path(__file__).resolve().parents[1]
+    repo_root = lib_root.parent
+    cses_root = repo_root / "cses"
     if not cses_root.is_dir():
-        print("error: CSES root is not a directory: {}".format(cses_root),
-              file=sys.stderr)
+        print("error: không thấy thư mục cses/", file=sys.stderr)
         return 2
-
-    try:
-        entries = _read_catalog(options.catalog.resolve())
-        allowed, entry_ids = _tag_vocabulary(entries)
-        idea_paths = sorted(cses_root.rglob("idea.txt"))
-        if not idea_paths:
-            raise TagError("{} contains no idea.txt files".format(cses_root))
-        unexpected_paths = [
-            path for path in idea_paths
-            if len(path.relative_to(cses_root).parts) != 3
-        ]
-        if unexpected_paths:
-            raise TagError(
-                "unexpected CSES idea.txt layout: {}".format(
-                    ", ".join(str(path) for path in unexpected_paths)
-                )
-            )
-        tagged_files = 0
-        assignment_count = 0
-        errors: List[str] = []
-        for idea_path in idea_paths:
-            try:
-                count = _validate_idea(idea_path, allowed, entry_ids)
-                if count > 0:
-                    tagged_files += 1
-                    assignment_count += count
-            except TagError as error:
-                errors.append(str(error))
-        if errors:
-            raise TagError("\n".join(errors))
-    except TagError as error:
-        print("error: {}".format(error), file=sys.stderr)
+    ids, allowed = load_vocabulary(lib_root)
+    total = tagged = assignments = 0
+    ok = True
+    for idea in sorted(cses_root.rglob("idea.txt")):
+        total += 1
+        text = idea.read_text(encoding="utf-8")
+        errs = validate(text, ids, allowed)
+        tag_line = next((ln for ln in text.split("\n") if ln.startswith(PREFIX)), None)
+        if tag_line is not None and not errs:
+            tagged += 1
+            assignments += len(tag_line[len(PREFIX):].split(", "))
+        for e in errs:
+            ok = False
+            print("error: {}: {}".format(idea.relative_to(repo_root).as_posix(), e),
+                  file=sys.stderr)
+    if not ok:
         return 2
-
-    print(
-        "CSES tag format/vocabulary valid: {} idea files, {} tagged, "
-        "{} assignments. Semantic correctness and coverage are not "
-        "checked.".format(
-            len(idea_paths), tagged_files, assignment_count
-        )
-    )
+    print("CSES tags hợp lệ: {} idea, {} đã gắn, {} lượt tag "
+          "(chỉ kiểm format/vị trí/từ vựng).".format(total, tagged, assignments))
     return 0
 
 

@@ -1,7 +1,7 @@
 Polynomial Queries - CSES 1736
 https://cses.fi/problemset/task/1736
 
-Tags: difference-array, prefix-sum, range-query, range-update
+Tags: difference-array, fenwick, prefix-sum, range-query, range-update
 
 ## Đề bài
 Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:

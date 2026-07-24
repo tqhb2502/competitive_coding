@@ -5,7 +5,7 @@ https://cses.fi/problemset/task/2192
 Cho một đa giác đơn (simple polygon) gồm n đỉnh liệt kê theo thứ tự, cùng với m
 điểm truy vấn. Với mỗi điểm, hãy cho biết nó nằm INSIDE (bên trong), OUTSIDE
 (bên ngoài) hay BOUNDARY (nằm trên biên) của đa giác.
-Ràng buộc: 3 <= n, m <= 1000; toạ độ nguyên nằm trong đoạn [-1e9, 1e9].
+Ràng buộc: 3 <= n <= 1000, 1 <= m <= 1000; toạ độ nguyên nằm trong đoạn [-1e9, 1e9].
 
 ## Ý tưởng
 Với mỗi điểm truy vấn, duyệt qua từng cạnh của đa giác và thực hiện hai việc:

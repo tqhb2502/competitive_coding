@@ -1,6 +1,8 @@
 Counting Paths - CSES 1136
 https://cses.fi/problemset/task/1136
 
+Tags: dsu
+
 ## Đề bài
 Cho một cây gồm n đỉnh và m đường đi. Mỗi đường đi được cho bởi một cặp đỉnh
 (a, b) và tương ứng với đường đi duy nhất giữa a và b trên cây. Với mỗi đỉnh,

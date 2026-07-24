@@ -1,7 +1,7 @@
 Intersection Points - CSES 1740
 https://cses.fi/problemset/task/1740
 
-Tags: coordinate-compression, sorting
+Tags: coordinate-compression, fenwick, sorting
 
 ## Đề bài
 Cho n đoạn thẳng trên mặt phẳng, mỗi đoạn hoặc nằm ngang (horizontal, y1 = y2)

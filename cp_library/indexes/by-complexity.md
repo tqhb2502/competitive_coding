@@ -147,15 +147,14 @@ Ngoài payload còn có overhead của `vector`, node pointer, allocator, recurs
 stack và capacity chưa dùng. `vector<vector<int>>` không tương đương một mảng
 liên tục `n * m`.
 
-## Tìm entry theo complexity
+## Tìm snippet theo complexity
 
-Metadata là cách ổn định nhất:
+Độ phức tạp nằm ở dòng `ĐPT:` trong comment đầu mỗi `.hpp`:
 
 ```sh
-rg -n '"complexities"' cp_library
-rg -n -i '"(query|update|time)": "O\(log n\)' cp_library
-python3 cp_library/tools/search.py "O(n log n)"
+rg -n 'ĐPT:.*O\(log n\)' cp_library
+rg -n 'ĐPT:' cp_library/02_data_structures
 ```
 
-Sau khi chọn được entry, đọc README để biết `n` trong biểu thức là số đỉnh, số
-cạnh, độ dài chuỗi hay kích thước miền giá trị.
+Sau khi chọn được snippet, đọc comment header để biết `n` trong biểu thức là số
+đỉnh, số cạnh, độ dài chuỗi hay kích thước miền giá trị.

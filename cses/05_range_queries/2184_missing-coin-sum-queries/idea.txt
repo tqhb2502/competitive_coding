@@ -1,7 +1,7 @@
 Missing Coin Sum Queries - CSES 2184
 https://cses.fi/problemset/task/2184
 
-Tags: coordinate-compression, sorting
+Tags: coordinate-compression, segment-tree, sorting
 
 ## Đề bài
 Cho một dãy n đồng xu với các giá trị x_1..x_n. Có q truy vấn, mỗi truy vấn cho

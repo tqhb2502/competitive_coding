@@ -1,6 +1,8 @@
 Subarray Sum Queries II - CSES 3226
 https://cses.fi/problemset/task/3226
 
+Tags: segment-tree
+
 ## Đề bài
 Cho một mảng gồm n số nguyên (các vị trí đánh chỉ số từ 1). Với mỗi truy vấn
 [a, b], hãy tìm tổng đoạn con (subarray) lớn nhất nằm hoàn toàn bên trong đoạn

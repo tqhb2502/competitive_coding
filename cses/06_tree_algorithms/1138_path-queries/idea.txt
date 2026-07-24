@@ -1,7 +1,7 @@
 Path Queries - CSES 1138
 https://cses.fi/problemset/task/1138
 
-Tags: difference-array, range-update
+Tags: difference-array, fenwick, range-update
 
 ## Đề bài
 Cho một cây có gốc gồm n đỉnh (đỉnh 1 là gốc), mỗi đỉnh mang một giá trị. Có q truy vấn:

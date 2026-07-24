@@ -1,0 +1,18 @@
+# Modifier tags cho dòng Tags: của bài CSES.
+# Đây KHÔNG phải id snippet — chỉ là bổ ngữ mô tả cách áp dụng, giúp tìm kiếm.
+# Từ vựng tag hợp lệ = {tên file .hpp trong cp_library} ∪ {các dòng dưới đây}.
+# Mỗi bài đã gắn tag vẫn phải có >= 1 tag là id snippet (kỹ thuật cốt lõi).
+# Mỗi dòng một tag, lowercase kebab-case.
+bitmask
+counting
+monotone-predicate
+nearest-element
+offline
+range-query
+range-update
+search-on-answer
+sorted-array
+sorting
+static-array
+submask
+window-extrema

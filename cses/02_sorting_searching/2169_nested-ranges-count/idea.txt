@@ -1,7 +1,7 @@
 Nested Ranges Count - CSES 2169
 https://cses.fi/problemset/task/2169
 
-Tags: coordinate-compression, sorting, fenwick-tree
+Tags: coordinate-compression, fenwick, sorting
 
 ## Đề bài
 Cho n đoạn [a, b]. Với mỗi đoạn, hãy đếm:

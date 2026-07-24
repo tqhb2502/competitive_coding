@@ -1,6 +1,8 @@
 Prefix Sum Queries - CSES 2166
 https://cses.fi/problemset/task/2166
 
+Tags: segment-tree
+
 ## Đề bài
 Cho một mảng gồm n số nguyên (đánh số từ 1) và q truy vấn thuộc hai loại:
   - "1 k u": cập nhật (point update) giá trị tại vị trí k thành u.

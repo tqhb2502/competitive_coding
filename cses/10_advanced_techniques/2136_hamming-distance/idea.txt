@@ -33,8 +33,9 @@ Tính đúng đắn:
 Ghi chú kỹ thuật:
 - Dùng scanf để đọc nhanh. __builtin_popcount trên unsigned int
   thường biên dịch thành một lệnh POPCNT duy nhất trên phần cứng hiện
-  đại, giúp vòng lặp trong cùng cực nhanh. Đây là bài mang bản chất
-  O(n^2) với bitset, rất hợp với C++.
+  đại, giúp vòng lặp trong cùng cực nhanh. Đây là bài bản chất
+  O(n^2), gói mỗi xâu vào một unsigned int và đếm bit khác nhau bằng
+  __builtin_popcount, rất hợp với C++.
 
 ## Độ phức tạp
 - Thời gian: O(n^2) phép so sánh, mỗi phép O(1) nhờ XOR + popcount

@@ -1,6 +1,8 @@
 Maximum Xor Subarray - CSES 1655
 https://cses.fi/problemset/task/1655
 
+Tags: binary-trie
+
 ## Đề bài
 Cho một mảng gồm n số nguyên. Hãy tìm giá trị XOR lớn nhất
 của một đoạn con liên tiếp (có độ dài ít nhất bằng 1).

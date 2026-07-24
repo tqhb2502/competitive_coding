@@ -1,6 +1,8 @@
 MST Edge Set Check - CSES 3408
 https://cses.fi/problemset/task/3408
 
+Tags: dsu
+
 ## Đề bài
 Cho đồ thị vô hướng liên thông, có trọng số, gồm n đỉnh và m cạnh. Có q truy
 vấn, mỗi truy vấn cho một tập cạnh. Hỏi tất cả các cạnh trong tập đó có thể

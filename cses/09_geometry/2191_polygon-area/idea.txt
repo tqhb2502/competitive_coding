@@ -8,7 +8,7 @@ không nguyên, đề bài yêu cầu in ra 2a, tức là gấp đôi diện tí
 là số nguyên.
 
 ## Ý tưởng
-Dùng công thức shoelace (định lý con lắc / Gauss's area formula). Với các đỉnh
+Dùng công thức shoelace (công thức dây giày / Gauss's area formula). Với các đỉnh
 P_0, P_1, ..., P_{n-1} theo thứ tự vòng quanh đa giác, diện tích có dấu bằng:
     2A = sum_{i=0}^{n-1} (x_i * y_{i+1} - x_{i+1} * y_i)   (chỉ số lấy mod n)
 Diện tích thực là |2A| / 2. Vì đề bài yêu cầu in 2a nên ta chỉ cần in |sum|.

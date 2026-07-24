@@ -1,6 +1,8 @@
 Building Roads - CSES 1666
 https://cses.fi/problemset/task/1666
 
+Tags: dsu
+
 ## Đề bài
 Có n thành phố và m con đường (cạnh vô hướng) đã có sẵn nối một số cặp thành
 phố. Hãy xây thêm số con đường ÍT NHẤT sao cho từ bất kỳ thành phố nào cũng đi

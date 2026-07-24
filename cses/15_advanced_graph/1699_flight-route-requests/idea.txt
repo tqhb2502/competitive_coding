@@ -1,6 +1,8 @@
 Flight Route Requests - CSES 1699
 https://cses.fi/problemset/task/1699
 
+Tags: dsu
+
 ## Đề bài
 Có n thành phố, ban đầu chưa có chuyến bay nào. Cho m yêu cầu, mỗi yêu cầu
 (a, b) nghĩa là PHẢI đi được từ a tới b bằng các chuyến bay MỘT CHIỀU (có thể

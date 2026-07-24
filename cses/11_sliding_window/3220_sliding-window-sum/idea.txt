@@ -27,7 +27,7 @@ Tính đúng đắn:
   trừ đúng phần tử rời cửa sổ.
 
 Chú ý tràn số:
-- k, giá trị phần tử có thể tới ~10^9 nên window sum tối đa ~10^16, phải dùng long long.
+- k, giá trị phần tử có thể tới ~10^9 nên window sum tối đa ~10^18, phải dùng long long.
 - Phép a * x_{i-1} tối đa ~10^18, vẫn nằm trong long long.
 - Giá trị từng phần tử < 10^9 nên lưu buffer bằng int là đủ (tiết kiệm bộ nhớ).
 

@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// DSU (Union-Find) với path compression + union by rank.
+// DSU (Union-Find) với path halving + union by rank.
 static int par[100005], rnk[100005];
 
 int findp(int x) {

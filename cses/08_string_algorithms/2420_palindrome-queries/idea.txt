@@ -1,6 +1,8 @@
 Palindrome Queries - CSES 2420
 https://cses.fi/problemset/task/2420
 
+Tags: fenwick
+
 ## Đề bài
 Cho một xâu độ dài n và m thao tác. Có hai loại thao tác:
   - Loại 1 "1 k x": đổi ký tự ở vị trí k thành x (cập nhật một điểm).

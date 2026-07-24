@@ -1,6 +1,8 @@
 Path Queries II - CSES 2134
 https://cses.fi/problemset/task/2134
 
+Tags: segment-tree
+
 ## Đề bài
 Cho một cây có n đỉnh (chọn đỉnh 1 làm gốc), mỗi đỉnh mang một giá trị. Cần xử lý q
 truy vấn thuộc hai loại:

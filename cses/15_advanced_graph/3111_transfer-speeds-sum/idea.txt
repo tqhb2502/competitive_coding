@@ -1,6 +1,8 @@
 Transfer Speeds Sum - CSES 3111
 https://cses.fi/problemset/task/3111
 
+Tags: dsu
+
 ## Đề bài
 Cho một cây gồm n máy tính và n-1 kết nối, mỗi kết nối (a, b) có tốc độ truyền x.
 Tốc độ truyền giữa hai máy u và v được định nghĩa là GIÁ TRỊ NHỎ NHẤT của các cạnh

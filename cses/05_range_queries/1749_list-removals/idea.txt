@@ -1,6 +1,8 @@
 List Removals - CSES 1749
 https://cses.fi/problemset/task/1749
 
+Tags: fenwick
+
 ## Đề bài
 Cho một danh sách gồm n phần tử. Ta thực hiện n thao tác xóa. Thao tác thứ i
 cho một vị trí p_i tính theo danh sách HIỆN TẠI (sau khi đã xóa các phần tử ở
