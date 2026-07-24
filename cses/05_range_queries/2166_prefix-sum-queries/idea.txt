@@ -2,15 +2,18 @@ Prefix Sum Queries - CSES 2166
 https://cses.fi/problemset/task/2166
 
 ## Đề bài
-Cho một mảng gồm n số nguyên và q truy vấn thuộc hai loại:
+Cho một mảng gồm n số nguyên (đánh số từ 1) và q truy vấn thuộc hai loại:
   - "1 k u": cập nhật (point update) giá trị tại vị trí k thành u.
-  - "2 a b": tìm maximum prefix sum trong đoạn [a, b], trong đó cho phép
-    prefix rỗng (tổng bằng 0). Nghĩa là kết quả luôn lớn hơn hoặc bằng 0.
+  - "2 a b": tìm maximum prefix sum trong đoạn [a, b] (a, b đánh số từ 1),
+    trong đó cho phép prefix rỗng (tổng bằng 0). Nghĩa là kết quả luôn lớn
+    hơn hoặc bằng 0.
 
 ## Ý tưởng
-Dùng iterative segment tree (bottom-up), mỗi node lưu 2 giá trị:
-  - tot: tổng tất cả phần tử trong đoạn của node.
-  - bst: maximum prefix sum của đoạn đó, đã tính cả prefix rỗng nên bst >= 0.
+Dùng iterative segment tree (bottom-up); C++ lưu mỗi node bằng struct Node
+(sum, best_prefix), Python lưu song song hai mảng (tot, bst). Ý nghĩa 2 giá trị:
+  - tot (sum): tổng tất cả phần tử trong đoạn của node.
+  - bst (best_prefix): maximum prefix sum của đoạn đó, đã tính cả prefix rỗng
+    nên luôn >= 0.
 
 Phép hợp nhất (merge) hai node con L (trái) và R (phải), KHÔNG giao hoán:
   tot = L.tot + R.tot
@@ -40,5 +43,8 @@ tree phủ đúng đoạn [a, b] bằng các node rời nhau theo đúng thứ t
 phải, nên bst cuối cùng chính là maximum prefix sum của đoạn.
 
 ## Độ phức tạp
-Build O(n); mỗi update và mỗi query O(log n). Tổng thời gian O((n + q) log n).
-Bộ nhớ O(n) cho vector gồm khoảng `2*size` node.
+Cả C++ và Python: build O(n); mỗi update và mỗi query O(log n); tổng thời gian
+O((n + q) log n).
+Bộ nhớ O(n): C++ dùng vector Node khoảng `2*size` phần tử; Python dùng hai mảng
+tot và bst khoảng `2*size` phần tử, đồng thời đọc toàn bộ input một lần (mảng
+data tách sẵn) nên tốn thêm O(n + q).

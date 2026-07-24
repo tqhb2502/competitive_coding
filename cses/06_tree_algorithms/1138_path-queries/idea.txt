@@ -32,8 +32,15 @@ Xử lý truy vấn:
     cộng -delta tại tout[s]+1 (point update). Việc này giữ đúng bất biến trên cho mọi
     truy vấn về sau.
 
-BIT được khởi tạo trong O(n) từ một mảng hiệu (difference array) rồi dựng cây Fenwick.
+Khởi tạo BIT (cách dựng khác nhau giữa hai bản, nhưng cây Fenwick thu được là như nhau):
+  - Bản Python: dựng mảng hiệu (difference array) — cộng +val tại tin[v], -val tại tout[v]+1
+    — rồi khởi tạo cây Fenwick trực tiếp trong O(n).
+  - Bản C++: thực hiện hai point update (+val[v] tại entry[v], -val[v] tại exit[v]+1) cho từng
+    đỉnh, tốn O(n log n).
 
 ## Độ phức tạp
-  - Thời gian: O(n) dựng Euler tour và BIT, mỗi truy vấn O(log n). Tổng O((n + q) log n).
-  - Bộ nhớ: O(n) cho danh sách kề, tin/tout, parent và BIT.
+  - Thời gian: Euler tour O(n); dựng BIT O(n) ở bản Python, O(n log n) ở bản C++; mỗi truy vấn
+    O(log n). Tổng O((n + q) log n) cho cả hai bản.
+  - Bộ nhớ: O(n) cho danh sách kề, tin/tout, parent và BIT. Bản C++ đọc input theo luồng nên
+    thêm O(n); bản Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read() nên tốn thêm
+    O(n + q) cho mảng token đầu vào.

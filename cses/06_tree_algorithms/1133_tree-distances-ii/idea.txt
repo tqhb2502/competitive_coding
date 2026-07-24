@@ -13,7 +13,7 @@ Mô hình cây:
 Thuật toán: rerooting DP (quy hoạch động đổi gốc).
 
 Bước 1 - Tính đáp án cho gốc:
-- Duyệt cây bằng iterative DFS/BFS (KHÔNG dùng đệ quy vì n tới 2e5 sẽ tràn stack).
+- Duyệt cây bằng iterative BFS (KHÔNG dùng đệ quy vì n tới 2e5 sẽ tràn stack).
 - Tính size[v] = số đỉnh trong subtree của v (kể cả chính v). Tính bằng cách xử
   lý các đỉnh theo thứ tự ngược của BFS order (con trước, cha sau).
 - Tính depth[v] = khoảng cách từ gốc tới v.

@@ -31,4 +31,6 @@ Dùng Heavy-Light Decomposition (HLD) kết hợp với segment tree (max):
 - Tiền xử lý (DFS, subtree size, decomposition, build segment tree): O(n).
 - Mỗi cập nhật loại 1: O(log n).
 - Mỗi truy vấn loại 2: O(log^2 n) (O(log n) chain, mỗi chain O(log n)).
-- Tổng: O(n + q log^2 n) thời gian, O(n) bộ nhớ.
+- Tổng thời gian: O(n + q log^2 n).
+- Bộ nhớ: C++ O(n) (đọc input theo từng token). Python O(n + q) vì đọc toàn bộ
+  input một lần vào mảng data và lưu danh sách kết quả trước khi in.

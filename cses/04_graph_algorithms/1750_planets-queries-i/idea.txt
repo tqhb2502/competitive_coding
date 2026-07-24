@@ -17,17 +17,25 @@ https://cses.fi/problemset/task/1750
     up[j][v] = up[j-1][ up[j-1][v] ]   (đi 2^j = 2^(j-1) + 2^(j-1) bước)
 - Cần LOG mức với 2^LOG > k_max = 1e9, tức LOG = 30 (2^30 > 1.07e9).
 - Trả lời truy vấn (x, k): phân tích k theo nhị phân; với mỗi bit j bật trong k,
-  cập nhật `x = up[j][x]`. Code xử lý độc lập từng truy vấn bằng một vòng lặp
-  qua 30 mức; sau mức cuối, x chính là đáp án.
+  cập nhật `x = up[j][x]`; sau khi duyệt hết 30 mức, x chính là đáp án.
+- Bản C++ xử lý ĐỘC LẬP từng truy vấn: đọc (x, k) rồi chạy ngay vòng lặp qua 30
+  mức cho riêng truy vấn đó rồi in kết quả.
+- Bản Python xử lý GỘP (batch): đọc trước toàn bộ truy vấn vào các mảng phẳng,
+  rồi lặp NGOÀI theo 30 mức; ở mỗi mức j chỉ dịch những truy vấn có bit j của k
+  bật (dùng list comprehension để dồn phần nặng xuống tầng C, nhanh hơn vòng lặp
+  Python từng truy vấn). Hai cách cho cùng kết quả, chỉ khác thứ tự duyệt.
 
 VÌ SAO ĐÚNG
 - Mọi số bước k đều biểu diễn được thành tổng các luỹ thừa 2^j (biểu diễn nhị phân).
 - Do đồ thị là hàm số (deterministic), ghép các bước 2^j theo đúng thứ tự cho ra
   chính xác vị trí sau k bước; up[j] được dựng đúng bằng quy nạp từ up[j-1].
-- Bảng và các hành tinh đều dùng chỉ số 1-based, đúng với định dạng của đề.
+- Bản C++ giữ chỉ số 1-based suốt (khớp trực tiếp định dạng đề); bản Python
+  chuyển sang 0-based khi đọc để index list gọn, rồi cộng lại 1 lúc in ra.
 
 ## Độ phức tạp
-- Thời gian: O((n + q) * LOG) = O((n + q) * 30) ~ 1.2e7 phép toán, thừa sức
-  trong giới hạn.
-- Bộ nhớ: O(n * LOG) cho bảng up, với n <= 2e5 và LOG = 30 là ~6e6 số nguyên,
-  chấp nhận được.
+- Thời gian: O((n + q) * LOG) = O((n + q) * 30) cho cả hai bản (~1.2e7 phép toán
+  khi n, q <= 2e5), thừa sức trong giới hạn.
+- Bộ nhớ (C++): O(n * LOG) cho bảng successor, với n <= 2e5 và LOG = 30 là ~6e6
+  số nguyên, chấp nhận được.
+- Bộ nhớ (Python): O(n * LOG) cho bảng up, cộng O(n + q) do đọc toàn bộ input
+  một lần và lưu các mảng truy vấn phẳng (xs, ks).

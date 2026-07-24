@@ -28,6 +28,7 @@ tử, và mỗi cập nhật đoạn chỉ chỉnh sửa hai điểm biên nên 
 
 ## Độ phức tạp
 - Mỗi cập nhật và mỗi truy vấn đều là O(log n) nhờ Fenwick tree.
-- Tổng thời gian O((n + q) log n), bộ nhớ O(n).
+- Tổng thời gian O((n + q) log n) cho cả hai bản. Bộ nhớ: bản C++ là O(n) (chỉ
+  mảng BIT); bản Python là O(n + q) vì đọc toàn bộ input một lần rồi mới xử lý.
 - Với n, q <= 2*10^5, giải pháp chạy tốt; Fenwick tree có hằng số nhỏ hơn hẳn
   segment tree cho dạng point-update + prefix-sum này.

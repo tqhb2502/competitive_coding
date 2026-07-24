@@ -10,9 +10,11 @@ https://cses.fi/problemset/task/1667
 ## Ý tưởng
 - Mô hình đồ thị: đồ thị vô hướng, không trọng số (mỗi cạnh coi như trọng số 1).
 - Vì đồ thị không trọng số, đường đi ngắn nhất được tìm bằng BFS xuất phát từ đỉnh 1.
-- Trong lúc BFS, lưu mảng parent[v] = đỉnh liền trước v trên đường đi ngắn nhất.
-- Khi chạm tới đỉnh n, truy vết ngược từ n về 1 qua mảng parent để dựng lại đường đi,
-  sau đó đảo ngược danh sách để in theo thứ tự 1 -> ... -> n.
+- Trong lúc BFS, lưu mảng parent[v] = đỉnh liền trước v trên đường đi ngắn nhất; chính
+  mảng parent này cũng đóng vai trò đánh dấu đã thăm (không dùng mảng visited riêng).
+- Khi lấy được đỉnh n ra khỏi hàng đợi thì dừng sớm (không cần duyệt tiếp).
+- Truy vết ngược từ n về 1 qua mảng parent để dựng lại đường đi, sau đó đảo ngược danh
+  sách để in theo thứ tự 1 -> ... -> n.
 - Nếu sau khi BFS mà đỉnh n vẫn chưa được thăm thì in "IMPOSSIBLE".
 - Tính đúng đắn: BFS duyệt các đỉnh theo từng lớp khoảng cách tăng dần; do mọi cạnh
   có trọng số bằng nhau, lần đầu tiên một đỉnh được thăm chính là lúc chạm tới nó
@@ -21,5 +23,6 @@ https://cses.fi/problemset/task/1667
 
 ## Độ phức tạp
 - Thời gian: O(n + m) cho BFS (mỗi đỉnh và mỗi cạnh xét O(1) lần).
-- Bộ nhớ: O(n + m) cho danh sách kề (adjacency list) và các mảng parent/visited.
+- Bộ nhớ: O(n + m) cho danh sách kề (adjacency list) và mảng parent (kiêm luôn vai trò
+  đánh dấu đã thăm). Riêng bản Python còn đọc toàn bộ input một lần nên tốn thêm O(n + m).
 - Với n <= 1e5 và m <= 2e5, độ phức tạp này hoàn toàn đủ nhanh.

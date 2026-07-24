@@ -7,33 +7,42 @@ Cho một cây có gốc gồm n đỉnh, gốc là đỉnh 1. Mỗi đỉnh i m
 trong subtree gốc tại đỉnh đó.
 
 ## Ý tưởng
-Dùng kỹ thuật small-to-large merging (còn gọi là DSU on tree).
-- Với mỗi đỉnh u ta duy trì một `unordered_set<int>` chứa các màu có trong
-  subtree của u.
-- Khi gộp các subtree con lại: luôn gộp set NHỎ vào set LỚN hơn (small-to-large).
-  Mỗi phần tử chỉ bị chuyển sang một set lớn hơn tối đa O(log n) lần; mỗi lần
-  chèn vào `unordered_set` tốn O(1) trung bình.
-- Đáp án cho u là kích thước set của u SAU khi đã gộp mọi con và thêm màu c[u].
+Dùng kỹ thuật small-to-large merging (còn gọi là DSU on tree). Với mỗi đỉnh ta
+duy trì một tập hợp băm (`unordered_set<int>` trong C++, `set` trong Python) chứa
+các màu phân biệt có trong subtree của đỉnh đó. Đáp án cho một đỉnh là kích thước
+tập màu của subtree đỉnh đó.
 
 Duyệt cây KHÔNG đệ quy để tránh tràn call stack với n tới 2e5:
-- Dùng một stack tường minh (iterative DFS) để tính parent[] và một mảng order[]
-  sao cho mỗi đỉnh luôn đứng TRƯỚC các hậu duệ của nó.
-- Duyệt order theo thứ tự ĐẢO NGƯỢC (reversed): khi tới u thì mọi con của u đã
-  được xử lý xong và giữ set riêng. Ta khởi tạo set của u bằng màu c[u], rồi lần
-  lượt gộp set của từng con vào set của u theo quy tắc small-to-large. Sau khi
-  gộp hết các con, kích thước set của u là đáp án.
+- Dùng một stack tường minh (iterative DFS) từ gốc 1 để tính parent[] và một mảng
+  order[] sao cho mỗi đỉnh luôn đứng TRƯỚC các hậu duệ của nó (C++ nhận diện cha
+  bằng cách so sánh parent[node]; Python dùng mảng visited).
+- Duyệt order theo thứ tự ĐẢO NGƯỢC (reversed): khi tới u thì mọi con của u đã được
+  xử lý xong. Khi gộp hai tập, LUÔN gộp tập NHỎ vào tập LỚN hơn (small-to-large):
+  mỗi phần tử chỉ bị chuyển sang một tập lớn hơn tối đa O(log n) lần; mỗi lần chèn
+  tốn O(1) trung bình.
+
+Hai file gộp theo hai HƯỚNG khác nhau nhưng cùng cho kết quả:
+- solution.cpp (gộp KÉO xuống cha): tại u khởi tạo tập bằng màu c[u], rồi lần lượt
+  kéo tập của từng con vào tập của u (hoán đổi trước nếu con lớn hơn). Sau khi gộp
+  hết các con, kích thước tập của u là đáp án.
+- solution.py (gộp ĐẨY lên cha): tại u tập đã chứa sẵn màu của mọi con (do các con
+  đẩy lên trước đó); thêm màu c[u], ghi đáp án bằng kích thước tập, rồi đẩy tập của
+  u vào tập của cha (nhỏ vào lớn).
 
 Tính đúng:
 - Thứ tự đảo của một thứ tự "cha trước con" bảo đảm mọi con được xử lý trước cha,
-  nên tại thời điểm xử lý u, set của từng con đã chứa đúng màu trong subtree con.
-  Việc gộp tất cả chúng với màu của u tạo đúng tập màu của subtree u.
-- Set tự động loại trùng nên kích thước set = số màu phân biệt. Small-to-large chỉ
-  đổi ĐÍCH gộp chứ không làm thay đổi TẬP hợp kết quả, nên đáp án luôn đúng.
-- Không cần nén màu (coordinate compression) vì set làm việc trực tiếp với số nguyên.
+  nên tại thời điểm xử lý u, tập màu của từng subtree con đã đầy đủ. Việc gộp tất cả
+  chúng với màu của u tạo đúng tập màu của subtree u.
+- Tập hợp tự động loại trùng nên kích thước tập = số màu phân biệt. Small-to-large
+  chỉ đổi ĐÍCH gộp chứ không làm thay đổi TẬP hợp kết quả, nên đáp án luôn đúng.
+- Không cần nén màu (coordinate compression) vì tập hợp làm việc trực tiếp với số
+  nguyên (màu có thể tới 1e9).
 
 ## Độ phức tạp
-- Thời gian kỳ vọng: O(n log n) cho các thao tác gộp `unordered_set`
-  (small-to-large), cộng O(n) đọc/duyệt.
-- Bộ nhớ: O(n). Mỗi phần tử đang lưu thuộc về set của một subtree chưa bị gộp
-  xong; trong lúc gộp có thể tồn tại tạm thời ở cả set nguồn và đích, nhưng tổng
-  số entry sống vẫn bị chặn bởi O(n).
+- solution.cpp: thời gian kỳ vọng O(n log n) cho các thao tác gộp `unordered_set`
+  (small-to-large), cộng O(n) đọc/duyệt; bộ nhớ O(n).
+- solution.py: thời gian kỳ vọng O(n log n) cho các thao tác gộp `set`
+  (small-to-large), cộng O(n) đọc/duyệt; bộ nhớ O(n), bao gồm việc đọc toàn bộ
+  input một lần vào bộ nhớ.
+- Trong lúc gộp, một phần tử có thể tồn tại tạm thời ở cả tập nguồn và tập đích,
+  nhưng tổng số entry sống vẫn bị chặn bởi O(n).

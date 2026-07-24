@@ -41,3 +41,6 @@ Vì sao đúng:
   nên tổng số phần tử trong heap là O(k * m). Thời gian: O(k * m * log(k * m)).
 - Với n <= 1e5, m <= 2e5, k <= 10: khoảng vài triệu thao tác heap, chấp nhận được.
 - Bộ nhớ: adjacency list O(n + m), heap O(k * m).
+- Khác biệt I/O: bản Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read()
+  nên tốn thêm O(m) bộ nhớ cho danh sách token (bị lấn át bởi adjacency list
+  O(n + m)); bản C++ đọc luồng từng số nên không phát sinh chi phí này.

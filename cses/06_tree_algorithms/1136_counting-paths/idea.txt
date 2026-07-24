@@ -23,14 +23,17 @@ parent[l] triệt tiêu phần cộng thừa phía trên l, nên chỉ còn đú
 
 Tính LCA offline bằng thuật toán Tarjan (union-find). Vì tất cả truy vấn LCA đã
 biết trước, ta duyệt cây một lần bằng DFS, dùng cấu trúc Disjoint Set Union
-(DSU) với nén đường đi. Khi một đỉnh được "hoàn tất", với mỗi truy vấn liên quan
-tới nó mà đầu kia đã hoàn tất (black), LCA = ancestor[find(đầu kia)].
+(DSU) với union theo size và nén đường đi. Khi một đỉnh được "hoàn tất", với mỗi
+truy vấn liên quan tới nó mà đầu kia đã hoàn tất (black), LCA = ancestor[find(đầu
+kia)].
 
 Có thể thay Tarjan bằng binary lifting (O((n+m) log n)) hoặc Euler tour + sparse
-table (O(1) mỗi truy vấn). Bản C++ dùng Tarjan offline với DSU. Mọi
-phép duyệt cây (BFS dựng parent/children/order, DFS Tarjan, cộng tổng subtree)
-đều ITERATIVE nên không bị tràn call stack với n ~ 2*10^5.
+table (O(1) mỗi truy vấn). Cả bản C++ và bản Python đều dùng Tarjan offline với
+DSU. Mọi phép duyệt cây (BFS dựng parent/children/order, DFS Tarjan, cộng tổng
+subtree) đều ITERATIVE nên không bị tràn call stack với n ~ 2*10^5.
 
 ## Độ phức tạp
-- Thời gian: O((n + m) * α(n)) ~ gần tuyến tính.
-- Bộ nhớ: O(n + m) cho adjacency, children, DSU và danh sách truy vấn.
+- Thời gian: O((n + m) * α(n)) ~ gần tuyến tính (cho cả hai bản).
+- Bộ nhớ: O(n + m) cho adjacency, children, DSU và danh sách truy vấn. Bản Python
+  đọc toàn bộ input một lần (sys.stdin.buffer.read) nên tốn thêm O(n + m) bộ nhớ
+  đệm cho dữ liệu vào.

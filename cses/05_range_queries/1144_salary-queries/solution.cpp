@@ -95,7 +95,7 @@ int main() {
             frequencies.add(current_position[employee], 1);
         } else {
             // Đếm số lương trong [a, b] = prefix(số lương <= b) - prefix(số lương < a);
-            // dùng bisect quy a, b về biên chỉ số hợp lệ trên tập đã nén.
+            // dùng lower_bound/upper_bound quy a, b về biên chỉ số hợp lệ trên tập đã nén.
             const std::size_t below_lower = static_cast<std::size_t>(
                 std::lower_bound(values.begin(), values.end(), query.a) - values.begin());
             const std::size_t at_most_upper = static_cast<std::size_t>(

@@ -27,6 +27,8 @@ truy vấn thuộc hai loại:
 ## Độ phức tạp
 - Xây cây và Euler tour: O(n).
 - Mỗi truy vấn (update hoặc sum) tốn O(log n) trên BIT.
-- Tổng thời gian: O((n + q) log n). Bộ nhớ: O(n).
+- Tổng thời gian: O((n + q) log n) cho cả hai lời giải.
+- Bộ nhớ: bản C++ đọc trực tiếp bằng cin nên chỉ tốn O(n); bản Python đọc toàn bộ
+  input một lần vào mảng token nên tốn O(n + q).
 - Với n, q <= 2e5 và giá trị tối đa 1e9, tổng có thể tới ~2e14 nên dùng số nguyên
-  64-bit (`long long`).
+  64-bit (`long long` trong C++; Python có số nguyên lớn tùy ý nên không lo tràn).

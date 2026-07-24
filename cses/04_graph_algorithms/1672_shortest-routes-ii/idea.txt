@@ -34,5 +34,8 @@ https://cses.fi/problemset/task/1672
   không thể tạo đường đi i -> k -> j hữu hạn.
 
 ## Độ phức tạp
-- Thời gian: O(n^3) cho Floyd-Warshall + O(q) cho các truy vấn.
-- Bộ nhớ: O(n^2) cho ma trận khoảng cách.
+- Thời gian: O(n^3) cho Floyd-Warshall + O(q) cho các truy vấn (cả C++ lẫn Python).
+- Bộ nhớ: O(n^2) cho ma trận khoảng cách (chi phối cả hai lời giải).
+    + C++ đọc input theo luồng bằng std::cin nên không tốn thêm bộ nhớ đáng kể.
+    + Python đọc toàn bộ input một lần vào bộ nhớ, tốn thêm O(m + q) để lưu mảng token;
+      vì m <= n^2 và q < n^2 nên tổng bộ nhớ vẫn là O(n^2).

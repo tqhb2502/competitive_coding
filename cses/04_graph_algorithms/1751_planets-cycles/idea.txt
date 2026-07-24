@@ -27,7 +27,7 @@ https://cses.fi/problemset/task/1751
     Gán mọi đỉnh trên chu trình đáp án = cyc_len; các đỉnh đuôi phía trước gán tăng
     dần cyc_len+1, cyc_len+2, ... khi đi ngược lại.
   + Nếu state[node] == 2: node đã có đáp án từ trước, toàn bộ chain là đuôi dẫn vào
-    phần đã xử lý; gán đáp án lùi dần ans[node]+1, ans[node]+2, ...
+    phần đã xử lý; gán đáp án tăng dần ans[node]+1, ans[node]+2, ... khi đi ngược lại.
 - Mỗi đỉnh được đưa vào chain đúng một lần và xử lý đúng một lần.
 
 ## Độ phức tạp

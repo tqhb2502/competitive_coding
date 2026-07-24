@@ -37,8 +37,14 @@ Cho một đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n đỉnh và m cạn
   này chắc chắn nằm trên một đường đi 1 -> n, do đó đáp án là -1.
 - Ngược lại, đáp án là dist[n].
 - Code C++ quét toàn bộ các cạnh good trong mỗi vòng. Nếu một vòng không có cập nhật
-  nào thì đã hội tụ và dừng sớm; sau cùng quét thêm toàn bộ cạnh good đúng một lần để
-  phát hiện chu trình dương.
+  nào thì đã hội tụ và dừng sớm; sau cùng LUÔN quét thêm toàn bộ cạnh good đúng một lần
+  để phát hiện chu trình dương (nếu đã hội tụ thì vòng này không tìm thấy gì).
+- Code Python dùng biến thể active-set (kiểu SPFA): mỗi vòng chỉ duyệt các đỉnh vừa
+  được cập nhật ở vòng trước thay vì quét lại toàn bộ cạnh, vẫn giữ chặn
+  O(cntgood * E_good) nhưng nhanh hơn nhiều trên thực tế. Nếu tập active trở nên rỗng
+  trước khi chạy hết (cntgood - 1) vòng thì đã hội tụ (chắc chắn không có chu trình
+  dương) và BỎ QUA vòng kiểm tra; ngược lại mới quét toàn bộ cạnh good một lần để phát
+  hiện chu trình dương.
 
 ## Độ phức tạp
 - BFS cắt tỉa: O(n + m).
@@ -47,4 +53,6 @@ Cho một đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n đỉnh và m cạn
 - Bộ nhớ: O(n + m).
 
 Việc chỉ giữ đồ thị con good có thể giảm đáng kể số cạnh thực tế; ngay cả cận
-xấu nhất 1.25 * 10^7 phép relax vẫn phù hợp với code C++.
+xấu nhất 1.25 * 10^7 phép relax vẫn phù hợp với code C++. Bản Python dùng active-set
+để tránh quét lại toàn bộ cạnh mỗi vòng nên nhanh hơn nhiều so với Bellman-Ford quét
+đầy đủ, dù chặn xấu nhất về lý thuyết vẫn là O(cntgood * E_good).

@@ -38,5 +38,9 @@ mỗi biểu thức trở thành (hằng theo k) cộng/trừ một số chỉ p
 toán quy về range-min cổ điển mà segment tree giải chính xác.
 
 ## Độ phức tạp
-- Thời gian: O((n + q) log n).
-- Bộ nhớ: O(n) cho mỗi cây (tổng O(n)).
+- Thời gian: O((n + q) log n) cho cả C++ lẫn Python.
+- Bộ nhớ:
+  * C++: O(n) — hai cây segment tree, mỗi cây 2n nút; đọc và xử lý từng truy vấn
+    ngay khi gặp nên không lưu toàn bộ input.
+  * Python: O(n + q) — ngoài hai cây O(n), đọc toàn bộ input một lần vào bộ nhớ
+    (O(n + q) token) để tăng tốc.

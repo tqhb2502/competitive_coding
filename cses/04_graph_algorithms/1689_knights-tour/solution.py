@@ -38,7 +38,7 @@ def main():
         # Gom các ô kề chưa thăm, sắp theo heuristic Warnsdorff: số nước đi tiếp
         # theo tăng dần. Khi bằng nhau, ưu tiên ô xa tâm bàn cờ hơn (tọa độ nhân
         # đôi để tâm 3.5 thành 7). Phá hòa xác định này giúp nhánh đầu luôn thành
-        # công nên DFS gần như không phải quay lui (64 lời gọi mỗi lần giải).
+        # công nên DFS không phải quay lui (64 lời gọi mỗi lần giải).
         cands = []
         for dr, dc in moves:
             nr = r + dr

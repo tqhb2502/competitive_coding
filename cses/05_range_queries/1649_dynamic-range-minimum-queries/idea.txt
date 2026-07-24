@@ -31,4 +31,6 @@ chỉ ảnh hưởng các node trên đường từ lá tới gốc nên O(log n
   - Xây dựng: O(n).
   - Mỗi update và mỗi query: O(log n).
   - Tổng thời gian: O((n + q) log n).
-  - Bộ nhớ: O(size) ~ O(n) cho mảng tree.
+  - Bộ nhớ mảng tree: O(size) ~ O(n).
+  - solution.py đọc toàn bộ input một lần nên tốn thêm O(n + q); solution.cpp
+    đọc từng token nên chỉ O(n).

@@ -21,8 +21,17 @@ chỉ thuộc tối đa một cặp. In ra số cặp lớn nhất và danh sác
 - Tính đúng đắn: theo định lý Berge, một matching là cực đại khi và chỉ khi không còn
   augmenting path. Thuật toán Kuhn lần lượt tăng matching cho từng nam; khi duyệt hết
   mọi nam mà không thể tăng thêm, ta thu được matching cực đại.
+- Chi tiết cài đặt: bản C++ (solution.cpp) cài hàm augment bằng đệ quy; bản Python
+  (solution.py) mô phỏng đúng quá trình DFS đó bằng ngăn xếp tường minh (mỗi nam có
+  con trỏ it[] để duyệt tiếp danh sách kề) nhằm tránh giới hạn độ sâu đệ quy của Python.
+  Cả hai bản dùng chính chỉ số bạn nam đang xét làm token (token = boy) nên không cần
+  reset lại mảng visited giữa các lần tìm kiếm. Ô trống được đánh dấu bằng 0 trong bản
+  C++ và bằng -1 trong bản Python.
 
 ## Độ phức tạp
-- Thời gian: O(V * E) trong trường hợp xấu nhất, với V = n <= 500 và E = k <= 1000,
-  tức khoảng 5 * 10^5 phép cơ bản. Rất nhanh.
-- Bộ nhớ: O(n + m + k) cho danh sách kề và các mảng match/visited.
+- Thời gian: O(V * E) trong trường hợp xấu nhất (V = n là số bạn nam, E = k là số cạnh),
+  với n <= 500 và k <= 1000 thì khoảng 5 * 10^5 phép cơ bản. Rất nhanh. Áp dụng cho cả
+  hai bản C++ và Python.
+- Bộ nhớ: O(n + m + k) cho danh sách kề và các mảng match/visited. Bản Python đọc toàn
+  bộ input một lần bằng sys.stdin.buffer.read() nên giữ thêm O(k) token trong bộ nhớ,
+  tổng vẫn là O(n + m + k).

@@ -40,9 +40,16 @@ dùng để relax tiếp; phép DP theo thứ tự topo của DAG là hợp lệ
 trong heap (d > dist[u]) bị bỏ qua nên mỗi đỉnh chỉ relax đúng một lần.
 
 ## Độ phức tạp
-- Thời gian: O((n + m) log n) do Dijkstra với binary heap. Với n <= 1e5,
-  m <= 2e5 thì số thao tác heap khoảng vài triệu.
-- Bộ nhớ: O(n + m) cho `vector<vector<Edge>>` và 4 mảng trạng thái.
+- Thời gian: O((n + m) log n) cho cả hai bản do Dijkstra với binary heap. Với
+  n <= 1e5, m <= 2e5 thì số thao tác heap khoảng vài triệu.
+- Bộ nhớ: O(n + m) cho danh sách kề và 4 mảng trạng thái (dist, ways, minE,
+  maxE).
 
-Code C++ dùng `priority_queue`, fast I/O và bỏ các bản ghi khoảng cách cũ trong
-heap; độ phức tạp trên nằm trong giới hạn.
+Bản C++ dùng `priority_queue` với danh sách kề `vector<vector<Edge>>`, fast I/O
+(`sync_with_stdio(false)`), và bỏ các bản ghi khoảng cách cũ trong heap khi
+`current_distance != distance[node]`.
+
+Bản Python đọc toàn bộ input một lần bằng `sys.stdin.buffer.read()` (O(n + m)
+bộ nhớ cho danh sách token), dựng danh sách kề dạng CSR (mảng phẳng adj_to/adj_w
+cùng con trỏ start) để tiết kiệm bộ nhớ và tăng tốc, dùng `heapq`, và bỏ bản ghi
+cũ trong heap khi `d > dist[u]`.

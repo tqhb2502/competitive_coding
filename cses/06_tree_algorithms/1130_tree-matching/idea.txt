@@ -33,9 +33,10 @@ hoặc u đã bị dùng bởi một con. Công thức chuyển trạng thái du
 chọn con để ghép và lấy tối ưu, nên cho ra maximum matching chính xác trên cây.
 
 Cài đặt tránh đệ quy: cây có tới 2*10^5 đỉnh nên KHÔNG dùng DFS đệ quy (tránh tràn
-call stack). Dùng BFS/DFS lặp bằng stack để lấy thứ tự duyệt và mảng
-parent, sau đó xử lý DP theo thứ tự ĐẢO NGƯỢC của thứ tự duyệt (bảo đảm mọi con
-được tính trước cha, tức post-order).
+call stack). Cả hai bản đều duyệt lặp để lấy thứ tự duyệt (order) và mảng parent:
+bản C++ duyệt theo kiểu BFS (dùng chính mảng order như một hàng đợi qua chỉ số i),
+bản Python duyệt DFS bằng stack tường minh. Sau đó xử lý DP theo thứ tự ĐẢO NGƯỢC
+của thứ tự duyệt (bảo đảm mọi con được tính trước cha, tức post-order).
 
 ## Độ phức tạp
 - Thời gian: O(n) (mỗi cạnh/đỉnh được xét số lần hằng số).

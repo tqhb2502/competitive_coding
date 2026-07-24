@@ -44,7 +44,7 @@ bool find_tour(const int row, const int column, const int step) {
     // Heuristic Warnsdorff: thử ô kề có ít nước đi tiếp theo nhất trước.
     // Khi bằng nhau, ưu tiên ô xa tâm bàn cờ hơn (tọa độ nhân đôi để tâm 3.5
     // thành 7, so sánh bằng số nguyên) - phá hòa xác định giúp nhánh đầu luôn
-    // thành công nên DFS gần như không phải quay lui.
+    // thành công nên DFS không phải quay lui (đúng 64 lời gọi mỗi lần giải).
     std::vector<std::tuple<int, int, int, int>> candidates;
     candidates.reserve(8);
     for (int move = 0; move < 8; ++move) {

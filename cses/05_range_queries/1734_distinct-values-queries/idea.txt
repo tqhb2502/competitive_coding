@@ -17,8 +17,8 @@ Xử lý OFFLINE kết hợp Fenwick tree (BIT).
      - nếu x đã từng xuất hiện ở vị trí last[x] thì BIT.update(last[x], -1)
        để gỡ bỏ đánh dấu cũ;
      - BIT.update(i, +1) để đánh dấu vị trí mới;
-     - cập nhật last[x] = i trong `unordered_map`, nên không cần coordinate
-       compression.
+     - cập nhật last[x] = i trong bảng băm (unordered_map ở C++, dict ở
+       Python), nên không cần coordinate compression.
 
 3. Sau khi đã xử lý xong vị trí i, mọi truy vấn có b = i được trả lời bằng
    range_sum(a, i) = prefix(i) - prefix(a-1). Vì BIT chỉ còn đúng một dấu 1

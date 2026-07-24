@@ -25,8 +25,15 @@ Việc còn lại là tính LCA nhanh bằng binary lifting (nhảy nhị phân)
 Tính parent[] và depth[]: vì cây có tới 2e5 đỉnh, KHÔNG dùng đệ quy (tránh tràn
 stack). Ta duyệt BFS lặp (iterative) từ đỉnh 1 theo thứ tự tăng dần độ sâu.
 
+Khác biệt cài đặt giữa hai bản (thuật toán BFS + binary lifting là như nhau):
+- Bản C++ dựng danh sách kề bằng vector<vector> và đọc/ghi trực tiếp qua cin/cout.
+- Bản Python đọc toàn bộ input một lần, dựng danh sách kề dạng CSR (mảng start[]
+  là offset, mảng adj[] chứa các đỉnh kề) để tiết kiệm bộ nhớ và chạy nhanh hơn.
+
 ## Độ phức tạp
 - Tiền xử lý bảng up: O(n log n) thời gian và O(n log n) bộ nhớ (LOG ≈ 18 với
   n = 2e5).
 - Mỗi truy vấn LCA: O(log n). Tổng các truy vấn: O(q log n).
 - Tổng: O((n + q) log n) thời gian, O(n log n) bộ nhớ.
+- Bản Python đọc toàn bộ input vào bộ nhớ một lần (thêm O(n + q)), nhưng bảng up
+  cỡ O(n log n) vẫn là thành phần chiếm bộ nhớ chủ đạo.

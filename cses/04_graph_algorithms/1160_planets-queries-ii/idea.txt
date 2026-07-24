@@ -45,5 +45,8 @@ cycle thì không bao giờ rời cycle để quay lại một đỉnh cây, nê
 khi nó là tổ tiên của a.
 
 ## Độ phức tạp
-Thời gian O(n + q), bộ nhớ O(n). Mọi bước duyệt (tìm cycle, gán cycle, DFS tính
+Thời gian O(n + q) cho cả hai bản. Mọi bước duyệt (tìm cycle, gán cycle, DFS tính
 depth/Euler tour) đều iterative nên không lo tràn call stack với n tới 2e5.
+Bộ nhớ: bản C++ chỉ O(n) vì đọc từng truy vấn bằng cin và in ngay từng đáp án; bản
+Python đọc toàn bộ input một lần (sys.stdin.buffer.read()) rồi gom mọi đáp án vào một
+list trước khi in, nên bộ nhớ là O(n + q).

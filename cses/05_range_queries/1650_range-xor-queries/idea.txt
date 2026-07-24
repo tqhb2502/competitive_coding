@@ -18,4 +18,7 @@ khi XOR hai giá trị này chúng triệt tiêu lẫn nhau, chỉ còn lại x_
 
 ## Độ phức tạp
 - Thời gian: O(n) để dựng prefix XOR, O(1) mỗi truy vấn, tổng cộng O(n + q).
-- Bộ nhớ: O(n) cho mảng prefix.
+- Bộ nhớ:
+  - C++ (solution.cpp): O(n) cho mảng prefix, đọc input theo luồng.
+  - Python (solution.py): O(n + q) do đọc toàn bộ input một lần vào bộ nhớ,
+    ngoài mảng prefix O(n) và danh sách kết quả O(q).

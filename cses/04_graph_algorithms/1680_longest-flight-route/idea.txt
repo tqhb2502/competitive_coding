@@ -18,9 +18,9 @@ https://cses.fi/problemset/task/1680
   parent[v] lưu đỉnh liền trước trên đường đi tối ưu để truy vết (path reconstruction).
 - Duyệt các đỉnh u theo thứ tự topo. Khi lấy u ra thì mọi đỉnh đứng trước u đã
   được xử lý xong nên dist[u] đã là giá trị cuối cùng. Với mỗi cạnh u -> v:
-    + giảm indegree[v] (phục vụ thuật toán Kahn), nếu về 0 thì đẩy v vào hàng đợi.
     + nếu dist[u] khác -1 và dist[u] + 1 > dist[v] thì
       cập nhật dist[v] = dist[u] + 1 và parent[v] = u.
+    + sau đó giảm indegree[v] (phục vụ thuật toán Kahn), nếu về 0 thì đẩy v vào hàng đợi.
 - Truy vết kết quả: nếu dist[n] bằng -1 thì không tới được n từ 1, in "IMPOSSIBLE".
   Ngược lại, bắt đầu từ n đi ngược theo parent về tới 1, thu được danh sách các
   thành phố, đảo ngược lại rồi in ra. Số thành phố bằng dist[n] (cũng bằng độ
@@ -31,6 +31,8 @@ https://cses.fi/problemset/task/1680
   trình nên longest path là hữu hạn và DP hội tụ.
 
 ## Độ phức tạp
-- Thời gian: O(n + m) cho cả topo sort lẫn DP.
+- Thời gian: O(n + m) cho cả topo sort lẫn DP (đúng với cả C++ và Python).
 - Bộ nhớ: O(n + m) cho adjacency list và các mảng dist, parent, indegree.
+  Bản Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read() rồi tách token,
+  tốn thêm O(n + m) bộ nhớ cho mảng token nhưng vẫn giữ độ phức tạp tuyến tính.
 - Với n <= 1e5 và m <= 2e5 thì độ phức tạp tuyến tính này chạy tốt.

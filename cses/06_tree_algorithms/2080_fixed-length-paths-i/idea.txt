@@ -22,9 +22,10 @@ PHÂN LOẠI ĐƯỜNG ĐI CÓ LCA = L
    đều nằm thực sự dưới L.
 
 THUẬT TOÁN O(n) BẰNG LONG-PATH DECOMPOSITION (heavy path theo chiều cao)
-- Tính height[v] (số cạnh của đường đi xuống dài nhất từ v) và heavy[v] (con
-  cho height lớn nhất) bằng DFS ITERATIVE dùng stack tường minh, KHÔNG dùng đệ
-  quy để tránh tràn call stack khi n tới 2*10^5.
+- DFS ITERATIVE từ root dùng stack tường minh (KHÔNG đệ quy, tránh tràn call
+  stack khi n tới 2*10^5) để tính parent[] và thứ tự preorder. Sau đó một lượt
+  duyệt bottom-up (đảo preorder) tính height[v] (số cạnh của đường đi xuống dài
+  nhất từ v) và heavy[v] (con đạt height lớn nhất đó).
 - Cấp phát một memory pool: mỗi heavy chain (từ đỉnh đầu chuỗi xuống tới lá sâu
   nhất) chiếm một đoạn liên tiếp trong mảng D có kích thước height+1. Đặt con
   trỏ Dptr[v] sao cho cnt[v][i] = D[Dptr[v] + i] và Dptr[v] = Dptr[heavy[v]] - 1.

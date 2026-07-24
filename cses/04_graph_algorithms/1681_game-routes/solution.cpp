@@ -27,7 +27,7 @@ int main() {
         }
     }
 
-    // dp: số đường đi từ đỉnh 1 đến từng đỉnh, khởi tạo dp[1] = 1
+    // ways: số đường đi từ đỉnh 1 đến từng đỉnh, khởi tạo ways[1] = 1
     constexpr int MOD = 1'000'000'007;
     std::vector<int> ways(n + 1, 0);
     ways[1] = 1;
@@ -38,7 +38,7 @@ int main() {
         ready.pop();
 
         for (const int next : adj[level]) {
-            // Cộng dp[level] vào dp[next] theo modulo (trừ MOD thay cho phép %)
+            // Cộng ways[level] vào ways[next] theo modulo (trừ MOD thay cho phép %)
             ways[next] += ways[level];
             if (ways[next] >= MOD) {
                 ways[next] -= MOD;

@@ -42,5 +42,10 @@ cách đổi thứ tự tổng và khai triển (x-j+1)(x-j+2)/2 theo các lũy 
 âm).
 
 ## Độ phức tạp
-Thời gian: O((n + q) log n). Bộ nhớ: O(n) cho ba BIT và mảng prefix. Các moment
-đa thức và phép nhân trung gian dùng `__int128` để tránh tràn số.
+Thời gian: O((n + q) log n) cho cả hai lời giải (mỗi update/query chỉ gồm vài thao
+tác BIT, mỗi thao tác O(log n)).
+Bộ nhớ:
+- solution.cpp: O(n) cho ba BIT và mảng prefix; đọc input tuần tự bằng std::cin. Các
+  moment đa thức và phép nhân trung gian dùng `__int128` để tránh tràn số.
+- solution.py: O(n + q) vì đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split();
+  Python dùng số nguyên lớn tùy ý nên không lo tràn số, và đã inline vòng lặp BIT cho nhanh.

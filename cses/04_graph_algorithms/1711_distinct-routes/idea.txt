@@ -16,20 +16,27 @@ sao cho không có cạnh nào bị dùng lại giữa các tuyến, rồi in ra
   cạnh có capacity 1 nên mỗi đơn vị luồng nguyên tương ứng một đường đi không dùng
   chung cạnh (theo định lý Menger / max-flow min-cut). Đó là đáp án k.
 - Chạy Dinic (max-flow) để tính k.
-- Tái tạo (decompose) k đường đi:
-  + Xét các cạnh gốc có forward capacity = 0 sau Dinic, tức đang mang một đơn vị
-    net flow, rồi đưa chúng vào danh sách kề flowEdges.
-  + Lặp đúng k lần: chạy BFS chỉ trên các cạnh mang luồng chưa bị tiêu thụ để tìm
-    một đường đi từ s tới t. Mảng parentVertex/parentEdge dùng để truy vết đường.
-  + Truy vết từ t về s, đánh dấu từng cạnh trên tuyến là consumed để các tuyến
-    sau không dùng lại cạnh đó.
-- Tính đúng đắn: max-flow = số đường đi edge-disjoint tối đa; bảo toàn luồng bảo
-  đảm sau khi bỏ một đường s -> t, phần luồng còn lại vẫn chứa thêm k-1 đơn vị
-  luồng. Vì thế mỗi lần BFS đều tìm được một tuyến và bóc tách đủ đúng k tuyến.
+- Tái tạo (decompose) k đường đi: trước hết chỉ giữ lại các cạnh gốc đang mang một
+  đơn vị net flow, tức cạnh forward còn capacity = 0 sau Dinic, rồi gom chúng vào
+  danh sách kề "chỉ gồm cạnh luồng" (flowEdges trong C++, flowadj trong Python).
+  + solution.cpp: lặp đúng k lần, mỗi lần chạy BFS chỉ trên các cạnh luồng chưa bị
+    tiêu thụ (mảng consumed) để tìm một đường s -> t, dùng parentVertex/parentEdge
+    truy vết ngược từ t về s và đánh dấu các cạnh trên tuyến là đã dùng.
+  + solution.py: đi bộ theo cạnh luồng bằng con trỏ ptr cho mỗi đỉnh (mỗi cạnh chỉ
+    dùng một lần); nếu gặp lại đỉnh đã nằm trên path thì đã tạo thành chu trình, cắt
+    bỏ đoạn chu trình đó rồi đi tiếp. Lặp đúng k lần để bóc ra k tuyến.
+- Tính đúng đắn: max-flow = số đường đi edge-disjoint tối đa; do bảo toàn luồng, sau
+  khi bóc một đường s -> t (và loại bỏ mọi chu trình) phần luồng còn lại vẫn là luồng
+  hợp lệ chứa thêm k-1 đơn vị luồng. Vì thế mỗi lần đều tìm được một tuyến và bóc
+  tách đủ đúng k tuyến.
 
 ## Độ phức tạp
-- Dùng cận tổng quát của Dinic: O(V^2 * E); với V <= 500, E = O(m) và mọi
-  capacity bằng 1, thực tế nhỏ hơn nhiều.
-- Tái tạo: O(k * (V + E)) do chạy tối đa k lần BFS. Bộ nhớ: O(V + E) ngoài
-  danh sách các tuyến xuất ra.
-- Với n <= 500, m <= 1000, cách cài đặt này nằm trong giới hạn.
+- Dinic dùng cận tổng quát O(V^2 * E); với mạng đơn vị (mọi capacity = 1) còn nhanh
+  hơn nhiều, cỡ O(E * sqrt(V)). Ở đây V = n <= 500, E = O(m).
+- Tái tạo:
+  + solution.cpp: O(k * (V + E)) do chạy tối đa k lần BFS.
+  + solution.py: O(V + E) tính chung (con trỏ ptr chỉ tiến, mỗi cạnh luồng được
+    duyệt đúng một lần, phần cắt chu trình cũng chỉ tốn tổng cộng O(V + E)).
+- Bộ nhớ: O(V + E) ngoài danh sách các tuyến xuất ra; solution.py còn đọc toàn bộ
+  input một lần nên tốn thêm O(n + m).
+- Với n <= 500, m <= 1000, cả hai cài đặt đều nằm trong giới hạn.

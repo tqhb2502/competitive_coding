@@ -35,8 +35,9 @@ Cấu trúc dữ liệu:
    liền kề của nó. Một Fenwick/BIT trên các chỉ số nén này lưu cờ present/absent
    cho phép:
      - bit_add: bật/tắt một cặp (activate / deactivate),
-     - prev_present / next_present: dùng prefix-count kết hợp thao tác "select"
-       của BIT (binary lifting) để tìm phần tử active liền trước / liền sau.
+     - tìm predecessor / successor cùng giá trị: dùng prefix-count (bit_sum) kết
+       hợp thao tác "select" của BIT (binary lifting) để lấy phần tử active liền
+       trước / liền sau.
    Sau khi tìm được hàng xóm, so sánh value_rank để biết có cùng giá trị không.
 
 Thao tác update "1 k u":

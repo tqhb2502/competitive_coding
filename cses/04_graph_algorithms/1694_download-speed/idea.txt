@@ -16,14 +16,19 @@ https://cses.fi/problemset/task/1694
     nên cạnh đối của eid là eid ^ 1.
   - Nếu có nhiều kết nối song song (kể cả hai chiều a -> b và b -> a) thì cứ thêm từng
     cạnh riêng biệt; điều này hoàn toàn đúng đắn với residual graph.
-  - Lặp lại: dựng level graph bằng BFS từ source; nếu tới được sink thì tìm nhiều
-    blocking flow bằng DFS (dùng mảng iterator để bỏ qua các cạnh đã bão hòa). Lặp cho
-    tới khi BFS không còn tìm được đường tăng luồng.
+  - Lặp lại: dựng level graph bằng BFS từ source; nếu tới được sink thì đẩy blocking
+    flow (gồm nhiều đường tăng luồng) bằng DFS, dùng mảng iterator (nextEdge/it) để bỏ
+    qua các cạnh đã bão hòa. Lặp cho tới khi BFS không còn tới được sink.
+  - Bản C++ dùng DFS đệ quy (sendFlow); bản Python dùng DFS lặp bằng stack tường minh
+    để tránh vượt giới hạn đệ quy khi đường tăng luồng dài.
 - Tính đúng đắn: Dinic kết thúc khi không còn augmenting path trong residual graph, khi
   đó luồng đã đạt cực đại. Vì c có thể tới 1e9 nên giá trị luồng và capacity được
   lưu bằng `long long`.
 
 ## Độ phức tạp
 - Thời gian: Dinic tổng quát O(V^2 * E). Với n <= 500 và m <= 1000 (số cạnh kể cả
-  residual khoảng 2m), chi phí rất nhỏ so với giới hạn nên chạy nhanh.
-- Bộ nhớ: O(V + E) cho danh sách kề và các mảng to[], cap[].
+  residual khoảng 2m), chi phí rất nhỏ so với giới hạn nên chạy nhanh. C++ và Python
+  cùng độ phức tạp thời gian.
+- Bộ nhớ: O(V + E) cho danh sách kề và các mảng to[], cap[]. Riêng bản Python đọc toàn
+  bộ input một lần (sys.stdin.buffer.read().split()) nên giữ thêm O(m) token trong bộ
+  nhớ, nhưng vẫn nằm trong O(V + E).

@@ -41,4 +41,6 @@ trị nhỏ nhất > R + 1 thì mọi giá trị còn lại chắc chắn lớn 
   Fibonacci; mỗi ngưỡng duyệt thêm O(log m) node, tổng cỡ O(log m * log(tổng)).
 - Tổng thời gian O(n log m + q log m log S), với S là tổng giá trị đồng xu
   tối đa trong một truy vấn.
-- Bộ nhớ O(n log m) node trong `vector<Node>`; trường `sum` dùng `long long`.
+- Bộ nhớ O(n log m) node: bản C++ lưu trong `vector<Node>` với trường `sum`
+  kiểu `long long`; bản Python dùng ba mảng phẳng `LC`/`RC`/`SUM`, trong đó
+  `SUM` là mảng int64 (`array('q')`) vì tổng tiền có thể tới ~2e14.

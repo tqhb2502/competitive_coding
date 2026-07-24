@@ -26,20 +26,21 @@ Thuật toán: DFS backtracking kết hợp heuristic Warnsdorff.
 - Khi hai ô có cùng số nước đi tiếp theo, phá hòa bằng cách ưu tiên ô xa tâm bàn cờ
   hơn (dùng tọa độ nhân đôi để tâm 3.5 thành 7, so sánh bằng số nguyên). Cách phá
   hòa xác định này giúp nhánh đầu tiên luôn thành công cho mọi ô xuất phát trên bàn
-  8x8, nên DFS gần như không bao giờ phải quay lui (đúng 64 lời gọi mỗi lần giải).
+  8x8, nên DFS không bao giờ phải quay lui (đúng 64 lời gọi mỗi lần giải, đã kiểm
+  chứng cả 64 ô xuất phát).
 - Đây vẫn là backtracking đầy đủ (exhaustive): nếu một nhánh đi vào ngõ cụt thì
   quay lui (đặt lại board = 0) và thử nhánh khác, nên thuật toán luôn tìm ra lời
   giải nếu tồn tại. Với bàn 8x8 và mọi ô xuất phát đều tồn tại tour, nên chắc chắn
   tìm được.
 - Heuristic Warnsdorff chỉ đổi THỨ TỰ thử các nhánh chứ không loại bỏ nhánh nào, do
-  đó không làm mất tính đúng đắn; nó chỉ giúp gần như luôn tìm ra nghiệm ngay ở
+  đó không làm mất tính đúng đắn; với bàn 8x8 nó luôn tìm ra nghiệm ngay ở
   nhánh đầu tiên. Bài chấp nhận bất kỳ tour hợp lệ nào nên chỉ cần in ra một lời
   giải có ô xuất phát mang số 1.
 
 ## Độ phức tạp
-- Bàn cờ cố định 64 ô. Nhờ heuristic Warnsdorff, DFS thực tế chạy gần như tuyến
-  tính theo số ô, mỗi bước làm O(số nước đi tối đa) = O(8) công việc để đếm và sắp
-  xếp. Tổng thời gian rất nhỏ (hằng số), thực tế tức thì.
+- Bàn cờ cố định 64 ô. Nhờ heuristic Warnsdorff, DFS chạy tuyến tính theo số ô
+  (đúng 64 lời gọi, không quay lui), mỗi bước làm O(số nước đi tối đa) = O(8) công
+  việc để đếm và sắp xếp. Tổng thời gian rất nhỏ (hằng số), thực tế tức thì.
 - Bộ nhớ O(64) cho bảng trạng thái. Độ sâu đệ quy tối đa 64.
 
 LƯU Ý TLE: Không có rủi ro TLE vì kích thước bài cố định 8x8.

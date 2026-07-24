@@ -95,7 +95,7 @@ int main() {
     std::sort(values.begin(), values.end());
     values.erase(std::unique(values.begin(), values.end()), values.end());
 
-    // Dựng cây theo prefix vị trí: roots[i] = đã chèn n đồng đầu tiên x_1..x_i.
+    // Dựng cây theo prefix vị trí: roots[i] = đã chèn i đồng đầu tiên x_1..x_i.
     PersistentSegmentTree tree(static_cast<int>(values.size()), n);
     std::vector<int> roots(n + 1, 0);
     for (int index = 1; index <= n; ++index) {

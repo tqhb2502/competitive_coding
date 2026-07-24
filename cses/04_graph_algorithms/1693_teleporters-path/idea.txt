@@ -32,8 +32,10 @@ Dùng thuật toán Hierholzer để dựng đường đi Euler:
             ngược lại: pop v ra và thêm vào path
         đảo ngược path để được thứ tự đi thực sự.
   - Sau khi dựng xong, nếu len(path) == m + 1 thì đã dùng hết mọi cạnh (đây chính
-    là kiểm tra điều kiện liên thông (4)); ngược lại in IMPOSSIBLE. Kiểm tra thêm
-    path đầu là 1 và cuối là n cho chắc chắn.
+    là kiểm tra điều kiện liên thông (4)); ngược lại in IMPOSSIBLE. Riêng bản C++
+    còn kiểm tra thêm path đầu là 1 và cuối là n cho chắc chắn (bản Python bỏ qua
+    vì khi các điều kiện bậc đã thỏa và path đủ m + 1 đỉnh thì hai đầu mút tất yếu
+    là 1 và n).
 
 Vì sao đúng: điều kiện bậc (1)-(3) là điều kiện cần và đủ cục bộ cho sự tồn tại
 của đường đi Euler có hướng với hai đầu mút xác định. Hierholzer luôn dựng được
@@ -45,5 +47,6 @@ liên thông.
 ## Độ phức tạp
   - Thời gian: O(n + m). Mỗi cạnh được duyệt đúng một lần trong Hierholzer, mỗi
     đỉnh được kiểm tra bậc một lần.
-  - Bộ nhớ: O(n + m) cho adjacency list, mảng bậc, mảng con trỏ, stack và path.
+  - Bộ nhớ: O(n + m) cho adjacency list, mảng bậc, mảng con trỏ, stack và path
+    (bản Python còn đọc toàn bộ input vào bộ nhớ một lần, cũng O(n + m)).
 Với n <= 10^5 và m <= 2*10^5, độ phức tạp tuyến tính là an toàn.

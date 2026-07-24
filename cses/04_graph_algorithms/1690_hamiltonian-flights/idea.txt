@@ -7,42 +7,58 @@ Cho đồ thị có hướng gồm n thành phố và m chuyến bay (n <= 20). 
 đúng một lần. In kết quả theo modulo 10^9 + 7.
 
 ## Ý tưởng
-Mô hình hóa đồ thị:
-- Các thành phố là các đỉnh (đánh số lại từ 0 đến n-1). Mỗi chuyến bay a -> b là
-  một cạnh có hướng. Lưu edge_count[a][b] là số chuyến bay a -> b để đếm đúng
-  cả trường hợp có nhiều cạnh song song.
-- Điểm đầu 0 và điểm cuối n-1 là cố định. Vì vậy bitmask chỉ cần biểu diễn tập
-  n-2 thành phố trung gian 1..n-2, giúp giảm bộ nhớ đi bốn lần so với mask đủ n
-  bit.
+Ý tưởng chung (cả hai lời giải): quy hoạch động trên bitmask tập thành phố đã
+thăm. Trạng thái theo dõi tập thành phố đã đi qua và thành phố đang đứng; mỗi
+bước mở rộng đường đi bằng đúng một cạnh. Duyệt mask tăng dần nên trạng thái
+nguồn (mask bỏ đi đỉnh cuối) luôn được tính trước. Hai lời giải khác nhau ở cách
+nén mask và cách lưu cạnh.
 
-Thuật toán quy hoạch động trên bitmask:
-- Gọi r = n-2. Định nghĩa dp[mask][last] là số cách xuất phát từ thành phố 0,
-  đã thăm đúng tập thành phố trung gian `mask`, và đang đứng ở thành phố trung
-  gian `last+1`. Bit `last` bắt buộc thuộc mask.
+Lời giải C++ (solution.cpp) — nén mask còn n-2 đỉnh trung gian:
+- Lưu edge_count[a][b] = số chuyến bay a -> b (ma trận kề giữ bội số, đếm đúng
+  cả khi có nhiều cạnh song song).
+- Điểm đầu (thành phố 1, chỉ số 0) và điểm cuối (thành phố n, chỉ số n-1) là cố
+  định nên bitmask chỉ cần biểu diễn tập n-2 thành phố trung gian, giảm bộ nhớ
+  bốn lần so với mask đủ n bit.
+- dp[mask][last] = số cách xuất phát từ thành phố 1, đã thăm đúng tập thành phố
+  trung gian `mask`, và đang đứng ở thành phố trung gian có chỉ số nội bộ `last`
+  (thành phố thật là `last+1`); bit `last` bắt buộc thuộc mask.
 - Với previous_mask = mask bỏ bit last:
   + Nếu previous_mask rỗng, `last+1` là thành phố trung gian đầu tiên:
         dp[mask][last] = edge_count[0][last+1].
   + Ngược lại:
-        dp[mask][last]
-          = tổng dp[previous_mask][previous]
-                  * edge_count[previous+1][last+1]
+        dp[mask][last] = tổng dp[previous_mask][previous]
+                                * edge_count[previous+1][last+1]
     trên mọi bit `previous` thuộc previous_mask.
-- Sau khi đã thăm full_mask = (1<<r)-1, đi cạnh cuối tới thành phố n-1:
-      answer = tổng dp[full_mask][last] * edge_count[last+1][n-1].
-- Trường hợp n = 2 không có đỉnh trung gian, đáp án là
-  edge_count[0][1].
+- Sau khi thăm full_mask = (1<<(n-2))-1, đi cạnh cuối tới thành phố n:
+        answer = tổng dp[full_mask][last] * edge_count[last+1][n-1].
+- Trường hợp n = 2 không có đỉnh trung gian, đáp án là edge_count[0][1].
+
+Lời giải Python (solution.py) — mask đủ n bit:
+- Đọc toàn bộ input một lần. Lưu inadj[j] = bitmask các đỉnh i có cạnh i -> j
+  (danh sách các đỉnh vào của j); vì là bitmask nên các cạnh song song bị gộp
+  làm một (đề không có cạnh song song nên vẫn đúng).
+- dp[mask][j] = số cách xuất phát từ đỉnh 0, đã thăm đúng tập đỉnh `mask` và
+  đang đứng ở đỉnh j. Cơ sở dp[1][0] = 1. Mỗi mask hợp lệ luôn chứa bit 0, và
+  bảng dp[mask] chỉ được cấp phát khi mask được xử lý.
+- Chỉ duyệt các mask lẻ (chứa đỉnh 0) và chỉ cho phép kết thúc tại j != 0. Với
+  mỗi j: prev_mask = mask bỏ bit j; cand = prev_mask & inadj[j]; cộng dồn
+  dp[prev_mask][i] trên mọi i thuộc cand rồi lấy modulo.
+- Đáp án là dp[full][n-1] với full = (1<<n)-1. Có xử lý riêng n = 1 trả về 1
+  (dù ràng buộc n >= 2).
 
 Vì sao đúng:
-- Mỗi đường đi tương ứng duy nhất với thứ tự của các thành phố trung gian và
-  lựa chọn một cạnh cụ thể giữa mỗi cặp liên tiếp. Bỏ thành phố trung gian cuối
-  cho đúng một trạng thái previous_mask; nhân với edge_count đếm đủ mọi lựa
-  chọn cạnh song song, nên transition không trùng và không sót.
-- Duyệt mask tăng dần bảo đảm previous_mask < mask đã được tính trước. Thành
-  phố đích chỉ được nối sau khi full_mask hoàn tất nên không thể bị ghé thăm
-  sớm; thành phố nguồn không nằm trong mask nên cũng không thể được thăm lại.
+- Mỗi đường đi tương ứng duy nhất với thứ tự của các thành phố và lựa chọn một
+  cạnh cụ thể giữa mỗi cặp liên tiếp. Bỏ đỉnh cuối cho đúng một trạng thái nguồn;
+  ở lời giải C++ việc nhân với edge_count đếm đủ mọi lựa chọn cạnh song song, nên
+  transition không trùng và không sót.
+- Duyệt mask tăng dần bảo đảm trạng thái nguồn (previous_mask/prev_mask) đã được
+  tính trước. Thành phố đích chỉ được nối sau khi thăm đủ nên không thể bị ghé
+  sớm; thành phố nguồn luôn nằm cố định trong trạng thái nên không thể bị thăm
+  lại.
 
 ## Độ phức tạp
-- Thời gian: O(2^(n-2) * (n-2)^2 + n^2 + m).
-- Bộ nhớ: O(2^(n-2) * (n-2) + n^2).
-- Mọi giá trị DP và đáp án được lấy modulo 10^9+7; tích và tổng trung gian dùng
-  `long long`.
+- C++: thời gian O(2^(n-2) * (n-2)^2 + n^2 + m), bộ nhớ O(2^(n-2) * (n-2) + n^2).
+- Python: thời gian O(2^n * n^2) (chỉ duyệt các mask lẻ nên hằng số nhỏ hơn),
+  bộ nhớ O(2^n * n) cho bảng dp cộng O(n + m) do đọc toàn bộ input một lần.
+- Mọi giá trị DP và đáp án được lấy modulo 10^9 + 7; C++ dùng `long long` cho
+  tích và tổng trung gian.

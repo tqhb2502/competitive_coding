@@ -11,29 +11,44 @@ qua ít nhất hai đỉnh khác. Vì không có self-loop hay cạnh bội nên
 nhất có độ dài 3 (tam giác). Nếu không tồn tại chu trình nào thì in "IMPOSSIBLE".
 
 ## Ý tưởng
-Dùng DFS để phát hiện chu trình trong đồ thị vô hướng. Vì n <= 1e5 và m <= 2e5,
-ta dùng DFS LẶP (iterative) với stack tường minh để tránh tràn call stack.
+Dùng DFS để phát hiện chu trình (back edge) trong đồ thị vô hướng. Vì n <= 1e5
+và m <= 2e5, cả hai lời giải đều dùng DFS LẶP (iterative) với stack tường minh
+để tránh tràn call stack.
 
-- Lưu mảng parent[]: parent[v] là đỉnh mà từ đó ta đi đến v trên cây DFS.
-- Với mỗi đỉnh u đang xét, duyệt lần lượt các đỉnh kề v:
-    + Nếu v == parent[u]: bỏ qua (do không có cạnh bội, chỉ có đúng một cạnh nối
-      u và parent[u], nên bỏ qua đúng cạnh này là an toàn).
-    + Nếu v chưa thăm: đẩy v vào stack và đặt parent[v] = u.
-    + Nếu v đang ở trạng thái `state[v] = 1` (còn nằm trên stack DFS): ta tìm
-      thấy một BACK EDGE u -> v.
-    + Nếu v đã xử lý xong (`state[v] = 2`): bỏ qua.
-- Truy ngược: bắt đầu từ u, liên tục đi theo parent cho tới khi gặp v, thu được
-  đường đi u -> parent[u] -> ... -> v trên cây DFS. Cộng thêm cạnh ngược v -> u
-  tạo thành chu trình. Kết quả in ra là [u, ..., v, u] (đỉnh đầu lặp lại ở cuối),
-  số lượng số in ra chính là k cần in.
+Dữ liệu dùng chung:
+- adj[]: danh sách kề, mỗi cạnh vô hướng được thêm hai chiều.
+- parent[v]: đỉnh mà từ đó ta đi đến v trên cây DFS (0 nghĩa là không có parent).
+- con trỏ next_edge[]/ptr[]: vị trí cạnh kề kế tiếp của mỗi đỉnh cho DFS lặp.
 
-Tính đúng đắn: tập đỉnh có trạng thái 1 chính là các đỉnh trên đường đi DFS hiện
-tại. Do đó khi u nhìn thấy đỉnh v có `state[v] = 1` và v khác parent[u], v là tổ
-tiên của u, nên chuỗi parent từ u luôn dẫn về tới v. Việc truy ngược theo parent
-tạo ra đúng một chu trình hợp lệ, mọi cạnh trong chu trình đều tồn tại. Nếu duyệt
-hết mọi thành phần liên thông mà không gặp back edge nào thì đồ thị không có chu
+Với mỗi đỉnh u ở đỉnh stack, lấy đỉnh kề v kế tiếp:
+- Nếu v == parent[u]: bỏ qua ĐÚNG MỘT cạnh quay lại parent (an toàn vì đề bài
+  bảo đảm không có cạnh bội, chỉ có duy nhất một cạnh nối u và parent[u]).
+- Nếu v chưa thăm: đây là cạnh cây, đặt parent[v] = u và đẩy v vào stack.
+- Nếu v đã thăm (và khác parent[u]): đây là BACK EDGE u -> v, ta đã tìm được
+  chu trình.
+Khi duyệt hết cạnh kề của u thì lấy u ra khỏi stack.
+
+Khác biệt nhỏ giữa hai lời giải nằm ở cách đánh dấu trạng thái (KẾT QUẢ NHƯ NHAU
+vì trong đồ thị vô hướng đơn, mọi đỉnh đã thăm mà không phải parent đều là tổ
+tiên còn nằm trên stack DFS):
+- solution.cpp dùng mảng state 3 trạng thái: 0 = chưa thăm, 1 = đang trên stack,
+  2 = đã duyệt xong; chỉ coi là back edge khi state[v] == 1.
+- solution.py dùng mảng visited 2 trạng thái (chưa thăm / đã thăm); coi mọi đỉnh
+  kề đã thăm khác parent là back edge.
+
+Truy ngược để dựng chu trình: bắt đầu từ u, liên tục đi theo parent cho tới khi
+gặp v, thu được đường đi u -> parent[u] -> ... -> v trên cây DFS; cộng thêm cạnh
+ngược v -> u tạo thành chu trình. Kết quả in ra là [u, ..., v, u] (đỉnh đầu lặp
+lại ở cuối) và số lượng số in ra chính là k mà đề yêu cầu.
+
+Tính đúng đắn: các đỉnh đang trên stack chính là các đỉnh trên đường đi DFS hiện
+tại. Trong đồ thị vô hướng đơn, khi u nhìn thấy đỉnh đã thăm v khác parent[u] thì
+v chắc chắn là tổ tiên của u (còn trên stack), nên chuỗi parent từ u luôn dẫn về
+tới v và tạo ra đúng một chu trình hợp lệ với mọi cạnh đều tồn tại. Nếu duyệt hết
+mọi thành phần liên thông mà không gặp back edge nào thì đồ thị không có chu
 trình -> in "IMPOSSIBLE".
 
 ## Độ phức tạp
-- Thời gian: O(n + m) cho việc đọc, dựng danh sách kề và chạy DFS.
-- Bộ nhớ: O(n + m) cho danh sách kề và các mảng parent/visited/ptr.
+- Thời gian: O(n + m) cho cả hai lời giải (đọc dữ liệu, dựng danh sách kề, DFS).
+- Bộ nhớ: O(n + m) cho danh sách kề và các mảng parent, state/visited, con trỏ.
+  Riêng solution.py đọc toàn bộ input vào bộ nhớ một lần (thêm O(n + m) cho buffer).

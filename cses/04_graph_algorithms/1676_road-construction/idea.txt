@@ -26,5 +26,10 @@ chỉ cần so sánh với kích thước tập vừa gộp.
 
 ## Độ phức tạp
 - Thời gian: O((n + m) * alpha(n)) với alpha là hàm Ackermann nghịch đảo (gần như
-  hằng số) nhờ path compression và union by size.
-- Bộ nhớ: O(n) cho hai mảng parent và size.
+  hằng số) nhờ path compression và union by size. Đúng cho cả C++ lẫn Python.
+- Bộ nhớ:
+  + C++: O(n) cho hai mảng parent và size; đọc từng số và in từng dòng nên không
+    cần thêm bộ nhớ theo m.
+  + Python: O(n + m). Ngoài hai mảng parent/size cỡ O(n), bản Python đọc toàn bộ
+    input một lần (O(m) token) và gom toàn bộ output vào một danh sách trước khi
+    in (O(m) dòng).

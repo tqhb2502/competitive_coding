@@ -27,5 +27,9 @@ Nếu không có khách sạn nào đủ phòng thì in 0.
 
 ## Độ phức tạp
 - Thời gian: mỗi truy vấn tìm và cập nhật đều là O(log n), tổng cộng
-  O((n + m) log n).
-- Bộ nhớ: O(n) cho mảng segment tree (khoảng 2 * size phần tử).
+  O((n + m) log n) cho cả hai file.
+- Bộ nhớ:
+  * solution.cpp: O(n) cho mảng segment tree (khoảng 2 * size phần tử), đọc và
+    ghi theo luồng nên không giữ toàn bộ input/output trong bộ nhớ.
+  * solution.py: O(n + m) vì đọc toàn bộ input một lần rồi gom toàn bộ output vào
+    danh sách trước khi in; riêng segment tree vẫn là O(n).

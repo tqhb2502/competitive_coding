@@ -34,4 +34,7 @@ query: mỗi update chỉ sửa đúng 1 lá rồi đi ngược lên gốc cập
 ## Độ phức tạp
   - Xây dựng: O(n).
   - Mỗi update: O(log n) do đi từ lá lên gốc.
-  - Tổng: O((n + m) log n) thời gian, O(n) bộ nhớ.
+  - Tổng thời gian: O((n + m) log n) cho cả hai lời giải (C++ và Python).
+  - Bộ nhớ: C++ dùng O(n) vì đọc input theo luồng. Python dùng O(n + m) vì đọc
+    toàn bộ input một lần bằng sys.stdin.buffer.read() và gom hết đáp án vào đệm
+    output trước khi in một lần.

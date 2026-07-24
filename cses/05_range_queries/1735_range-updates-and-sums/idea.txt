@@ -10,28 +10,45 @@ Ràng buộc: 1 <= n, q <= 2*10^5 ; các giá trị và x nằm trong khoảng 1
 1 <= a <= b <= n.
 
 ## Ý tưởng
-Dùng segment tree với lazy propagation, mỗi node lưu tổng của đoạn nó phủ.
-Vì có ĐỒNG THỜI hai phép "gán đoạn" và "cộng đoạn", mỗi node cần HAI thẻ lazy
-lồng nhau:
-  - lz_a : giá trị assign đang chờ (sentinel NONE nghĩa là không có assign chờ).
-  - lz_d : giá trị add đang chờ, được CỘNG SAU khi đã áp assign.
-Ý nghĩa lazy của một node: nếu lz_a != NONE thì trước hết GÁN mọi phần tử bằng
-lz_a rồi CỘNG thêm lz_d; nếu lz_a == NONE thì chỉ CỘNG lz_d.
+Cả hai lời giải dùng segment tree với lazy propagation, mỗi node lưu tổng của
+đoạn nó phủ. Vì có ĐỒNG THỜI hai phép "gán đoạn" và "cộng đoạn", mỗi node cần
+HAI thẻ lazy lồng nhau:
+  - thẻ assign : giá trị gán đang chờ.
+  - thẻ add    : giá trị cộng đang chờ, được CỘNG SAU khi đã áp assign.
+Cách đánh dấu "không có assign chờ" khác nhau giữa hai file:
+  - solution.cpp dùng cờ boolean has_assign_ (kèm lazy_assign_ và lazy_add_).
+  - solution.py dùng sentinel NONE = -1 cho lz_a (kèm lz_d); vì mọi x >= 1 nên
+    -1 an toàn làm giá trị "không có assign".
+Ý nghĩa lazy của một node: nếu đang có assign thì trước hết GÁN mọi phần tử bằng
+giá trị assign rồi CỘNG thêm giá trị add; nếu không có assign thì chỉ CỘNG add.
 
 Các phép áp lên một node phủ trọn trong đoạn truy vấn:
-  - assign x : seg = x * (độ dài đoạn), đặt lz_a = x, lz_d = 0. Phép assign GHI ĐÈ
-    toàn bộ lazy cũ bên dưới nên việc vứt bỏ lazy cũ là hợp lệ.
-  - add x    : seg += x * (độ dài đoạn), lz_d += x (giữ nguyên lz_a nếu đang có).
+  - assign x : seg = x * (độ dài đoạn), đặt thẻ assign = x, thẻ add = 0. Phép
+    assign GHI ĐÈ toàn bộ lazy cũ bên dưới nên việc vứt bỏ lazy cũ là hợp lệ.
+  - add x    : seg += x * (độ dài đoạn), thẻ add += x (giữ nguyên thẻ assign nếu có).
 
-Khi push lazy xuống hai con:
-  - Nếu node có lz_a, áp phép gán lz_a xuống cả hai con trước.
-  - Sau đó, nếu lz_d khác 0, áp riêng phép cộng lz_d xuống cả hai con.
+Khi push lazy của một node xuống hai con:
+  - Nếu node đang có assign, áp phép gán xuống cả hai con trước, rồi mới áp phần
+    add. (solution.py gộp thành một phép gán duy nhất bằng giá trị assign + add
+    vì "gán a rồi cộng d" tương đương "gán (a + d)".)
+  - Nếu node chỉ có add khác 0, áp riêng phép cộng xuống cả hai con.
 Sau đó xóa lazy của node để giữ bất biến "seg luôn là tổng đúng của đoạn".
 
-Mỗi truy vấn thu hẹp dần theo cây: push lazy dọc đường đi trước khi chạm các node
-con, áp phép add/assign lên các node phủ trọn đoạn, rồi pull-up cập nhật lại tổng
-cho các tổ tiên. Truy vấn tổng thì cộng seg của các node phủ trọn đoạn.
+Khác biệt cài đặt giữa hai file:
+  - solution.cpp: segment tree ĐỆ QUY top-down. Mỗi truy vấn đi xuống cây, push
+    lazy dọc đường đi trước khi vào con, áp add/assign lên các node phủ trọn đoạn,
+    rồi pull-up cập nhật lại tổng cho các tổ tiên.
+  - solution.py: segment tree LẶP bottom-up kiểu AtCoder trên đoạn nửa mở [l, r).
+    Trước mỗi thao tác, push lazy dọc hai biên trái/phải từ trên xuống; áp phép lên
+    các node phủ trọn; với cập nhật thì pull-up lại tổng cho các tổ tiên trên biên.
+    Truy vấn tổng thì cộng seg của các node phủ trọn đoạn.
 
 ## Độ phức tạp
-Mỗi truy vấn O(log n); tổng thể O((n + q) log n) thời gian và O(n) bộ nhớ.
-Tổng có thể rất lớn (tới ~4*10^16) nên code dùng `long long`.
+Mỗi thao tác (add/assign/query) chạy O(log n); tổng thể O((n + q) log n) thời gian
+cho cả hai file.
+Bộ nhớ:
+  - solution.cpp: O(n) cho các mảng của cây (4*n).
+  - solution.py: O(n) cho các mảng cây (2*size, với size là lũy thừa 2 nhỏ nhất
+    >= n) cộng O(n + q) do đọc toàn bộ input một lần vào bộ nhớ.
+Tổng có thể rất lớn (tới ~4*10^16) nên solution.cpp dùng `long long`; solution.py
+dùng số nguyên lớn tùy ý sẵn có của Python nên không lo tràn.

@@ -11,21 +11,30 @@ số KHÔNG ÂM.
 ## Ý tưởng
 - Vì mọi trọng số cạnh đều không âm nên dùng thuật toán Dijkstra kết hợp
   priority queue (min-heap).
+- Mô hình đồ thị: bản C++ lưu danh sách kề bằng `vector<vector<Edge>>` (mỗi phần
+  tử là cặp (đỉnh đích, trọng số)); bản Python đọc toàn bộ input một lần rồi dựng
+  đồ thị dạng CSR (compressed sparse row) gồm mảng `head` (tổng tiền tố của bậc
+  ra), `to` và `wt` để tiết kiệm bộ nhớ và duyệt cạnh nhanh.
 - Khởi tạo dist[1] = 0, các đỉnh khác bằng vô cực, rồi đẩy (0, 1) vào heap.
-- Lặp: lấy đỉnh u có khoảng cách nhỏ nhất ra khỏi heap. Nếu giá trị lấy ra lớn
-  hơn dist[u] hiện tại thì bỏ qua (đây là bản ghi cũ, kỹ thuật "lazy deletion").
-  Ngược lại, duyệt mọi cạnh (u -> v, w) và relax: nếu dist[u] + w < dist[v] thì
-  cập nhật dist[v] và đẩy (dist[v], v) vào heap.
-- Khi heap rỗng, dist chứa khoảng cách ngắn nhất từ đỉnh 1 tới mọi đỉnh.
+- Lặp: lấy đỉnh u có khoảng cách nhỏ nhất ra khỏi heap. Nếu giá trị lấy ra không
+  còn khớp với dist[u] hiện tại thì bỏ qua (bản ghi cũ, kỹ thuật "lazy deletion";
+  C++ so sánh bằng `!=`, Python so sánh `>`, hai cách tương đương vì giá trị lấy
+  ra không bao giờ nhỏ hơn dist[u]). Ngược lại, duyệt mọi cạnh (u -> v, w) và
+  relax: nếu dist[u] + w < dist[v] thì cập nhật dist[v] và đẩy (dist[v], v) vào heap.
+- Khi heap rỗng, dist chứa khoảng cách ngắn nhất từ đỉnh 1 tới mọi đỉnh; in ra
+  n giá trị cách nhau bởi dấu cách (đỉnh 1 luôn bằng 0).
 - Dijkstra đúng vì khi một đỉnh được lấy ra với khoảng cách nhỏ nhất hiện tại thì
   khoảng cách đó đã tối ưu (không có cạnh âm nào làm giảm thêm được). Có thể có
   nhiều cạnh song song; relax tự nhiên chọn cạnh tốt hơn nên không cần xử lý riêng.
 
 ## Độ phức tạp
-- Thời gian: O((n + m) log n) vì mỗi cạnh đẩy tối đa một phần tử vào heap và mỗi
-  thao tác heap tốn O(log n). Với n <= 1e5, m <= 2e5 là hoàn toàn ổn.
-- Bộ nhớ: O(n + m) cho `vector<vector<Edge>>` và mảng dist.
-- Khoảng cách có thể lên tới ~1e5 * 1e9 = 1e14 nên code dùng `long long`.
+- Thời gian: O((n + m) log n) cho cả hai bản vì mỗi cạnh đẩy tối đa một phần tử
+  vào heap và mỗi thao tác heap tốn O(log n). Với n <= 1e5, m <= 2e5 là hoàn toàn ổn.
+- Bộ nhớ: O(n + m). C++ dùng `vector<vector<Edge>>` và mảng dist; Python đọc toàn
+  bộ input vào một list rồi dựng các mảng CSR (`head`, `to`, `wt`) cùng mảng dist,
+  tất cả đều O(n + m).
+- Khoảng cách có thể lên tới ~1e5 * 1e9 = 1e14 nên bản C++ dùng `long long`; bản
+  Python dùng int (số lớn tùy ý) nên không lo tràn số.
 
-Code C++ dùng `priority_queue`, fast I/O và lazy deletion; với các giới hạn trên,
-độ phức tạp O((n+m) log n) là an toàn.
+Cả hai bản đều dùng min-heap và lazy deletion; C++ thêm fast I/O, Python đọc và
+ghi theo khối. Với các giới hạn trên, độ phức tạp O((n+m) log n) là an toàn.

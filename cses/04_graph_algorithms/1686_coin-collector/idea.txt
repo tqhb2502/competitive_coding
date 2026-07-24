@@ -31,10 +31,14 @@ nhất có thể thu được.
   chính là dp lớn nhất.
 
 ## Độ phức tạp
-- Thời gian: O(n + m) cho Tarjan, condense và DP.
-- Bộ nhớ: O(n + m) cho các danh sách kề dạng `vector<vector<int>>`, danh sách
-  cạnh và các mảng của Tarjan/DP.
-- Giá trị đáp án có thể tới n * 1e9 = 1e14 nên code dùng `long long`.
+- Thời gian: O(n + m) cho Tarjan, condense và DP (cả bản C++ lẫn Python).
+- Bộ nhớ: O(n + m) cho cả hai bản, chỉ khác cách lưu đồ thị:
+  - C++: danh sách kề `vector<vector<int>>`, danh sách cạnh gốc và các mảng
+    của Tarjan/DP.
+  - Python: đọc toàn bộ input một lần rồi dựng đồ thị dạng CSR (mảng off/adj),
+    cùng các mảng Tarjan/DP và list-các-list cho DAG condense.
+- Giá trị đáp án có thể tới n * 1e9 = 1e14 nên code dùng số nguyên 64-bit
+  (`long long` trong C++; Python dùng số nguyên vô hạn nên không lo tràn).
 
 Tarjan được cài đặt lặp bằng stack tường minh, tránh tràn call stack khi đồ thị
 có đường đi rất sâu.

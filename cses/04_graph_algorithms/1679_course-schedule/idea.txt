@@ -14,7 +14,8 @@ Mô hình đồ thị:
 
 Thuật toán Kahn (topo sort bằng BFS trên bậc vào):
 1. Xây dựng danh sách kề adj và mảng bậc vào indeg (in-degree) cho từng đỉnh.
-2. Đưa mọi đỉnh có indeg = 0 (không có khóa tiên quyết) vào `std::queue`.
+2. Đưa mọi đỉnh có indeg = 0 (không có khóa tiên quyết) vào hàng đợi FIFO
+   (C++ dùng `std::queue`, Python dùng `collections.deque`).
 3. Lặp: lấy đỉnh u ra khỏi hàng đợi, thêm u vào kết quả. Với mỗi cạnh u -> v,
    giảm indeg[v] đi 1; nếu indeg[v] về 0 thì đưa v vào hàng đợi.
 4. Nếu kết quả chứa đủ n đỉnh thì in ra thứ tự đó; ngược lại (còn đỉnh bị kẹt
