@@ -17,27 +17,39 @@ Tree (một biến thể segment tree, mỗi node lưu một đường thẳng) 
   "tốt nhất tại trung điểm m = (l + r) / 2" trong số các đường từng đi qua node.
 - Khi chèn một đường mới:
     + Nếu node đang rỗng, lưu đường mới và dừng.
-    + So sánh đường mới với đường hiện tại tại đầu trái l và trung điểm m.
-      Đường thắng tại m được giữ lại ở node; đường thua bị "đẩy xuống".
-    + Nếu kết quả so sánh tại l và m khác nhau thì hai đường đổi thứ tự ở nửa
-      trái, nên đẩy đường thua xuống con trái; ngược lại xuống con phải. Nhờ vậy
-      mỗi lần chèn chỉ đi một nhánh từ gốc xuống lá: O(log C).
+    + So sánh đường mới với đường hiện tại tại trung điểm m. Đường thắng tại m
+      được giữ lại ở node, đường thua bị "đẩy xuống" một con.
+    + Chọn con để đẩy đường thua sao cho đi đúng về nửa mà đường thua còn có
+      thể trội hơn đường thắng. Nhờ vậy mỗi lần chèn chỉ đi một nhánh từ gốc
+      xuống lá: O(log C).
 - Truy vấn tại x: đi từ gốc xuống lá theo x, lấy max các giá trị f(x) của đường
   lưu ở mọi node trên đường đi. O(log C) với C = N + 1 = 100001.
 
+Hai lời giải cùng thuật toán Li Chao nhưng khác vài chi tiết cài đặt:
+- solution.cpp (đệ quy): chọn con bằng cách so sánh thêm tại BIÊN TRÁI l. Nếu
+  kết quả so tại l khác kết quả so tại m (hai đường đổi thứ tự trong nửa trái)
+  thì đẩy đường thua xuống con trái, ngược lại xuống con phải. Node rỗng được
+  đánh dấu bằng mảng phụ `occupied`.
+- solution.py (vòng lặp): chọn con bằng cách so sánh HỆ SỐ GÓC (slope) của
+  đường thua với đường thắng; slope của đường thua nhỏ hơn -> nó trội ở nửa
+  trái (x < m) nên đi con trái, ngược lại đi con phải. Không dùng mảng
+  `occupied`: node rỗng để B = NEG (và A = 0) nên luôn thua, đóng sẵn vai trò
+  "âm vô cực". Đọc toàn bộ input một lần rồi tách token -> tốn thêm O(n) bộ nhớ.
+
 Số nguyên chính xác (exact integer arithmetic):
 - Mọi so sánh chỉ dùng biểu thức nguyên a*x + b. Với |a|, |b| <= 10^9 và
-  x <= 10^5 thì |giá trị| <= ~1.0001e14, nằm gọn trong `long long` nên không
-  tràn số và không có sai số như float.
-- Một mảng `occupied` phân biệt node rỗng với node đang giữ đường. Khi truy vấn,
-  node rỗng đóng góp giá trị âm vô cực.
+  x <= 10^5 thì |giá trị| <= ~1.0001e14, nằm gọn trong `long long` (C++) hoặc
+  int khổng lồ của Python nên không tràn số và không có sai số như float.
+- Node rỗng đóng góp giá trị âm vô cực khi truy vấn: C++ trả -(1<<62) cho node
+  chưa `occupied`; Python đã đặt sẵn B = NEG = -(1<<62) tại mọi node.
 
 Vì sao đúng: Li Chao Tree duy trì ngầm bao trên (upper envelope) của tập đường.
 Tính chất "giữ đường tốt nhất tại trung điểm, đẩy đường thua sang đúng nửa mà
-hai đường giao nhau" bảo đảm rằng tại mọi vị trí x, đường đạt cực đại tại x chắc
-chắn nằm trên đường đi từ gốc xuống lá chứa x, nên phép lấy max dọc đường đi cho
-ra kết quả đúng.
+đường thua còn có thể vượt đường thắng" bảo đảm rằng tại mọi vị trí x, đường đạt
+cực đại tại x chắc chắn nằm trên đường đi từ gốc xuống lá chứa x, nên phép lấy
+max dọc đường đi cho ra kết quả đúng.
 
 ## Độ phức tạp
 - Thời gian: O(n log C) ~ 2*10^5 * 17.
-- Bộ nhớ: O(C), hai mảng kích thước ~4*(10^5 + 1).
+- Bộ nhớ: O(C), hai mảng kích thước ~4*(10^5 + 1). Bản Python đọc cả input một
+  lần nên tốn thêm O(n) bộ nhớ cho danh sách token.

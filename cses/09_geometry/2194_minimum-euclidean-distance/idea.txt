@@ -20,9 +20,14 @@ https://cses.fi/problemset/task/2194
   2. Khởi tạo best = bình phương khoảng cách của hai điểm đầu tiên.
   3. Đặt kích thước ô lưới s = isqrt(best) (căn bậc hai NGUYÊN, s >= 1 vì các
      điểm phân biệt nên best >= 1). Băm mỗi điểm vào ô (floor(x/s), floor(y/s)).
-     Grid là `unordered_map<Cell, vector<Point>, CellHash>`; `CellHash` dùng
-     splitmix64 và salt theo thời gian để chống va chạm hash có chủ đích. Hàm
-     `floor_divide` riêng bảo đảm chỉ số ô đúng với cả tọa độ âm.
+     - Bản C++: grid là `unordered_map<Cell, vector<Point>, CellHash>`; `CellHash`
+       dùng splitmix64 và salt theo thời gian để chống va chạm hash có chủ đích;
+       hàm `floor_divide` riêng bảo đảm chỉ số ô đúng với cả tọa độ âm;
+       `integer_square_root` tự tinh chỉnh để loại sai số của std::sqrt.
+     - Bản Python: grid là dict lồng nhau `cx -> (cy -> danh sách điểm)`; dùng
+       toán tử `//` (đã tự làm tròn xuống với số âm) và `isqrt` sẵn có (fallback
+       `or 1`); đọc TOÀN BỘ input một lần bằng `sys.stdin.buffer.read().split()`
+       (bộ nhớ O(n)) và có nhánh riêng in ra 0 khi n <= 1.
   4. Thêm từng điểm p còn lại:
      - Tính ô (cx, cy) của p. Duyệt 3x3 ô xung quanh, so sánh d2 với từng điểm
        đã chèn. Nếu tìm được d2 < best -> cập nhật best.

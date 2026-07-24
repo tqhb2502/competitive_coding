@@ -49,6 +49,16 @@ state u có endpos size = cnt[u], cách cộng cnt[u] + g[u] đếm chính xác 
 (có lặp) đi qua mỗi cạnh, không trùng, không sót.
 
 ## Độ phức tạp
-Xây SAM: O(n) khấu hao với `array<int,26>` cho transition. Tính cnt và g:
-O(số state * 26) = O(26n). Bước đi tìm đáp án: O(|đáp án| * 26) <=
-O(26n). Bộ nhớ O(26n) = O(n).
+Cả hai lời giải đều xây SAM (≤ 2n state, O(n) transition), tính cnt rồi tính g,
+nên đều là O(n) (nhân với hằng số bảng chữ cái 26). Khác biệt chỉ ở cấu trúc lưu
+transition và cách đọc input:
+
+- solution.cpp: mỗi state lưu transition bằng `array<int,26>`. Xây SAM O(n) khấu
+  hao (tách clone copy mảng 26 phần tử). Tính cnt và g duyệt đủ 26 ô mỗi state:
+  O(số state * 26) = O(26n). Bước đi tìm đáp án: O(|đáp án| * 26). Bộ nhớ
+  O(26n) = O(n).
+- solution.py: đọc toàn bộ input một lần (sys.stdin.buffer.read) và xử lý s dưới
+  dạng bytes; transition lưu bằng dict (khóa là giá trị byte của ký tự). Xây SAM,
+  tính cnt và g đều O(n) trên TỔNG số transition thực có (không nhân 26 khi cộng
+  g vì chỉ duyệt các cạnh thật). Bước tìm đáp án duyệt 'a'..'z' (97..123) ở mỗi
+  state: O(|đáp án| * 26). Bộ nhớ O(n).

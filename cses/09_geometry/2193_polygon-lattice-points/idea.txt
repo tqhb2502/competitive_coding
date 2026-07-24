@@ -24,8 +24,9 @@ Tính b (số điểm nguyên trên biên):
 Tính A bằng công thức shoelace với số nguyên chính xác:
 - Tính diện tích gấp đôi: 2A = | sum_k (x_k * y_{k+1} - x_{k+1} * y_k) |.
 - Lấy trị tuyệt đối nên không phụ thuộc chiều duyệt (thuận hay nghịch kim đồng hồ).
-- Toàn bộ phép tính giữ nguyên số nguyên để tránh sai số float; code dùng
-  `__int128` vì giá trị trung gian có thể rất lớn với tọa độ tới 1e9.
+- Toàn bộ phép tính giữ nguyên số nguyên để tránh sai số float. Bản C++ dùng
+  `__int128` vì giá trị trung gian có thể rất lớn với tọa độ tới 1e9; bản Python
+  dùng số nguyên lớn tùy ý (arbitrary precision) sẵn có nên không lo tràn số.
 
 Ghép lại: đặt twoA = |2A|, ta có
     i = A - b/2 + 1 = (2A - b + 2) / 2.
@@ -41,4 +42,5 @@ Vì sao đúng:
 ## Độ phức tạp
 - Thời gian: O(n log C), với C là độ lớn tọa độ, do mỗi cạnh gọi gcd; phần
   shoelace riêng tốn O(n).
-- Bộ nhớ: O(n) để lưu các đỉnh; thừa sức với n <= 1e5.
+- Bộ nhớ: O(n) để lưu các đỉnh; thừa sức với n <= 1e5. Bản Python đọc toàn bộ
+  input một lần (sys.stdin.buffer.read) rồi tách token, vẫn là O(n) bộ nhớ.

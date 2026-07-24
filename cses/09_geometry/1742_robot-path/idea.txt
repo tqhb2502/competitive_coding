@@ -14,37 +14,59 @@ dừng; nếu không bao giờ tự cắt thì in tổng độ dài của mọi 
 Đường đi là một polyline gồm các đoạn song song trục toạ độ (mỗi đoạn hoặc ngang
 H hoặc dọc V). Điểm robot dừng chính là điểm tự cắt ĐẦU TIÊN theo thứ tự đi. Với
 mỗi giao, quãng đường tới nơi (reach-distance) bằng prefixLen[j] + t, trong đó j
-là đoạn "đến sau" chứa điểm chạm và t là khoảng cách dọc đoạn j tính từ điểm bắt
-đầu của j tới điểm giao. Vì prefixLen tăng dần theo thứ tự đoạn, đáp án là giao
-có reach-distance nhỏ nhất trên toàn đường.
+là đoạn "đến sau" (chỉ số lớn hơn) chứa điểm chạm và t là khoảng cách dọc đoạn j
+tính từ điểm bắt đầu của j tới điểm giao. Vì prefixLen tăng dần theo thứ tự đoạn,
+đáp án là giao có reach-distance NHỎ NHẤT trên toàn đường.
 
 Hai đoạn song song trục chỉ cắt nhau đúng hai kiểu, nên tách xử lý riêng rồi lấy
 min:
-
-- Giao vuông góc (một H với một V): với mỗi đoạn mới, truy vấn "đâm xuyên"
-  (stabbing) trên tập các đoạn đã vẽ trước đó để tìm điểm chạm gần đầu đoạn nhất
-  (t nhỏ nhất). Dùng segment tree lưu key của các đoạn tại O(log n) nút chuẩn tắc
-  (hoặc Fenwick tree trên toạ độ đã nén - coordinate compression). Nếu t == 0
-  (điểm chạm trùng đúng góc nối giữa hai đoạn liên tiếp) thì bỏ qua, vì đó chỉ là
-  khúc cua chứ không phải "quay lại".
-
+- Giao vuông góc (một H với một V): tìm điểm chạm có t nhỏ nhất; t == 0 (điểm
+  chạm trùng đúng góc nối giữa hai đoạn liên tiếp) bị bỏ qua vì đó chỉ là khúc
+  cua chứ không phải "quay lại".
 - Chồng lấn collinear (hai đoạn cùng nằm trên một đường x = const hoặc
-  y = const): với mỗi đường, duy trì hợp (union) các khoảng đã bị phủ (interval
-  map) và tìm điểm bị phủ gần nhất nằm phía trước điểm bắt đầu theo hướng đi. Đảo
-  chiều (ví dụ U rồi D) cho t == 0 (quay lại tức thì), đi cùng chiều nối tiếp thì
-  không sinh sự kiện.
+  y = const): với mỗi đường duy trì hợp (union) các khoảng đã bị phủ và tìm điểm
+  bị phủ gần nhất nằm phía trước điểm bắt đầu theo hướng đi (đảo chiều, ví dụ U
+  rồi D, cho t == 0 - quay lại tức thì; đi cùng chiều nối tiếp thì không sinh sự
+  kiện).
 
-Xử lý các đoạn THEO THỨ TỰ ĐI và dừng ngay tại lần tự cắt đầu tiên; đáp án là
-travelled + t tại đoạn đó. Nếu duyệt hết n lệnh mà không có giao nào thì đáp án
-là tổng độ dài mọi đoạn. Mọi toạ độ đều nguyên nên t và reach-distance đều
-nguyên; toàn bộ dùng integer arithmetic nên không có sai số.
+Mọi toạ độ đều nguyên nên t và reach-distance đều nguyên; cả hai bản đều dùng
+integer arithmetic nên không có sai số (Python cũng chỉ dùng số nguyên, không
+epsilon). Hai lời giải cùng ý tưởng nhưng khác cấu trúc dữ liệu và cách duyệt:
+
+solution.cpp - TRỰC TUYẾN (online), dừng sớm. Duyệt các đoạn THEO THỨ TỰ ĐI; với
+mỗi đoạn mới truy vấn giao với các đoạn đã vẽ trước đó rồi DỪNG NGAY tại lần tự
+cắt đầu tiên (in travelled + t). Nếu hết n lệnh mà không giao thì in tổng độ dài.
+- Giao vuông góc: cấu trúc "đâm xuyên" (stabbing) dựng trên segment tree lặp (cỡ
+  làm tròn lên luỹ thừa 2). Mỗi đoạn phủ khoảng chỉ số đã nén (coordinate
+  compression) được lưu tại O(log n) nút chuẩn tắc, mỗi nút giữ một std::set các
+  key (toạ độ vuông góc). Truy vấn điểm đi từ lá lên gốc, tại mỗi nút dùng
+  lower_bound/upper_bound tìm key gần start nhất trong [start, finish] theo hướng
+  đi.
+- Chồng lấn collinear: mỗi đường giữ hợp khoảng bằng std::map (interval map),
+  nearest_collinear tìm điểm phủ gần nhất phía trước start.
+
+solution.py - NGOẠI TUYẾN (offline), lấy min toàn cục. Đọc cả input một lần bằng
+sys.stdin.buffer.read().split() (bộ nhớ O(n)), dựng toàn bộ n đoạn rồi tính min
+reach-distance qua hai pha độc lập:
+- Pha B (giao vuông góc): quét đường (sweep line) theo trục x. Các hàng y của
+  đoạn ngang được nén rồi đánh dấu 0/1 trên Fenwick tree (BIT) cho biết hàng nào
+  đang active. Sự kiện sắp theo (x, loại) với thêm(0) < truy vấn(1) < xoá(2):
+  đoạn ngang thêm tại x thấp và xoá tại x cao; đoạn dọc truy vấn tại cột x của
+  nó, liệt kê các hàng active trong [ylo, yhi] bằng binary lifting trên Fenwick
+  (fen_findrank). Với mỗi cặp giao, đoạn chỉ số lớn hơn là đoạn "đến sau"; cập
+  nhật best = min(best, prefix + t), bỏ qua t == 0.
+- Pha C (chồng lấn collinear): gom đoạn theo đường (vlines theo x, hlines theo
+  y); mỗi đường duy trì hợp khoảng bằng hai mảng đã sắp cov/starts + bisect,
+  duyệt đoạn theo thứ tự, tìm điểm phủ gần nhất phía trước rồi gộp [lo, hi], cập
+  nhật best. Đáp án là best, hoặc tổng độ dài nếu không có giao nào.
 
 ## Độ phức tạp
-- Một đoạn được chèn vào O(log n) node của segment tree; mỗi lần chèn vào
-  `std::set` tốn O(log n). Truy vấn đi qua O(log n) node và tại mỗi node thực
-  hiện `lower_bound`/`upper_bound` O(log n). Vì vậy phần stabbing tốn
-  O(log^2 n) cho mỗi đoạn.
-- Các interval map có tổng O(n) lần chèn/xóa và chi phí O(log n) khấu hao cho
-  mỗi khoảng được xử lý.
-- Tổng thời gian O(n log^2 n), bộ nhớ O(n log n) vì mỗi đoạn được lưu ở
-  O(log n) tập; các interval map dùng thêm O(n).
+- solution.cpp: mỗi đoạn được chèn vào O(log n) node của segment tree, mỗi lần
+  chèn vào `std::set` tốn O(log n); truy vấn đi qua O(log n) node và tại mỗi node
+  thực hiện `lower_bound`/`upper_bound` O(log n) - phần stabbing O(log^2 n) mỗi
+  đoạn. Các interval map (std::map) có tổng O(n) lần chèn/xoá, O(log n) mỗi
+  khoảng. Tổng thời gian O(n log^2 n), bộ nhớ O(n log n) vì mỗi đoạn được lưu ở
+  O(log n) tập (interval map dùng thêm O(n)).
+- solution.py: quét đường + Fenwick tốn O(n log n) cho phần sự kiện; việc liệt kê
+  giao vuông góc là output-sensitive, tốn thêm O(K log n) với K là số cặp giao
+  được duyệt (xấu nhất O(n^2)). Pha collinear O(n log n) khấu hao. Bộ nhớ O(n).

@@ -39,6 +39,17 @@ Cài đặt dùng bốn đối tượng Fenwick độc lập: forward/backward c
 Mỗi cập nhật gọi `add` trên cả bốn cây; mỗi truy vấn lấy bốn tổng đoạn rồi so
 sánh hai cặp hash đã chuẩn hóa bằng phép nhân chéo.
 
+Hai lời giải khác nhau ở khâu dựng cây và I/O:
+  - solution.cpp: dựng bốn cây bằng n lần cập nhật điểm (O(n log n)) và đọc dữ
+    liệu vào tuần tự bằng std::cin, nên bộ nhớ chỉ O(n).
+  - solution.py: đọc TOÀN BỘ input một lần rồi tách token (bộ nhớ O(n + m)); dựng
+    bốn cây Fenwick trong O(n) bằng cách lan giá trị lên nút cha (j = i + (i&-i)),
+    và khi lấy tổng tiền tố thì gộp cả bốn cây trong cùng một vòng lặp, hoãn lấy
+    modulo để giảm số phép chia dư.
+
 ## Độ phức tạp
-Khởi tạo bằng n lần cập nhật điểm trên bốn cây, tốn O(n log n). Mỗi thao tác
-tốn O(log n). Tổng thời gian O((n + m) log n), bộ nhớ O(n).
+Mỗi thao tác (cập nhật hoặc truy vấn) tốn O(log n).
+  - solution.cpp: khởi tạo bằng n lần cập nhật điểm trên bốn cây, tốn O(n log n);
+    tổng thời gian O((n + m) log n), bộ nhớ O(n).
+  - solution.py: khởi tạo bốn cây trong O(n); tổng thời gian O(n + m log n), bộ
+    nhớ O(n + m) do đọc toàn bộ input một lần.

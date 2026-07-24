@@ -27,7 +27,11 @@ tử trước, luôn không âm), nên kết quả bằng chính |a_i - a_j|.
 
 Toàn bộ phép tính giữ nguyên số nguyên (exact integer arithmetic), không dùng
 float. Tọa độ tới cỡ 1e9 và n tới 2e5 nên tổng có thể lớn cỡ n^2 * range ~
-10^20, vượt quá 64-bit; code dùng `__int128` để tránh tràn số.
+10^20, vượt quá 64-bit: bản C++ dùng `__int128` để tránh tràn số (và in ra bằng
+cách tách từng chữ số vì std::cout không hỗ trợ __int128), còn bản Python dùng
+số nguyên lớn (big int) sẵn có nên luôn chính xác tuyệt đối. Về I/O, bản Python
+đọc toàn bộ input một lần rồi tách token (O(n) bộ nhớ), bản C++ đọc trực tiếp
+từng số qua std::cin.
 
 ## Độ phức tạp
 - Thời gian: O(n log n) do hai lần sort (một cho x, một cho y); phần cộng dồn

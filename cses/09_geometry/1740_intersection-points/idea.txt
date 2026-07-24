@@ -41,6 +41,10 @@ log. Với mỗi đoạn dọc, dùng `lower_bound` / `upper_bound` trên mảng
 [y_low, y_high]. Toàn bộ so sánh và cộng dồn dùng số nguyên (exact integer
 arithmetic), không dùng float nên không có sai số.
 
+Hai bản C++ và Python dùng chung thuật toán và cùng độ phức tạp; bản Python thay
+`lower_bound` / `upper_bound` bằng `bisect_left` / `bisect_right`, cài BIT bằng
+list thường và đọc toàn bộ input một lần (sys.stdin.buffer.read).
+
 ## Độ phức tạp
 - Số sự kiện O(n), sắp xếp O(n log n), mỗi thao tác BIT O(log m).
 - Thời gian tổng cộng O(n log n). Bộ nhớ O(n) cho BIT và danh sách sự kiện.

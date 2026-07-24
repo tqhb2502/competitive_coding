@@ -20,8 +20,9 @@ Dùng suffix automaton (SAM).
    Ở đây "1" là xâu kết thúc ngay sau khi đi cạnh c, còn paths[u] là mọi cách
    kéo dài tiếp. Mọi transition đều làm TĂNG NGHIÊM NGẶT giá trị len của trạng
    thái (len[u] >= len[v] + 1), nên xử lý các trạng thái theo thứ tự len GIẢM
-   dần là một thứ tự topo hợp lệ để tính DP. paths[root] chính là tổng số xâu
-   con phân biệt của s.
+   dần là một thứ tự topo hợp lệ để tính DP. solution.cpp lấy thứ tự này bằng
+   counting sort theo len (O(n)); solution.py dùng sorted() nên tốn O(n log n).
+   paths[root] chính là tổng số xâu con phân biệt của s.
 
 3) Truy vết (greedy descent) để dựng đáp án. Xuất phát từ root:
    - Với mỗi trạng thái, xét các ký tự c theo thứ tự 'a'..'z'.
@@ -35,9 +36,21 @@ Vì sao đúng: nhờ song ánh giữa xâu con phân biệt và đường đi t
 được duyệt đúng theo thứ tự từ điển tăng dần; paths cho phép "nhảy" qua trọn một
 nhánh mà không cần liệt kê từng xâu, nên tìm được xâu thứ k một cách chính xác.
 
+Khác biệt cài đặt giữa hai bản:
+- solution.cpp: mỗi trạng thái giữ mảng transition cố định next[26] (chỉ số theo
+  'a'..'z'); lấy thứ tự len bằng counting sort O(n).
+- solution.py: mỗi trạng thái giữ một dict transition; lấy thứ tự bằng sorted()
+  (O(n log n)); đọc TOÀN BỘ input một lần bằng sys.stdin.buffer.read() và lưu s
+  dưới dạng bytes (mỗi ký tự là một int trong [97,122]).
+
 ## Độ phức tạp
-- Xây SAM: O(n) trạng thái (tối đa 2n) và O(n) transition (tối đa 3n), thời gian
-  gần tuyến tính O(n * alphabet) với alphabet = 26.
-- Tính paths: O(số trạng thái + số transition).
+- Xây SAM: O(n) trạng thái (tối đa 2n) và O(n) transition (tối đa 3n); bản C++
+  với mảng next[26] chạy gần tuyến tính O(n * alphabet), alphabet = 26; bản Python
+  dùng dict nên tỉ lệ với số transition thực tế.
+- Sắp thứ tự topo theo len: solution.cpp counting sort O(n); solution.py sorted()
+  O(n log n).
+- Tính paths (DP): O(số trạng thái + số transition) (bản C++ duyệt đủ 26 ô mỗi
+  trạng thái).
 - Truy vết: O(độ dài đáp án * alphabet), độ dài đáp án tối đa n.
-- Bộ nhớ: O(26n) = O(n) cho các mảng và bảng transition cố định.
+- Bộ nhớ: O(n) — bản C++ dùng bảng next[26] cố định (O(26n)); bản Python dùng dict
+  nên tỉ lệ với số transition thực tế.

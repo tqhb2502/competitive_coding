@@ -30,5 +30,12 @@ quyết định. Đáp án luôn là số nguyên.
 Thuật toán: khi thêm mỗi điểm, cập nhật bốn biến running min/max của u và v,
 rồi in ra max(maxU-minU, maxV-minV). Mỗi bước tốn O(1).
 
+Về nhập/xuất: bản C++ đọc từng điểm và in ngay đáp án của bước đó (dùng int64,
+bộ nhớ phụ O(1)). Bản Python đọc toàn bộ input một lần rồi tách token, gom các
+đáp án vào một danh sách và xuất một lần ở cuối (nên tốn O(n) bộ nhớ), tận dụng
+số nguyên chính xác vô hạn của Python nên không lo tràn số.
+
 ## Độ phức tạp
-Thời gian O(n), bộ nhớ phụ O(1); mỗi đáp án được in ngay sau khi đọc điểm.
+Thời gian O(n) cho cả hai bản. Bộ nhớ: bản C++ dùng O(1) phụ và in đáp án ngay
+sau mỗi điểm; bản Python dùng O(n) do đọc hết input và gom toàn bộ đáp án rồi
+mới xuất một lần.

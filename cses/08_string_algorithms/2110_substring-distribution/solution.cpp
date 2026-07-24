@@ -33,7 +33,7 @@ int main() {
     for (const char character : text) {
         const int letter = character - 'a';
 
-        // Tạo state mới cho tiền tố dài hơn 1 ký tự
+        // Tạo state mới ứng với tiền tố dài thêm 1 ký tự (state dài nhất mới)
         const int current = static_cast<int>(automaton.size());
         automaton.emplace_back();
         automaton[current].length = automaton[last].length + 1;

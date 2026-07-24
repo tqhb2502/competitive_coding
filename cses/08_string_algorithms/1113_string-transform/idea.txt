@@ -37,7 +37,17 @@ cycle) độ dài n+1. Đi theo LF sẽ duyệt lần lượt các ký tự củ
 chiều ngược, nên ghi ngược lại cho ra chính xác T = '#' + s. Đây là thuật toán
 inverse BWT chuẩn, deterministic (không dùng hashing) nên không sợ anti-hash test.
 
+Cả solution.cpp và solution.py đều cài đặt cùng thuật toán inverse BWT bằng LF
+mapping ở trên; chỉ khác chi tiết I/O và bảng chữ cái:
+  - solution.cpp: đọc L bằng std::cin >> string, đếm tần suất một lượt trên bảng
+    256 byte, mảng C và LF đều dùng bảng 256.
+  - solution.py: đọc TOÀN BỘ input một lần bằng sys.stdin.buffer.read() (bộ nhớ
+    O(m)) và xử lý L ở dạng bytes; đếm tần suất bằng bytes.count trên bảng 128 ký
+    tự (chỉ '#'(35) và 'a'..'z'(97..122)); phần LF mapping và bước khôi phục ghi
+    ngược hoàn toàn giống bản C++.
+
 ## Độ phức tạp
-Đếm ký tự và tính LF tốn O(m), tính các vị trí đầu tiên tốn O(256), bước đi
-khôi phục tốn O(m). Tổng thời gian O(m + 256) = O(m), bộ nhớ O(m) cho mảng LF
-và xâu kết quả.
+Đếm ký tự và tính LF tốn O(m), tính các vị trí đầu tiên tốn O(σ) với σ là kích
+thước bảng chữ cái (256 cho C++, 128 cho Python), bước đi khôi phục tốn O(m).
+Tổng thời gian O(m + σ) = O(m), bộ nhớ O(m) cho mảng LF và xâu kết quả (bản
+Python còn giữ toàn bộ input trong bộ nhớ, cũng O(m)).

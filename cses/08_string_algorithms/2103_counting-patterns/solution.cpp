@@ -75,7 +75,7 @@ int main() {
         last = current;
     }
 
-    // Counting sort các state theo len để duyệt theo thứ tự len tăng dần.
+    // Counting sort các state theo len; mảng order thu được tăng dần theo len.
     std::vector<int> length_count(text.size() + 1, 0);
     for (const State& state : automaton) {
         ++length_count[state.length];

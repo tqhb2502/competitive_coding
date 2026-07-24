@@ -8,7 +8,8 @@ https://cses.fi/problemset/task/2104
   hoặc -1 nếu pattern không xuất hiện trong s.
 
 ## Ý tưởng
-Dùng Suffix Automaton (SAM) của xâu s.
+Dùng Suffix Automaton (SAM) của xâu s. Cả solution.cpp và solution.py đều dùng chung
+thuật toán SAM này, chỉ khác cách lưu transition (C++: `array<int, 26>`, Python: dict).
 
 - SAM của s là một automaton nhỏ (nhiều nhất 2n trạng thái) nhận diện đúng toàn
   bộ các xâu con của s. Đi từ trạng thái khởi đầu theo các ký tự của một pattern p:
@@ -44,6 +45,10 @@ Tính đúng đắn:
 - Các pattern trùng nhau sẽ tới cùng một trạng thái nên cho cùng đáp án.
 
 ## Độ phức tạp
-- Xây SAM: O(n) khấu hao với bảng transition `array<int,26>`.
+- Xây SAM: O(n) khấu hao. solution.cpp lưu transition bằng `array<int, 26>` cho mỗi
+  trạng thái; solution.py lưu bằng dict (byte -> trạng thái) nên thưa hơn nhưng cùng bậc.
 - Trả lời: O(tổng độ dài các pattern) = O(5e5) lần tra transition.
-- Bộ nhớ: O(26n) = O(n).
+- Bộ nhớ: solution.cpp O(26n); solution.py O(n) vì SAM chỉ có O(n) cạnh (dict lưu
+  thưa). Cả hai đều là O(n).
+- I/O: solution.cpp đọc dần qua std::cin (đã tắt sync_with_stdio); solution.py đọc
+  toàn bộ input một lần bằng sys.stdin.buffer.read() rồi tách thành danh sách bytes.

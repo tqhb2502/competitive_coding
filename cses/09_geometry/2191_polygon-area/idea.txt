@@ -15,10 +15,12 @@ Diện tích thực là |2A| / 2. Vì đề bài yêu cầu in 2a nên ta chỉ 
 
 Mỗi số hạng x_i * y_{i+1} - x_{i+1} * y_i chính là cross product của hai vector
 tính từ gốc tọa độ và luôn là số nguyên. Ta cộng dồn toàn bộ bằng số nguyên rồi
-lấy giá trị tuyệt đối. Code cộng dồn bằng `__int128` để tránh tràn (mỗi tích
-cỡ ~1e18, tổng qua n <= 1000
-số hạng cỡ ~1e21). Không dùng float để tránh mọi sai số làm tròn (bài toán hình
-học của CSES rất nhạy về precision).
+lấy giá trị tuyệt đối. Với tọa độ tới ~1e9 mỗi tích cỡ ~1e18, tổng qua n <= 1000
+số hạng có thể cỡ ~1e21 nên vượt int64. Bản C++ cộng dồn bằng `__int128` để tránh
+tràn (và có hàm print_integer tự in vì cout không hỗ trợ __int128); bản Python
+đọc toàn bộ input một lần (sys.stdin.buffer.read) rồi cộng dồn bằng big integer
+sẵn có nên không bao giờ tràn. Không dùng float để tránh mọi sai số làm tròn
+(bài toán hình học của CSES rất nhạy về precision).
 
 Vì sao đúng: công thức shoelace cho diện tích có dấu của bất kỳ đa giác đơn nào;
 dấu phụ thuộc chiều duyệt (clockwise hay counter-clockwise). Lấy trị tuyệt đối

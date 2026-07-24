@@ -14,7 +14,9 @@ Dùng Eertree (Palindromic Tree).
   (độ dài = 0). Mỗi nút có:
     + length: độ dài palindrome.
     + link (suffix link): trỏ tới palindrome-suffix thật sự dài nhất của nó.
-    + transition trans[node, c]: nút ứng với palindrome c + P + c (thêm kí tự c hai đầu).
+    + transition [node, c]: nút ứng với palindrome c + P + c (thêm kí tự c hai đầu).
+      Trong solution.cpp lưu bằng mảng dày đặc `next` (array<int,26>) trên mỗi nút; trong
+      solution.py lưu bằng dict thưa `trans` với khóa node*26 + c.
 - Thêm từng kí tự của s từ trái sang phải. Biến `last` luôn là nút ứng với
   palindrome-suffix DÀI NHẤT của tiền tố hiện tại.
 - Khi thêm kí tự thứ i:
@@ -37,4 +39,8 @@ Tính đúng:
 ## Độ phức tạp
 - Thời gian: O(n) amortized (tổng số bước đi theo suffix link trên toàn bộ quá trình là
   O(n)).
-- Bộ nhớ: O(26n) = O(n), vì mỗi nút chứa một `array<int,26>` transition.
+- Bộ nhớ: số nút là O(n) (mỗi kí tự tạo nhiều nhất 1 nút palindrome mới). Cách lưu
+  transition khác nhau giữa hai lời giải:
+    + solution.cpp: mỗi nút chứa một `array<int,26>` transition => O(26n) = O(n).
+    + solution.py: dùng dict thưa nên tổng số transition chỉ tốn O(n); ngoài ra đọc toàn
+      bộ input một lần bằng sys.stdin.buffer.read() (O(n) bộ nhớ).

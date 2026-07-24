@@ -27,6 +27,11 @@ Dùng suffix automaton (SAM) của chuỗi s.
   tương ứng thì p không phải substring của s => đáp án 0. Nếu đi hết p tới state u
   thì đáp án = cnt[u].
 
+Hai bản cài đặt dùng chung thuật toán SAM, chỉ khác cách lưu chuyển và I/O:
+- solution.cpp: mỗi state lưu chuyển bằng `array<int,26>` (dày, tra cứu O(1)).
+- solution.py: mỗi state lưu chuyển bằng dict (thưa); đọc toàn bộ input một lần
+  bằng sys.stdin.buffer.read() rồi tách token.
+
 Vì sao đúng:
 - Đi hết pattern p trong SAM tới state u nghĩa là p thuộc lớp endpos của u, nên số vị trí
   kết thúc của p trong s đúng bằng |endpos(u)| = cnt[u]. Số vị trí kết thúc cũng chính là
@@ -35,7 +40,8 @@ Vì sao đúng:
   anti-hash test của CSES.
 
 ## Độ phức tạp
-- Xây SAM: O(n) khấu hao; mỗi state dùng `array<int,26>` cho transition.
+- Xây SAM: O(n) khấu hao (tối đa 2n state).
 - Tính cnt: O(n) nhờ counting sort theo len.
-- Trả lời truy vấn: O(tổng độ dài các pattern) = O(5e5).
-- Bộ nhớ: O(26n) = O(n).
+- Trả lời truy vấn: O(tổng độ dài các pattern).
+- Bộ nhớ: bản C++ dùng `array<int,26>` nên O(26n) = O(n); bản Python dùng dict
+  nên O(số cạnh) = O(n), cộng O(tổng độ dài input) do đọc toàn bộ một lần.

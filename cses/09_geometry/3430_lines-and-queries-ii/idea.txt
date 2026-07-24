@@ -14,11 +14,16 @@ Ràng buộc: n <= 2*10^5; -10^9 <= a, b <= 10^9; 0 <= x, l, r <= 10^5.
 Đây thực chất là bài "thêm đường trên đoạn vị trí [l, r], truy vấn max tại điểm x".
 Ta dùng Li Chao segment tree đặt trên TRỤC VỊ TRÍ [0, M] với M = 10^5:
 - Xây một segment tree phủ toàn bộ trục vị trí; mỗi nút phủ một đoạn vị trí liên
-  tục và giữ TỐI ĐA MỘT đường thẳng (đúng bất biến của Li Chao tree). Code cài
-  đệ quy trực tiếp trên miền đóng [0, 100000], dùng các mảng kích thước
-  4*(M+1).
+  tục và giữ TỐI ĐA MỘT đường thẳng (đúng bất biến của Li Chao tree). solution.cpp
+  cài ĐỆ QUY trực tiếp trên miền đóng [0, 100000], đánh chỉ số nút từ 1, dùng các
+  mảng kích thước 4*(M+1). solution.py cài LẶP (iterative) trên cây nhị phân đầy
+  kích thước lũy thừa 2: SZ = 2^17 = 131072 (lũy thừa 2 nhỏ nhất >= M+1), dùng hai
+  mảng LA/LB (slope/intercept) kích thước 2*SZ; ngoài ra solution.py đọc TOÀN BỘ
+  input một lần (sys.stdin.buffer.read) nên tốn thêm O(n) bộ nhớ cho dữ liệu vào.
 - Khi thêm đường active trên [l, r]: phân rã [l, r] thành O(log M) nút chuẩn
-  (canonical nodes) của segment tree. Tại mỗi nút chuẩn, đường phủ trọn đoạn của
+  (canonical nodes) của segment tree (solution.cpp phân rã bằng đệ quy; solution.py
+  phân rã bottom-up bằng vòng lặp trên cặp chỉ số lp = l + SZ, rp = r + SZ + 1).
+  Tại mỗi nút chuẩn, đường phủ trọn đoạn của
   nút (vì nút nằm gọn trong [l, r]) nên ta thực hiện một phép Li Chao insert của
   đường vào subtree gốc là nút đó: so sánh đường mới với đường đang giữ tại nút ở
   điểm giữa mid, giữ đường tốt hơn ở nút, đẩy đường thua xuống nửa mà nó còn có
@@ -31,11 +36,13 @@ nạp: đường vào N hoặc do canonical insert (N nằm trong [l, r]), hoặ
 xuống từ cha đã phủ đoạn con). Với mỗi đường active trên [l, r], khi l <= x <= r
 đúng MỘT nút chuẩn của [l, r] nằm trên đường đi root -> leaf(x), nên lấy max trên
 đường đi bằng đúng max của toàn bộ đường active tại x. Mọi phép tính a*x + b và
-so sánh tại mid / đầu mút đều dùng `long long`; theo ràng buộc, |a*x+b| không
-quá khoảng 10^14 nên không tràn và không có sai số.
+so sánh tại mid / đầu mút trong solution.cpp đều dùng `long long`; theo ràng buộc,
+|a*x+b| không quá khoảng 10^14 nên không tràn và không có sai số (solution.py dùng
+số nguyên Python độ chính xác vô hạn nên cũng không tràn).
 
 ## Độ phức tạp
 - Mỗi lần thêm đường: O(log M) nút chuẩn, mỗi nút Li Chao insert O(log kích thước
   subtree) => O(log^2 M) mỗi lần thêm.
 - Mỗi truy vấn: đi root -> leaf, chỉ đánh giá một đường mỗi nút => O(log M).
-- Tổng: O(n log^2 M) thời gian, O(SZ) = O(M) bộ nhớ.
+- Tổng: O(n log^2 M) thời gian, O(SZ) = O(M) bộ nhớ cho cây; riêng solution.py tốn
+  thêm O(n) bộ nhớ do đọc toàn bộ input một lần.

@@ -5,7 +5,8 @@ https://cses.fi/problemset/task/3427
 Có n đoạn thẳng, mỗi đoạn nối điểm (0, y1) với (m, y2); toạ độ nguyên và hệ
 số góc (slope) của mỗi đoạn là số nguyên. Với mỗi x = 0, 1, ..., m, hãy in ra
 giá trị y lớn nhất trong tất cả các đoạn tại hoành độ x đó (chính là bao trên
-- upper envelope).
+- upper envelope). Kết quả in trên một dòng gồm m + 1 số nguyên (ứng với
+x = 0, 1, ..., m) cách nhau bởi dấu cách.
 
 ## Ý tưởng
 Vì mọi đoạn đều trải dài trên toàn bộ khoảng [0, m], ta coi mỗi đoạn như một
@@ -31,9 +32,18 @@ Dùng Convex Hull Trick (CHT) đơn điệu:
   f(hull[ptr+1], x) >= f(hull[ptr], x) thì tăng ptr. Giá trị f = s*x + b được
   tính bằng số nguyên nên luôn chính xác.
 
+Hai bản cài đặt dùng cùng thuật toán CHT nhưng khác vài chi tiết:
+- solution.cpp đọc dữ liệu theo luồng (cin), sắp xếp toàn bộ đường theo slope
+  (cùng slope thì intercept lớn hơn đứng trước) rồi bỏ qua đường trùng slope
+  ngay trong lúc xây hull, và dùng __int128 cho tích chéo để tránh tràn số.
+- solution.py đọc toàn bộ input một lần (sys.stdin.buffer.read(), bộ nhớ O(n)),
+  gộp các đường cùng slope bằng một dict (giữ intercept lớn nhất) trước khi sắp
+  xếp, và dùng số nguyên vô hạn của Python nên không lo tràn số.
+
 ## Tính đúng đắn
-- Mọi phép so sánh và cross product đều là số nguyên; code dùng `__int128` cho
-  tích chéo để không tràn số, nên không có sai số dấu phẩy động.
+- Mọi phép so sánh và tích chéo đều là số nguyên nên không có sai số dấu phẩy
+  động: solution.cpp dùng `__int128` cho tích chéo để không tràn số, còn
+  solution.py dùng số nguyên vô hạn sẵn có của Python.
 - Với x nguyên, y = b + s*x luôn là số nguyên, khớp với yêu cầu in số nguyên.
   Tại x = m: y = y1 + s*m = y1 + (y2 - y1) = y2 (đúng đầu mút phải).
 - Upper envelope của các đường thẳng cho đúng giá trị lớn nhất tại mọi x; và vì

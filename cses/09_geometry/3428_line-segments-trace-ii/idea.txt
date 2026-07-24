@@ -7,7 +7,8 @@ Tags: two-pointers
 Cho n đoạn thẳng, mỗi đoạn có hai đầu mút nguyên (x1, y1) và (x2, y2) với
 0 <= x1 < x2 <= m, và hệ số góc (slope) của đoạn là số nguyên. Với mỗi hoành độ
 nguyên x = 0, 1, ..., m, hãy tìm tung độ y lớn nhất trong tất cả các đoạn thẳng
-"phủ" x (tức là x1 <= x <= x2). Nếu không có đoạn thẳng nào phủ x thì in ra -1.
+"phủ" x (tức là x1 <= x <= x2). Nếu không có đoạn thẳng nào phủ x thì giá trị là -1.
+In ra m+1 số nguyên trên một dòng, cách nhau bởi dấu cách, theo thứ tự x = 0..m.
 
 ## Ý tưởng
 Mỗi đoạn thẳng là một hàm tuyến tính y = a*x + b, nhưng chỉ xác định trên khoảng
@@ -16,8 +17,11 @@ Mỗi đoạn thẳng là một hàm tuyến tính y = a*x + b, nhưng chỉ xá
     này chia hết, tính bằng integer division cho kết quả chính xác.
   - b = y1 - a*x1 là intercept.
 Vì a nguyên và x nguyên nên y = a*x + b tại mọi điểm nguyên đều là số nguyên. Do
-đó toàn bộ tính toán dùng số nguyên; code dùng `__int128` cho các tích chéo để
-tránh tràn và không có sai số dấu phẩy động.
+đó toàn bộ tính toán dùng số nguyên, không có sai số dấu phẩy động. Bản C++ dùng
+`__int128` cho các tích chéo (intercept có thể lớn cỡ ~1e15 nên tích chéo vượt
+long long) để tránh tràn; bản Python dùng số nguyên lớn (big integer) sẵn có nên
+không cần kiểu đặc biệt, và đọc toàn bộ input một lần rồi xử lý (bản C++ đọc theo
+luồng qua cin).
 
 Bài toán quy về: tính upper envelope (giá trị lớn nhất của tập các đường) của các
 "line segment" (đường tuyến tính bị giới hạn trên một khoảng), đánh giá tại mọi

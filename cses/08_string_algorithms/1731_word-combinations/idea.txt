@@ -23,13 +23,21 @@ trong một lượt quét, không cần cắt và so sánh lại các chuỗi co
 tách của s tương ứng duy nhất với vị trí cắt cuối cùng, phép cộng dồn dp không đếm
 trùng và không bỏ sót.
 
-Chi tiết cài đặt: mỗi nút Trie chứa `array<int,26>` các cạnh con và cờ `is_word`;
-chỉ số 0 vừa là nút gốc, vừa là giá trị biểu diễn "không có cạnh". Khi cập nhật
-DP, mỗi phép cộng được đưa ngay về modulo 10^9+7.
+Chi tiết cài đặt (C++): mỗi nút Trie chứa `array<int,26>` các cạnh con và cờ
+`is_word`; chỉ số 0 vừa là nút gốc, vừa là giá trị biểu diễn "không có cạnh".
+Khi cập nhật DP, mỗi phép cộng được đưa ngay về modulo 10^9+7.
+
+Bản Python cùng thuật toán nhưng khác cài đặt: đọc toàn bộ input một lần bằng
+`sys.stdin.buffer.read().split()` (giữ dữ liệu vào trong bộ nhớ, s ở dạng bytes);
+Trie lưu trong một dict với khóa gói `(node << 7) | char` trỏ tới chỉ số nút con,
+cùng mảng `is_word` kiểu bytearray. DP không giảm modulo ngay mà cộng dồn lười rồi
+mới lấy modulo lúc đọc `dp[i]` và khi in kết quả; mỗi ô dp bị chặn dưới ~5e12 (tối
+đa n phép cộng, mỗi số đã < MOD) nên không tràn.
 
 ## Độ phức tạp
 - Xây Trie: O(tổng độ dài các từ) ≤ O(10^6) thời gian và bộ nhớ.
 - DP: mỗi vị trí bắt đầu i đi trên Trie tối đa n bước, nên O(n^2) = 25*10^6 bước
   khi n = 5000.
 - Bộ nhớ: O(26 * số nút Trie + n); vì bảng chữ cái có kích thước cố định, có thể
-  viết gọn là O(số nút Trie + n).
+  viết gọn là O(số nút Trie + n). Bản Python lưu Trie bằng dict nên bộ nhớ tỉ lệ
+  với số cạnh thực tế, cộng thêm chi phí giữ toàn bộ input trong bộ nhớ.

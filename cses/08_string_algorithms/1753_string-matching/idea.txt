@@ -20,6 +20,13 @@ mang tính tất định (deterministic), nên không bị các test chống has
   là tìm thấy một lần xuất hiện đầy đủ của pattern → tăng bộ đếm answer, rồi
   lùi k = pi[k-1] để tiếp tục tìm các lần xuất hiện chồng lấn.
 
+Chi tiết cài đặt (I/O) — cả hai bản dùng cùng thuật toán KMP:
+- Bản C++ đọc text và pattern bằng std::cin >> (kèm sync_with_stdio(false) và
+  cin.tie(nullptr)) để tăng tốc, rồi quét toàn bộ text.
+- Bản Python đọc toàn bộ stdin một lần bằng sys.stdin.buffer.read().split() và
+  xử lý text/pattern trực tiếp ở dạng bytes cho nhanh; có thêm nhánh biên trả về
+  0 ngay khi input ít hơn 2 token hoặc khi m > n.
+
 Vì sao đúng:
 - Failure function bảo đảm khi gặp mismatch, ta không cần quét lại các ký tự đã
   so khớp trong text; thay vào đó lùi con trỏ pattern về biên dài nhất còn có

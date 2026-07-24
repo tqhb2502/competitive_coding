@@ -27,11 +27,19 @@ Xây dựng SAM (thuật toán online cổ điển):
 - Thêm từng ký tự của text. Mỗi lần thêm tạo trạng thái mới cur với len tăng 1,
   đi ngược theo suffix link để nối transition; xử lý clone khi
   len(p)+1 != len(q).
-- Vì bảng chữ cái chỉ gồm `a..z`, mỗi trạng thái lưu transition bằng
-  `array<int,26>`; giá trị -1 biểu diễn cạnh không tồn tại.
+- Biểu diễn transition khác nhau giữa hai bản cài đặt:
+  + solution.cpp: mỗi trạng thái là một struct State lưu transition bằng
+    `array<int,26>` cho bảng chữ cái cố định `a..z`; giá trị -1 nghĩa là cạnh
+    không tồn tại. Toàn bộ SAM giữ trong `vector<State>`.
+  + solution.py: dùng 3 mảng song song `sa_len`/`sa_link`/`sa_next` (thay vì
+    object) để tiết kiệm chi phí; transition của mỗi trạng thái lưu bằng `dict`
+    khóa theo giá trị byte của ký tự (input đọc bằng `sys.stdin.buffer`). Cả input
+    được đọc một lần bằng `sys.stdin.buffer.read().split()`.
 
 ## Độ phức tạp
 - Xây SAM: O(n) trạng thái/transition (amortized), bảng chữ cái cố định (a..z),
   số trạng thái ≤ 2n.
 - Kiểm tra tất cả pattern: O(tổng độ dài pattern) = O(5e5).
-- Bộ nhớ: O(26n) = O(n) trạng thái và bảng transition cố định.
+- Bộ nhớ: solution.cpp O(26n) do mỗi trạng thái mang bảng transition cố định
+  `array<int,26>`; solution.py O(n) theo tổng số cạnh thực sự (dict) cộng thêm
+  O(tổng độ dài input) vì đọc toàn bộ input một lần vào bộ nhớ.

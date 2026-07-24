@@ -31,6 +31,17 @@ tạo thêm một trạng thái "clone" khi cần tách lớp. Số trạng thá
 cạnh chuyển là O(n). Kết quả có thể lớn tới n*(n+1)/2 ~ 5e9 nên cần kiểu số nguyên
 64-bit (`long long`).
 
+Hai bản cài đặt dùng cùng thuật toán SAM, chỉ khác cách lưu transition và I/O:
+- solution.cpp: mỗi trạng thái lưu transition trong `array<int,26>` (đầy đủ 26
+  ô, -1 nếu không có cạnh), đọc xâu bằng `std::cin`.
+- solution.py: mỗi trạng thái lưu transition trong một `dict` (chỉ giữ các cạnh
+  thực sự tồn tại), đọc toàn bộ input một lần bằng `sys.stdin.buffer.read()` rồi
+  duyệt trực tiếp trên `bytes` (mỗi ký tự là một giá trị byte int).
+
 ## Độ phức tạp
-- Thời gian: O(n) khấu hao với transition lưu trong `array<int,26>`.
-- Bộ nhớ: O(26n) = O(n).
+- Thời gian: O(n) khấu hao (bảng chữ cái a-z cố định).
+  * solution.cpp: transition lưu trong `array<int,26>`.
+  * solution.py: transition lưu trong `dict` cho từng trạng thái.
+- Bộ nhớ:
+  * solution.cpp: O(26n) do mỗi trạng thái luôn cấp phát đủ 26 ô.
+  * solution.py: O(n) vì `dict` chỉ lưu các cạnh có thật (tổng cộng O(n) cạnh).

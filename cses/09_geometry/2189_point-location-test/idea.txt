@@ -21,9 +21,16 @@ tức dấu của nó cho biết chiều quay của bộ ba điểm p1 -> p2 -> 
 - Nếu cross = 0: hai vector cùng phương nên ba điểm thẳng hàng -> "TOUCH".
 
 Lưu ý về số học chính xác: tọa độ tới 1e9 nên mỗi hiệu có thể tới 2e9 và tích
-tới 4e18, hiệu hai tích có thể vượt phạm vi 64-bit. Code dùng `__int128`, nhờ
-vậy tránh tràn số; toàn bộ phép tính là số nguyên nên không có sai số làm tròn.
+tới 4e18, hiệu hai tích có thể vượt phạm vi 64-bit. Bản C++ dùng `__int128` để
+tránh tràn số; bản Python dùng số nguyên độ chính xác tùy ý (big int) nên tự
+động không tràn. Toàn bộ phép tính là số nguyên nên không có sai số làm tròn.
+
+Khác biệt I/O giữa hai bản: C++ đọc từng truy vấn trực tiếp từ luồng `cin`
+(xử lý ngay khi đọc); Python đọc toàn bộ input một lần vào một mảng rồi duyệt,
+đồng thời gom kết quả vào danh sách `out` và xuất một lần cho nhanh.
 
 ## Độ phức tạp
 - Thời gian: O(t) cho t truy vấn, mỗi truy vấn chỉ vài phép nhân và trừ nguyên.
-- Bộ nhớ phụ: O(1), vì từng truy vấn được xử lý ngay khi đọc.
+- Bộ nhớ phụ:
+  + Bản C++: O(1), vì từng truy vấn được xử lý ngay khi đọc từ luồng.
+  + Bản Python: O(t), vì đọc toàn bộ input vào bộ nhớ và gom kết quả rồi mới xuất.

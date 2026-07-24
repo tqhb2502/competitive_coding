@@ -38,7 +38,14 @@ Với mỗi điểm truy vấn, duyệt qua từng cạnh của đa giác và th
    floating point. Với toạ độ tới 1e9, mỗi tích có trị tuyệt đối không quá
    4e18 và code dùng `long long`.
 
+Cả solution.cpp và solution.py cài đặt đúng một thuật toán trên; chỉ khác ở I/O:
+bản C++ đọc/ghi theo luồng (cin/cout) nên chỉ giữ O(n) trong bộ nhớ, còn bản
+Python đọc trọn input một lần bằng sys.stdin.buffer.read() rồi gom các dòng kết
+quả vào buffer trước khi in. Python dùng số nguyên lớn tuỳ ý nên cũng không có
+sai số floating point.
+
 ## Độ phức tạp
 - Thời gian: O(n) cho mỗi truy vấn, tổng cộng O(n*m). Với n, m <= 1000 là tối đa
   khoảng 1e6 phép tính, chạy thoải mái trong giới hạn thời gian.
-- Bộ nhớ: O(n) để lưu toạ độ đa giác.
+- Bộ nhớ: bản C++ dùng O(n) để lưu toạ độ đa giác; bản Python đọc toàn bộ input
+  và gom output nên tốn O(n + m).

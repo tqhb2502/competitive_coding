@@ -17,18 +17,24 @@ Dùng cách tiếp cận tất định (deterministic), tránh hashing vì CSES 
   chung độ dài L thì mọi hậu tố nằm giữa chúng theo thứ tự từ điển cũng có tiền tố chung độ
   dài ít nhất L).
 - Nếu max LCP = 0 thì không có substring lặp lại -> in -1. Ngược lại in ra chính đoạn đó:
-  s[i : i+L] với i là vị trí hậu tố hiện tại và L = max LCP.
+  s[i : i+L] với i là vị trí hậu tố đạt max LCP và L = max LCP.
 
 Xây dựng suffix array bằng prefix doubling (rank doubling):
-- Ban đầu xếp hạng hậu tố theo ký tự đầu (nén tọa độ về 0..d-1).
+- Khởi tạo rank theo một ký tự đầu. solution.cpp gán rank = ký tự - 'a' (giá trị 0..25);
+  solution.py nén tọa độ về 0..d-1 (d = số ký tự phân biệt). Cả hai đều cho đúng thứ tự
+  theo một ký tự đầu.
 - Mỗi bước doubling k = 1, 2, 4, ...: sắp xếp hậu tố theo cặp (rank[i], rank[i+k]); sau bước đó
-  rank phản ánh thứ tự theo 2k ký tự đầu. Code gọi `std::sort` với comparator so
-  sánh trực tiếp hai thành phần của cặp (thành phần thứ hai là -1 nếu vượt cuối xâu),
-  rồi gán lại rank mới.
+  rank phản ánh thứ tự theo 2k ký tự đầu, rồi gán lại rank mới (tăng 1 mỗi khi cặp khóa đổi so
+  với hậu tố liền trước trong SA). Cách tạo khóa sắp xếp khác nhau giữa hai bản:
+  - solution.cpp gọi `std::sort` với comparator so sánh trực tiếp hai thành phần của cặp
+    (thành phần thứ hai là -1 nếu vượt cuối xâu).
+  - solution.py gộp cặp thành một khóa nguyên duy nhất: key[i] = rank[i]*base + (rank[i+k]+1)
+    với base = n+1, rồi `sorted` theo khóa đó. Bản Python đọc toàn bộ input một lần bằng
+    sys.stdin.buffer.read() và xử lý trực tiếp trên bytes.
 - Dừng khi mọi rank đều phân biệt.
 
 ## Độ phức tạp
 - Suffix array (prefix doubling): O(n log^2 n) thời gian trong trường hợp xấu (O(log n) bước,
-  mỗi bước một lần sort O(n log n)); bộ nhớ O(n).
-- Kasai LCP: O(n) thời gian, O(n) bộ nhớ (biến h giảm tối đa 1 mỗi bước nên tổng chi phí
+  mỗi bước một lần sort O(n log n)); bộ nhớ O(n). Áp dụng cho cả solution.cpp và solution.py.
+- Kasai LCP: O(n) thời gian, O(n) bộ nhớ (biến h/common giảm tối đa 1 mỗi bước nên tổng chi phí
   amortized O(n)).

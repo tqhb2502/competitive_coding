@@ -28,7 +28,16 @@ https://cses.fi/problemset/task/2195
   bị loại.
 - Hợp của lower hull và upper hull phủ toàn bộ biên, kể cả các điểm collinear
   trên mọi cạnh. Trước khi ghép, code bỏ điểm cuối của mỗi chain để hai đầu mút
-  chung không bị lặp. Trường hợp mọi điểm thẳng hàng được xử lý riêng.
+  chung không bị lặp.
+
+- Xử lý suy biến khác nhau giữa hai bản: solution.cpp kiểm tra riêng trường hợp
+  mọi điểm thẳng hàng (khi đó chỉ in danh sách điểm đã sắp xếp, tránh việc hai
+  monotone chain in trùng các điểm collinear) dù CSES đã bảo đảm diện tích hull
+  dương; solution.py dựa vào bảo đảm đó nên chỉ chặn riêng n <= 1.
+
+- I/O: solution.cpp tắt đồng bộ cin/cout và đọc từng điểm; solution.py đọc toàn
+  bộ input một lần bằng sys.stdin.buffer.read() (O(n) bộ nhớ) rồi tối ưu hằng số
+  (theo dõi độ dài stack bằng biến m, unpack đỉnh stack, cache pop/append cục bộ).
 
 - Tính đúng: monotone chain là thuật toán chuẩn, đã được chứng minh đúng cho
   convex hull. Đã kiểm tra chương trình với brute-force O(n^3) (một điểm thuộc

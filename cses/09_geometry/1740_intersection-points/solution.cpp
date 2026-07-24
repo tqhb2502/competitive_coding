@@ -4,7 +4,8 @@
 #include <vector>
 
 // Sự kiện của sweep line: tại hoành độ x, loại type (add=0 < query=1 < remove=2).
-// Với add/remove: left = rank của y trong BIT. Với query: [left, right) là khoảng rank.
+// Với add/remove: left = rank (1-based) của y trong BIT. Với query: left = số y ngang
+// < y_low, right = số y ngang <= y_high; đếm = prefix(right) - prefix(left).
 struct Event {
     int x;
     int type;
@@ -92,7 +93,8 @@ int main() {
         events.push_back({segment.right_x, 2, rank, 0});
     }
 
-    // Mỗi đoạn dọc -> sự kiện query lấy khoảng rank [left, right) ứng với [low_y, high_y].
+    // Mỗi đoạn dọc -> query: left = số y ngang < low_y, right = số y ngang <= high_y;
+    // đếm bằng prefix(right) - prefix(left).
     for (const Vertical& segment : verticals) {
         const int left = static_cast<int>(std::lower_bound(
             horizontal_ys.begin(), horizontal_ys.end(), segment.low_y) -

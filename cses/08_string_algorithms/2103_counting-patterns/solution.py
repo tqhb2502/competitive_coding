@@ -59,7 +59,7 @@ def main():
 
     total = len(sa_len)
 
-    # Counting sort theo len giảm dần để cộng dồn endpos theo suffix link.
+    # Counting sort theo len (mảng order tăng dần) để cộng dồn endpos theo suffix link.
     bucket = [0] * (n + 2)
     for v in range(total):
         bucket[sa_len[v]] += 1
