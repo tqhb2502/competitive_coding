@@ -36,5 +36,5 @@ Cài đặt:
 
 ## Độ phức tạp
 - Sắp xếp: O(m log m).
-- DSU với path compression + union by rank: gần như O(alpha) mỗi thao tác.
+- DSU với path halving + union by rank: gần như O(alpha) mỗi thao tác.
 - Tổng: O(m log m + (n + m) alpha), thoải mái với n <= 1e5, m <= 2e5.

@@ -43,7 +43,7 @@ int main() {
         std::cin >> point.x >> point.y;
     }
 
-    // Công thức shoelace: cộng dồn cross product của các cạnh liên tiếp.
+    // Công thức shoelace: cộng dồn cross product của hai vector đỉnh liên tiếp tính từ gốc tọa độ.
     // Dùng __int128 để tránh tràn số vì tổng có thể cỡ ~1e21.
     i128 doubled_area = 0;
     for (int index = 0; index < vertex_count; ++index) {

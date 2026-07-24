@@ -32,4 +32,4 @@ Dùng Dynamic Programming đếm distinct subsequences.
 
 ## Độ phức tạp
 - Thời gian: O(n), mỗi ký tự xử lý O(1) nhờ mảng last kích thước 26.
-- Bộ nhớ: O(1) ngoài chuỗi đầu vào (một biến dp và mảng 26 phần tử).
+- Bộ nhớ: O(1) ngoài chuỗi đầu vào (một biến dp và hai mảng 26 phần tử: mảng đếm và mảng cờ đã gặp).

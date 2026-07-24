@@ -33,4 +33,5 @@ Trên bàn n*n, số quân tượng không tấn công nhau tối đa là 1 khi 
 khi n>1. Nếu k vượt giới hạn này có thể trả lời 0 ngay.
 
 ## Độ phức tạp
-Thời gian O(n*k), bộ nhớ O(k).
+Thời gian O(n*k), bộ nhớ O(n + k): O(n) cho mảng độ dài các đường chéo + O(k)
+cho hai mảng DP.

@@ -13,7 +13,7 @@ chung đỉnh với tổng trọng số nhỏ nhất, trong đó cạnh i có tr
 d[i] = x[i] - x[i-1].
 
 Đây là bài toán ghép cặp trọng số nhỏ nhất trên đường đi, giải bằng kỹ thuật
-tham lam kèm "hối tiếc" (slope trick / exchange argument) với priority_queue và
+tham lam kèm "hối tiếc" (exchange argument) với priority_queue và
 danh sách liên kết đôi các cạnh:
 - Mỗi bước lấy cạnh còn sống có trọng số nhỏ nhất w, cộng w vào đáp án -> đây là
   đáp án tối ưu khi ghép đúng số cặp hiện tại.

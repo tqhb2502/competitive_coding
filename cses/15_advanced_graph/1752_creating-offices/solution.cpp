@@ -154,7 +154,7 @@ private:
 
     // Phân rã cây theo centroid bằng vòng lặp (tránh tràn stack).
     // Mỗi thành phần: tìm centroid, lưu centroid + khoảng cách cho mọi đỉnh
-    // trong thành phần, gỡ centroid rồi đẩy các thành phần con vào hàng đợi.
+    // trong thành phần, gỡ centroid rồi đẩy các thành phần con vào ngăn xếp (stack).
     void buildCentroidPaths() {
         vector<char> removed(static_cast<size_t>(vertexCount_), false);
         vector<int> traversalParent(static_cast<size_t>(vertexCount_), -1);
@@ -253,7 +253,7 @@ private:
                 }
             }
 
-            // Gỡ centroid rồi đẩy mỗi thành phần con vào hàng đợi ở tầng kế
+            // Gỡ centroid rồi đẩy mỗi thành phần con vào ngăn xếp (stack) ở tầng kế
             removed[static_cast<size_t>(centroid)] = true;
             for (int edge = tree_.begin(centroid); edge < tree_.end(centroid);
                  ++edge) {
