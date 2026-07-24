@@ -9,8 +9,9 @@ giữa hai xâu là số vị trí mà chúng khác nhau.
 ## Ý tưởng
 Bit-packing kết hợp popcount:
 - Vì k <= 30, mỗi xâu nhị phân có thể đóng gói (pack) gọn vào một số
-  nguyên không dấu 32 bit (unsigned int). Bit thứ j của số tương ứng
-  với ký tự thứ j của xâu.
+  nguyên không dấu 32 bit (unsigned int). Mã đóng gói theo thứ tự
+  MSB-first (x = (x << 1) | bit): ký tự đầu tiên nằm ở bit cao nhất
+  trong k bit, mỗi ký tự chiếm đúng một bit riêng biệt.
 - Khoảng cách Hamming giữa hai xâu a và b chính bằng số bit 1 trong
   phép XOR: popcount(a XOR b). Bởi vì a XOR b có bit 1 đúng tại những
   vị trí mà hai xâu khác nhau.
@@ -19,8 +20,9 @@ Bit-packing kết hợp popcount:
   nhất.
 
 Tính đúng đắn:
-- Đóng gói xâu vào số nguyên là song ánh giữ nguyên vị trí bit, nên
-  vị trí khác nhau của hai xâu tương ứng chính xác với bit 1 của XOR.
+- Đóng gói xâu vào số nguyên là một song ánh nhất quán (mọi xâu đều
+  pack theo cùng một quy tắc), nên vị trí khác nhau của hai xâu tương
+  ứng chính xác với bit 1 của XOR.
   Do đó popcount(a XOR b) đúng bằng khoảng cách Hamming.
 - Ta xét đầy đủ mọi cặp (i, j) với i < j nên chắc chắn tìm được cặp
   có khoảng cách nhỏ nhất. Cận trên khởi tạo ans = k là hợp lệ vì hai

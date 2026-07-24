@@ -41,5 +41,5 @@ Tags: sliding-window
 
 ## Độ phức tạp
 - Thời gian: O(n) — một lượt sinh mảng và một lượt trượt cửa sổ.
-- Bộ nhớ được cấp phát cố định theo giới hạn `MAX_N`: mảng `int` tĩnh
-  10,000,005 phần tử, khoảng 40 MB (tương đương O(MAX_N)).
+- Bộ nhớ: mảng `int` tĩnh cố định 10,000,005 phần tử (đủ cho n tới 10^7),
+  khoảng 40 MB.

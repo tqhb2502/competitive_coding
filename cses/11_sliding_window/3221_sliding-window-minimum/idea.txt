@@ -15,8 +15,10 @@ Tags: monotonic-deque, sliding-window, window-extrema
 - Dùng một monotonic deque lưu các CHỈ SỐ (index) của mảng sao cho các giá
   trị arr[idx] tương ứng luôn TĂNG DẦN từ đầu (front) tới cuối (back).
 - Khi duyệt tới phần tử i:
-  1) Loại khỏi front các chỉ số đã ra khỏi cửa sổ hiện tại, tức các index
-     <= i - k (cửa sổ của i là đoạn [i-k+1, i]).
+  1) Loại khỏi front chỉ số đã ra khỏi cửa sổ hiện tại, tức index <= i - k
+     (cửa sổ của i là đoạn [i-k+1, i]). Vì cửa sổ trượt mỗi bước đúng một ô
+     nên tối đa một chỉ số rơi khỏi front, do đó chỉ cần một lệnh if (không
+     cần vòng lặp while).
   2) Loại khỏi back mọi chỉ số j mà arr[j] >= arr[i], vì arr[i] nhỏ hơn và
      mới hơn nên các phần tử đó không bao giờ còn có thể là min nữa.
   3) Đẩy i vào back.

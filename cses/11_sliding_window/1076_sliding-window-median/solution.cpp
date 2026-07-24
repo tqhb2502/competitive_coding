@@ -32,7 +32,7 @@ int main() {
         }
     };
 
-    // Thêm x vào nửa dưới nếu x <= max(low), ngược lại thêm vào nửa trên.
+    // Thêm x vào nửa dưới nếu low rỗng hoặc x <= max(low), ngược lại thêm vào nửa trên.
     auto add = [&](int x) {
         if (low.empty() || x <= *low.rbegin()) low.insert(x);
         else high.insert(x);

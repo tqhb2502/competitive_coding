@@ -25,7 +25,8 @@ int main() {
     long long ans = 0;
 
     for (int i = 0; i < n; i++) {
-        // (1) Loại khỏi front các chỉ số đã ra khỏi cửa sổ (index <= i - k).
+        // (1) Loại khỏi front chỉ số đã ra khỏi cửa sổ (index <= i - k);
+        //     mỗi bước tối đa một chỉ số rơi ra nên chỉ cần if, không cần while.
         if (head < tail && dq[head] <= i - k) head++;
         // (2) Loại khỏi back các phần tử >= arr[i] (không còn có thể là min).
         while (head < tail && arr[dq[tail - 1]] >= arr[i]) tail--;

@@ -23,7 +23,7 @@ void add(int node, int lo, int hi, Line nw){
     else             add(2*node+1, mid+1, hi,  nw);
 }
 
-// chèn đường ln chỉ trên đoạn s in [ql, qr] (segment insert)
+// chèn đường ln chỉ trên đoạn vị trí [ql, qr] (0-indexed, ứng với s = pos+1) (segment insert)
 void insert_seg(int node, int lo, int hi, int ql, int qr, const Line& ln){
     if (qr < lo || hi < ql) return;
     if (ql <= lo && hi <= qr){ add(node, lo, hi, ln); return; }

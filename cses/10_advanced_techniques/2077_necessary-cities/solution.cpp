@@ -18,7 +18,7 @@ int main() {
     }
 
     // disc: thời điểm thăm; low: disc nhỏ nhất vươn tới được qua tối đa một back edge
-    // parent: cha trong cây DFS; it: con trỏ cạnh kề kế tiếp; childCount: số con của gốc
+    // parent: cha trong cây DFS; it: con trỏ cạnh kề kế tiếp; childCount: số con trong cây DFS (dùng cho trường hợp gốc)
     vector<int> disc(n + 1, 0), low(n + 1, 0), parent(n + 1, -1);
     vector<int> it(n + 1, 0), childCount(n + 1, 0);
     vector<char> isAP(n + 1, 0);

@@ -6,7 +6,8 @@ int main() {
     if (scanf("%d %d", &n, &k) != 2) return 0;
 
     // Đóng gói (pack) mỗi xâu nhị phân độ dài k <= 30 vào một số nguyên
-    // 32 bit; bit thứ j tương ứng với ký tự thứ j của xâu.
+    // 32 bit theo thứ tự MSB-first (ký tự đầu ở bit cao nhất); mỗi ký tự
+    // chiếm đúng một bit riêng.
     vector<unsigned int> a(n);
     char buf[40];
     for (int i = 0; i < n; i++) {

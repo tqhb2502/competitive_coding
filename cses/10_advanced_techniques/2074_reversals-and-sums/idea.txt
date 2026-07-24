@@ -5,7 +5,7 @@ https://cses.fi/problemset/task/2074
 Cho mảng gồm n phần tử, xử lý m truy vấn trên đoạn [a, b]:
   - Loại 1: đảo ngược (reverse) các phần tử trong đoạn [a, b].
   - Loại 2: tính tổng các phần tử trong đoạn [a, b].
-Ràng buộc: n <= 2*10^5, m <= 10^5, 0 <= x_i <= 10^9. Vì tổng có thể lên tới
+Ràng buộc: n <= 2*10^5, m <= 2*10^5, 1 <= x_i <= 10^9. Vì tổng có thể lên tới
 2*10^5 * 10^9 = 2*10^14 nên bắt buộc phải dùng long long.
 
 ## Ý tưởng

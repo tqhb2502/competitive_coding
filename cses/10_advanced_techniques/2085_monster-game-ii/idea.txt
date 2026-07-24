@@ -5,7 +5,7 @@ https://cses.fi/problemset/task/2085
 Có n con quái vật, con thứ i có độ khó s_i và hệ số kỹ năng f_i. Ta khởi đầu với
 hệ số kỹ năng x. Chi phí (thời gian) để giết một con quái bằng hệ số kỹ năng hiện
 tại nhân với độ khó của con quái đó. Sau khi giết con j, hệ số kỹ năng của ta trở
-thành f_j (nhỏ dần). Ta được phép bỏ qua các con ở giữa, nhưng bắt buộc phải giết
+thành f_j. Ta được phép bỏ qua các con ở giữa, nhưng bắt buộc phải giết
 con quái cuối cùng n. Hãy tìm tổng thời gian nhỏ nhất để giết được con quái n.
 
 ## Ý tưởng

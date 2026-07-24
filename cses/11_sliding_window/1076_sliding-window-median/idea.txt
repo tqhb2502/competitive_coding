@@ -10,7 +10,8 @@ median được quy ước là phần tử NHỎ HƠN trong hai phần tử đó
 Ràng buộc: 1 <= k <= n <= 2*10^5, 1 <= x_i <= 10^9. Cần in ra n-k+1 giá trị.
 
 ## Ý tưởng
-Kỹ thuật hai multiset cân bằng (two heaps balancing).
+Kỹ thuật hai multiset cân bằng (dạng "two heaps" / median maintenance, nhưng dùng
+multiset thay cho heap để có thể xóa đúng một phần tử tùy ý khi nó rời khỏi cửa sổ).
 
 - Median cần lấy là phần tử ở hạng (rank) m = (k-1)/2 theo thứ tự sắp xếp 0-indexed.
   Suy ra tập nửa dưới cần chứa đúng target = (k+1)/2 phần tử, và đáp án chính là phần
