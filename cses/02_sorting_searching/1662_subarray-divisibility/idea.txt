@@ -19,8 +19,10 @@ có cùng số dư (residue) khi chia cho n.
 
 Thuật toán duyệt một lần:
 - Duyệt từng phần tử, cộng dồn để có prefix sum, rồi lấy số dư r = prefix % n.
-  Vì phần tử có thể âm nên code chuẩn hóa bằng `(prefix % n + n) % n` để đưa r
-  về khoảng [0, n-1].
+  Vì phần tử có thể âm, trong C++ số dư `prefix % n` có thể âm nên code chuẩn hóa
+  bằng cách tính residue = prefix % n rồi cộng thêm n nếu residue < 0, đưa r về
+  khoảng [0, n-1]. Trong Python, toán tử % với n dương đã cho số dư không âm nên
+  không cần bước chuẩn hóa này.
 - Dùng mảng đếm cnt[0..n-1], khởi tạo cnt[0] = 1 tương ứng prefix rỗng P[0] = 0.
 - Với mỗi prefix mới có số dư r: số subarray hợp lệ kết thúc tại vị trí đó chính
   là cnt[r] (số prefix trước đó cùng số dư). Cộng cnt[r] vào đáp án rồi tăng
@@ -30,7 +32,11 @@ Cách đếm tích lũy này bảo đảm mỗi cặp (l, r) hợp lệ được
 đương công thức tổng của C(cnt[r], 2) trên mọi số dư.
 
 Lưu ý về kiểu dữ liệu: đáp án có thể lên tới khoảng C(2e5, 2) ≈ 2e10, vượt phạm vi
-32-bit, nên code dùng `long long`.
+32-bit, nên bản C++ dùng `long long`. Python có số nguyên độ chính xác tùy ý nên
+không gặp vấn đề tràn số.
+
+Khác biệt I/O giữa hai bản: C++ đọc từng token bằng std::cin (kèm fast I/O), còn
+Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split() rồi xử lý.
 
 ## Độ phức tạp
 - Thời gian: O(n) để duyệt mảng một lần.

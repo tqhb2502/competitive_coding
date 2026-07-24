@@ -3,6 +3,7 @@ from collections import deque
 
 
 def main():
+    # Đọc toàn bộ input một lần rồi tách thành các token để tăng tốc I/O.
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 
@@ -15,7 +16,7 @@ def main():
         # Loại (remove): phần tử đầu tiếp theo bị loại, ghi vào kết quả.
         res.append(q.popleft())
 
-    # Xuất một lần bằng bộ đệm để tăng tốc I/O.
+    # Gộp toàn bộ kết quả thành một chuỗi rồi ghi ra một lần để tăng tốc I/O.
     sys.stdout.write(' '.join(map(str, res)) + '\n')
 
 

@@ -46,5 +46,11 @@ right=4: thêm 1 (đã có), left=2, cộng 3 -> 10
 Kết quả có thể lớn tới ~ n*(n+1)/2 = 2e10, vượt 32-bit, nên code dùng
 `long long` cho biến đếm.
 
-Code đặt trước dung lượng và hạ `max_load_factor` cho `unordered_map`; sau bước
-nén, vòng sliding window chỉ truy cập vector theo chỉ số.
+Hai bản C++ và Python dùng chung thuật toán trên, chỉ khác chi tiết cài đặt:
+- C++: đọc từng số một, nén tọa độ bằng `unordered_map` (đặt trước dung lượng và
+  hạ `max_load_factor`), sau đó dùng `vector` frequency truy cập theo chỉ số; biến
+  đếm đáp án dùng `long long` cho khỏi tràn.
+- Python: đọc toàn bộ input một lần bằng `sys.stdin.buffer.read().split()`, giữ
+  nguyên các token ở dạng bytes (vừa hashable vừa so sánh được) để tránh chi phí
+  parse int, nén tọa độ bằng `dict` và đếm tần suất bằng `list`. Do đọc trọn input,
+  bộ nhớ có thêm phần lưu danh sách token nhưng tổng vẫn là O(n).

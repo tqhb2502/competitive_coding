@@ -32,14 +32,14 @@ int main() {
             continue;
         }
 
-        // m lá bài đầu tham gia phân thắng thua; n - m lá còn lại đều hòa.
+        // moved (= a + b) lá bài đầu tham gia phân thắng thua; n - moved lá còn lại đều hòa.
         const int moved = a + b;
         vector<int> firstPlayer;
         vector<int> secondPlayer;
         firstPlayer.reserve(n);
         secondPlayer.reserve(n);
 
-        // Người 1: dịch vòng tròn theo b trên m lá đầu -> [b+1..m] + [1..b], rồi [m+1..n].
+        // Người 1: dịch vòng tròn theo b trên moved lá đầu -> [b+1..moved] + [1..b], rồi [moved+1..n].
         for (int card = b + 1; card <= moved; ++card) {
             firstPlayer.push_back(card);
         }

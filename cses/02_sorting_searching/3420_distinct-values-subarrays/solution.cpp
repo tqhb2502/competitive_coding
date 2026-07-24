@@ -11,7 +11,7 @@ int main() {
     int n;
     cin >> n;
 
-    // last[value] = vị trí xuất hiện gần nhất của giá trị (hash map).
+    // lastPosition[value] = vị trí xuất hiện gần nhất của giá trị (hash map).
     unordered_map<int, int> lastPosition;
     lastPosition.reserve(2 * n);
     lastPosition.max_load_factor(0.7F);

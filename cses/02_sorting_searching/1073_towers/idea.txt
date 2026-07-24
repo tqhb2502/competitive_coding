@@ -28,7 +28,9 @@ Vì sao greedy này tối ưu?
 
 ## Độ phức tạp
 - Thời gian: O(n log n) do mỗi khối tốn một lần tìm kiếm nhị phân O(log n) và một phép gán hoặc thêm vào cuối O(1).
-- Bộ nhớ: O(n) cho danh sách tops; code C++ xử lý các khối ngay khi đọc nên
-  không lưu thêm mảng đầu vào.
+- Bộ nhớ: O(n) cho danh sách tops. Bản C++ đọc từng khối ngay trong vòng lặp nên
+  không lưu thêm mảng đầu vào; bản Python đọc toàn bộ input một lần
+  (sys.stdin.buffer.read().split()) nên giữ thêm danh sách token đầu vào O(n)
+  trong bộ nhớ. Tổng thể cả hai đều là O(n).
 
 Với n tối đa 2*10^5, `vector` kết hợp `upper_bound` chạy trong giới hạn.

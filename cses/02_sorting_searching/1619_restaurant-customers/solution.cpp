@@ -34,9 +34,8 @@ int main() {
             answer = max(answer, current);
             ++arrival_index;
         } else {
-            // Sự kiện rời đi: bớt một khách (nếu trùng thời điểm thì xử lý rời
-            // đi trước, vì khách rời tại t không tính là cùng có mặt với khách
-            // đến tại t)
+            // Sự kiện rời đi: bớt một khách. Đề bài bảo đảm mọi thời điểm đều
+            // phân biệt nên thời điểm đến không bao giờ trùng thời điểm rời đi.
             --current;
             ++departure_index;
         }

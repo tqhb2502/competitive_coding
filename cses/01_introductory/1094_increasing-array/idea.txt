@@ -35,4 +35,6 @@ Tổng = 1 + 4 = 5. Đúng với đáp án mẫu.
 
 ## Độ phức tạp
 - Thời gian: O(n) - chỉ duyệt mảng một lần.
-- Bộ nhớ: O(1) - đọc và xử lý luôn từng số, không cần lưu cả mảng.
+- Bộ nhớ:
+  + C++: O(1) phụ - đọc và xử lý luôn từng số (cin >> value), không lưu cả mảng.
+  + Python: O(n) - đọc toàn bộ input một lần vào danh sách (data) rồi mới duyệt xử lý.

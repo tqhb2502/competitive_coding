@@ -7,7 +7,11 @@ Levenshtein): số phép biến đổi ít nhất để đưa s thành t, mỗi 
 xóa hoặc thay thế một ký tự.
 
 ## Ý tưởng
-Dùng quy hoạch động Levenshtein kinh điển:
+Cả hai lời giải đều tính khoảng cách Levenshtein và đều chọn chuỗi ngắn hơn
+làm chiều "hẹp" để tiết kiệm bộ nhớ, nhưng hai file cài đặt theo hai cách khác
+nhau. Bài này không có modulo.
+
+solution.cpp — quy hoạch động Levenshtein cổ điển:
 - Trạng thái: dp[i][j] = số phép biến đổi ít nhất để biến i ký tự đầu của s
   thành j ký tự đầu của t.
 - Base case: dp[0][j] = j (chèn thêm j ký tự), dp[i][0] = i (xóa i ký tự).
@@ -18,16 +22,34 @@ Dùng quy hoạch động Levenshtein kinh điển:
           dp[i][j-1],    // chèn t[j-1]
           dp[i-1][j-1]   // thay thế s[i-1] bằng t[j-1]
       ).
-- Đáp án: dp[n][m].
-- Tính đúng: mọi cách biến đổi tối ưu đều xử lý ký tự cuối bằng đúng một trong
-  bốn khả năng (khớp, thay thế, xóa, chèn); công thức min đã xét đủ và các bài
-  con nhỏ hơn có tính chất tối ưu con (optimal substructure). Bài này không có
-  modulo.
-- Code chọn chuỗi ngắn hơn làm chiều cột để giảm bộ nhớ, rồi cuộn DP bằng đúng
-  một mảng `dp`. Khi xử lý một hàng, `diagonal` giữ ô chéo cũ, `dp[j]` trước khi
-  ghi đè là ô phía trên, còn `dp[j-1]` đã là ô bên trái của hàng hiện tại.
+- Đáp án: dp[n][m]. Tính đúng nhờ tối ưu con: mọi cách biến đổi tối ưu đều xử
+  lý ký tự cuối bằng đúng một trong bốn khả năng (khớp, thay thế, xóa, chèn) và
+  công thức min đã xét đủ.
+- Code đặt chuỗi ngắn hơn ở chiều cột rồi cuộn DP bằng đúng một mảng `dp`. Khi
+  xử lý một hàng, `diagonal` giữ ô chéo cũ (dp[i-1][j-1]), `dp[j]` trước khi ghi
+  đè là ô phía trên (dp[i-1][j]), còn `dp[j-1]` đã là ô bên trái (dp[i][j-1])
+  của hàng hiện tại.
+
+solution.py — thuật toán bit-song song của Myers:
+- Chọn chuỗi ngắn hơn làm pattern P (rộng m bit), chuỗi kia làm text T (duyệt
+  n vòng).
+- Peq[ch] là bitmask các vị trí ký tự ch xuất hiện trong P.
+- Một cột của bảng DP được nén thành các số nguyên m bit: VP/VN giữ delta dọc
+  (+1/-1) giữa hai ô liền kề theo cột, Ph/Mh giữ delta ngang, còn Xv/Xh (D0)
+  cho biết ô nào lấy giá trị theo đường chéo.
+- Khởi tạo cột 0: VP = tất cả bit 1 (mỗi hàng xuống làm khoảng cách tăng 1),
+  VN = 0, score = m (chính là dp[m][0]).
+- Mỗi vòng đọc một ký tự của T, cập nhật các bitmask bằng vài phép cộng/dịch/
+  AND/OR/NOT, rồi cập nhật `score` theo delta ngang tại bit cao nhất (ứng với
+  hàng m). Sau khi duyệt hết T, `score` chính là edit distance dp[m][n].
+- Dùng cách này vì DP O(n*m) thuần Python (tới 25 triệu ô khi n,m ≤ 5000) dễ
+  TLE; bit-song song xử lý cả cột trong vài phép trên số nguyên lớn nên nhanh
+  hơn khoảng w lần.
 
 ## Độ phức tạp
-- Thời gian O(n*m).
-- Bộ nhớ phụ cho DP là O(min(n,m)) nhờ đặt chuỗi ngắn hơn ở chiều cột.
-  Tính cả hai xâu đầu vào, tổng bộ nhớ là O(n+m).
+- solution.cpp: thời gian O(n*m); bộ nhớ phụ cho DP O(min(n,m)) nhờ đặt chuỗi
+  ngắn hơn ở chiều cột (tính cả hai xâu đầu vào là O(n+m)).
+- solution.py: thời gian O(n*m/w) với w là số bit mỗi "từ máy" (các số nguyên
+  lớn m bit được xử lý theo khối ~64 bit); bộ nhớ O(sigma*m/w) cho bảng Peq
+  cộng vài số nguyên m bit. Với n,m ≤ 5000 chạy rất nhanh, tránh được nguy cơ
+  TLE của DP O(n*m) thuần Python.

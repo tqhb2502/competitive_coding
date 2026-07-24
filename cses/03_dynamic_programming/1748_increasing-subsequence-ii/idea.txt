@@ -35,11 +35,16 @@ Tối ưu để tránh O(n^2):
   Duyệt theo i tăng dần nên BIT chỉ chứa các j < i; truy vấn tới r-1 (không gồm r)
   bảo đảm điều kiện tăng NGẶT a[j] < a[i].
 
-Các phép cộng trong Fenwick tree đều được lấy modulo MOD. Trong `update`, mỗi ô
-đang nhỏ hơn MOD và giá trị cộng vào cũng nhỏ hơn MOD, nên chỉ cần trừ MOD một
-lần nếu tổng đạt MOD. `query` cộng các ô bằng `long long` rồi lấy modulo trước
-khi trả về. Nhờ vậy mọi ô Fenwick luôn nằm trong kiểu `int`, còn các tổng trung
-gian vẫn an toàn.
+Hai lời giải dùng chung thuật toán trên, chỉ khác ở cách xử lý modulo trong
+Fenwick tree:
+- solution.cpp: giữ mỗi ô Fenwick luôn nằm trong [0, MOD). Trong `add`, ô hiện
+  tại và giá trị cộng vào đều nhỏ hơn MOD nên chỉ cần trừ MOD một lần nếu tổng
+  đạt MOD; `prefix_sum` cộng dồn các ô bằng `long long` rồi lấy modulo trước khi
+  trả về. Nhờ vậy mọi ô Fenwick luôn nằm gọn trong kiểu `int`.
+- solution.py: KHÔNG rút gọn modulo trong vòng update. Mỗi ô chỉ bị cộng tối đa n
+  lần với giá trị dp đã rút gọn (< MOD), nên tối đa khoảng n*MOD ~ 2e14, vẫn gọn
+  trong một từ máy 64-bit. Modulo chỉ được lấy khi tính dp = (s + 1) % MOD và ở
+  tổng cuối cùng total % MOD, giúp giảm hằng số thời gian.
 
 ## Độ phức tạp
 - Thời gian: O(n log n) — sort để nén tọa độ, và n lần query/update trên Fenwick

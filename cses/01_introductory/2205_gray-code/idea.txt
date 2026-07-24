@@ -25,10 +25,14 @@ Tại sao đúng:
   đúng một lần.
 
 Ghi chú về I/O:
-- Code C++ tạo một xâu độ dài n cho từng giá trị Gray rồi in ngay; không cần
-  giữ toàn bộ 2^n xâu trong bộ nhớ.
+- Code C++ tạo một xâu độ dài n cho từng giá trị Gray rồi in ngay (cout <<
+  code << '\n'); không cần giữ toàn bộ 2^n xâu trong bộ nhớ, chỉ dùng O(n).
+- Code Python gom tất cả 2^n xâu vào một danh sách rồi nối lại và ghi ra
+  một lần duy nhất (fast I/O), nên tốn O(2^n * n) bộ nhớ cho toàn bộ output.
 
 ## Độ phức tạp
 - Thời gian: O(2^n * n) để tạo và in tất cả các xâu (mỗi xâu độ dài n).
   Với n = 16 thì 2^n = 65536 dòng, hoàn toàn trong giới hạn.
-- Bộ nhớ: O(n) cho xâu đang được dựng.
+- Bộ nhớ:
+  + C++: O(n) cho xâu đang được dựng (in ngay từng dòng).
+  + Python: O(2^n * n) vì gom toàn bộ output vào danh sách trước khi ghi.

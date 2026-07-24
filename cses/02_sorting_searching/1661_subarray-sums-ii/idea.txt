@@ -30,7 +30,14 @@ cho số lần xuất hiện của prefix và đáp án.
 
 ## Độ phức tạp
 - Thời gian: O(n) trung bình (mỗi thao tác hash map là O(1) trung bình).
-- Bộ nhớ: O(n) cho hash map.
+- Bộ nhớ: O(n) cho hash map (bản Python đọc toàn bộ input một lần nên tốn thêm
+  O(n) cho danh sách token, tổng vẫn là O(n)).
 
-Code C++ đặt trước dung lượng và hạ `max_load_factor` cho `unordered_map`, kết
-hợp fast I/O; thời gian trung bình O(n) phù hợp với n = 2*10^5.
+Chi tiết cài đặt (cả hai bản dùng chung thuật toán prefix sum + hash map):
+- Bản C++ đọc từng số bằng `cin` (đã `sync_with_stdio(false)` và
+  `tie(nullptr)`), dùng `unordered_map<long long, long long>` được `reserve`
+  trước dung lượng và hạ `max_load_factor` để giảm va chạm băm; số lần xuất hiện
+  và đáp án đều là `long long`. Thời gian trung bình O(n), phù hợp n = 2*10^5.
+- Bản Python đọc TOÀN BỘ input một lần bằng `sys.stdin.buffer.read().split()`
+  rồi duyệt danh sách token, dùng `dict` làm hash map và ghi kết quả một lần bằng
+  `sys.stdout.write`; số nguyên Python vô hạn nên không lo tràn số.

@@ -38,14 +38,18 @@ Biểu diễn dạng ma trận với M = [[2, 1], [1, 4]]:
 Tính M^(n-1) bằng lũy thừa ma trận (bình phương liên tiếp) trong O(log n) mỗi truy
 vấn, rồi lấy answer(n) = (A[n] + B[n]) mod 1000000007. Với n = 1 thì M^0 là ma trận
 đơn vị nên A[1] = B[1] = 1, cho đáp án 2 (khớp base case). Có bộ nhớ đệm (cache) theo
-n để không tính lại các truy vấn trùng nhau.
+n để không tính lại các truy vấn trùng nhau. Cả solution.cpp lẫn solution.py đều
+hiện thực đúng cách lũy thừa ma trận này (khác nhau chỉ ở cấu trúc cache).
 
 Kiểm chứng: n = 2 cho 8 (A = 3, B = 5); n = 6 cho 2864 (A = 843, B = 2021).
 
 ## Độ phức tạp
-- Gọi u là số chiều cao khác nhau và H là chiều cao lớn nhất. Với
-  `unordered_map`, thời gian kỳ vọng là O(t + u log H): mọi truy vấn vẫn cần
-  đọc, tra cache và in kết quả, còn mỗi chiều cao mới cần một lần lũy thừa
-  ma trận. Xấu nhất theo số phép lũy thừa là O(t log H).
-- Cache chứa u phần tử nhưng code `reserve` số bucket theo t, nên tổng bộ nhớ
-  là O(t); phép lũy thừa ma trận chỉ dùng thêm O(1).
+Hai file dùng cùng thuật toán lũy thừa ma trận nên độ phức tạp thời gian như nhau;
+chỉ khác nhau ở bộ nhớ cache.
+- Gọi u là số chiều cao khác nhau và H là chiều cao lớn nhất. Thời gian kỳ vọng là
+  O(t + u log H): mọi truy vấn vẫn cần đọc, tra cache và in kết quả, còn mỗi chiều
+  cao mới cần một lần lũy thừa ma trận O(log H). Xấu nhất (mọi truy vấn khác nhau,
+  u = t) là O(t log H).
+- Bộ nhớ: solution.cpp dùng `unordered_map` và `reserve` số bucket theo t nên tổng
+  bộ nhớ cache là O(t); solution.py dùng `dict` chứa u phần tử nên bộ nhớ cache là
+  O(u). Phép lũy thừa ma trận chỉ dùng thêm O(1) trong cả hai file.

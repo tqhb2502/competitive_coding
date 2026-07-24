@@ -34,7 +34,17 @@ Chuyển trạng thái (xét lần lượt từng cuốn i, giá p = price[i], s
 - dp[x] là số trang lớn nhất mua được với ngân sách x. Do dp không giảm theo j nên
   dp[x] cũng bằng max(dp).
 
+Hai lời giải dùng CÙNG một thuật toán (0/1 knapsack, cùng trạng thái/chuyển
+trạng thái/đáp án), chỉ khác cách viết vòng lặp trong:
+- solution.cpp: duyệt j GIẢM DẦN bằng vòng lặp tường minh như mô tả ở trên.
+- solution.py: cập nhật theo lô bằng phép cắt mảng (slice). seg_new = dp[p:x+1]
+  ("không mua cuốn i") và seg_old = dp[0:x+1-p] ("mua cuốn i") được đọc thành bản
+  sao độc lập trước khi ghi đè, nên không có xung đột đọc/ghi và hoàn toàn tương
+  đương với việc duyệt j giảm dần. (Có thêm điều kiện bỏ qua cuốn có giá p > x.)
+
 ## Độ phức tạp
-- Thời gian: O(n * x), tối đa 1000 * 100000 = 1e8 phép cập nhật.
+- Thời gian: O(n * x) cho cả hai lời giải, tối đa 1000 * 100000 = 1e8 phép cập
+  nhật. Bản Python tuy cùng độ phức tạp nhưng các phép cập nhật chạy ở tầng C
+  (nhờ cắt mảng và zip) nên đủ nhanh, không TLE.
 - Bộ nhớ phụ của DP là O(x); tính cả hai mảng giá và số trang, tổng bộ nhớ
   là O(n+x).

@@ -19,8 +19,12 @@ lại về bài toán 2SUM và giải bằng kỹ thuật two-pointer.
 
 Các bước:
 1. Ghép mỗi giá trị a[i] với chỉ số gốc (i+1) thành cặp (value, index), rồi
-   sắp xếp vector các cặp theo value tăng dần. Lưu chỉ số gốc là bắt buộc vì
-   đáp án yêu cầu vị trí ban đầu, không phải vị trí sau khi sort.
+   sắp xếp các cặp theo value tăng dần. Lưu chỉ số gốc là bắt buộc vì đáp án
+   yêu cầu vị trí ban đầu, không phải vị trí sau khi sort. (Khác biệt cài đặt:
+   C++ giữ nguyên vector các cặp và truy cập values[i].first; Python đọc toàn
+   bộ input một lần, sau khi sort còn TÁCH thành hai mảng riêng vals (giá trị)
+   và idxs (chỉ số gốc) để truy cập trong vòng lặp nhanh hơn so với index vào
+   tuple. Về mặt thuật toán hai bản là như nhau.)
 2. Duyệt i từ 0 tới n-3 (chỉ tới n-3 vì cần ít nhất hai phần tử phía sau i để
    tạo cặp), coi value[i] là phần tử đầu tiên. Khi đó cần tìm hai phần tử trong
    đoạn [i+1, n-1] có tổng bằng need = x - vals[i].
@@ -51,7 +55,10 @@ Vì sao đúng:
 ## Độ phức tạp
 - Thời gian: O(n^2). Với mỗi i, two-pointer chạy O(n), tổng cộng O(n^2). Với
   n <= 5000 thì tối đa khoảng 12.5 triệu bước.
-- Bộ nhớ: O(n) cho vector các cặp (giá trị, chỉ số gốc).
+- Bộ nhớ: O(n). C++ dùng vector các cặp (giá trị, chỉ số gốc); Python đọc
+  toàn bộ input một lần rồi lưu hai mảng vals và idxs — vẫn là O(n).
 
 Trong trường hợp xấu nhất, two-pointer thực hiện khoảng n(n-1)/2, tức 12.5
-triệu bước khi n = 5000. Code C++ cùng hai phép cắt tỉa chạy trong giới hạn.
+triệu bước khi n = 5000. Hai phép cắt tỉa giúp cắt sớm nhiều i vô vọng. Bản
+C++ chạy thoải mái trong giới hạn; bản Python tách sẵn hai mảng vals/idxs
+(thay vì index vào tuple) để giảm hằng số, tránh nguy cơ TLE khi n lớn.

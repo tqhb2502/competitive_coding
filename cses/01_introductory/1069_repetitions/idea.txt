@@ -18,8 +18,12 @@ Tính đúng đắn:
 - Vì ta lấy max qua tất cả các vị trí nên best chính là độ dài đoạn lặp dài nhất.
 
 Ghi chú cài đặt:
-- Code C++ đọc chuỗi bằng `std::cin`, rồi duyệt trực tiếp bằng chỉ số; fast I/O
-  được bật cho trường hợp n đạt 10^6.
+- Code C++ đọc chuỗi bằng `std::cin` (đã bật fast I/O cho n tới 10^6), rồi duyệt
+  bằng vòng lặp range-based trên từng ký tự với hai biến best/current như trên.
+- Code Python dùng cách cài đặt khác nhưng cùng ý tưởng: đọc toàn bộ dữ liệu bằng
+  `sys.stdin.buffer.read().split()`, lấy token đầu, rồi dùng `itertools.groupby`
+  để gộp các ký tự giống nhau liên tiếp thành từng đoạn và lấy độ dài đoạn dài
+  nhất (groupby chạy ở tầng C nên nhanh); có xử lý dữ liệu rỗng bằng cách in "0".
 
 ## Độ phức tạp
 - Thời gian: O(n) - duyệt chuỗi một lần.

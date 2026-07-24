@@ -40,5 +40,10 @@ nghĩa. Do đó hai lượt quét cho kết quả chính xác cho mọi đoạn.
 - Thời gian: O(n log n) do hai lần sắp xếp; hai lượt quét là O(n).
 - Bộ nhớ: O(n) để lưu các đoạn và mảng kết quả.
 
-Code C++ dùng `std::sort` trên struct `Range`, hai lượt quét tuyến tính và fast
-I/O; O(n log n) phù hợp với n <= 2*10^5.
+Code C++ dùng `std::sort` trên struct `Range` với hàm so sánh tùy biến, hai lượt
+quét tuyến tính và fast I/O (`sync_with_stdio(false)`); lưu cờ bằng hai vector int.
+Code Python cùng thuật toán nhưng đọc toàn bộ input một lần bằng
+`sys.stdin.buffer.read()`, mã hóa thứ tự giảm dần bằng cách đổi dấu (sắp bộ ba
+`(x, -y, i)` cho lượt A và `(-x, y, i)` cho lượt B) rồi gọi `sorted`, và lưu cờ
+kết quả bằng `bytearray`. Cả hai bản đều O(n log n) thời gian, O(n) bộ nhớ, phù
+hợp với n <= 2*10^5.

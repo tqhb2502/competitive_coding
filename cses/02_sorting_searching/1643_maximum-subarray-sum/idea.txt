@@ -31,8 +31,10 @@ nếu tính đúng best_ending_here[i] cho mọi i thì giá trị lớn nhất 
 là đáp án toàn cục.
 
 ## Độ phức tạp
-- Thời gian: O(n) vì chỉ duyệt mảng một lần.
-- Bộ nhớ: O(1); code C++ xử lý từng phần tử ngay khi đọc.
+- Thời gian: O(n) cho cả hai bản vì chỉ duyệt mảng đúng một lần.
+- Bộ nhớ: bản C++ dùng O(1) vì đọc và xử lý từng phần tử ngay tại chỗ; bản
+  Python dùng O(n) vì đọc toàn bộ input một lần bằng
+  sys.stdin.buffer.read().split() rồi mới duyệt danh sách token.
 
 Kết quả có thể lên tới cỡ 2*10^5 * 10^9 = 2*10^14, vượt phạm vi 32-bit nên C++
-cần dùng kiểu `long long`.
+cần dùng kiểu `long long` (Python có số nguyên vô hạn nên không cần lo).

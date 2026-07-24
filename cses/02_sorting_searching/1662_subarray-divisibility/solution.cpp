@@ -8,8 +8,8 @@ int main() {
     int n;
     std::cin >> n;
 
-    // cnt[r] = số prefix đã gặp có số dư r khi chia cho n.
-    // Khởi tạo cnt[0] = 1 tương ứng prefix rỗng P[0] = 0.
+    // residue_count[r] = số prefix đã gặp có số dư r khi chia cho n.
+    // Khởi tạo residue_count[0] = 1 tương ứng prefix rỗng P[0] = 0.
     std::vector<long long> residue_count(n, 0);
     residue_count[0] = 1;
 

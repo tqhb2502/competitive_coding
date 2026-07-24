@@ -24,19 +24,38 @@ Chặt nhị phân trên đáp án (binary search on the answer).
 2. Chặt nhị phân tìm T nhỏ nhất với f(T) >= t: nếu f(mid) >= t thì hi = mid,
    ngược lại lo = mid + 1; kết thúc khi lo == hi.
 
-3. Chọn cận nguyên an toàn:
-   - `low = 0`.
-   - `high = min(k_i) * t`, vì riêng máy nhanh nhất cũng hoàn thành t sản phẩm
-     trong thời gian này.
-   Hai cận đều nằm trong `long long`.
+3. Cận trên chung: cap = min(k_i) * t luôn hợp lệ, vì riêng máy nhanh nhất cũng
+   hoàn thành t sản phẩm trong thời gian này, tức f(min(k_i) * t) >= t.
 
-4. Khi tính f(mid), cộng lần lượt `mid / k_i` nhưng dừng ngay khi tổng đã đạt t.
-   Việc dừng sớm vừa giảm hằng số vừa tránh cộng dồn vượt quá mức cần thiết.
+Hai lời giải dùng cùng ý tưởng trên nhưng CHỌN KHOẢNG TÌM KIẾM KHÁC NHAU:
+
+- C++: chặt nhị phân nguyên trên toàn khoảng [low = 0, high = min(k_i) * t].
+  Khi tính f(mid), cộng lần lượt `mid / k_i` nhưng DỪNG SỚM ngay khi tổng đã đạt t
+  (vừa giảm hằng số vừa tránh cộng dồn thừa). Cả hai cận đều nằm gọn trong long long.
+
+- Python: đọc toàn bộ input một lần (sys.stdin.buffer.read), rồi THU HẸP khoảng
+  tìm kiếm bằng ước lượng thực. Đặt S = tổng(1/k_i); vì T*S - n < f(T) <= T*S nên
+  đáp án A nằm trong [t/S, (t+n)/S], bề rộng ~n/S <= max(k_i) (khoảng 10^9, tức chỉ
+  ~30 vòng chặt). Vì S là số thực có thể sai số, lo/hi được nới thêm ±5 và hệ số
+  tương đối 1e-6, RỒI được ghim lại bằng các chốt số nguyên chính xác:
+     * nếu f(hi) < t thì đặt hi = cap = min(k_i) * t (cận trên chắc chắn hợp lệ);
+     * nếu f(lo-1) >= t thì lo đã vượt đáp án, đặt lo = 1;
+     * nếu lo > hi thì đặt lo = 1 (dự phòng an toàn).
+  Nhờ vậy đáp án luôn nằm trong [lo, hi] dù double có sai số. Vòng chặt của Python
+  KHÔNG dừng sớm mà tính trọn f(mid) = sum(map(mid.__floordiv__, k)) ở tầng C.
+
+LƯU Ý TLE: chặt nhị phân trên toàn khoảng tới ~10^18 tốn ~60 vòng * n phép chia;
+trong CPython điều này dễ chậm, nên bản Python thu hẹp còn ~30 vòng và chạy trọn
+vòng chia lấy nguyên qua sum(map(...)) ở tầng C để kịp thời gian.
 
 ## Độ phức tạp
-- Thời gian của code C++: O(n * log(min(k_i) * t)); cận trên không quá 10^18
-  nên có tối đa khoảng 60 vòng chặt nhị phân, và mỗi vòng dừng sớm ngay khi đã
-  đếm đủ t sản phẩm.
-- Bộ nhớ: O(n) để lưu danh sách k.
+- C++: O(n * log(min(k_i) * t)); cận trên không quá 10^18 nên có tối đa khoảng 60
+  vòng chặt nhị phân, mỗi vòng dừng sớm ngay khi đã đếm đủ t sản phẩm.
+  Bộ nhớ O(n) lưu danh sách k.
+- Python: O(n * log(bề rộng khoảng)); bề rộng <= max(k_i) <= 10^9 nên khoảng 30
+  vòng chặt, cộng vài lượt O(n) để tính S và các chốt kiểm tra bằng số nguyên.
+  Bộ nhớ O(n) (đọc toàn bộ input vào danh sách k).
 
-Code C++ chỉ dùng số nguyên và fast I/O; không có sai số dấu phẩy động.
+Cả hai lời giải chỉ dùng số nguyên khi ra quyết định (Python dùng số thực chỉ như
+gợi ý khoảng, đã được các chốt số nguyên bảo vệ), nên kết quả không phụ thuộc sai
+số dấu phẩy động.

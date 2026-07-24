@@ -2,6 +2,7 @@ import sys
 
 
 def main():
+    # Đọc toàn bộ input một lần rồi tách thành token (O(n) bộ nhớ).
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 

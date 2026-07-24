@@ -37,10 +37,24 @@ Tính đúng đắn (correctness):
   dãy có thứ tự tạo tổng s - c). Do đó công thức truy hồi bao phủ đủ và không trùng
   lặp mọi dãy. Với s = 0 chỉ có dãy rỗng nên dp[0] = 1.
 
-Cài đặt sắp xếp các đồng xu tăng dần. Với mỗi tổng s, duyệt các đồng xu theo
-thứ tự này và dừng ngay khi gặp c > s. Biến `ways` được giữ trong [0, MOD)
-bằng cách trừ MOD sau mỗi phép cộng nếu cần.
+Cả hai lời giải đều sắp xếp các đồng xu tăng dần trước khi chạy DP; nhờ đó vòng
+duyệt đồng xu có thể dừng sớm khi gặp c > s.
+
+Cài đặt C++ (solution.cpp): với mỗi tổng s, duyệt các đồng xu theo thứ tự tăng
+dần và break ngay khi coin > s. Biến `ways` được giữ trong [0, MOD) bằng cách trừ
+MOD sau mỗi phép cộng thay cho phép chia lấy dư, rồi gán dp[s] = ways.
+
+Cài đặt Python (solution.py): dùng đúng công thức truy hồi trên nhưng chia miền s
+làm hai để tăng tốc CPython:
+  - Vùng biên 1 <= s < cmax (cmax là mệnh giá lớn nhất): chưa chắc mọi đồng xu đều
+    dùng được nên vẫn duyệt kèm kiểm tra c <= s và break sớm khi c > s.
+  - Vùng nóng cmax <= s <= x: mọi đồng xu đều hợp lệ (s - c >= 0), nên sinh sẵn một
+    hàm cộng "duỗi cuộn" (unrolled) bằng exec, nhúng thẳng các mệnh giá vào biểu
+    thức dp[s] = (dp[s-c1] + dp[s-c2] + ...) % MOD để bỏ hẳn vòng lặp bên trong,
+    giúp giảm mạnh hằng số thời gian.
 
 ## Độ phức tạp
-- Thời gian: O(n log n) để sắp xếp và O(n*x) cho DP trong cận xấu nhất.
-- Bộ nhớ: O(n+x) cho vector đồng xu và mảng DP.
+- Thời gian: O(n log n) để sắp xếp và O(n*x) cho DP ở cận xấu nhất; đúng cho cả
+  hai lời giải. Python chỉ tối ưu hằng số (duỗi cuộn vòng trong) chứ không thay đổi
+  độ phức tạp tiệm cận.
+- Bộ nhớ: O(n+x) cho mảng đồng xu và mảng DP.

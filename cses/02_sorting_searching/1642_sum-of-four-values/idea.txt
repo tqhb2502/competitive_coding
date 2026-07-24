@@ -40,5 +40,10 @@ mà không thấy thì thực sự không tồn tại -> in "IMPOSSIBLE".
   bình nhờ hashmap).
 - Bộ nhớ: O(n^2) trong trường hợp xấu nhất để lưu các tổng cặp trong hashmap.
 
-Với n = 1000 có khoảng 10^6 lượt tìm/chèn. Code đặt trước dung lượng và hạ
-`max_load_factor` của `unordered_map` để tránh rehash tốn kém.
+Với n = 1000 có khoảng 10^6 lượt tìm/chèn. Hai bản cài đặt dùng chung thuật
+toán, chỉ khác chi tiết:
+- Bản C++ dùng `unordered_map`, đặt trước dung lượng (`reserve` ~ n^2/2) và hạ
+  `max_load_factor` xuống 0.7 để tránh rehash tốn kém.
+- Bản Python đọc toàn bộ input một lần bằng `sys.stdin.buffer.read()` rồi dùng
+  `dict` thường (không tinh chỉnh thủ công); tốn thêm O(n) bộ nhớ cho dữ liệu
+  đã đọc, không đổi độ phức tạp tổng thể.

@@ -13,16 +13,20 @@ https://cses.fi/problemset/task/1068
   + In giá trị hiện tại của n.
   + Nếu n chẵn: n = n / 2. Nếu n lẻ: n = 3 * n + 1.
   + Dừng khi n = 1 (vẫn phải in ra giá trị 1).
-- Code C++ in trực tiếp từng giá trị, chèn dấu cách trước khi chuyển sang giá trị
-  kế tiếp và xuống dòng sau khi đã in 1.
+- Code C++ in trực tiếp (streaming) từng giá trị ra cout, chèn dấu cách trước giá trị
+  kế tiếp và xuống dòng sau khi đã in 1 (không lưu toàn bộ dãy).
+- Code Python gom lần lượt các giá trị vào một danh sách, rồi ghép bằng dấu cách và
+  in một lần duy nhất ở cuối.
 - Tính đúng đắn: dãy Collatz với n <= 10^6 luôn hội tụ về 1 (đã được kiểm chứng thực nghiệm
   rất xa), nên vòng lặp chắc chắn kết thúc; ta chỉ mô phỏng theo định nghĩa nên kết quả chính xác.
 
 LƯU Ý (tràn số):
-- Giá trị trung gian có thể vượt quá 10^6 (với n <= 10^6, giá trị lớn nhất khoảng ~2^32),
-  nên code C++ dùng `long long` để tránh tràn số.
+- Với n <= 10^6, giá trị trung gian có thể lên tới khoảng 5.7 * 10^10 (~2^36, đạt tại n = 704511),
+  vượt xa phạm vi int 32-bit, nên code C++ dùng `long long` để tránh tràn số.
+- Python dùng số nguyên chính xác vô hạn nên không cần lo tràn số.
 
 ## Độ phức tạp
 - Thời gian: O(L) với L là độ dài dãy Collatz (với n <= 10^6, L tối đa khoảng ~500 bước),
   rất nhỏ nên chạy tức thì.
-- Bộ nhớ: O(1), vì code C++ không lưu toàn bộ dãy.
+- Bộ nhớ: C++ dùng O(1) (in trực tiếp, không lưu dãy); Python dùng O(L) (lưu toàn bộ
+  dãy vào danh sách trước khi in một lần).

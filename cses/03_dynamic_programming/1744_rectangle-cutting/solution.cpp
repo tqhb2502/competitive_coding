@@ -28,7 +28,9 @@ int main() {
                 best = min(best, dp[i][cut] + dp[i][j - cut] + 1);
             }
 
-            // Cắt theo cạnh dài i (giữ nguyên j): dp[k][j] + dp[i-k][j] + 1.
+            // Cắt theo cạnh dài i (giữ nguyên j): dp[k][j] + dp[i-k][j] + 1. Nhờ
+            // đối xứng dp[k][j] = dp[j][k] nên đọc theo hàng j (dp[j][cut]) đã được
+            // soi gương từ các i nhỏ hơn; cũng chỉ cần duyệt cut tới i/2.
             for (int cut = 1; cut <= i / 2; ++cut) {
                 best = min(best, dp[j][cut] + dp[j][i - cut] + 1);
             }

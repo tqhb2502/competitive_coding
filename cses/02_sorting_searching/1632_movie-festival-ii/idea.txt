@@ -9,15 +9,14 @@ https://cses.fi/problemset/task/1632
 - Tìm tổng số phim tối đa mà k thành viên có thể xem được.
 
 ## Ý tưởng
-Greedy kết hợp với `std::multiset`.
+Greedy: quản lý "thời điểm rảnh" (thời điểm kết thúc phim gần nhất) của k thành
+viên như một multiset gồm k giá trị, ban đầu tất cả bằng 0 vì chưa ai xem gì.
 
 - Sắp xếp tất cả các phim theo thời gian kết thúc b tăng dần.
-- Duy trì một multiset gồm k giá trị: thời điểm kết thúc phim gần nhất mà mỗi
-  thành viên đã xem (ban đầu tất cả đều bằng 0 vì chưa ai xem gì).
 - Duyệt lần lượt từng phim (a, b) theo thứ tự b tăng dần. Chọn thành viên có
   "thời điểm rảnh" (end time) LỚN NHẤT nhưng vẫn <= a để giao bộ phim này:
-    + Nếu tồn tại thành viên như vậy: xóa giá trị end cũ của người đó khỏi
-      multiset, chèn b vào, và tăng số phim đã xem lên 1.
+    + Nếu tồn tại thành viên như vậy: thay giá trị end cũ của người đó trong
+      multiset bằng b, và tăng số phim đã xem lên 1.
     + Nếu không: bỏ qua bộ phim này.
 
 Tại sao đúng:
@@ -33,17 +32,41 @@ Tại sao đúng:
 - Cách chọn này tương đương với chọn số phim tối đa sao cho tại mỗi thời điểm số
   phim chồng lấn nhau không vượt quá k.
 
-Cài đặt:
+Cài đặt C++ (solution.cpp) - dùng std::multiset trực tiếp:
+- Lưu mỗi phim dưới dạng (end, start) và sort để có thứ tự end tăng dần.
 - Khởi tạo multiset bằng k giá trị 0, biểu diễn thời điểm rảnh của k thành viên.
 - Với phim (a, b), gọi `available_times.upper_bound(a)`. Nếu iterator đang ở
   `begin()` thì không có thành viên nào rảnh kịp và bỏ qua phim.
 - Ngược lại lùi iterator một bước để lấy thời điểm rảnh lớn nhất <= a, xóa đúng
   phần tử đó, chèn b và tăng đáp án. Multiset luôn giữ đúng k phần tử.
 
+Cài đặt Python (solution.py) - mô phỏng multiset bằng cây Fenwick (BIT):
+- Python không có multiset dựng sẵn hỗ trợ tìm kiếm/order-statistics O(log n),
+  nên thay bằng cây Fenwick đếm số thành viên đang ở mỗi giá trị "thời điểm rảnh"
+  (giúp tránh TLE).
+- Nén tọa độ trên tập giá trị có thể xuất hiện trong multiset: {0} hợp {b_i}
+  (thời điểm rảnh chỉ có thể là 0 hoặc một giá trị end nào đó). Gọi V là mảng
+  giá trị đã nén, m = |V|.
+- Khởi tạo: cộng k vào chỉ số Fenwick 1 (ứng với V[0] = 0), tức k thành viên
+  đều rảnh từ thời điểm 0.
+- Với phim (a, b) (duyệt theo b tăng dần):
+    + p = bisect_right(V, a) = số giá trị nén <= a (nằm ở các chỉ số Fenwick
+      1..p).
+    + s = tổng tiền tố tree[1..p] = số thành viên có thời điểm rảnh <= a. Nếu
+      s = 0 thì bỏ qua phim.
+    + find_kth(s) bằng binary lifting: chỉ số nhỏ nhất có tổng tiền tố >= s. Vì
+      có đúng s slot bị chiếm trong [1..p], đây chính là chỉ số LỚN NHẤT <= p
+      bị chiếm, tức thành viên có end lớn nhất mà vẫn <= a.
+    + Cập nhật Fenwick: trừ 1 tại chỉ số đó (xóa end cũ), cộng 1 tại chỉ số của
+      b (chèn end mới), rồi tăng đáp án.
+
 ## Độ phức tạp
 - Sắp xếp: O(n log n).
-- Mỗi phim: một tìm kiếm, một xóa và một chèn trên multiset, đều O(log k);
-  tổng O(n log n).
-- Bộ nhớ: O(n).
+- Mỗi phim làm một tìm kiếm + một xóa + một chèn:
+    + C++: trên multiset k phần tử, mỗi thao tác O(log k).
+    + Python: trên Fenwick m <= n+1 phần tử, mỗi thao tác O(log n).
+  Tổng cộng O(n log n) cho cả hai.
+- Bộ nhớ: O(n). Python đọc toàn bộ input một lần rồi lưu các mảng a, b, V và cây
+  Fenwick.
 
-Với n <= 2*10^5, `std::multiset` và fast I/O đáp ứng giới hạn.
+Với n <= 2*10^5, cả hai cài đặt cùng fast I/O đáp ứng giới hạn.

@@ -12,6 +12,7 @@ int main() {
 
     // Hash set tự động loại bỏ các phần tử trùng lặp.
     unordered_set<long long> distinct;
+    // Đặt trước dung lượng và hạ max_load_factor để giảm số lần rehash.
     distinct.reserve(static_cast<size_t>(n) * 2);
     distinct.max_load_factor(0.7F);
 

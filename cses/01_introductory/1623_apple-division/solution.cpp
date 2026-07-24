@@ -54,9 +54,9 @@ int main() {
         const long long key = total - 2 * left_sum;
 
         // Tìm vị trí đầu tiên có 2*right_sum >= key (tức b gần key/2 nhất).
-        // lower_bound(begin, end, value, comparator):
-        // returns an iterator pointing to the first element that is
-        // greater than or equal to a given value in a sorted range.
+        // lower_bound(begin, end, value, comparator): trả về iterator trỏ tới
+        // phần tử đầu tiên trong dãy đã sắp xếp mà comparator(phần tử, value)
+        // cho kết quả false, ở đây chính là phần tử đầu tiên có 2*right_sum >= key.
         const auto position = lower_bound(
             right_sums.begin(), right_sums.end(), key,
             [](long long right_sum, long long target) {
@@ -64,7 +64,7 @@ int main() {
             });
 
         // Chỉ cần thử 2 ứng viên liền kề quanh key/2 để lấy hiệu nhỏ nhất.
-        // The llabs function: the absolute value of a long long integer _Number.
+        // Hàm llabs: trả về giá trị tuyệt đối của một số nguyên kiểu long long.
         if (position != right_sums.end()) {
             best = min(best, llabs(key - 2 * *position));
         }

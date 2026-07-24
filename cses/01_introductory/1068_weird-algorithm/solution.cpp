@@ -5,7 +5,7 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
 
-    // Dùng long long vì giá trị trung gian có thể tới ~2^32, vượt phạm vi int
+    // Dùng long long vì giá trị trung gian có thể tới ~5.7*10^10 (~2^36), vượt phạm vi int
     long long n;
     std::cin >> n;
 

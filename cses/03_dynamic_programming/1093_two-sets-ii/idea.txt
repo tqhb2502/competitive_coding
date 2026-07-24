@@ -27,13 +27,19 @@ tập cho nhau. Kết quả lấy modulo 1000000007. Ràng buộc: 1 ≤ n ≤ 5
   Duyệt j giảm dần bảo đảm mỗi số chỉ được dùng một lần trong một subset.
 - Vì mọi giá trị đều nhỏ hơn MOD, thay cho phép chia lấy dư đắt đỏ, ta chỉ cần cộng
   rồi trừ MOD một lần khi kết quả ≥ MOD.
-- Để không duyệt các tổng chưa thể đạt được, code giữ `reachable_sum = 1+...+k`
-  và chỉ cập nhật j từ `min(target, reachable_sum)` giảm tới k.
+- Cắt tỉa vùng cập nhật để bỏ qua các tổng chưa/không thể dùng. Đây là điểm khác
+  nhau duy nhất giữa hai file; công thức dp và đáp án hoàn toàn giống nhau:
+  + solution.cpp chỉ cắt cận TRÊN: giữ `reachable_sum = 1+...+k` (tổng các item đã
+    xét) và cập nhật j từ `min(target, reachable_sum)` giảm dần tới k.
+  + solution.py cắt cả HAI đầu: đặt gap = (tổng 1..n-1) - target và cập nhật j trong
+    cửa sổ [lo, hi] với hi = min(target, s_k) và lo = max(k, s_k - gap); dưới ngưỡng
+    lo thì phần item còn lại không đủ để bù cho tới target nên có thể bỏ qua.
 
 - Đáp án: sau khi xử lý hết k, đáp án là dp[target] (đã ở dạng mod 1e9+7). Trường hợp
   total lẻ trả về 0. Ví dụ: n = 7 -> đáp án 4.
 
 ## Độ phức tạp
-- Thời gian: O(n * target) = O(n^3) trong cận xấu nhất; cận trên theo
-  `reachable_sum` làm giảm số phép cập nhật thực tế.
-- Bộ nhớ: O(target) cho mảng dp một chiều.
+- Thời gian: O(n * target) = O(n^3) trong cận xấu nhất (target = O(n^2)) cho cả hai
+  file. Việc cắt tỉa vùng cập nhật (cận trên ở solution.cpp, cả hai đầu ở solution.py)
+  chỉ làm giảm hằng số thực tế, không thay đổi bậc độ phức tạp.
+- Bộ nhớ: O(target) = O(n^2) cho mảng dp một chiều (cả hai file).

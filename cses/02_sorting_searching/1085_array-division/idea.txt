@@ -41,5 +41,7 @@ Tags: binary-search, monotone-predicate, search-on-answer
   sum <= n * 10^9 = 2*10^14, tức khoảng 48 bước.
 - Tổng thời gian: O(n log(sum)) ~ 2*10^5 * 48 ~ 10^7 phép toán. Bộ nhớ O(n).
 
-Code C++ dừng sớm trong `feasible` ngay khi số đoạn vượt k và bật fast I/O;
-khoảng 48 lượt quét mảng nằm trong giới hạn.
+Cả hai bản C++ và Python đều dừng sớm trong `feasible` ngay khi số đoạn vượt k.
+Về I/O: C++ bật fast I/O (sync_with_stdio(false) + cin.tie(nullptr)) và đọc từng
+số bằng cin; Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split().
+Cả hai đều dùng O(n) bộ nhớ và khoảng 48 lượt quét mảng nằm trong giới hạn.

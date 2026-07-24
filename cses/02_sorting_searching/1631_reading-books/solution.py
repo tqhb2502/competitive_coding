@@ -2,6 +2,7 @@ import sys
 
 
 def main():
+    # Nạp TOÀN BỘ input một lần thành danh sách token (bộ nhớ O(n), không stream).
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 

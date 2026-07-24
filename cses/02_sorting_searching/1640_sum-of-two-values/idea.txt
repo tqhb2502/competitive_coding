@@ -13,7 +13,9 @@ Dùng hash map và duyệt mảng đúng một lượt từ trái sang phải:
   của một phần tử mang giá trị đó, trong số các phần tử đứng TRƯỚC i.
 - Khi xét a[i], nếu need đã có trong map thì ta tìm được cặp: in ra map[need]
   (vị trí phần tử trước) và i+1 (vị trí hiện tại), rồi kết thúc.
-- Nếu chưa có, ta ghi map[a[i]] = i+1 rồi tiếp tục.
+- Nếu chưa có, ta lưu giá trị hiện tại kèm vị trí của nó vào map — nhưng chỉ khi
+  giá trị đó chưa từng xuất hiện (giữ vị trí đầu tiên gặp, không ghi đè) — rồi
+  tiếp tục.
 
 Vì sao đúng:
 - Khi xét i, map chỉ chứa các phần tử ở vị trí j < i, nên cặp (map[need], i+1)
@@ -24,10 +26,16 @@ Vì sao đúng:
 - Đề cho phép in ra bất kỳ lời giải hợp lệ nào nên việc giữ vị trí đầu tiên gặp
   mỗi giá trị là chấp nhận được (ghi đè hay không đều cho kết quả hợp lệ).
 
+Chi tiết cài đặt: cả hai bản đều dùng cùng thuật toán hash map một lượt. Bản C++
+đọc luồng từng số bằng `cin` và dùng `unordered_map` (có reserve trước và đặt
+max_load_factor để giảm rehash). Bản Python đọc toàn bộ input một lần bằng
+`sys.stdin.buffer.read().split()` rồi duyệt, dùng `dict` làm hash map.
+
 Cách khác (two-pointer): sắp xếp các phần tử kèm chỉ số gốc, dùng hai con trỏ
 l, r từ hai đầu; nếu tổng nhỏ hơn x thì l++, lớn hơn x thì r--, bằng x thì in
 hai chỉ số gốc. Độ phức tạp O(n log n) do sorting, chậm hơn cách hash map.
 
 ## Độ phức tạp
 - Thời gian: O(n) trung bình cho các thao tác trên hash map (n ≤ 2·10^5).
-- Bộ nhớ: O(n) cho `unordered_map`.
+- Bộ nhớ: O(n) cho hash map (`unordered_map` ở C++, `dict` ở Python). Bản Python
+  còn giữ toàn bộ input trong bộ nhớ do đọc một lần, nhưng vẫn là O(n).

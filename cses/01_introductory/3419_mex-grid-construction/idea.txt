@@ -25,12 +25,17 @@ https://cses.fi/problemset/task/3419
     tức k XOR j = v (thuộc tập bên trên) và kiểm tra được k < i.
     Trường hợp bit p của j là 1 xử lý đối xứng cho tập bên trái.
   => mex đúng bằng i XOR j.
-- Cài đặt: với mỗi hàng i, in ra n giá trị i XOR j (j từ 0 đến n-1), cách nhau
-  bởi dấu cách, mỗi hàng một dòng; không cần lưu cả lưới.
+- Cài đặt:
+  + C++: với mỗi ô (row, col) tính và in trực tiếp row XOR col, các giá trị
+    cách nhau bởi dấu cách, mỗi hàng một dòng; không lưu dòng hay lưới.
+  + Python: với mỗi hàng i tạo chuỗi bằng join các giá trị i XOR j (j từ 0 đến
+    n-1), gom tất cả hàng vào một danh sách rồi ghi ra một lần; thêm ký tự
+    xuống dòng cuối khi n > 0.
 
 ## Độ phức tạp
 - Thời gian: O(n^2) để sinh toàn bộ lưới.
-- Bộ nhớ: O(1) ngoài dữ liệu xuất; code C++ tính và in trực tiếp từng ô,
-  không lưu cả dòng hay cả lưới.
+- Bộ nhớ: C++ tính và in trực tiếp từng ô nên chỉ O(1) ngoài dữ liệu xuất;
+  Python gom toàn bộ hàng vào danh sách trước khi ghi nên tốn O(n^2) cho phần
+  văn bản xuất (đúng bằng kích thước output), không có mảng lưới 2 chiều.
 
 LƯU Ý TLE: Với n <= 100 nên chỉ có tối đa 10000 số, cực kỳ nhẹ, không có rủi ro TLE.

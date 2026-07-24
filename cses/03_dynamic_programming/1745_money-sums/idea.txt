@@ -9,27 +9,43 @@ tự tăng dần.
 
 ## Ý tưởng
 Đây là bài subset-sum (0/1 knapsack) cơ bản: cần tìm mọi tổng tập con khả thi.
+Gọi maxSum = tổng tất cả các đồng xu (tối đa 100 * 1000 = 100000). Ý tưởng chung
+cho cả hai file là dựng tập các tổng tạo được, bắt đầu từ tổng 0 (tập rỗng) và
+với mỗi đồng xu c thì bổ sung "mọi tổng cũ + c" vào tập. Hai file cài đặt khác
+nhau ở cách biểu diễn tập tổng.
 
-- Trạng thái: dp[s] = True nếu tổng s có thể tạo được từ một tập con các đồng
-  xu đã xét, ngược lại là False.
-- Tổng lớn nhất là maxSum = tổng tất cả các đồng xu, tối đa 100 * 1000 = 100000.
-- Cơ sở: dp[0] = True (chọn tập rỗng thì tổng bằng 0), các dp[s] còn lại là False.
-- Chuyển trạng thái (0/1 knapsack, mỗi đồng xu xét đúng một lần): với mỗi đồng
-  xu giá trị c, duyệt s từ cao xuống thấp và cập nhật dp[s] = dp[s] OR dp[s - c]
-  với mọi s >= c. Duyệt giảm dần bảo đảm mỗi đồng xu chỉ được dùng một lần.
-- Đáp án: đếm số s trong [1, maxSum] có dp[s] = True, đó chính là k. In k rồi in
-  tất cả các s đó theo thứ tự tăng dần.
+Cài đặt C++ (solution.cpp) - DP mảng boolean:
+- Trạng thái: possible[s] = True nếu tổng s tạo được từ một tập con các đồng xu
+  đã xét, ngược lại là False.
+- Cơ sở: possible[0] = True, các possible[s] còn lại là False.
+- Chuyển trạng thái (0/1 knapsack, mỗi đồng xu xét đúng một lần) theo kiểu đẩy
+  tới: với đồng xu c, duyệt s giảm dần và nếu possible[s] đúng thì bật
+  possible[s + c]. Duyệt giảm dần bảo đảm đồng xu vừa thêm không bị dùng lại
+  trong cùng một lượt. Code giữ `processed_sum` là tổng các đồng xu đã xét và
+  chỉ duyệt s từ `processed_sum` về 0, tránh quét phần mảng chắc chắn chưa đạt
+  được.
 
-Tính đúng đắn: mỗi phép cập nhật dp[s] |= dp[s-c] tương ứng với việc thêm đồng
-xu c vào một tập con đã tạo ra tổng s-c. Sau khi xét hết mọi đồng xu, dp[s] phản
-ánh chính xác mọi tổng tập con khả thi.
+Cài đặt Python (solution.py) - DP bitset bằng số nguyên lớn:
+- Dùng một số nguyên Python `dp` làm bitset: bit thứ i bật nghĩa là tổng i tạo
+  được. Cơ sở: dp = 1 (chỉ bit 0 bật, ứng với tổng 0).
+- Với mỗi đồng xu c: dp |= dp << c. Phép dịch trái c bit tương ứng cộng c vào
+  mọi tổng đang có, phép OR gộp lại; toàn bộ các tổng được cập nhật đồng thời
+  trong một thao tác trên số lớn (không cần lo dùng lại đồng xu vì dp bên phải
+  là trạng thái trước khi thêm c).
 
-Cài đặt dùng `vector<char> possible`. Code giữ `processed_sum` là tổng các
-đồng xu đã xét; với đồng xu c, chỉ cần duyệt s từ `processed_sum` về 0 và bật
-`possible[s+c]` nếu `possible[s]` đang đúng. Cận này tránh quét phần mảng chắc
-chắn chưa thể đạt được.
+Đáp án (cả hai file): các tổng khả thi là các chỉ số s trong [1, maxSum] có
+possible[s] = True (C++), hay các bit bật trừ bit 0 (Python). Số lượng của chúng
+là k. In k rồi liệt kê các tổng theo thứ tự tăng dần.
+
+Tính đúng đắn: mỗi lần thêm đồng xu c chính là gộp tập tổng cũ với "tập tổng cũ
+dịch lên c". Sau khi xét hết mọi đồng xu, tập thu được phản ánh chính xác mọi
+tổng tập con khả thi.
 
 ## Độ phức tạp
-- Thời gian O(n * maxSum) trong cận xấu nhất.
-- Bộ nhớ O(n + maxSum + k) cho danh sách đồng xu, mảng `possible` và danh sách
-  kết quả; có thể viết gọn là O(maxSum).
+- C++ (solution.cpp): thời gian O(n * maxSum), bộ nhớ O(n + maxSum + k) cho danh
+  sách đồng xu, mảng `possible` và danh sách kết quả (gọn lại là O(maxSum)).
+- Python (solution.py): thời gian O(n * maxSum / w) với w là số bit mỗi từ máy
+  (các phép dịch/OR trên số lớn xử lý theo khối từ máy nên nhanh hơn một hằng
+  số so với DP mảng), bộ nhớ O(maxSum) bit cho bitset cộng danh sách kết quả.
+- Với ràng buộc n <= 100 và maxSum <= 100000, cả hai cách đều chạy dư sức trong
+  thời gian cho phép, không có nguy cơ TLE.

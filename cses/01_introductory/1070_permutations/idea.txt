@@ -16,8 +16,8 @@ https://cses.fi/problemset/task/1070
   rồi tới tất cả các số LẺ sau (1, 3, 5, ...).
   + Trong nhóm số chẵn, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
   + Trong nhóm số lẻ, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
-  + Điểm nối giữa số chẵn lớn nhất và số lẻ nhỏ nhất: với n >= 4, điểm nối là
-    ... 4 và 1, hiệu bằng 3, không bằng 1.
+  + Điểm nối giữa số chẵn lớn nhất và số lẻ nhỏ nhất (luôn là 1): với n >= 4,
+    số chẵn lớn nhất >= 4 nên hiệu tại điểm nối >= 3, không bằng 1.
   Vì vậy hoán vị tạo ra luôn "đẹp".
 - Tính đúng đắn: đề bài chấp nhận bất kỳ lời giải hợp lệ nào (checker chỉ kiểm
   tra tính hợp lệ), nên chỉ cần bảo đảm không có cặp kề nhau hiệu 1. Cách xếp
@@ -26,7 +26,8 @@ https://cses.fi/problemset/task/1070
 
 ## Độ phức tạp
 - Thời gian: O(n) để sinh và in dãy số.
-- Bộ nhớ: O(1) ngoài dữ liệu xuất; code C++ sinh và in trực tiếp từng số.
+- Bộ nhớ: C++ sinh và in trực tiếp từng số nên chỉ O(1) ngoài dữ liệu xuất;
+  Python dựng danh sách kết quả kích thước n nên tốn O(n).
 
 LƯU Ý TLE: Code C++ dùng fast I/O và in trực tiếp; với n = 10^6 và độ phức tạp
 O(n), lượng công việc chủ yếu chính là kích thước output.

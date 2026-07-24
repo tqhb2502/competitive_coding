@@ -11,22 +11,31 @@ In ra:
 ## Ý tưởng
 1. Vì n rất nhỏ (tối đa 8), số hoán vị tối đa là 8! = 40320 nên ta có thể
    sinh toàn bộ hoán vị mà không lo về hiệu năng.
-2. Trước tiên sắp xếp xâu tăng dần, sau đó gọi `next_permutation` liên tiếp.
-   Khi bắt đầu từ xâu đã sort, hàm này duyệt các cách sắp xếp giá trị theo thứ
-   tự từ điển; các ký tự bằng nhau không tạo ra nhiều xâu kết quả giống nhau.
-3. Code vẫn chèn từng xâu vào `set<string>` để lưu toàn bộ kết quả theo thứ tự
-   từ điển và bảo đảm tính duy nhất.
-4. In ra số lượng phần tử phân biệt, rồi in từng xâu, mỗi xâu một dòng.
+2. Ý tưởng chung: sinh mọi hoán vị của các ký tự, loại trùng (do ký tự lặp)
+   bằng một `set`, rồi in ra theo thứ tự từ điển.
+3. Bản C++: sắp xếp xâu tăng dần rồi gọi `next_permutation` liên tiếp. Khi bắt
+   đầu từ xâu đã sort, hàm này chỉ duyệt các hoán vị PHÂN BIỆT theo đúng thứ tự
+   từ điển; mỗi xâu vẫn được chèn vào `set<string>` để lưu kết quả và bảo đảm
+   tính duy nhất.
+4. Bản Python: dùng `itertools.permutations` trên các ký tự đã `sorted`. Hàm này
+   sinh đủ n! hoán vị theo vị trí (có lặp khi có ký tự giống nhau), nên ta ghép
+   chuỗi rồi đưa vào `set` để loại trùng, cuối cùng `sorted` lại để in theo thứ
+   tự từ điển.
+5. In ra số lượng phần tử phân biệt, rồi in từng xâu, mỗi xâu một dòng.
 
 Vì sao đúng:
 - Việc duyệt mọi hoán vị của các vị trí chắc chắn bao phủ mọi cách sắp xếp
   các ký tự.
 - set đảm bảo mỗi xâu chỉ xuất hiện đúng một lần (loại trùng do ký tự lặp).
-- Thứ tự từ điển được bảo đảm bởi `set`.
+- Thứ tự từ điển: bản C++ dựa vào `set` (tự sắp xếp), bản Python dùng `sorted`
+  trước khi in.
 
 ## Độ phức tạp
-- Thời gian: O(k * n * log k), với k là số hoán vị phân biệt, do sinh xâu kế
-  tiếp và chèn vào `set`. Vì k <= 8! nên rất nhỏ.
+- Bản C++: `next_permutation` chỉ duyệt k hoán vị phân biệt, mỗi bước O(n) và
+  chèn vào `set` mất O(n * log k), nên tổng O(k * n * log k) với k là số hoán vị
+  phân biệt.
+- Bản Python: `itertools.permutations` sinh đủ n! hoán vị mất O(n! * n), sau đó
+  loại trùng và `sorted` mất O(k * n * log k). Vì n <= 8 nên n! <= 40320, rất nhỏ.
 - Bộ nhớ: O(k * n) để lưu tập các xâu phân biệt (tối đa ~40320 xâu độ dài 8).
 
 ## LƯU Ý TLE

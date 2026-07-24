@@ -14,32 +14,39 @@ Ta cần một cấu trúc dạng multiset hỗ trợ nhanh (O(log n)) hai thao 
   1) Tìm phần tử lớn nhất <= t (predecessor / floor).
   2) Xóa đúng phần tử đó khỏi tập hợp.
 
-Code C++ cài cấu trúc này bằng Fenwick tree (BIT) kết hợp binary lifting
-(`find_by_order`):
+Cả hai lời giải (C++ và Python) đều cài cấu trúc này bằng Fenwick tree (BIT)
+kết hợp binary lifting (`find_by_order` trong C++, `find_kth` trong Python):
   - Nén tọa độ (coordinate compression): nén các giá vé h_i về các chỉ số 1..K
-    theo thứ tự tăng dần (unique). Mảng "unique" lưu giá thực tại từng chỉ số.
+    theo thứ tự tăng dần. Mảng giá đã nén (`prices` trong C++, `unique` trong
+    Python) lưu giá thực tại từng chỉ số.
   - BIT lưu SỐ LƯỢNG vé còn lại tại mỗi chỉ số nén; ban đầu tăng đếm cho mỗi vé.
 
 Với mỗi khách có ngân sách t:
-  - Dùng `upper_bound(prices, t)` để lấy pos_idx = số mức giá <= t, tức các chỉ số
-    1..pos_idx ứng với mọi mức giá không vượt quá t.
+  - Tìm nhị phân (`upper_bound` trong C++, `bisect_right` trong Python) để lấy
+    pos_idx = số mức giá <= t, tức các chỉ số 1..pos_idx ứng với mọi mức giá
+    không vượt quá t.
   - cnt = prefix(pos_idx) = tổng số vé còn lại có giá <= t.
-      * Nếu cnt == 0 -> in -1 (không còn vé phù hợp).
+      * Nếu cnt == 0 -> in -1 (không còn vé phù hợp). Python còn kiểm tra sớm
+        pos_idx == 0 để in -1 ngay, nhưng kết quả hoàn toàn tương đương (C++ chỉ
+        dựa vào affordable_tickets == 0 vì prefix_sum(0) = 0).
       * Ngược lại, vé cần bán là vé còn lại LỚN NHẤT trong nhóm giá <= t, tức
         vé đứng thứ hạng cnt (phần tử lớn nhất) trong đám vé <= t. Dùng
-        find_kth(cnt) trên BIT (binary lifting) để lấy chỉ số j của vé đó trong
-        O(log n). In ra unique[j-1] rồi update(j, -1) để xóa vé.
+        find_by_order/find_kth trên BIT (binary lifting) để lấy chỉ số j của vé
+        đó trong O(log n). In ra giá tại j (prices[j-1] / unique[j-1]) rồi
+        update(j, -1) để xóa vé.
 
 Tại sao đúng: trong nhóm vé có giá <= t có đúng cnt vé còn lại. Phần tử thứ cnt
 (theo thứ tự tăng dần) chính là phần tử lớn nhất trong nhóm, và nó <= t theo định
-nghĩa pos_idx, nên đúng là tấm vé giá cao nhất không vượt quá t. find_kth trả về
-chỉ số nhỏ nhất có prefix sum >= cnt, đúng vị trí phần tử thứ cnt. Sau khi bán, ta
-giảm số đếm để phản ánh vé đã bị loại.
+nghĩa pos_idx, nên đúng là tấm vé giá cao nhất không vượt quá t. find_by_order/
+find_kth trả về chỉ số nhỏ nhất có prefix sum >= cnt, đúng vị trí phần tử thứ
+cnt. Sau khi bán, ta giảm số đếm để phản ánh vé đã bị loại.
 
 ## Độ phức tạp
   - Thời gian: O((n + m) log n) cho nén tọa độ, BIT và tìm kiếm nhị phân.
   - Bộ nhớ: O(n) cho BIT và mảng unique.
 Với n, m <= 2*10^5 thì hoàn toàn an toàn.
 
-Code bật fast I/O; mỗi khách chỉ cần một `upper_bound`, một prefix sum, một
-`find_by_order` và một point update.
+C++ bật fast I/O (sync_with_stdio(false), cin.tie(nullptr)); Python đọc toàn bộ
+input một lần bằng sys.stdin.buffer.read() (bộ nhớ vẫn O(n+m)). Mỗi khách chỉ cần
+một lần tìm nhị phân, một prefix sum, một find_by_order/find_kth và một point
+update.

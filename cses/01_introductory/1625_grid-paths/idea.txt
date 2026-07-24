@@ -34,7 +34,8 @@ Cài đặt / thủ thuật tốc độ:
    - Dùng lưới đệm 9x9: viền ngoài được đánh dấu sẵn là "bị chặn", nhờ vậy
      không cần kiểm tra biên khi di chuyển (ô trên/dưới/trái/phải luôn hợp lệ).
    - Mã hóa 4 hướng thành độ lệch chỉ số: D=+9, U=-9, L=-1, R=+1.
-   - Dùng mảng `visited` cố định 81 phần tử để đánh dấu ô đã thăm.
+   - Dùng mảng đánh dấu cố định 81 phần tử (`occupied` trong C++, `occ`
+     trong Python) để đánh dấu ô đã thăm / bị chặn.
 
 ## Độ phức tạp
 - Thời gian: theo lý thuyết là mũ (số nhánh backtracking), nhưng nhờ các phép

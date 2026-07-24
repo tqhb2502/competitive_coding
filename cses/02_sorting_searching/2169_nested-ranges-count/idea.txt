@@ -1,7 +1,7 @@
 Nested Ranges Count - CSES 2169
 https://cses.fi/problemset/task/2169
 
-Tags: coordinate-compression, sorting
+Tags: coordinate-compression, sorting, fenwick-tree
 
 ## Đề bài
 Cho n đoạn [a, b]. Với mỗi đoạn, hãy đếm:
@@ -44,6 +44,14 @@ Kiểm tra với ví dụ mẫu: contains = "2 0 0 0", contained = "0 1 0 1" - k
 Thời gian: O(n log n) cho sort và các thao tác BIT (mỗi truy vấn/cập nhật O(log n)).
 Bộ nhớ: O(n).
 
-Code C++ thực hiện hai lần sort và hai lượt Fenwick. Mỗi lượt có n truy vấn cùng
-n cập nhật O(log n), nên tổng O(n log n) nằm trong giới hạn 1 giây tốt hơn các
-cách duyệt cặp O(n^2).
+Cả hai lời giải (C++ và Python) dùng chung thuật toán: hai lần sort và hai lượt
+Fenwick, mỗi lượt có n truy vấn cùng n cập nhật O(log n), nên tổng O(n log n) tốt
+hơn hẳn cách duyệt cặp O(n^2).
+
+Khác biệt cài đặt:
+  - C++: sort mảng struct Range bằng comparator, khóa (-a, b) cho pass 1 và
+    (a, -b) cho pass 2.
+  - Python: đọc toàn bộ input một lần rồi ghép hai khóa sắp xếp thành một số
+    nguyên duy nhất (key = b - a*BIG cho pass 1, key = a*BIG - b cho pass 2, với
+    BIG = 2^31 > mọi b) để argsort các chỉ số nhanh hơn so với dùng tuple.
+Cả hai đều là O(n log n) thời gian, O(n) bộ nhớ, nằm trong giới hạn thời gian.

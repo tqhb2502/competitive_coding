@@ -31,10 +31,14 @@ cùng trừ 1 để bỏ trường hợp S rỗng.
 Ví dụ mẫu: giá trị 1 (cnt=2), 2 (cnt=1), 3 (cnt=1) => (1+2)(1+1)(1+1) - 1 = 12 - 1 = 11,
 khớp đáp án mẫu.
 
-Cài đặt: dùng một hash map để đếm số lần xuất hiện của từng giá trị, sau đó nhân dồn
-(1 + cnt) theo modulo. Đọc dữ liệu bằng bộ đệm để tăng tốc.
+Cài đặt: bản C++ dùng unordered_map để đếm tần suất trong lúc đọc từng số bằng cin (đã
+tắt đồng bộ để tăng tốc), nên chỉ lưu các giá trị phân biệt. Bản Python đọc toàn bộ input
+một lần bằng sys.stdin.buffer.read().split() rồi dùng Counter đếm tần suất trên các token
+(mỗi token phân biệt ứng với một giá trị phân biệt). Cả hai đều nhân dồn (1 + cnt) theo
+modulo rồi trừ 1.
 
 ## Độ phức tạp
-- Thời gian: O(n) (đếm tần suất + nhân dồn tích).
-- Bộ nhớ: O(n) cho hash map các giá trị phân biệt.
+- Thời gian: O(n) (đếm tần suất + nhân dồn tích) cho cả hai bản.
+- Bộ nhớ: bản C++ chỉ O(số giá trị phân biệt) cho unordered_map; bản Python là O(n) vì
+  đọc toàn bộ token vào một danh sách rồi thêm Counter. Nhìn chung là O(n).
 Với n <= 2*10^5, thuật toán O(n) chạy rất nhẹ.

@@ -3,6 +3,7 @@ from bisect import bisect_right
 
 
 def main():
+    # Đọc toàn bộ input một lần để tăng tốc; data giữ toàn bộ token trong bộ nhớ
     data = sys.stdin.buffer.read().split()
     n = int(data[0])
 

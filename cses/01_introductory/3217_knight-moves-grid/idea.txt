@@ -32,6 +32,13 @@ Cách cài đặt trong code C++:
 - In ma trận dist theo từng hàng (chỉ lấy phần bên trong), các số cách nhau bởi
   dấu cách.
 
+Cách cài đặt trong code Python:
+- Cùng ý tưởng BFS trên mảng phẳng có viền như trên, chỉ khác cách duyệt hàng
+  đợi: BFS chạy theo TỪNG LỚP. `cur` giữ các ô ở khoảng cách d-1, `nxt` gom các
+  ô mới phát hiện ở khoảng cách d. Vì mọi ô trong cùng một lớp có cùng khoảng
+  cách nên không cần lưu kèm khoảng cách trong hàng đợi; biến `d` tăng dần sau
+  mỗi lớp và được gán trực tiếp cho các ô mới (dist[j] = d).
+
 Tính đúng đắn:
 - BFS trên đồ thị không trọng số (mỗi cạnh giá trị 1) luôn cho khoảng cách ngắn
   nhất từ nguồn tới mỗi đỉnh. Do tính đối xứng của nước đi quân mã, khoảng cách

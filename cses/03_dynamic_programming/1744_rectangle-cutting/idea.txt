@@ -30,7 +30,8 @@ Công thức chuyển (với i ≠ j, xét lần cắt đầu tiên):
   cắt đầu tiên, hai phần con còn lại được giải tối ưu độc lập.
 
 Đáp án:
-  dp[a][b]. Nếu a == b thì in ngay 0.
+  dp[a][b]. Với a == b kết quả là 0: solution.py kiểm tra và in thẳng 0, còn
+  solution.cpp lấy luôn dp[a][b] = 0 nhờ bảng được khởi tạo 0.
 
 Tính đúng đắn:
   Mọi cách cắt tối ưu đều có một lần cắt đầu tiên trên toàn bộ hình, chia nó
@@ -52,3 +53,7 @@ Tận dụng đối xứng:
 ## Độ phức tạp
 Với N = max(a, b) ≤ 500: thời gian O(N^3) (mỗi ô có O(N) chuyển tiếp), bộ nhớ
 O(N^2). Tận dụng đối xứng nên hằng số nhỏ đi khoảng một nửa.
+
+Cả solution.cpp và solution.py đều cài cùng thuật toán O(N^3) / O(N^2) này;
+bản Python dùng map(add, lát_trái, lát_phải) để đẩy phần cộng của mỗi ô xuống
+chạy trong C nên vẫn kịp thời gian trong giới hạn N ≤ 500.

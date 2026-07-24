@@ -34,18 +34,26 @@ Transition (từ đường chéo d-1 sang d):
 
 Answer: nối các ký tự đã chọn cho d = 0, 1, ..., 2n-2, được xâu độ dài 2n-1.
 
-Cài đặt dùng hai mảng `vector<char>` độ dài n là `frontier` và
-`next_frontier`, đánh dấu theo chỉ số hàng. Trên mỗi đường chéo d, chỉ cần duyệt
-các hàng từ `lo` đến `hi`:
+Hai lời giải dùng CÙNG thuật toán trên nhưng khác nhau ở kỹ thuật cài đặt:
 
-- Lượt thứ nhất kiểm tra điều kiện có thể đi tới từ frontier cũ và tìm ký tự nhỏ
-  nhất trong các ô ứng viên.
-- Lượt thứ hai đánh dấu vào frontier mới đúng những ô ứng viên mang ký tự nhỏ
-  nhất đó.
+- solution.cpp: dùng hai mảng `vector<char>` độ dài n là `frontier` và
+  `nextFrontier`, đánh dấu theo chỉ số hàng. Trên mỗi đường chéo d chỉ duyệt các
+  hàng từ `lowestRow` đến `highestRow` bằng hai lượt: lượt thứ nhất tìm ký tự nhỏ
+  nhất trong các ô ứng viên, lượt thứ hai đánh dấu vào `nextFrontier` đúng những
+  ô ứng viên mang ký tự nhỏ nhất đó; sau đó đổi vai trò hai mảng và sang đường
+  chéo kế tiếp.
 
-Sau đó đổi vai trò hai mảng và tiếp tục với đường chéo kế tiếp.
+- solution.py: cài đặt tương đương bằng số nguyên lớn (big-integer) và bảng
+  `translate` để xử lý song song ở mức từ máy. Frontier là một số n byte (byte
+  hàng 0 là MSB); tập ứng viên = `flag | (flag >> 8)` (dịch phải 8 bit = đi xuống
+  một hàng, giữ nguyên = đi phải). Cắt cửa sổ hàng hợp lệ [lo, hi], lấy các ký tự
+  trên đường chéo bằng lát cắt bước n-1, gán 255 cho ô không phải ứng viên rồi lấy
+  `min` để tìm ký tự nhỏ nhất mn, và dựng frontier mới bằng `translate` (vị trí có
+  ký tự == mn thành 1). Trường hợp n = 1 được xử lý riêng.
 
 ## Độ phức tạp
-- Thời gian: O(n^2), vì tổng độ dài của các đường chéo là n^2 và mỗi đường chéo
-  được duyệt hai lần.
-- Bộ nhớ: O(n^2) cho lưới, cộng O(n) cho hai frontier và xâu kết quả.
+- Thời gian: cả hai file đều O(n^2), vì tổng độ dài của các đường chéo là n^2.
+  solution.cpp duyệt mỗi đường chéo hai lượt; solution.py làm O(n) thao tác
+  byte/big-integer cho mỗi đường chéo (tổng vẫn O(n^2) nhưng chạy song song ở
+  mức từ máy nên hằng số rất nhỏ, đủ nhanh để qua giới hạn thời gian).
+- Bộ nhớ: O(n^2) cho lưới, cộng O(n) cho frontier và xâu kết quả.

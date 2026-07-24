@@ -27,8 +27,10 @@ Vì sao đúng:
 ## Độ phức tạp
 - Thời gian: O(n) trung bình (mỗi phần tử được xét một lần, thao tác hash map là
   O(1) trung bình).
-- Bộ nhớ: O(n) cho `unordered_map` lưu vị trí cuối; code xử lý bài hát ngay khi
-  đọc nên không lưu cả mảng.
+- Bộ nhớ: O(n). Bản C++ dùng `unordered_map` lưu vị trí cuối và xử lý từng bài
+  hát ngay khi đọc (đọc luồng) nên không lưu cả mảng. Bản Python đọc toàn bộ
+  dữ liệu một lần rồi giữ cả mảng `a` (dạng bytes, không ép kiểu int) cùng dict
+  `last`, nên vẫn là O(n) nhưng có lưu cả mảng.
 
-Code C++ đặt trước dung lượng cho `unordered_map` và bật fast I/O; thuật toán
-O(n) an toàn với n = 2·10^5.
+Code C++ đặt trước dung lượng cho `unordered_map` và bật fast I/O; bản Python
+dùng đọc/ghi qua buffer. Thuật toán O(n) an toàn với n = 2·10^5.

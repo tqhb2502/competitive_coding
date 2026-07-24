@@ -11,7 +11,8 @@ int main() {
     long long target;
     cin >> n >> target;
 
-    // Hash map ánh xạ: giá trị đã gặp -> vị trí (1-based) của phần tử đứng trước
+    // Hash map ánh xạ: giá trị đã gặp -> vị trí (1-based) của phần tử đứng trước.
+    // Cấp phát trước và đặt max_load_factor để giảm số lần rehash, tránh chậm.
     unordered_map<long long, int> seen;
     seen.reserve(static_cast<size_t>(n) * 2);
     seen.max_load_factor(0.7F);
