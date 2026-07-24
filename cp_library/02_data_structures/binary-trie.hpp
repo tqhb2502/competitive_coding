@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: insert/erase/maxXor O(B); bộ nhớ O(số phần tử · B). B = số bit (mặc định 30, giá trị < 2^30).
 // Dùng: BinaryTrie t; t.insert(x); t.erase(x); t.maxXor(x); // max của (x ^ y) trên tập KHÁC rỗng
 // Bẫy: chọn B đủ lớn; maxXor yêu cầu tập khác rỗng; erase phải khớp giá trị đã insert.
+// CSES: 1655
 struct BinaryTrie {
     static const int B = 30;
     struct Node {
@@ -39,3 +40,14 @@ struct BinaryTrie {
         return res;
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ binary-trie.hpp -o demo && ./demo
+int main() {
+    BinaryTrie t;
+    t.insert(5);
+    t.insert(10);
+    t.insert(2);
+    printf("maxXor(3) = %lld\n", t.maxXor(3));   // max cua (3 ^ y)
+    return 0;
+}
+#endif

@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: insert/query O(|s|); bộ nhớ O(tổng độ dài · ALPHA).
 // Dùng: Trie t; t.insert("abc"); t.countPrefix("ab"); t.countWord("abc");
 // Bẫy: ALPHA và gốc 'a' cố định — đổi bảng chữ cái phải sửa; ký tự ngoài ['a','z'] sẽ hỏng.
+// CSES: 1731
 struct Trie {
     static const int A = 26;
     struct Node {
@@ -37,3 +38,14 @@ struct Trie {
     int countPrefix(const string& s) const { int u = walk(s); return u < 0 ? 0 : tr[u].cntPrefix; }
     int countWord(const string& s) const { int u = walk(s); return u < 0 ? 0 : tr[u].cntWord; }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ trie.hpp -o demo && ./demo
+int main() {
+    Trie t;
+    t.insert("abc");
+    t.insert("ab");
+    t.insert("abcd");
+    printf("countPrefix(ab)=%d  countWord(abc)=%d\n", t.countPrefix("ab"), t.countWord("abc"));
+    return 0;
+}
+#endif

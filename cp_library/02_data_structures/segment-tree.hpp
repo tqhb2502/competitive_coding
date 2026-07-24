@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: build O(n); update/query O(log n); bộ nhớ O(2n). Index 0-based, đoạn [l, r).
 // Dùng: SegTree st(a, [](ll x,ll y){return min(x,y);}, LLONG_MAX); st.set(i, v); st.query(l, r);
 // Bẫy: id là phần tử trung hòa của op; bản lặp này gộp đúng thứ tự trái->phải (non-commutative cũng đúng).
+// CSES: 1143 1190 1649 2133 2134 2163 2166 2184 3219 3226 3428 3430
 struct SegTree {
     int n;
     vector<long long> t;
@@ -28,3 +29,14 @@ struct SegTree {
         return op(resl, resr);
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ segment-tree.hpp -o demo && ./demo
+int main() {
+    vector<long long> a = {5, 2, 4, 7, 1};
+    SegTree st(a, [](long long x, long long y) { return min(x, y); }, LLONG_MAX);
+    printf("min[0,5)=%lld ", st.query(0, 5));
+    st.set(3, -1);
+    printf(" -> sau set(3,-1) min[2,5)=%lld\n", st.query(2, 5));
+    return 0;
+}
+#endif

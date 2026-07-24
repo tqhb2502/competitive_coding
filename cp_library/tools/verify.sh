@@ -26,9 +26,13 @@ while IFS= read -r hpp; do
     printf '#include "%s"\nint main() { return 0; }\n' "$(win "${hpp}")" > "${tmp}/driver.cpp"
     # shellcheck disable=SC2086
     "${cxx}" ${flags} "${tmpw}/driver.cpp" -o "${tmpw}/a.exe"
+    # Demo #ifdef CP_DEMO: biên dịch .hpp làm file chính rồi chạy (mọi entry đều có demo).
+    # shellcheck disable=SC2086
+    "${cxx}" ${flags} -Wno-pragma-once-outside-header -DCP_DEMO -x c++ "$(win "${hpp}")" -o "${tmpw}/demo.exe"
+    "${tmpw}/demo.exe" < /dev/null > /dev/null
     count=$((count + 1))
 done < <(find "${lib}" -mindepth 2 -maxdepth 2 -name '*.hpp' | LC_ALL=C sort)
-printf 'compiled %d snippet header(s)\n' "${count}"
+printf 'compiled + ran %d snippet header(s) và demo\n' "${count}"
 
 # 2. Template thi đấu phải biên dịch và chạy an toàn không cần input.
 for cpp in "${lib}"/templates/*.cpp; do
@@ -63,7 +67,8 @@ if [ "${bundle_output}" != "1 3" ]; then
 fi
 printf 'bundle-to-one-file smoke passed\n'
 
-# 4. Dòng Tags của bài CSES đúng format và từ vựng.
+# 4. Dòng Tags của bài CSES đúng format/từ vựng; và dòng // CSES trong .hpp đã cập nhật.
 python3 "$(win "${tools_dir}/check_cses_tags.py")"
+python3 "$(win "${tools_dir}/link_cses.py")" --check
 
 printf 'cp_library verify passed.\n'

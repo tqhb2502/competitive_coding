@@ -14,7 +14,15 @@ using namespace std;
 // ĐPT: build O(...), update O(...), query O(...); bộ nhớ O(...)
 // Dùng: <1-3 dòng ví dụ gọi API>
 // Bẫy: <index base, overflow, identity...>
+// CSES: —          (sinh tự động bởi tools/link_cses.py từ các dòng Tags)
 struct TenDuyNhat { /* ... */ };
+
+#ifdef CP_DEMO       // g++ -std=c++17 -DCP_DEMO -x c++ <ten-file>.hpp -o demo && ./demo
+int main() {
+    // ví dụ nhỏ, chạy được, in kết quả dễ hiểu để minh hoạ API
+    return 0;
+}
+#endif
 ```
 
 Quy ước:
@@ -24,6 +32,8 @@ Quy ước:
   (`gcd`, `Edge`, `Node`…).
 - Ghi rõ index 0/1-based, kiểu số / overflow, identity của phép gộp.
 - Không cần `meta.json` / test / README riêng — comment header chính là tài liệu.
+- Ví dụ minh hoạ đặt trong `#ifdef CP_DEMO int main(){...}#endif` cuối file — **đừng để `main` trần**
+  (bundle nhiều snippet sẽ nhân đôi `main`). Dòng `// CSES:` do `link_cses.py` sinh, đừng sửa tay.
 
 ## Sau khi thêm
 
@@ -37,6 +47,7 @@ Quy ước:
 
    Nó biên dịch mọi `.hpp`, chạy template, kiểm luồng bundle và kiểm tag CSES.
 3. Gắn `Tags:` cho các bài CSES dùng kỹ thuật này (xem dưới).
+4. Cập nhật link ngược trong các `.hpp`: `python3 tools/link_cses.py`.
 
 ## Gắn tag CSES
 

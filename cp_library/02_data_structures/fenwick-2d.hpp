@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: add/query O(log R · log C); bộ nhớ O(R·C). Ngoài 0-based; trong 1-based.
 // Dùng: Fenwick2D f(R, C); f.add(r, c, v); f.rectSum(r1, c1, r2, c2); // [r1,r2) × [c1,c2)
 // Bẫy: tốn O(R·C) bộ nhớ — tọa độ lớn phải nén trước; dùng long long.
+// CSES: 1739
 struct Fenwick2D {
     int R, C;
     vector<vector<long long>> t;
@@ -24,3 +25,13 @@ struct Fenwick2D {
         return sum(r2, c2) - sum(r1, c2) - sum(r2, c1) + sum(r1, c1);
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ fenwick-2d.hpp -o demo && ./demo
+int main() {
+    Fenwick2D f(3, 3);
+    f.add(0, 0, 5);
+    f.add(1, 2, 7);
+    printf("rectSum [0,2)x[0,3) = %lld\n", f.rectSum(0, 0, 2, 3));   // 12
+    return 0;
+}
+#endif

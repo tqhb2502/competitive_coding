@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: O(n) — mỗi index vào/ra deque một lần; bộ nhớ O(k).
 // Dùng: auto mn = windowMin(a, k); // mn[i] = min a[i..i+k-1], i in [0, n-k]; windowMax tương tự.
 // Bẫy: deque lưu INDEX; loại đầu khi index <= i-k; kết quả có đúng n-k+1 phần tử.
+// CSES: 1159 1644 3221
 template <class T>
 vector<T> windowExtreme(const vector<T>& a, int k, bool wantMin) {
     int n = (int)a.size();
@@ -22,3 +23,14 @@ vector<T> windowExtreme(const vector<T>& a, int k, bool wantMin) {
 }
 template <class T> vector<T> windowMin(const vector<T>& a, int k) { return windowExtreme(a, k, true); }
 template <class T> vector<T> windowMax(const vector<T>& a, int k) { return windowExtreme(a, k, false); }
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ monotonic-deque.hpp -o demo && ./demo
+int main() {
+    vector<int> a = {3, 1, 2, 4};
+    for (int x : windowMin(a, 2)) printf("%d ", x);
+    printf("| ");
+    for (int x : windowMax(a, 2)) printf("%d ", x);
+    printf("\n");
+    return 0;
+}
+#endif

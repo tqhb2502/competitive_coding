@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: build O(n log n); query O(1); bộ nhớ O(n log n). Đoạn nửa mở [l, r), l < r.
 // Dùng: DisjointSparseTable st(a, [](ll x, ll y){ return __gcd(x, y); }); st.query(l, r);
 // Bẫy: op phải KẾT HỢP; query kết hợp đúng thứ tự trái->phải nên non-commutative cũng đúng.
+// CSES: —
 struct DisjointSparseTable {
     int n;
     vector<vector<long long>> t;
@@ -44,3 +45,12 @@ struct DisjointSparseTable {
         return op(t[level][l], t[level][r]);
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ disjoint-sparse-table.hpp -o demo && ./demo
+int main() {
+    vector<long long> a = {6, 4, 9, 12, 8};
+    DisjointSparseTable st(a, [](long long x, long long y) { return __gcd(x, y); });
+    printf("gcd[0,3)=%lld  gcd[0,5)=%lld\n", st.query(0, 3), st.query(0, 5));
+    return 0;
+}
+#endif

@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: find/unite O(log n); rollback O(số union đã hoàn tác); bộ nhớ O(n). Index 0-based.
 // Dùng: RollbackDSU d(n); int t=d.snapshot(); d.unite(a,b); ...; d.rollback(t); // về đúng mốc t
 // Bẫy: TUYỆT ĐỐI không thêm nén đường (find phải O(log n) để undo được); snapshot lấy trước khi unite.
+// CSES: 2133
 struct RollbackDSU {
     vector<int> p, sz;
     int comp;
@@ -29,3 +30,16 @@ struct RollbackDSU {
     }
     bool same(int a, int b) const { return find(a) == find(b); }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ rollback-dsu.hpp -o demo && ./demo
+int main() {
+    RollbackDSU d(5);
+    int t = d.snapshot();
+    d.unite(0, 1);
+    d.unite(1, 2);
+    printf("truoc rollback: same(0,2)=%d comp=%d\n", d.same(0, 2), d.comp);
+    d.rollback(t);
+    printf("sau  rollback: same(0,2)=%d comp=%d\n", d.same(0, 2), d.comp);
+    return 0;
+}
+#endif

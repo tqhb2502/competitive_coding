@@ -78,6 +78,9 @@ cp_library/
 - Comment header 5 dòng: *mục đích · khi dùng · độ phức tạp · cách dùng · bẫy*.
   Identifier tiếng Anh, comment tiếng Việt.
 - Ghi rõ **index 0-based/1-based**, kiểu số / overflow, và identity của phép gộp.
+- Mỗi entry có **demo chạy được** trong `#ifdef CP_DEMO int main(){...}#endif` (không phá bundle/include):
+  `g++ -std=c++17 -DCP_DEMO -x c++ cp_library/02_data_structures/dsu.hpp -o demo && ./demo`.
+- Dòng `// CSES: <mã bài>` (sinh bởi `tools/link_cses.py` từ `Tags:`) liệt kê bài CSES dùng kỹ thuật đó.
 
 ## Kiểm chứng
 

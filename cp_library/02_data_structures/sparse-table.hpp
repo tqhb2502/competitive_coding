@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: build O(n log n); query O(1); bộ nhớ O(n log n). Đoạn nửa mở [l, r), l < r.
 // Dùng: SparseTable st(a); st.query(l, r); // min trên [l, r)  (đổi min -> max/gcd nếu cần)
 // Bẫy: CHỈ dùng cho phép idempotent (đoạn chồng lấn vẫn đúng); tổng thì KHÔNG được.
+// CSES: 1135 1705 2101 3114 3149 3409
 struct SparseTable {
     vector<vector<long long>> t;
     vector<int> lg;
@@ -25,3 +26,12 @@ struct SparseTable {
         return min(t[k][l], t[k][r - (1 << k)]);
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ sparse-table.hpp -o demo && ./demo
+int main() {
+    vector<long long> a = {5, 2, 4, 7, 1, 3};
+    SparseTable st(a);
+    printf("min[1,5)=%lld  min[0,6)=%lld\n", st.query(1, 5), st.query(0, 6));
+    return 0;
+}
+#endif

@@ -6,6 +6,7 @@ using namespace std;
 // ĐPT: add O(1); build O(n); bộ nhớ O(n).
 // Dùng: DiffArray d(n); d.add(l, r, v); auto res = d.build(); // res[i] = tổng delta phủ i
 // Bẫy: đoạn nửa mở [l, r); dùng long long; add hết rồi mới build một lần.
+// CSES: 1138 1148 1203 1651 1736 2110 2416
 struct DiffArray {
     vector<long long> d;
     explicit DiffArray(int n) : d(n + 1, 0) {}
@@ -18,3 +19,14 @@ struct DiffArray {
         return a;
     }
 };
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ difference-array.hpp -o demo && ./demo
+int main() {
+    DiffArray d(5);
+    d.add(1, 4, 10);   // +10 tren [1,4)
+    d.add(0, 2, 5);    // +5  tren [0,2)
+    for (long long x : d.build()) printf("%lld ", x);
+    printf("\n");
+    return 0;
+}
+#endif
