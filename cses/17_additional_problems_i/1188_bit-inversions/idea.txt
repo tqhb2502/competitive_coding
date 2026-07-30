@@ -1,0 +1,25 @@
+Bit Inversions - CSES 1188
+https://cses.fi/problemset/task/1188
+
+Tags: run-intervals
+
+## Đề bài
+Cho một chuỗi bit độ dài n. Có m thao tác, mỗi thao tác đảo (invert) một bit tại
+vị trí cho trước. Sau mỗi thao tác, in ra độ dài lớn nhất của một đoạn liên tiếp
+gồm toàn các bit giống nhau. Giới hạn n, m tối đa 2*10^5.
+
+## Ý tưởng
+Dùng một ordered set để lưu mọi biên (boundary) giữa hai đoạn đồng nhất: luôn có
+sẵn hai biên 0 và n, và có biên tại vị trí i khi s[i-1] khác s[i]. Một multiset
+khác lưu độ dài của mọi đoạn nằm giữa hai biên liên tiếp; phần tử lớn nhất của
+multiset chính là đáp án hiện tại.
+
+Khi đảo bit tại vị trí p, chỉ có trạng thái của hai biên p và p+1 có thể thay
+đổi (quan hệ bằng/khác của cặp (p-1,p) và (p,p+1) bị đảo), các cặp kề khác không
+đổi. Với mỗi biên bị ảnh hưởng ta toggle: nếu biên chưa tồn tại thì thêm vào,
+tách đoạn chứa nó thành hai độ dài; nếu biên đã tồn tại thì xóa đi, ghép hai đoạn
+kề thành một. Mỗi lần cập nhật set/multiset tốn O(log n), sau đó lấy phần tử lớn
+nhất của multiset làm kết quả.
+
+## Độ phức tạp
+Thời gian O((n + m) log n), bộ nhớ O(n).

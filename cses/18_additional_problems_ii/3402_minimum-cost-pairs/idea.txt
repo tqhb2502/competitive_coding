@@ -1,0 +1,32 @@
+Minimum Cost Pairs - CSES 3402
+https://cses.fi/problemset/task/3402
+
+Tags: path-matching, sorting
+
+## Đề bài
+Cho n số nguyên. Với mỗi k = 1..floor(n/2), hãy chọn k cặp rời nhau (mỗi phần
+tử thuộc tối đa một cặp) sao cho tổng chi phí các cặp nhỏ nhất, trong đó chi phí
+một cặp bằng |a - b|. In ra đáp án tối ưu cho từng giá trị k.
+
+## Ý tưởng
+Sắp xếp dãy số tăng dần. Luôn tồn tại nghiệm tối ưu chỉ ghép hai phần tử kề nhau
+sau khi sắp xếp, nên bài toán trở thành: trên một đường đi, chọn k cạnh không
+chung đỉnh với tổng trọng số nhỏ nhất, trong đó cạnh i có trọng số
+d[i] = x[i] - x[i-1].
+
+Đây là bài toán ghép cặp trọng số nhỏ nhất trên đường đi, giải bằng kỹ thuật
+tham lam kèm "hối tiếc" (exchange argument) với priority_queue và
+danh sách liên kết đôi các cạnh:
+- Mỗi bước lấy cạnh còn sống có trọng số nhỏ nhất w, cộng w vào đáp án -> đây là
+  đáp án tối ưu khi ghép đúng số cặp hiện tại.
+- Hai cạnh kề l và r bị xóa (vì xung đột đỉnh với cạnh vừa chọn).
+- Tại vị trí vừa chọn tạo một cạnh co mới có trọng số d[l] + d[r] - w. Cạnh co
+  này biểu diễn thao tác "hối tiếc": nếu sau này chọn nó thì tương đương bỏ w và
+  thay bằng cả hai cạnh l, r.
+- Hai cạnh biên giả có trọng số vô cùng để chặn ngoài biên. Dùng phiên bản
+  (version) để bỏ qua các bản ghi cũ đã lỗi thời còn nằm trong heap.
+
+Tổng tích lũy sau lần chọn thứ k chính là đáp án tối ưu cho k cặp.
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n).

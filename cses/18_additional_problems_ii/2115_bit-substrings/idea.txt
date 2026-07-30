@@ -1,0 +1,24 @@
+Bit Substrings - CSES 2115
+https://cses.fi/problemset/task/2115
+
+Tags: ntt, prefix-sum
+
+## Đề bài
+Cho một chuỗi bit độ dài n. Với mỗi k = 0..n, đếm số substring không rỗng
+chứa đúng k chữ số 1, rồi in ra n+1 giá trị đó. Ràng buộc n <= 2*10^5.
+
+## Ý tưởng
+Gọi p_i là số bit 1 trong prefix độ dài i (i = 0..n) và f[t] là số prefix có
+p_i = t. Một substring (l, r] có đúng k bit 1 khi và chỉ khi p_r - p_l = k.
+- Với k = 0: hai đầu prefix phải cùng giá trị, đáp án là tổng C(f[t], 2).
+- Với k > 0: vì dãy p không giảm nên mọi prefix mang t luôn đứng trước mọi
+  prefix mang t+k; do đó số cặp hợp lệ là tổng_t f[t]*f[t+k], tức tương quan
+  chéo của f.
+Đảo ngược một bản sao của f rồi nhân đa thức: hệ số tại vị trí (m-1-k) chính là
+tổng trên, với m là số giá trị prefix khác nhau. Vì đáp án có thể lớn hơn một
+modulus, ta chạy NTT với hai số nguyên tố 998244353 và 1004535809 rồi ghép hai
+phần dư bằng CRT; tích hai modulus lớn hơn mọi đáp án nên khôi phục được số
+nguyên thật.
+
+## Độ phức tạp
+O(n log n) thời gian, O(n) bộ nhớ.

@@ -1,0 +1,44 @@
+Dynamic Range Sum Queries - CSES 1648
+https://cses.fi/problemset/task/1648
+
+Tags: fenwick
+
+## Đề bài
+Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
+- "1 k u": gán giá trị của phần tử tại vị trí k thành u (cập nhật một điểm).
+- "2 a b": tính tổng các phần tử trong đoạn [a, b] (truy vấn tổng đoạn).
+
+## Ý tưởng
+Dùng Fenwick tree (Binary Indexed Tree, BIT) đánh chỉ số từ 1. BIT cho phép cả
+hai thao tác cập nhật một điểm và truy vấn prefix-sum trong O(log n), với hằng số
+nhỏ hơn nhiều so với segment tree nên rất phù hợp ở đây.
+
+Các thao tác trên BIT:
+- update(i, delta): cộng thêm delta vào phần tử tại vị trí i, cập nhật bằng cách
+  đi lên theo i += i & (-i).
+- query(i): trả về prefix sum của đoạn [1, i] bằng cách đi xuống theo i -= i & (-i).
+- Tổng đoạn [a, b] = query(b) - query(a - 1).
+
+Vì truy vấn cập nhật là phép GÁN (set) chứ không phải cộng dồn, ta lưu thêm mảng
+cur giữ giá trị hiện tại của từng vị trí. Khi gặp "1 k u", ta gọi
+update(k, u - cur[k]) rồi đặt cur[k] = u để BIT phản ánh đúng chênh lệch (delta).
+
+Tính đúng đắn: BIT duy trì bất biến rằng mỗi node quản lý một đoạn có độ dài bằng
+lowbit của chỉ số; phép đi lên khi update và đi xuống khi query đảm bảo mọi phần tử
+được cộng đúng một lần vào prefix sum, do đó query(b) - query(a - 1) cho đúng tổng
+đoạn [a, b].
+
+Khác biệt nhỏ khi dựng cây: solution.cpp gọi add cho từng phần tử ban đầu nên tốn
+O(n log n); solution.py dựng trực tiếp trong O(n) bằng cách cộng dồn giá trị của mỗi
+node lên node cha j = i + lowbit(i).
+
+## Độ phức tạp
+- Thời gian:
+  - solution.cpp: O((n + q) log n) (dựng BIT bằng add từng phần tử là O(n log n)).
+  - solution.py: O(n + q log n) (dựng BIT trong O(n)).
+- Không gian:
+  - solution.cpp: O(n) cho BIT và mảng current.
+  - solution.py: O(n) cho tree/cur, nhưng đọc toàn bộ input một lần nên tổng bộ nhớ
+    là O(n + q).
+Với n, q <= 2*10^5, tổng thao tác khoảng vài triệu phép O(log n), hoàn toàn chấp
+nhận được.

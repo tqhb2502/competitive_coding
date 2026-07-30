@@ -1,0 +1,39 @@
+All Manhattan Distances - CSES 3411
+https://cses.fi/problemset/task/3411
+
+Tags: manhattan-distance, prefix-sum
+
+## Đề bài
+Cho tập hợp n điểm trên mặt phẳng. Hãy tính tổng khoảng cách Manhattan giữa MỌI
+cặp điểm. Khoảng cách Manhattan giữa hai điểm i và j được định nghĩa là:
+    dist(i, j) = |x_i - x_j| + |y_i - y_j|
+
+## Ý tưởng
+Vì phần tọa độ x và phần tọa độ y trong công thức trị tuyệt đối hoàn toàn độc
+lập nhau, nên tổng trên tất cả các cặp tách được thành hai bài toán một chiều
+(1D) riêng biệt:
+    Sum = ( tổng |x_i - x_j| trên mọi cặp ) + ( tổng |y_i - y_j| trên mọi cặp )
+
+Bài toán một chiều: cho mảng a gồm n số, tính S = tổng |a_i - a_j| với mọi cặp
+i < j. Ta sắp xếp (sort) mảng a tăng dần. Sau khi sắp xếp, với chỉ số k
+(0-based) mọi phần tử a[0..k-1] đều nhỏ hơn hoặc bằng a[k], nên đóng góp của
+a[k] khi ghép với tất cả các phần tử đứng trước nó là:
+    a[k] * k - (a[0] + a[1] + ... + a[k-1])
+
+Dùng prefix sum (tổng tiền tố) để lấy nhanh (a[0] + ... + a[k-1]). Cộng dồn
+đóng góp này qua mọi k sẽ cho ra S. Mỗi cặp (i, j) được đếm đúng một lần (tại
+k = vị trí của phần tử lớn hơn) và luôn lấy đúng dấu hiệu (phần tử sau trừ phần
+tử trước, luôn không âm), nên kết quả bằng chính |a_i - a_j|.
+
+Toàn bộ phép tính giữ nguyên số nguyên (exact integer arithmetic), không dùng
+float. Tọa độ tới cỡ 1e9 và n tới 2e5 nên tổng có thể lớn cỡ n^2 * range ~
+10^20, vượt quá 64-bit: bản C++ dùng `__int128` để tránh tràn số (và in ra bằng
+cách tách từng chữ số vì std::cout không hỗ trợ __int128), còn bản Python dùng
+số nguyên lớn (big int) sẵn có nên luôn chính xác tuyệt đối. Về I/O, bản Python
+đọc toàn bộ input một lần rồi tách token (O(n) bộ nhớ), bản C++ đọc trực tiếp
+từng số qua std::cin.
+
+## Độ phức tạp
+- Thời gian: O(n log n) do hai lần sort (một cho x, một cho y); phần cộng dồn
+  prefix sum là O(n). Với n = 2e5 chạy rất nhanh.
+- Bộ nhớ: O(n) lưu hai danh sách tọa độ.

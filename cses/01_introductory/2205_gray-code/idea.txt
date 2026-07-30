@@ -1,0 +1,40 @@
+Gray Code - CSES 2205
+https://cses.fi/problemset/task/2205
+
+Tags: gray-code
+
+## Đề bài
+- Cho số nguyên n (1 <= n <= 16).
+- In ra 2^n xâu nhị phân độ dài n sao cho hai xâu liên tiếp chỉ khác nhau đúng 1 bit.
+- Được phép in bất kỳ nghiệm hợp lệ nào.
+
+## Ý tưởng
+- Sử dụng công thức Gray code chuẩn (Reflected Binary Gray Code):
+      gray(i) = i XOR (i >> 1)
+  với i chạy từ 0 đến 2^n - 1.
+- Với mỗi i, tính gray(i) rồi in ra dưới dạng nhị phân gồm đúng n bit
+  (thêm số 0 ở bên trái cho đủ độ dài).
+
+Tại sao đúng:
+- Hai số nguyên liên tiếp i và i+1 có biểu diễn Gray khác nhau đúng 1 bit.
+  Khi tăng i lên 1, ở dạng nhị phân chuỗi các bit 1 ở cuối bị lật thành 0
+  và bit 0 đầu tiên (tính từ phải) bị lật thành 1. Phép XOR với (i >> 1)
+  trong công thức Gray đảm bảo rằng tổng hợp lại chỉ có đúng một bit thay đổi
+  giữa gray(i) và gray(i+1). Đây là tính chất cơ bản đã được chứng minh của
+  mã Gray phản xạ.
+- Khi i chạy hết 0..2^n - 1, giá trị gray(i) là một hoán vị của tất cả 2^n
+  giá trị, nên ta liệt kê đầy đủ tất cả 2^n xâu nhị phân độ dài n, mỗi xâu
+  đúng một lần.
+
+Ghi chú về I/O:
+- Code C++ tạo một xâu độ dài n cho từng giá trị Gray rồi in ngay (cout <<
+  code << '\n'); không cần giữ toàn bộ 2^n xâu trong bộ nhớ, chỉ dùng O(n).
+- Code Python gom tất cả 2^n xâu vào một danh sách rồi nối lại và ghi ra
+  một lần duy nhất (fast I/O), nên tốn O(2^n * n) bộ nhớ cho toàn bộ output.
+
+## Độ phức tạp
+- Thời gian: O(2^n * n) để tạo và in tất cả các xâu (mỗi xâu độ dài n).
+  Với n = 16 thì 2^n = 65536 dòng, hoàn toàn trong giới hạn.
+- Bộ nhớ:
+  + C++: O(n) cho xâu đang được dựng (in ngay từng dòng).
+  + Python: O(2^n * n) vì gom toàn bộ output vào danh sách trước khi ghi.

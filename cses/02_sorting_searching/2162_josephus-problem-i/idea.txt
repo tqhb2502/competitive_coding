@@ -1,0 +1,40 @@
+Josephus Problem I - CSES 2162
+https://cses.fi/problemset/task/2162
+
+Tags: josephus
+
+## Đề bài
+Có n đứa trẻ được đánh số 1, 2, ..., n đứng thành một vòng tròn. Bắt đầu từ đầu
+vòng, ta lần lượt bỏ qua một đứa rồi loại một đứa (tức là loại cứ mỗi đứa thứ hai)
+cho đến khi không còn ai. Hãy in ra thứ tự các đứa trẻ bị loại.
+
+## Ý tưởng
+Mô phỏng vòng tròn bằng một hàng đợi hai đầu (deque):
+- Đưa tất cả n đứa trẻ vào deque theo thứ tự 1, 2, ..., n. Phần tử đầu deque chính
+  là đứa trẻ mà con trỏ đang chỉ tới trong vòng tròn.
+- Lặp lại cho đến khi deque rỗng:
+    1. Lấy phần tử đầu deque ra rồi đẩy xuống cuối bằng
+       `front/pop_front/push_back` -> đây là thao tác "bỏ qua" (skip) một đứa
+       trẻ, nó vẫn còn trong vòng nên quay lại cuối hàng.
+    2. Lấy phần tử đầu deque tiếp theo ra -> đây là đứa trẻ bị "loại" (remove), thêm
+       nó vào danh sách kết quả.
+- Danh sách kết quả chính là thứ tự bị loại cần in ra.
+
+Vì sao đúng: cứ mỗi hai phần tử đầu deque thì phần tử thứ nhất được giữ lại (đưa
+xuống cuối) và phần tử thứ hai bị loại, đúng như luật "loại mỗi đứa thứ hai". Việc
+đưa một đứa xuống cuối hàng tương đương với tiếp tục đi vòng quanh vòng tròn.
+Kiểm chứng với n = 7: kết quả 2 4 6 1 5 3 7, khớp với đáp án mẫu.
+
+## Độ phức tạp
+- Thời gian: O(n). Mỗi vòng lặp loại đúng 1 phần tử và chỉ thực hiện các thao tác
+  O(1) trên deque.
+- Bộ nhớ: O(n) để lưu deque và danh sách kết quả.
+- Với n <= 2 * 10^5 thuật toán chạy rất nhẹ.
+
+Chi tiết cài đặt:
+- C++ dùng `std::deque<int>`, đặt trước dung lượng cho `std::vector` kết quả, bật
+  fast I/O (`sync_with_stdio(false)` + `cin.tie(nullptr)`) và in kết quả bằng vòng
+  lặp, các số cách nhau bởi dấu cách.
+- Python dùng `collections.deque`, đọc toàn bộ input một lần bằng
+  `sys.stdin.buffer.read().split()`, gộp toàn bộ kết quả thành một chuỗi rồi ghi ra
+  một lần bằng `sys.stdout.write` để tăng tốc I/O. Cùng thuật toán O(n) như C++.

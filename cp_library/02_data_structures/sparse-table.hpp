@@ -1,0 +1,42 @@
+#pragma once
+#include <bits/stdc++.h>
+using namespace std;
+// Sparse Table — truy vấn IDEMPOTENT (min/max/gcd) trên mảng TĨNH, query O(1).
+// Khi dùng: nhiều truy vấn min/max/gcd đoạn, mảng không đổi.
+// ĐPT: build O(n log n); query O(1); bộ nhớ O(n log n). Đoạn nửa mở [l, r), l < r.
+// Dùng: SparseTable st(a); st.query(l, r); // min trên [l, r)  (đổi min -> max/gcd nếu cần)
+// Bẫy: CHỈ dùng cho phép idempotent (đoạn chồng lấn vẫn đúng); tổng thì KHÔNG được.
+// CSES: 1135 1647
+struct SparseTable {
+    vector<vector<long long>> t;
+    vector<int> lg;
+    // Ý nghĩa: dựng sparse table cho phép idempotent (mặc định min) từ mảng a.
+    // Tham số: a = mảng đầu vào (0-based) không đổi trong suốt các truy vấn.
+    explicit SparseTable(const vector<long long>& a) {
+        int n = (int)a.size();
+        lg.assign(n + 1, 0);
+        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;
+        int K = (n ? lg[n] : 0) + 1;
+        t.assign(K, vector<long long>(max(1, n)));
+        for (int i = 0; i < n; i++) t[0][i] = a[i];
+        for (int k = 1; k < K; k++)
+            for (int i = 0; i + (1 << k) <= n; i++)
+                t[k][i] = min(t[k - 1][i], t[k - 1][i + (1 << (k - 1))]);
+    }
+    // Ý nghĩa: truy vấn min trên đoạn nửa mở [l, r) trong O(1).
+    // Tham số: l, r = biên trái/phải (0-based, nửa mở), yêu cầu l < r.
+    // Trả về: giá trị min của các phần tử trong [l, r).
+    long long query(int l, int r) const {  // min trên [l, r), l < r
+        int k = lg[r - l];
+        return min(t[k][l], t[k][r - (1 << k)]);
+    }
+};
+
+#ifdef CP_DEMO  // g++ -std=c++17 -DCP_DEMO -x c++ sparse-table.hpp -o demo && ./demo
+int main() {
+    vector<long long> a = {5, 2, 4, 7, 1, 3};
+    SparseTable st(a);
+    printf("min[1,5)=%lld  min[0,6)=%lld\n", st.query(1, 5), st.query(0, 6));
+    return 0;
+}
+#endif

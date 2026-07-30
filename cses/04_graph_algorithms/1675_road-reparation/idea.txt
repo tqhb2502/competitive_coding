@@ -1,0 +1,32 @@
+Road Reparation - CSES 1675
+https://cses.fi/problemset/task/1675
+
+Tags: dsu, mst
+
+## Đề bài
+Có n thành phố và m con đường hai chiều, mỗi con đường nối hai thành phố và có
+một chi phí sửa chữa. Hãy chọn một tập các con đường để sửa sao cho mọi cặp
+thành phố đều đi tới được nhau và tổng chi phí là nhỏ nhất. Nếu không thể nối
+tất cả các thành phố thành một mạng liên thông thì in ra "IMPOSSIBLE".
+
+## Ý tưởng
+- Mô hình hóa: mỗi thành phố là một đỉnh, mỗi con đường là một cạnh vô hướng có
+  trọng số bằng chi phí. Việc chọn tập cạnh rẻ nhất nối liền thông toàn bộ đồ
+  thị chính là tìm cây khung nhỏ nhất (Minimum Spanning Tree - MST).
+- Thuật toán Kruskal kết hợp cấu trúc Disjoint Set Union (DSU):
+  1. Sắp xếp tất cả các cạnh theo chi phí tăng dần.
+  2. Duyệt lần lượt từng cạnh (a, b, c). Dùng DSU với union by size và path
+     compression để kiểm tra a và b đã cùng một thành phần liên thông chưa.
+     - Nếu chưa cùng thành phần: gộp hai thành phần lại, cộng c vào tổng chi
+       phí và tăng số cạnh đã chọn.
+     - Nếu đã cùng thành phần: bỏ qua vì thêm vào sẽ tạo chu trình.
+  3. Nếu số cạnh đã chọn đạt n-1 thì đồ thị liên thông và tổng chi phí là đáp
+     án; ngược lại đồ thị không liên thông nên in "IMPOSSIBLE".
+- Tính đúng đắn: Kruskal là thuật toán tham lam kinh điển. Theo cut property,
+  cạnh nhỏ nhất băng qua một lát cắt luôn thuộc về một MST, nên việc luôn chọn
+  cạnh rẻ nhất mà không tạo chu trình cho ra cây khung có tổng trọng số nhỏ nhất.
+
+## Độ phức tạp
+- Thời gian: O(m log m) cho việc sắp xếp cạnh, cộng O(m * alpha(n)) cho các thao
+  tác DSU (alpha là hàm ngược Ackermann, gần như hằng số). Tổng: O(m log m).
+- Không gian: O(n + m) để lưu danh sách cạnh và các mảng của DSU.

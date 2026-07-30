@@ -1,0 +1,40 @@
+Letter Pair Move Game - CSES 2427
+https://cses.fi/problemset/task/2427
+
+Tags: bfs
+
+## Đề bài
+Có 2n ô xếp thành một hàng: đúng hai ô trống kề nhau, các ô còn lại chứa n-1 chữ
+'A' và n-1 chữ 'B'. Mỗi bước ta chọn hai chữ kề nhau rồi chuyển nguyên thứ tự
+của chúng vào hai ô trống (để lại hai ô trống mới ngay tại vị trí vừa lấy). Hãy
+đưa dãy về dạng mọi 'A' đứng trước mọi 'B' bằng không quá 1000 bước; nếu không
+thể thì in -1. Ràng buộc n <= 100; khi có lời giải thì luôn tồn tại lời giải
+không quá 10n bước. Đây là bài chấm đặc biệt: in số bước rồi in trạng thái sau
+mỗi bước.
+
+## Ý tưởng
+Kỹ thuật thu nhỏ đoạn (shrinking window) kết hợp BFS cho đoạn nhỏ ở cuối.
+
+Xét đoạn đang xử lý [L, R] luôn cân bằng số 'A'/'B' và chứa cặp ô trống.
+
+Khi độ dài đoạn còn lớn hơn 8, ta cố định một 'A' tại L và một 'B' tại R:
+- Đưa cặp ô trống về đầu đoạn (vị trí L). Nếu cặp đầu đoạn đang dính ô trống, dùng
+  một cặp chữ đệm bất kỳ bên trong để giải phóng trước. Sau đó chuyển vào L một
+  cặp bắt đầu bằng 'A'.
+- Làm đối xứng ở cuối đoạn: đưa cặp ô trống về R-1 rồi chuyển vào đó một cặp kết
+  thúc bằng 'B'.
+- Mỗi lần thu nhỏ tốn tối đa 5 bước, sau đó tiếp tục với đoạn [L+1, R-1]. Vì đoạn
+  vẫn đủ dài nên luôn tồn tại cặp đệm và cặp 'A?'/'?B' cần thiết. Chữ 'A' đã đặt ở
+  L và chữ 'B' đã đặt ở R không bị đụng tới nữa nên giữ nguyên.
+
+Khi độ dài đoạn còn tối đa 8 ô, chạy BFS trên toàn bộ trạng thái của đoạn nhỏ:
+mỗi cạnh là đúng một nước đi hợp lệ, dừng khi đạt dạng A...AB...B (bỏ qua vị trí
+hai ô trống). BFS cũng tự nhận biết các trường hợp nhỏ vô nghiệm; khi đó in -1.
+
+Ghép các đầu 'A', lời giải của đoạn nhỏ, và các đầu 'B' cho ra trạng thái toàn
+cục thoả yêu cầu. Tổng số bước tối đa 5(n-4)+5 < 10n và cũng nhỏ hơn 1000.
+
+## Độ phức tạp
+Thời gian O(n^2): có O(n) bước, mỗi bước tạo và in một chuỗi trạng thái dài O(n).
+Bộ nhớ O(n^2) để lưu các trạng thái kết quả; không gian BFS cho đoạn nhỏ là hằng
+số (số trạng thái của đoạn tối đa 8 ô bị chặn).

@@ -1,0 +1,44 @@
+Giant Pizza - CSES 1684
+https://cses.fi/problemset/task/1684
+
+Tags: two-sat
+
+## Đề bài
+Có m loại topping và n thành viên. Mỗi thành viên nêu ra 2 mong muốn, mỗi mong
+muốn có dạng "+ x" (thích topping x) hoặc "- x" (ghét topping x). Ta cần chọn một
+tập hợp topping (mỗi topping được thêm hoặc không thêm) sao cho MỌI thành viên
+đều hài lòng, tức là ÍT NHẤT MỘT trong 2 mong muốn của họ được thỏa mãn. In ra
+một cách chọn hợp lệ (dãy '+'/'-' cho từng topping) hoặc "IMPOSSIBLE" nếu không có.
+
+## Ý tưởng
+Đây là bài toán 2-SAT: mỗi topping là một biến boolean (TRUE = được chọn '+',
+FALSE = không được chọn '-'), mỗi thành viên là một clause (a OR b) gồm đúng 2
+literal. Cần tìm cách gán TRUE/FALSE cho m biến để mọi clause đều đúng.
+
+Xây dựng implication graph:
+- Với mỗi biến i (0-indexed) tạo 2 node: 2*i = "topping i được chọn (true)",
+  2*i+1 = "topping i không được chọn (false)". Node phủ định của node v là v XOR 1.
+- Một literal (sign, x) tương ứng node = 2*(x-1) nếu sign = '+', ngược lại 2*(x-1)+1.
+- Clause (a OR b) tương đương hai mệnh đề kéo theo (NOT a => b) và (NOT b => a),
+  nên thêm cạnh: node(a)^1 -> node(b) và node(b)^1 -> node(a).
+
+Thuật toán:
+- Tìm các thành phần liên thông mạnh (SCC) của implication graph bằng Tarjan,
+  cài đặt ITERATIVE để tránh tràn stack với tối đa 2*m node.
+- Tarjan đánh số component theo thứ tự hoàn thành SCC (SCC ở phía sink được đánh
+  trước), tức là reverse topological order: SCC càng gần sink thì comp càng nhỏ.
+- Kiểm tra khả thi: nếu tồn tại biến i mà comp[2*i] == comp[2*i+1] (một literal và
+  phủ định của nó cùng một SCC) thì mâu thuẫn -> in "IMPOSSIBLE".
+- Ngược lại luôn có lời giải: với mỗi biến chọn literal có comp NHỎ HƠN (nằm phía
+  sink / downstream) làm TRUE. Cụ thể topping i chọn '+' khi comp[2*i] < comp[2*i+1],
+  ngược lại '-'.
+
+Tính đúng đắn: theo định lý 2-SAT, công thức thỏa được khi và chỉ khi không có biến
+nào mà x và NOT x cùng một SCC. Chọn literal có SCC ở phía sink làm true thì không
+thể kéo theo phủ định của nó (mọi cạnh kéo theo chỉ đi về phía sink, không quay
+ngược lên phủ định đang ở phía source), nên phép gán nhất quán và thỏa mọi clause.
+
+## Độ phức tạp
+- Số node = 2*m, số cạnh = 2*n. Tarjan chạy O(V + E) = O(n + m) thời gian.
+- Bộ nhớ O(n + m) cho adjacency list và các mảng phụ trợ.
+- Với n, m <= 1e5: khoảng 2e5 node và 2e5 cạnh, hoàn toàn trong giới hạn.

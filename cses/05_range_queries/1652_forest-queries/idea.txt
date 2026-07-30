@@ -1,0 +1,28 @@
+Forest Queries - CSES 1652
+https://cses.fi/problemset/task/1652
+
+Tags: prefix-sum, range-query, static-array
+
+## Đề bài
+Cho một lưới n x n gồm các ô trống ('.') và các ô có cây ('*'). Lưới là TĨNH,
+không có thao tác cập nhật. Với mỗi truy vấn là một hình chữ nhật cho bởi bốn số
+(y1, x1, y2, x2) — góc trên-trái (y1, x1) và góc dưới-phải (y2, x2) — hãy đếm số
+cây nằm bên trong hình chữ nhật đó.
+
+## Ý tưởng
+Dùng mảng cộng dồn hai chiều (2D prefix sum).
+- Đặt a[i][j] = 1 nếu ô (i, j) có cây, ngược lại bằng 0.
+- Xây bảng P với P[i][j] = tổng số cây trong hình chữ nhật từ (1, 1) đến (i, j):
+      P[i][j] = P[i-1][j] + P[i][j-1] - P[i-1][j-1] + a[i][j].
+  Trong code, ta xây theo từng hàng: tính cộng dồn trong hàng (row_sum theo cột)
+  rồi cộng thêm hàng phía trên P[i-1][j]; cách này tương đương và tránh phép trừ
+  P[i-1][j-1].
+- Trả lời mỗi truy vấn trong O(1) bằng nguyên lý bù trừ (inclusion-exclusion):
+      answer = P[y2][x2] - P[y1-1][x2] - P[y2][x1-1] + P[y1-1][x1-1].
+  Ý nghĩa: P[y2][x2] đếm cả vùng từ góc trên-trái tới (y2, x2); trừ đi dải phía
+  trên và dải bên trái nằm ngoài hình chữ nhật, rồi cộng lại phần giao bị trừ hai
+  lần để ra đúng số cây cần đếm.
+
+## Độ phức tạp
+- Thời gian: O(n^2) để xây prefix sum + O(1) mỗi truy vấn, tổng O(n^2 + q).
+- Bộ nhớ: O(n^2) cho bảng P (khoảng (n+1)^2 số nguyên).

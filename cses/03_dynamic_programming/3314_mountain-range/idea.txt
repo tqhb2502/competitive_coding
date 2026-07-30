@@ -1,0 +1,52 @@
+Mountain Range - CSES 3314
+https://cses.fi/problemset/task/3314
+
+Tags: monotonic-stack, nearest-element
+
+## Đề bài
+Có n ngọn núi xếp thành một hàng, núi thứ i cao h_i. Ta bắt đầu một hành trình lượn
+(hang gliding) tại một ngọn núi bất kỳ. Được phép lượn từ núi a sang núi b nếu núi a
+cao hơn núi b VÀ mọi ngọn núi nằm giữa a và b đều thấp hơn a (tức a là đỉnh cao nhất
+trong đoạn từ a đến b). Hãy tìm số ngọn núi tối đa thăm được trên một hành trình.
+
+Đầu vào: dòng 1 là n; dòng 2 là n số nguyên h_1..h_n.
+Đầu ra: một số nguyên duy nhất (số núi tối đa). KHÔNG có modulo.
+Ràng buộc: 1 <= n <= 2*10^5, 1 <= h_i <= 10^9.
+Ví dụ: n = 10, h = 20 15 17 35 25 40 12 19 13 12  ->  đáp án 5.
+
+## Ý tưởng
+Nhận xét về tập núi lượn tới được: từ núi i, tập các núi có thể lượn tới đúng bằng
+khoảng mở (L_i, R_i) (không kể i), trong đó L_i là vị trí gần nhất bên TRÁI có chiều
+cao >= h_i (nếu không có thì -1), R_i là vị trí gần nhất bên PHẢI có chiều cao >= h_i
+(nếu không có thì n). Trong đoạn [L_i+1, R_i-1] thì i là cực đại DUY NHẤT, mọi phần tử
+khác đều thấp hơn h_i thực sự nên đều lượn tới được; ra khỏi đoạn sẽ gặp một núi cao
+>= h_i chặn lại. (Dùng ngưỡng >= cho cả hai phía nên trong đoạn không có núi bằng h_i.)
+
+Trạng thái DP:
+dp[i] = độ dài hành trình dài nhất bắt đầu tại núi i (số núi thăm được).
+
+Chuyển trạng thái:
+dp[i] = 1 + max{ dp[j] : j thuộc [L_i+1, R_i-1], j != i }.
+
+Cơ sở:
+Nếu đoạn rỗng (không lượn được đi đâu) thì dp[i] = 1.
+
+Đáp án:
+đáp án = max_i dp[i].
+
+Tính đúng: đồ thị lượn là DAG vì chiều cao giảm THỰC SỰ theo mỗi bước lượn (a > b) nên
+không có chu trình. Xử lý các núi theo thứ tự chiều cao TĂNG DẦN đảm bảo mọi đích j
+(đều thấp hơn i thực sự) đã được tính dp trước khi tính dp[i].
+
+Cách cài đặt O(n) (tránh segment tree cho nhanh): định nghĩa SL[i] = núi gần nhất bên
+trái cao hơn i THỰC SỰ (strictly greater), SR[i] = núi gần nhất bên phải cao hơn i thực
+sự; tính bằng monotonic stack O(n). Xử lý theo chiều cao tăng dần, giữ mảng childmax[].
+Khi tính xong dp[i] = childmax[i] + 1, ta "đẩy" giá trị dp[i] lên hai cha SL[i] và SR[i]
+bằng phép max. Lý do đúng: các cực đại của đoạn lượn tới được của một núi X chính là
+những núi nhận X làm SL hoặc SR; và mỗi núi trong đoạn đó bị một cực đại nào đó "thống
+trị" (dp của cực đại >= dp của nó), nên childmax[X] tích lũy đúng max{dp[j]} trên toàn
+bộ đoạn lượn tới được của X. Mỗi núi chỉ đẩy lên tối đa 2 cha nên tổng chi phí là O(n).
+
+## Độ phức tạp
+Thời gian: O(n log n) (chỉ do bước sort theo chiều cao; monotonic stack và vòng DP đều
+O(n)). Bộ nhớ: O(n).

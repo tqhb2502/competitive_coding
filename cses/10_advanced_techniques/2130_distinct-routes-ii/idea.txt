@@ -1,0 +1,56 @@
+Distinct Routes II - CSES 2130
+https://cses.fi/problemset/task/2130
+
+Tags: dijkstra, min-cost-max-flow
+
+## Đề bài
+Cho đồ thị CÓ HƯỚNG với n phòng và m teleporter (cạnh có hướng từ a đến b). Mỗi
+teleporter chỉ được dùng TỐI ĐA MỘT LẦN trong toàn bộ trò chơi, và mỗi lần dùng
+phải trả 1 coin. Ta phải đi từ phòng 1 đến phòng n đúng k lần (k ngày). Vì mỗi
+cạnh dùng nhiều nhất một lần nên k đường đi này là EDGE-DISJOINT (không chung
+cạnh). Hãy tìm tổng số coin (tổng số teleporter sử dụng) nhỏ nhất, rồi in ra số
+coin đó và k đường đi. Nếu không thể tạo đủ k đường thì in -1.
+
+Ràng buộc: 2 <= n <= 500, 1 <= m <= 1000, 1 <= k <= n-1.
+
+## Ý tưởng
+Mô hình Min-Cost Max-Flow (MCMF). Xây dựng mạng luồng (flow network):
+  - Mỗi teleporter a->b trở thành một cạnh có capacity = 1, cost = 1. Capacity 1
+    đảm bảo mỗi teleporter dùng tối đa một lần; cost 1 đếm số coin.
+  - source = phòng 1, sink = phòng n.
+Ta cần một luồng (flow) có GIÁ TRỊ ĐÚNG BẰNG k với CHI PHÍ NHỎ NHẤT. Chi phí của
+luồng chính là tổng số cạnh được dùng = tổng số coin. Nếu giá trị luồng cực đại
+(max-flow) < k thì không thể tạo đủ k đường đi -> đáp án -1.
+
+Thuật toán Successive Shortest Paths (SSP). Lặp lại: mỗi lần tìm đường tăng luồng
+(augmenting path) NGẮN NHẤT theo cost trên đồ thị thặng dư (residual), rồi bơm 1
+đơn vị luồng. Vì tất cả cost ban đầu không âm nên dùng Dijkstra kết hợp Johnson
+potentials h[] để giữ reduced cost không âm, mỗi lần Dijkstra chạy O(E log V).
+  - reduced cost của cạnh u->v: c(u,v) + h[u] - h[v] >= 0.
+  - sau mỗi Dijkstra: h[i] += dist[i] (với các đỉnh tới được). Khi đó h[t] chính
+    là chi phí thực sự của đường ngắn nhất, cộng dồn vào tổng cost.
+Vì mỗi capacity = 1, mỗi lần tăng đúng 1 đơn vị luồng, nên tối đa có k lần lặp.
+
+Phân rã luồng thành k đường đi (path decomposition). Vì mỗi cost > 0, luồng tối
+ưu KHÔNG chứa chu trình (một chu trình sẽ có tổng cost dương, bỏ đi sẽ giảm cost
+mà vẫn giữ giá trị luồng -> mâu thuẫn tối ưu). Do đó luồng là một DAG-flow phân
+rã chính xác thành k đường đi đơn giản. Cách cài đặt: cạnh gốc thứ i (lưu tại chỉ
+số 2*i trong mảng edges) được DÙNG khi capacity forward còn lại = 0. Với mỗi đỉnh,
+thu tập các đỉnh kề ra từ các cạnh đã dùng: nxt[u]. Sau đó lặp k lần: bắt đầu từ
+phòng 1, mỗi bước lấy một cạnh ra chưa dùng (dùng con trỏ ptr[u]) đi tiếp cho đến
+khi tới phòng n.
+
+Tính đúng: tại mỗi đỉnh trong (khác 1 và n), số cạnh vào đã dùng = số cạnh ra đã
+dùng (bảo toàn luồng). Mỗi lần "đến" một đỉnh sẽ tiêu thụ đúng một cạnh ra, nên
+luôn còn cạnh ra để đi tiếp, và không bao giờ vượt quá số cạnh. Phòng 1 có đúng k
+cạnh ra (bắt đầu k đường), phòng n có đúng k cạnh vào (kết thúc k đường).
+
+In kết quả:
+  - Dòng 1: tổng số coin (= cost = tổng số teleporter đã dùng).
+  - Với mỗi trong k đường đi: một dòng ghi SỐ PHÒNG trên đường, rồi một dòng liệt
+    kê các phòng theo thứ tự từ 1 đến n.
+
+## Độ phức tạp
+  - Thời gian: O(k * E log V), với E = O(m), V = n. Rất đủ nhanh cho n <= 500,
+    m <= 1000, k <= n-1 (~ 500 * 2000 * log(500)).
+  - Bộ nhớ: O(n + m) cho đồ thị và các mảng phụ trợ.

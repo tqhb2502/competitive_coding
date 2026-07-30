@@ -1,0 +1,57 @@
+Palindrome Queries - CSES 2420
+https://cses.fi/problemset/task/2420
+
+Tags: fenwick, string-hashing
+
+## Đề bài
+Cho một xâu độ dài n và m thao tác. Có hai loại thao tác:
+  - Loại 1 "1 k x": đổi ký tự ở vị trí k thành x (cập nhật một điểm).
+  - Loại 2 "2 a b": kiểm tra xem đoạn con [a, b] có phải là palindrome hay không,
+    in ra "YES" hoặc "NO".
+
+## Ý tưởng
+Dùng polynomial hashing kết hợp với Fenwick tree (Binary Indexed Tree) để vừa hỗ
+trợ cập nhật một điểm, vừa lấy hash của một đoạn trong O(log n).
+
+Với cơ số p và modulo M, ta duy trì HAI cây Fenwick:
+  - Cây "forward" F lưu tại vị trí i giá trị val[i] * p^(i-1).
+  - Cây "backward" B lưu tại vị trí i giá trị val[i] * p^(n-i).
+(val[i] = giá trị 1..26 của ký tự, cộng thêm offset để 'a' không bằng 0.)
+
+Gọi Fsum(a,b), Bsum(a,b) là tổng đoạn [a,b] lấy từ hai cây. Khi đó:
+  - Hash đọc XUÔI của [a,b]  = Fsum(a,b) / p^(a-1)
+  - Hash đọc NGƯỢC của [a,b] = Bsum(a,b) / p^(n-b)
+Đoạn là palindrome khi hai hash này bằng nhau. Để tránh nghịch đảo modular, ta
+nhân chéo và so sánh:
+        Fsum(a,b) * p^(n-b)  ==  Bsum(a,b) * p^(a-1)   (mod M)
+
+Cập nhật loại 1: chỉ cần cộng delta = (val_mới - val_cũ) vào cả hai cây tại vị
+trí k (nhân với lũy thừa p tương ứng), mất O(log n).
+
+Vì sao đúng: nếu đoạn thật sự là palindrome thì đẳng thức hash luôn đúng (điều
+kiện cần). Chiều ngược lại chỉ đúng theo xác suất: hai xâu khác nhau có cùng hash
+với xác suất rất nhỏ. Để chống các test anti-hash của CSES, ta dùng DOUBLE HASHING
+với hai modulo khác nhau (1e9+7 và 998244353) và hai cơ số NGẪU NHIÊN chọn lúc
+chạy. Đối thủ không biết cơ số ngẫu nhiên nên khó dựng va chạm có chủ đích.
+Lời giải vẫn mang xác suất: cận va chạm của polynomial hash còn phụ thuộc vào
+độ dài đa thức và số truy vấn, không chỉ vào tích hai modulo, nhưng double
+hashing với hai cơ số độc lập khiến xác suất sai trong giới hạn bài rất nhỏ.
+
+Cài đặt dùng bốn đối tượng Fenwick độc lập: forward/backward cho từng modulo.
+Mỗi cập nhật gọi `add` trên cả bốn cây; mỗi truy vấn lấy bốn tổng đoạn rồi so
+sánh hai cặp hash đã chuẩn hóa bằng phép nhân chéo.
+
+Hai lời giải khác nhau ở khâu dựng cây và I/O:
+  - solution.cpp: dựng bốn cây bằng n lần cập nhật điểm (O(n log n)) và đọc dữ
+    liệu vào tuần tự bằng std::cin, nên bộ nhớ chỉ O(n).
+  - solution.py: đọc TOÀN BỘ input một lần rồi tách token (bộ nhớ O(n + m)); dựng
+    bốn cây Fenwick trong O(n) bằng cách lan giá trị lên nút cha (j = i + (i&-i)),
+    và khi lấy tổng tiền tố thì gộp cả bốn cây trong cùng một vòng lặp, hoãn lấy
+    modulo để giảm số phép chia dư.
+
+## Độ phức tạp
+Mỗi thao tác (cập nhật hoặc truy vấn) tốn O(log n).
+  - solution.cpp: khởi tạo bằng n lần cập nhật điểm trên bốn cây, tốn O(n log n);
+    tổng thời gian O((n + m) log n), bộ nhớ O(n).
+  - solution.py: khởi tạo bốn cây trong O(n); tổng thời gian O(n + m log n), bộ
+    nhớ O(n + m) do đọc toàn bộ input một lần.

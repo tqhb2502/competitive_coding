@@ -1,0 +1,32 @@
+Same Sum Subsets - CSES 3425
+https://cses.fi/problemset/task/3425
+
+Tags: binary-search, counting, meet-in-the-middle, sorted-array, two-pointers
+
+## Đề bài
+Cho n số nguyên dương (n <= 40, tổng các số <= 2^n - 2). Hãy dựng hai tập con
+rời nhau, không rỗng và có cùng tổng. Nếu không tồn tại thì in "IMPOSSIBLE".
+Thực tế với ràng buộc trên đáp án luôn tồn tại.
+
+## Ý tưởng
+Có 2^n - 1 tập con không rỗng, nhưng tổng của chúng chỉ nhận nhiều nhất
+2^n - 2 giá trị khác nhau (nằm trong đoạn [1, tổng]). Theo nguyên lý Dirichlet,
+tồn tại hai tập con khác nhau có cùng tổng. Bỏ đi phần giao của chúng ở cả hai
+phía thì tổng vẫn bằng nhau và hai phần còn lại rời nhau; vì các số đều dương
+nên cả hai phần còn lại đều không rỗng. Vậy đáp án luôn tồn tại.
+
+Dùng kỹ thuật meet-in-the-middle: chia mảng thành hai nửa, sinh và sắp xếp mọi
+cặp (tổng, mask) của từng nửa. Với ngưỡng v, đếm C(v) là số tập con không rỗng
+có tổng <= v bằng hai con trỏ trên hai danh sách tổng, mất O(2^(n/2)).
+
+Đặt vị từ P(v) = [C(v) > v]. Ta có P(0) = false và P(2^n - 2) = true, nên dùng
+tìm kiếm nhị phân giữ bất biến hai đầu false/true (P không cần đơn điệu). Khi
+hai đầu thành hai số liên tiếp l, r thì số tập con có tổng đúng bằng r là
+C(r) - C(l) > r - l = 1, tức có ít nhất hai tập con cùng tổng r.
+
+Cuối cùng dùng hai con trỏ lần nữa để duyệt các cặp (nửa trái, nửa phải) có tổng
+bằng r, lấy hai tập con khác nhau. Xóa các bit chung của hai mask rồi in giá trị
+của hai phần còn lại.
+
+## Độ phức tạp
+Thời gian O(n * 2^(n/2)), bộ nhớ O(2^(n/2)).

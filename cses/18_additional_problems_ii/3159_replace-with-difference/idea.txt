@@ -1,0 +1,33 @@
+Replace with Difference - CSES 3159
+https://cses.fi/problemset/task/3159
+
+Tags: dynamic-bitset, knapsack, subset-sum-trace
+
+## Đề bài
+Cho một multiset gồm n số nguyên. Mỗi thao tác chọn hai giá trị a, b trong
+multiset, xóa chúng và thêm vào |a - b|. Sau đúng n - 1 thao tác chỉ còn lại
+một phần tử; hãy dựng dãy thao tác sao cho phần tử còn lại bằng 0, hoặc in -1
+nếu không thể. Ràng buộc: 2 <= n <= 1000 và 1 <= x_i <= 1000.
+
+## Ý tưởng
+Kết quả cuối của một cây các phép hiệu luôn biểu diễn được dưới dạng trị tuyệt
+đối của một tổng có dấu +/- x_i. Vì vậy muốn thu được 0, các số ban đầu phải
+chia được thành hai nhóm có tổng bằng nhau; điều kiện này cũng là đủ. Do đó nếu
+tổng lẻ thì lập tức in -1.
+
+Tìm một tập con có tổng đúng bằng nửa tổng (subset-sum) bằng bitset động. Mỗi
+lần dịch bitset đi x_i, với những tổng lần đầu đạt tới ta lưu lại phần tử vừa
+thêm cùng tổng trước đó để truy vết. Cài đặt theo từng từ 64 bit nên chi phí là
+O(n*S/64), với S là tổng cần đạt.
+
+Sau khi có hai nhóm tổng bằng nhau, liên tục lấy a ở nhóm A và b ở nhóm B:
+- in thao tác (a, b);
+- nếu a > b, đưa a - b trở lại A; nếu b > a, đưa b - a trở lại B;
+- nếu a = b, kết quả là một số 0 và được để riêng.
+Vì các x_i đều dương nên mọi giá trị trong hai nhóm luôn dương và tổng hai nhóm
+luôn bằng nhau, do đó cả hai cùng cạn đồng thời. Cuối cùng ghép các số 0 sinh ra
+bằng những thao tác (0, 0) cho đến khi chỉ còn duy nhất một số 0. Tổng số thao
+tác đúng bằng n - 1 và lời giải in ra là hợp lệ.
+
+## Độ phức tạp
+O(n*S/64 + S) thời gian, O(S + n) bộ nhớ, với S <= 5*10^5.

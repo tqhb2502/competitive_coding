@@ -1,0 +1,24 @@
+Bouncing Ball Steps - CSES 3215
+https://cses.fi/problemset/task/3215
+
+Tags: inclusion-exclusion, integer-math
+
+## Đề bài
+Một quả bóng bắt đầu tại góc trên bên trái (1,1) của bảng n x m, ban đầu đi
+chéo ra xa góc đó, mỗi bước di chuyển một ô và đổi hướng mỗi khi chạm biên.
+Với mỗi truy vấn (n, m, k), in ra hàng, cột của quả bóng sau k bước và số lần
+nó đổi hướng.
+
+## Ý tưởng
+Xét độc lập từng tọa độ. Với một chiều có độ dài d, đặt p = d - 1; khi trải
+phẳng các lần phản xạ, tọa độ đi theo chu kỳ 0,1,...,p,...,1 với chu kỳ 2p.
+Lấy r = k mod (2p) thì khoảng cách tới biên trên/trái bằng min(r, 2p - r), nên
+tọa độ là 1 + min(r, 2p - r). Áp dụng cho cả hàng (d = n) và cột (d = m).
+
+Quả bóng đổi hướng tại mỗi thời điểm dương chia hết cho n - 1 (chạm biên
+trên/dưới) hoặc m - 1 (chạm biên trái/phải). Dùng nguyên lý bù trừ, số lần đổi
+hướng bằng floor(k/(n-1)) + floor(k/(m-1)) - floor(k/lcm(n-1, m-1)); phần trừ
+loại bỏ lần đếm lặp khi bóng chạm đồng thời hai biên tại các bội chung.
+
+## Độ phức tạp
+O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

@@ -1,0 +1,29 @@
+Grid Puzzle II - CSES 2131
+https://cses.fi/problemset/task/2131
+
+Tags: dijkstra, min-cost-max-flow
+
+## Đề bài
+Cho lưới n x n, ô (i, j) chứa c_ij đồng xu. Phải chọn đúng a_i ô ở hàng i và
+đúng b_j ô ở cột j sao cho tổng số xu thu được là lớn nhất. In ra số xu tối đa
+cùng bảng đánh dấu ('X' là ô được chọn, '.' là ô không chọn); nếu không thể thỏa
+mọi ràng buộc thì in -1. Ràng buộc: n <= 50, c_ij <= 1000.
+
+## Ý tưởng
+Mô hình hóa bằng luồng chi phí nhỏ nhất (min-cost max-flow) trên mạng lưỡng phân
+hàng - cột:
+- nguồn -> hàng i, sức chứa a_i, chi phí 0;
+- hàng i -> cột j, sức chứa 1, chi phí 1000 - c_ij;
+- cột j -> đích, sức chứa b_j, chi phí 0.
+Điều kiện cần: tổng a_i phải bằng tổng b_j (nếu khác thì in -1). Mỗi ô được chọn
+đóng góp chi phí 1000 - c_ij, nên với đúng F = tổng a_i ô được đẩy luồng, tổng
+chi phí bằng 1000*F trừ tổng số xu; do đó bảng có chi phí nhỏ nhất chính là bảng
+có số xu lớn nhất. Mọi chi phí thuận đều không âm nên chạy thuật toán đường tăng
+ngắn nhất (successive shortest augmenting path) với thế đỉnh, dùng Dijkstra trên
+reduced cost. Nếu không đẩy đủ F đơn vị luồng thì bảng thỏa yêu cầu không tồn tại
+và ta in -1. Ngược lại, đáp án là 1000*F - minCost, và những cạnh ô đã bão hòa
+(sức chứa còn lại bằng 0) cho biết vị trí đánh dấu 'X'.
+
+## Độ phức tạp
+Mạng có O(n) đỉnh, O(n^2) cạnh và F <= n^2. Độ phức tạp thời gian
+O(F * n^2 * log n), bộ nhớ O(n^2).

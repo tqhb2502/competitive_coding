@@ -1,0 +1,66 @@
+Substring Order II - CSES 2109
+https://cses.fi/problemset/task/2109
+
+Tags: suffix-automaton
+
+## Đề bài
+Cho một xâu s độ dài n (n ≤ 1e5) gồm các chữ thường a..z và một số k
+(1 ≤ k ≤ n(n+1)/2). Xét TẤT CẢ các substring của s, ĐẾM CẢ LẶP LẠI: mỗi lần một
+substring xuất hiện ở một vị trí khác nhau thì được tính là một phần tử riêng,
+nên tổng cộng có đúng n(n+1)/2 phần tử. Hãy sắp xếp toàn bộ các phần tử này theo
+thứ tự từ điển và in ra phần tử thứ k.
+
+(Khác với Substring Order I: bài I chỉ đếm các substring PHÂN BIỆT, còn bài II
+đếm theo số lần xuất hiện.)
+
+## Ý tưởng
+Dùng Suffix Automaton (SAM). SAM của s có ≤ 2n state và O(n) transition. Mỗi
+substring của s ứng với đúng một đường đi (mỗi transition thêm một ký tự) xuất
+phát từ state khởi đầu. State đích của đường đi thuộc một lớp tương đương endpos;
+mọi substring trong cùng một state có CÙNG số lần xuất hiện trong s, bằng kích
+thước tập endpos.
+
+1) cnt[v] = số lần xuất hiện (endpos size) của các substring thuộc state v.
+   Khi mở rộng SAM, các state "gốc" (không phải clone) được gán cnt = 1, còn
+   clone gán cnt = 0. Sau đó cộng ngược theo suffix link: duyệt các state theo
+   length giảm dần và cộng cnt[link[v]] += cnt[v]. Kết quả cnt[v] chính là
+   endpos size.
+
+2) g[v] = tổng số phần tử (substring, có đếm lặp) tạo được khi đi TIẾP từ state
+   v, KHÔNG kể chuỗi ứng với chính v. Với mỗi transition v --c--> u:
+        đóng góp = cnt[u]  (chuỗi "đường đi tới v" + c, xuất hiện cnt[u] lần)
+                 + g[u]    (mọi chuỗi dài hơn, mở rộng thêm từ u)
+   nên g[v] = Σ_{v->u} (cnt[u] + g[u]).
+   Vì mọi transition luôn đi tới state có length LỚN HƠN, ta tính g theo thứ tự
+   length giảm dần. Kiểm tra: g[state khởi đầu] = n(n+1)/2 (tổng số substring).
+
+3) Tìm substring thứ k: bắt đầu ở state khởi đầu với chuỗi kết quả rỗng. Ở mỗi
+   state, duyệt các transition theo thứ tự chữ cái a..z. Với cạnh --c--> u:
+      - Chuỗi "hiện tại + c" xuất hiện cnt[u] lần và đứng TRƯỚC mọi chuỗi dài hơn
+        (vì nó là tiền tố của chúng). Nếu k ≤ cnt[u] thì đáp án = "hiện tại + c".
+      - Ngược lại k -= cnt[u]. Nếu k ≤ g[u] thì nối c vào kết quả, đi xuống u, lặp.
+      - Ngược lại k -= g[u] rồi thử ký tự tiếp theo.
+   Do k ≤ tổng số substring nên quá trình luôn kết thúc với một đáp án.
+
+Vì sao đúng: thứ tự từ điển của các substring tương ứng đúng với thứ tự duyệt DFS
+các transition theo chữ cái tăng dần. Tại một state, đi theo cạnh 'a' cho tất cả
+chuỗi bắt đầu bằng 'a' (nhỏ hơn) trước cạnh 'b', v.v. Với một cạnh, chuỗi ngắn
+"hiện tại + c" là tiền tố của mọi chuỗi mở rộng nên xếp trước và lặp đúng cnt[u]
+lần. Vì mỗi substring phân biệt ứng với đúng một đường đi và mọi chuỗi trong
+state u có endpos size = cnt[u], cách cộng cnt[u] + g[u] đếm chính xác số phần tử
+(có lặp) đi qua mỗi cạnh, không trùng, không sót.
+
+## Độ phức tạp
+Cả hai lời giải đều xây SAM (≤ 2n state, O(n) transition), tính cnt rồi tính g,
+nên đều là O(n) (nhân với hằng số bảng chữ cái 26). Khác biệt chỉ ở cấu trúc lưu
+transition và cách đọc input:
+
+- solution.cpp: mỗi state lưu transition bằng `array<int,26>`. Xây SAM O(n) khấu
+  hao (tách clone copy mảng 26 phần tử). Tính cnt và g duyệt đủ 26 ô mỗi state:
+  O(số state * 26) = O(26n). Bước đi tìm đáp án: O(|đáp án| * 26). Bộ nhớ
+  O(26n) = O(n).
+- solution.py: đọc toàn bộ input một lần (sys.stdin.buffer.read) và xử lý s dưới
+  dạng bytes; transition lưu bằng dict (khóa là giá trị byte của ký tự). Xây SAM,
+  tính cnt và g đều O(n) trên TỔNG số transition thực có (không nhân 26 khi cộng
+  g vì chỉ duyệt các cạnh thật). Bước tìm đáp án duyệt 'a'..'z' (97..123) ở mỗi
+  state: O(|đáp án| * 26). Bộ nhớ O(n).

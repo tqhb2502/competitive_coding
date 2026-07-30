@@ -1,0 +1,52 @@
+Increasing Subsequence II - CSES 1748
+https://cses.fi/problemset/task/1748
+
+Tags: coordinate-compression, fenwick, sorting
+
+## Đề bài
+Cho một mảng gồm n số nguyên. Hãy đếm số lượng dãy con tăng ngặt (strictly
+increasing subsequence) không rỗng của mảng. Hai dãy con ở các vị trí khác nhau
+được tính riêng, ngay cả khi giá trị của chúng trùng nhau. Kết quả in ra lấy
+modulo 1000000007.
+
+## Ý tưởng
+Dùng quy hoạch động theo phần tử kết thúc kết hợp Fenwick tree (BIT) và nén tọa
+độ (coordinate compression).
+
+- Trạng thái: dp[i] = số dãy con tăng ngặt kết thúc đúng tại vị trí i (phần tử
+  cuối cùng là a[i]).
+- Công thức chuyển: dp[i] = 1 + tổng dp[j] với mọi j < i mà a[j] < a[i].
+    + Số 1 ứng với dãy con chỉ gồm riêng phần tử a[i].
+    + Mỗi dãy con tăng kết thúc tại j (a[j] < a[i]) đều nối thêm a[i] vào cuối
+      để tạo một dãy con tăng mới kết thúc tại i.
+- Cơ sở: mỗi phần tử tự nó là một dãy con độ dài 1, nên dp[i] luôn có ít nhất là 1.
+- Đáp án: tổng tất cả dp[i] với i từ 0 đến n-1, lấy modulo 1000000007.
+- Đúng đắn: mỗi dãy con tăng ngặt có duy nhất một phần tử cuối, nên phân hoạch
+  theo vị trí kết thúc không bỏ sót và không đếm trùng.
+
+Tối ưu để tránh O(n^2):
+- "Tổng dp[j] với a[j] < a[i]" chính là prefix sum theo giá trị, tính nhanh bằng
+  Fenwick tree. Vì a[i] tới 10^9 nên phải nén tọa độ: sắp xếp các giá trị phân
+  biệt rồi gán rank.
+- Duyệt mảng từ trái sang phải. Với phần tử giá trị v có rank r:
+    dp = 1 + query(r-1)   (tổng dp của các giá trị rank < r đã xử lý -> a[j] < a[i])
+    total += dp
+    update(r, dp)         (cộng dp vào BIT tại vị trí rank r)
+  Duyệt theo i tăng dần nên BIT chỉ chứa các j < i; truy vấn tới r-1 (không gồm r)
+  bảo đảm điều kiện tăng NGẶT a[j] < a[i].
+
+Hai lời giải dùng chung thuật toán trên, chỉ khác ở cách xử lý modulo trong
+Fenwick tree:
+- solution.cpp: giữ mỗi ô Fenwick luôn nằm trong [0, MOD). Trong `add`, ô hiện
+  tại và giá trị cộng vào đều nhỏ hơn MOD nên chỉ cần trừ MOD một lần nếu tổng
+  đạt MOD; `prefix_sum` cộng dồn các ô bằng `long long` rồi lấy modulo trước khi
+  trả về. Nhờ vậy mọi ô Fenwick luôn nằm gọn trong kiểu `int`.
+- solution.py: KHÔNG rút gọn modulo trong vòng update. Mỗi ô chỉ bị cộng tối đa n
+  lần với giá trị dp đã rút gọn (< MOD), nên tối đa khoảng n*MOD ~ 2e14, vẫn gọn
+  trong một từ máy 64-bit. Modulo chỉ được lấy khi tính dp = (s + 1) % MOD và ở
+  tổng cuối cùng total % MOD, giúp giảm hằng số thời gian.
+
+## Độ phức tạp
+- Thời gian: O(n log n) — sort để nén tọa độ, và n lần query/update trên Fenwick
+  tree, mỗi lần O(log n).
+- Bộ nhớ: O(n).

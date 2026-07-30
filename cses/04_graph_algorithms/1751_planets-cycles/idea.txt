@@ -1,0 +1,38 @@
+Planets Cycles - CSES 1751
+https://cses.fi/problemset/task/1751
+
+Tags: functional-graph
+
+## Đề bài
+- Có n hành tinh, mỗi hành tinh i có đúng một cổng dịch chuyển tới hành tinh t[i].
+- Xuất phát từ một hành tinh rồi liên tục đi theo cổng dịch chuyển cho tới khi gặp
+  lại một hành tinh đã thăm.
+- Với mỗi hành tinh i, hãy tính số bước dịch chuyển thực hiện cho tới thời điểm đó.
+
+## Ý tưởng
+- Mô hình đồ thị: vì mỗi đỉnh có out-degree đúng bằng 1 nên đây là một functional
+  graph (đồ thị hàm). Đi mãi theo cổng dịch chuyển từ một đỉnh, do số đỉnh hữu hạn
+  nên chắc chắn sẽ lặp lại một đỉnh: đường đi luôn có dạng một "đuôi" (tail) dẫn
+  vào một chu trình (cycle).
+- Nhận xét đáp án:
+  + Nếu i nằm trên chu trình độ dài L thì đáp án là L (đi đúng một vòng quay lại
+    chính đỉnh xuất phát).
+  + Nếu i nằm trên đuôi và cách đỉnh vào chu trình d bước thì đáp án là d + L: đi
+    d bước để vào chu trình rồi đi thêm L bước để gặp lại đỉnh vào chu trình.
+- Thuật toán O(n), lặp không đệ quy, dùng mảng state: 0 = chưa thăm, 1 = đang nằm
+  trong chuỗi (chain) hiện tại, 2 = đã tính xong đáp án.
+  + Duyệt lần lượt mỗi đỉnh s chưa thăm. Từ s đi theo t[], đẩy các đỉnh vào danh
+    sách chain, đánh dấu state = 1 và ghi lại vị trí order[] của đỉnh trong chain,
+    cho tới khi gặp một đỉnh biên node có state != 0.
+  + Nếu state[node] == 1: vừa phát hiện một chu trình mới. order[node] là điểm bắt
+    đầu chu trình trong chain; độ dài chu trình cyc_len = len(chain) - order[node].
+    Gán mọi đỉnh trên chu trình đáp án = cyc_len; các đỉnh đuôi phía trước gán tăng
+    dần cyc_len+1, cyc_len+2, ... khi đi ngược lại.
+  + Nếu state[node] == 2: node đã có đáp án từ trước, toàn bộ chain là đuôi dẫn vào
+    phần đã xử lý; gán đáp án tăng dần ans[node]+1, ans[node]+2, ... khi đi ngược lại.
+- Mỗi đỉnh được đưa vào chain đúng một lần và xử lý đúng một lần.
+
+## Độ phức tạp
+- Thời gian: O(n). Bộ nhớ: O(n) cho các mảng t, state, order (position), ans.
+- Với n <= 2*10^5, thuật toán O(n) lặp không đệ quy chạy thoải mái, không lo TLE
+  hay tràn stack.

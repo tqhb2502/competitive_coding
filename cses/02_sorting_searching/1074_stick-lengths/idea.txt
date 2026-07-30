@@ -1,0 +1,30 @@
+Stick Lengths - CSES 1074
+https://cses.fi/problemset/task/1074
+
+Tags: median-maintenance, sorting, ternary-search
+
+## Đề bài
+- Có n chiếc que với độ dài p_1, p_2, ..., p_n.
+- Ta cần chọn một độ dài đích t rồi biến mọi chiếc que về cùng độ dài t.
+- Chi phí để chỉnh một chiếc que có độ dài p về t là |p - t|.
+- Yêu cầu: tìm tổng chi phí nhỏ nhất, tức là cực tiểu hóa sum(|p_i - t|) theo t.
+
+## Ý tưởng
+- Hàm f(t) = sum |p_i - t| là một hàm lồi, dạng tuyến tính từng khúc theo t.
+- Giá trị t làm f(t) đạt cực tiểu chính là median (trung vị) của dãy p.
+- Trực giác: khi ta dịch t sang phải một đoạn nhỏ, tổng chi phí thay đổi bằng
+  (số que nhỏ hơn t) trừ (số que lớn hơn t). Khi hai phía cân bằng (đạt tại median)
+  thì đạo hàm đổi dấu, đó chính là điểm cực tiểu.
+- Với n lẻ median là phần tử ở giữa; với n chẵn mọi t nằm giữa hai phần tử giữa đều
+  tối ưu và cho cùng giá trị f, nên chỉ cần lấy phần tử ở vị trí n//2 sau khi sắp xếp.
+- Thuật toán: đọc n và mảng p, sắp xếp p, lấy median m = p[n//2], trả về sum(|p_i - m|).
+- Vì mọi phần tử đều so với cùng median nên tổng này chắc chắn là nhỏ nhất có thể,
+  đúng cho cả n chẵn lẫn n lẻ.
+
+## Độ phức tạp
+- Thời gian: O(n log n) do bước sắp xếp; phần tính tổng là O(n).
+- Bộ nhớ: O(n) để lưu mảng.
+- Với n <= 2*10^5 và p_i <= 10^9, tổng chi phí có thể lớn (cỡ 2*10^14) nên phải dùng
+  `long long`.
+
+Với n <= 2*10^5, một lần `sort` và một lượt cộng là đủ nhẹ.

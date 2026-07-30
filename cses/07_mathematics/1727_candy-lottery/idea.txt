@@ -1,0 +1,47 @@
+Candy Lottery - CSES 1727
+https://cses.fi/problemset/task/1727
+
+Tags: probability-expectation
+
+## Đề bài
+Có n đứa trẻ, mỗi đứa nhận độc lập một số nguyên ngẫu nhiên trong đoạn [1, k]
+theo phân phối đều (uniform). Hãy tính kỳ vọng (expected value) của giá trị lớn
+nhất trong số n số đó. Đáp án được chấp nhận nếu sai số tuyệt đối hoặc tương đối
+không quá 1e-6 (code in ra 6 chữ số thập phân).
+
+## Ý tưởng
+Gọi M là giá trị lớn nhất của n số; M nhận giá trị nguyên trong [1, k].
+
+Xét hàm phân phối tích lũy (CDF): xác suất để MỘT đứa trẻ nhận không quá m viên
+kẹo là m/k (có m giá trị 1..m trên tổng số k giá trị). Vì n đứa trẻ độc lập nên:
+    P(M <= m) = (m/k)^n
+Suy ra xác suất M đúng bằng m:
+    P(M = m) = P(M <= m) - P(M <= m-1) = (m/k)^n - ((m-1)/k)^n
+
+Kỳ vọng theo định nghĩa:
+    E[M] = sum_{m=1}^{k} m * ((m/k)^n - ((m-1)/k)^n)
+
+Dùng công thức E[X] = sum_{v>=1} P(X >= v) cho biến không âm, ta được dạng gọn
+hơn và tương đương:
+    E[M] = sum_{v=1}^{k} P(M >= v) = sum_{v=1}^{k} (1 - ((v-1)/k)^n)
+         = k - sum_{value=1}^{k-1} (value/k)^n
+Code cài đặt theo công thức cuối cùng này.
+
+Để tránh sai số dấu phẩy động, code tính bằng số học chính xác trên số nguyên
+lớn (lớp BigUnsigned, biểu diễn theo cơ số 1e9):
+    - Mẫu số  denominator = k^n
+    - Tử số   numerator   = k^(n+1) - sum_{value=1}^{k-1} value^n
+    - Khi đó  E[M] = numerator / denominator (đúng bằng k - sum (value/k)^n).
+Kết quả được in với 6 chữ số thập phân, làm tròn theo kiểu half-even (banker's
+rounding) qua tìm kiếm nhị phân trên số nguyên (sai số cho phép ~1e-6).
+
+Kiểm chứng ví dụ n=2, k=3:
+    m=1: 1*((1/3)^2 - 0)        = 1/9
+    m=2: 2*((2/3)^2 - (1/3)^2)  = 6/9
+    m=3: 3*(1 - (2/3)^2)        = 15/9
+    Tổng = 22/9 = 2.444444 (khớp đáp án).
+
+## Độ phức tạp
+Thời gian O(k) lần lũy thừa số nguyên, mỗi lũy thừa là O(n) phép nhân số lớn với
+độ dài O(n log k) chữ số, đủ nhanh khi n, k <= 100 (chạy tức thời). Bộ nhớ O(n log k)
+cho các số nguyên lớn.

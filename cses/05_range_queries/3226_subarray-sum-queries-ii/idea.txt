@@ -1,0 +1,48 @@
+Subarray Sum Queries II - CSES 3226
+https://cses.fi/problemset/task/3226
+
+Tags: segment-tree
+
+## Đề bài
+Cho một mảng gồm n số nguyên (các vị trí đánh chỉ số từ 1). Với mỗi truy vấn
+[a, b], hãy tìm tổng đoạn con (subarray) lớn nhất nằm hoàn toàn bên trong đoạn
+[a, b]. Được phép chọn đoạn con rỗng có tổng bằng 0, nên đáp án luôn lớn hơn hoặc
+bằng 0. Mảng không bị cập nhật, chỉ có các truy vấn theo khoảng.
+
+## Ý tưởng
+Dùng iterative segment tree (dạng bottom-up). Mỗi node quản lý một đoạn và lưu 4
+giá trị:
+  - sum : tổng của cả đoạn.
+  - pre : max prefix sum (tổng tiền tố lớn nhất, được clamp về >= 0 vì cho rỗng).
+  - suf : max suffix sum (tổng hậu tố lớn nhất, >= 0).
+  - best: tổng đoạn con lớn nhất bên trong đoạn (>= 0).
+
+Phép MERGE hai node con L (trái) và R (phải) KHÔNG giao hoán, thứ tự quan trọng:
+  sum  = L.sum + R.sum
+  pre  = max(L.pre, L.sum + R.pre)
+  suf  = max(R.suf, R.sum + L.suf)
+  best = max(L.best, R.best, L.suf + R.pre)
+Đoạn con tối ưu hoặc nằm hẳn trong L, hoặc nằm hẳn trong R, hoặc bắc cầu qua điểm
+nối (bằng hậu tố tốt nhất của L cộng tiền tố tốt nhất của R). Hai giá trị pre và
+suf được cập nhật để phục vụ các lần merge ở tầng trên.
+
+Lá cây: với phần tử x, đặt p = max(x, 0) rồi gán sum = x và pre = suf = best = p.
+
+Truy vấn [a, b]: vì phép merge không giao hoán nên khi gộp kiểu iterative phải giữ
+hai bộ tích lũy riêng, một bộ gộp các mảnh phía TRÁI theo đúng thứ tự từ trái sang,
+một bộ gộp các mảnh phía PHẢI từ phải sang. Phần tử đơn vị (identity) là
+(sum=0, pre=0, suf=0, best=0); merge với identity giữ nguyên node nhờ các giá trị
+đã clamp >= 0. Cuối cùng gộp (L_acc, R_acc) và lấy trường best làm đáp án. Phép
+merge có tính kết hợp (associative) nên gộp các mảnh theo đúng thứ tự cho ra kết
+quả bằng đúng đoạn [a, b].
+
+Khác biệt cài đặt (cùng cấu trúc iterative segment tree bottom-up): bản C++ làm
+tròn kích thước cây lên lũy thừa của 2 rồi dùng mảng 2*size node, còn bản Python
+dùng thẳng size = n với 4 mảng song song (SUM, PRE, SUF, BEST) độ dài 2*n. Cách
+gộp mảnh trong truy vấn của hai bản là như nhau.
+
+## Độ phức tạp
+Build O(n) (mỗi node gộp trong O(1)). Mỗi truy vấn O(log n) lần merge, nên tổng
+thời gian O(n + q log n). Bộ nhớ: C++ O(n) cho vector node (kích thước làm tròn
+lên lũy thừa của 2, tối đa ~4n node tóm tắt đoạn); Python O(n + q) do đọc toàn bộ
+input một lần rồi cộng thêm 4 mảng song song O(n).

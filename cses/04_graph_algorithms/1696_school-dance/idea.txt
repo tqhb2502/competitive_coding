@@ -1,0 +1,39 @@
+School Dance - CSES 1696
+https://cses.fi/problemset/task/1696
+
+Tags: hopcroft-karp
+
+## Đề bài
+Có n bạn nam và m bạn nữ. Cho k cặp tiềm năng (a, b) nghĩa là nam a và nữ b sẵn
+sàng nhảy cùng nhau. Hãy ghép được càng nhiều cặp nhảy càng tốt, sao cho mỗi bạn
+chỉ thuộc tối đa một cặp. In ra số cặp lớn nhất và danh sách các cặp đã ghép.
+Đề chấp nhận mọi lời giải hợp lệ (special judge), miễn là đúng số lượng cặp cực đại.
+
+## Ý tưởng
+- Mô hình đồ thị: đây là bài toán Maximum Bipartite Matching (ghép cặp cực đại trên
+  đồ thị hai phía). Một phía là tập nam, một phía là tập nữ; mỗi cặp tiềm năng là một
+  cạnh nối giữa hai phía.
+- Dùng thuật toán Kuhn tìm đường tăng luồng (augmenting path) bằng DFS:
+  + Với mỗi bạn nam u, thử tìm một augmenting path: đi theo các cạnh tới nữ v chưa
+    được thăm trong lần DFS này. Nếu v chưa được ghép, hoặc bạn nam đang ghép với v
+    có thể được đẩy sang một nữ khác (đệ quy), thì ta ghép u với v.
+  + Mảng matchR[v] lưu bạn nam đang ghép với nữ v (hoặc rỗng); matchL[u] lưu bạn nữ
+    đang ghép với nam u. Mỗi lần DFS cho một nam mới, dùng token để đánh dấu các nữ
+    đã thăm trong lần tìm kiếm đó.
+- Tính đúng đắn: theo định lý Berge, một matching là cực đại khi và chỉ khi không còn
+  augmenting path. Thuật toán Kuhn lần lượt tăng matching cho từng nam; khi duyệt hết
+  mọi nam mà không thể tăng thêm, ta thu được matching cực đại.
+- Chi tiết cài đặt: bản C++ (solution.cpp) cài hàm augment bằng đệ quy; bản Python
+  (solution.py) mô phỏng đúng quá trình DFS đó bằng ngăn xếp tường minh (mỗi nam có
+  con trỏ it[] để duyệt tiếp danh sách kề) nhằm tránh giới hạn độ sâu đệ quy của Python.
+  Cả hai bản dùng chính chỉ số bạn nam đang xét làm token (token = boy) nên không cần
+  reset lại mảng visited giữa các lần tìm kiếm. Ô trống được đánh dấu bằng 0 trong bản
+  C++ và bằng -1 trong bản Python.
+
+## Độ phức tạp
+- Thời gian: O(V * E) trong trường hợp xấu nhất (V = n là số bạn nam, E = k là số cạnh),
+  với n <= 500 và k <= 1000 thì khoảng 5 * 10^5 phép cơ bản. Rất nhanh. Áp dụng cho cả
+  hai bản C++ và Python.
+- Bộ nhớ: O(n + m + k) cho danh sách kề và các mảng match/visited. Bản Python đọc toàn
+  bộ input một lần bằng sys.stdin.buffer.read() nên giữ thêm O(k) token trong bộ nhớ,
+  tổng vẫn là O(n + m + k).

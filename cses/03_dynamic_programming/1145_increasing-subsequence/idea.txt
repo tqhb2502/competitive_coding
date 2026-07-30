@@ -1,0 +1,31 @@
+Increasing Subsequence - CSES 1145
+https://cses.fi/problemset/task/1145
+
+Tags: binary-search, lis
+
+## Đề bài
+Cho mảng x gồm n phần tử. Hãy tìm độ dài của dãy con tăng nghiêm ngặt
+(strictly increasing subsequence) dài nhất, thường gọi tắt là LIS.
+
+## Ý tưởng
+Dùng kỹ thuật patience sorting (DP kết hợp binary search) chạy O(n log n).
+- Trạng thái: duy trì mảng tails, với tails[i] là giá trị đuôi (phần tử cuối)
+  NHỎ NHẤT có thể của một dãy con tăng nghiêm ngặt độ dài i+1, xét trên tiền tố
+  đã duyệt qua. Bất biến: mảng tails luôn tăng nghiêm ngặt, nhờ đó dùng được
+  binary search để cập nhật.
+- Chuyển trạng thái: với mỗi phần tử x, dùng `lower_bound` để tìm vị
+  trí pos đầu tiên trong tails có giá trị >= x.
+  + Nếu pos == len(tails): x lớn hơn mọi đuôi hiện có, nối x vào cuối nên LIS dài
+    thêm 1 đơn vị.
+  + Ngược lại: gán tails[pos] = x vì x là đuôi tốt hơn (nhỏ hơn hoặc bằng) cho
+    dãy con tăng độ dài pos+1, giúp mở rộng dễ hơn về sau.
+  (Chọn `lower_bound` để bảo đảm tính TĂNG NGHIÊM NGẶT: một x bằng với
+   đuôi hiện có sẽ ghi đè chứ không kéo dài dãy, tránh hai phần tử bằng nhau.)
+- Cơ sở: tails rỗng ban đầu; phần tử đầu tiên luôn tạo tails = [x0].
+- Đáp án: sau khi duyệt hết mảng, đáp án là len(tails), chính là độ dài LIS.
+
+## Độ phức tạp
+- Thời gian: O(n log n) vì mỗi phần tử tốn một binary search O(log n).
+- Bộ nhớ: O(n) cho mảng tails. Bản Python đọc toàn bộ input một lần nên lưu
+  cả mảng token O(n), còn bản C++ đọc từng giá trị nên không giữ thêm mảng đầu
+  vào. Tổng bộ nhớ vẫn O(n) cho cả hai.

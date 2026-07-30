@@ -1,0 +1,65 @@
+Fixed-Length Paths II - CSES 2081
+https://cses.fi/problemset/task/2081
+
+Tags: centroid-decomposition, prefix-sum, range-query, static-array, two-pointers
+
+## Đề bài
+Cho một cây gồm n đỉnh. Hãy đếm số đường đi (path, không phân biệt thứ tự hai
+đầu mút, giữa hai đỉnh phân biệt) có số cạnh nằm trong đoạn [k1, k2]. Giới hạn
+n lên tới 2·10^5.
+
+## Ý tưởng
+Cả hai lời giải đều dùng Centroid Decomposition. Với mỗi component hiện tại, chọn
+centroid c thì mọi đường đi hoặc đi qua c (có thể một đầu chính là c), hoặc nằm
+trọn trong một cây con sau khi bỏ c. Vì vậy tại mỗi centroid ta chỉ đếm các path
+ĐI QUA c, rồi xóa c và đệ quy trên từng component con. Cả hai bản đều cài đặt
+ITERATIVE bằng stack tường minh (không đệ quy thật, an toàn với n tới 2·10^5).
+Mỗi đỉnh làm centroid đúng một lần và tổng kích thước các component qua mọi mức
+là O(n log n).
+
+Phần dùng chung: duyệt component bằng DFS iterative để lấy danh sách đỉnh và tính
+subtree size; rồi tìm centroid (bản C++ quét mọi đỉnh, chọn đỉnh mà phần tách lớn
+nhất <= total/2; bản Python đi dần về phía cây con có kích thước > total/2). Depth
+của một đỉnh là số cạnh từ centroid tới đỉnh đó (centroid có depth 0); một path đi
+qua c gồm hai "nửa" tới hai đỉnh u, v ở HAI cây con khác nhau, độ dài = depth[u] +
+depth[v]; path có một đầu là c ứng với việc coi c là đỉnh depth 0. Hai bản khác
+nhau ở cách đếm số cặp (u, v) hợp lệ:
+
++ solution.cpp — frequency + prefix-sum, sắp cây con theo depth lớn nhất:
+  DFS iterative lấy depth mọi đỉnh trong từng cây con của c, chỉ giữ các depth <=
+  k2 vì một nửa dài hơn k2 không thể tham gia đáp án; mỗi cây con thành một branch
+  kèm depth lớn nhất. Ghép lần lượt từng branch với các branch đã xử lý trước đó:
+  - frequency[d] = số đỉnh ở các branch trước có depth d; khởi tạo frequency[0] = 1
+    để coi chính centroid là một đầu mút depth 0.
+  - Trước khi xử lý một branch, dựng prefix[d] = frequency[0] + ... + frequency[d].
+  - Đỉnh depth x cần đầu mút còn lại có depth trong [k1-x, k2-x]; giao đoạn này với
+    [0, current_max] rồi lấy số lượng bằng hiệu hai prefix sum.
+  - Đếm xong toàn bộ branch mới cộng depth của nó vào frequency, nên hai đầu mút
+    không bao giờ thuộc cùng một cây con.
+  Các branch được sắp theo depth lớn nhất tăng dần: khi branch có max = h thì chỉ
+  cần dựng prefix tới current_max <= h; mỗi branch chứa ít nhất một đường từ depth
+  1 tới h nên tổng độ dài các đoạn prefix dựng tại một centroid bị chặn bởi tổng số
+  đỉnh trong component, thay vì phải quét toàn bộ [0, k2] cho từng branch.
+
++ solution.py — inclusion-exclusion + two-pointer:
+  Gom D_all = [0] (centroid) cùng depth của MỌI đỉnh trong component (không cắt theo
+  k2). Hàm count_leq(arr, X) đếm số cặp không thứ tự có tổng <= X trên mảng đã sắp
+  bằng two-pointer O(len); count_range = count_leq(k2) - count_leq(k1-1) là số cặp
+  có tổng trong [k1, k2]. count_range trên D_all tính cả những cặp nằm cùng một cây
+  con (đường đi thật giữa hai đỉnh đó không qua c nên độ dài không phải
+  depth[u]+depth[v]); vì vậy với mỗi cây con, trừ đi count_range của riêng mảng
+  depth cây con đó. Các cặp cùng cây con bị trừ ở đây sẽ được đếm đúng tại một
+  centroid sâu hơn.
+
+Vì sao đúng: mỗi path hợp lệ được đếm đúng tại centroid cao nhất trong cây phân rã
+mà hai đầu mút nằm ở hai cây con khác nhau (hoặc một đầu chính là centroid); các
+cặp cùng cây con được để lại cho một centroid sâu hơn xử lý, không trùng, không sót.
+
+## Độ phức tạp
+- Tổng kích thước các component qua mọi mức của centroid decomposition là O(n log n).
+- solution.cpp: mỗi centroid làm việc tuyến tính theo kích thước component (thu
+  depth + dựng prefix-frequency; sắp danh sách branch không làm đổi tổng bậc). Thời
+  gian O(n log n); bộ nhớ O(n) cho adjacency và hai mảng frequency/prefix dùng lại.
+- solution.py: mỗi centroid còn sắp xếp mảng D_all và các mảng con nên thêm một
+  thừa số log. Thời gian O(n log^2 n); bộ nhớ O(n) (đọc toàn bộ input một lần cũng
+  là O(n)).

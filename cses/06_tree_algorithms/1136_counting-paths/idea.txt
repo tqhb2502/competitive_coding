@@ -1,0 +1,41 @@
+Counting Paths - CSES 1136
+https://cses.fi/problemset/task/1136
+
+Tags: binary-lifting, dsu, lca-binary-lifting, offline-lca
+
+## Đề bài
+Cho một cây gồm n đỉnh và m đường đi. Mỗi đường đi được cho bởi một cặp đỉnh
+(a, b) và tương ứng với đường đi duy nhất giữa a và b trên cây. Với mỗi đỉnh,
+hãy đếm số đường đi đi qua đỉnh đó.
+
+## Ý tưởng
+Chọn gốc là đỉnh 1. Ý tưởng chính là kỹ thuật "difference on tree" (hiệu trên
+cây, tương tự prefix-sum). Với mỗi đường đi (a, b), gọi l = LCA(a, b). Ta cần
+cộng 1 cho mọi đỉnh nằm trên đường a -> l -> b, và làm điều đó bằng phép hiệu:
+    diff[a]         += 1
+    diff[b]         += 1
+    diff[l]         -= 1
+    diff[parent[l]] -= 1   (nếu l không phải gốc)
+
+Sau khi xử lý hết m đường đi, đáp án của một đỉnh u bằng TỔNG diff trên toàn bộ
+subtree của u. Lý do: khi cộng 1 vào diff[a] và diff[b], hiệu ứng "lan lên" từ
+a và b về phía gốc thông qua phép lấy tổng subtree; hai lần trừ tại l và
+parent[l] triệt tiêu phần cộng thừa phía trên l, nên chỉ còn đúng đoạn a..l..b
+được cộng 1.
+
+Tính LCA offline bằng thuật toán Tarjan (union-find). Vì tất cả truy vấn LCA đã
+biết trước, ta duyệt cây một lần bằng DFS, dùng cấu trúc Disjoint Set Union
+(DSU) với union theo size và nén đường đi. Khi một đỉnh được "hoàn tất", với mỗi
+truy vấn liên quan tới nó mà đầu kia đã hoàn tất (black), LCA = ancestor[find(đầu
+kia)].
+
+Có thể thay Tarjan bằng binary lifting (O((n+m) log n)) hoặc Euler tour + sparse
+table (O(1) mỗi truy vấn). Cả bản C++ và bản Python đều dùng Tarjan offline với
+DSU. Mọi phép duyệt cây (BFS dựng parent/children/order, DFS Tarjan, cộng tổng
+subtree) đều ITERATIVE nên không bị tràn call stack với n ~ 2*10^5.
+
+## Độ phức tạp
+- Thời gian: O((n + m) * α(n)) ~ gần tuyến tính (cho cả hai bản).
+- Bộ nhớ: O(n + m) cho adjacency, children, DSU và danh sách truy vấn. Bản Python
+  đọc toàn bộ input một lần (sys.stdin.buffer.read) nên tốn thêm O(n + m) bộ nhớ
+  đệm cho dữ liệu vào.

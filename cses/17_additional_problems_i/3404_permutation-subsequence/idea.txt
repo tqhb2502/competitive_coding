@@ -1,0 +1,25 @@
+Permutation Subsequence - CSES 3404
+https://cses.fi/problemset/task/3404
+
+Tags: binary-search, lis
+
+## Đề bài
+Cho hai mảng đều là hoán vị (mảng thứ nhất là hoán vị của 1..n, mảng thứ hai là
+hoán vị của 1..m). Tìm độ dài và in ra một dãy con chung dài nhất (LCS). Một dãy
+con lấy các phần tử theo thứ tự từ trái sang phải, có thể bỏ cách. In độ dài ở
+dòng đầu, một dãy con hợp lệ ở dòng sau (chấp nhận mọi đáp án đúng).
+
+## Ý tưởng
+Lưu position[x] là vị trí (chỉ số) của giá trị x trong mảng thứ nhất. Duyệt mảng
+thứ hai; với mỗi giá trị x cũng xuất hiện ở mảng thứ nhất (tức x <= n), thay nó
+bằng position[x]. Vì các giá trị là duy nhất, một dãy con chung của hai mảng
+tương ứng chính xác với một dãy con tăng của dãy vị trí vừa tạo. Nhờ vậy bài toán
+LCS trở thành LIS.
+
+Dùng patience sorting O(N log N): với mỗi phần tử tìm vị trí chèn bằng lower_bound
+trên mảng đuôi, cập nhật đuôi nhỏ nhất cho mỗi độ dài, đồng thời lưu chỉ số phần
+tử tạo ra mỗi đuôi và predecessor của từng phần tử để truy vết một LIS. Cuối cùng
+đổi các vị trí ngược lại thành giá trị gốc rồi in ra.
+
+## Độ phức tạp
+O((n+m) log n) thời gian, O(n+m) bộ nhớ.

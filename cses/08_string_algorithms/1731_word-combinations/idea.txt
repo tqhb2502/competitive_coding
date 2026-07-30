@@ -1,0 +1,45 @@
+Word Combinations - CSES 1731
+https://cses.fi/problemset/task/1731
+
+Tags: trie
+
+## Đề bài
+Cho chuỗi s độ dài n và một từ điển gồm k từ. Đếm số cách ghép được chuỗi s bằng
+cách nối liên tiếp các từ trong từ điển (mỗi từ có thể dùng nhiều lần), lấy kết
+quả theo modulo 10^9+7.
+
+## Ý tưởng
+Dùng Trie kết hợp Quy hoạch động (DP).
+- Xây một Trie chứa toàn bộ các từ trong từ điển (bỏ qua các từ dài hơn n vì chúng
+  không bao giờ khớp được với đoạn con nào của s).
+- Gọi dp[i] là số cách tạo thành tiền tố s[0..i-1] (độ dài i). Khởi tạo dp[0] = 1.
+- Với mỗi vị trí bắt đầu i mà dp[i] > 0, ta đi trên Trie lần lượt theo các ký tự
+  s[i], s[i+1], ... Mỗi khi tới một nút được đánh dấu là kết thúc một từ (tức
+  s[i..j-1] là một từ trong từ điển), ta cộng dp[i] vào dp[j].
+- Đáp án là dp[n] modulo 10^9+7.
+
+Vì sao đúng: dp[j] gộp mọi cách phân tách tiền tố độ dài j sao cho "từ cuối cùng"
+là một từ trong từ điển kết thúc đúng tại vị trí j. Việc đi trên Trie đảm bảo với
+mỗi điểm bắt đầu i ta duyệt được chính xác tất cả các từ khớp bắt đầu tại i chỉ
+trong một lượt quét, không cần cắt và so sánh lại các chuỗi con. Vì mỗi cách phân
+tách của s tương ứng duy nhất với vị trí cắt cuối cùng, phép cộng dồn dp không đếm
+trùng và không bỏ sót.
+
+Chi tiết cài đặt (C++): mỗi nút Trie chứa `array<int,26>` các cạnh con và cờ
+`is_word`; chỉ số 0 vừa là nút gốc, vừa là giá trị biểu diễn "không có cạnh".
+Khi cập nhật DP, mỗi phép cộng được đưa ngay về modulo 10^9+7.
+
+Bản Python cùng thuật toán nhưng khác cài đặt: đọc toàn bộ input một lần bằng
+`sys.stdin.buffer.read().split()` (giữ dữ liệu vào trong bộ nhớ, s ở dạng bytes);
+Trie lưu trong một dict với khóa gói `(node << 7) | char` trỏ tới chỉ số nút con,
+cùng mảng `is_word` kiểu bytearray. DP không giảm modulo ngay mà cộng dồn lười rồi
+mới lấy modulo lúc đọc `dp[i]` và khi in kết quả; mỗi ô dp bị chặn trên ~5e12 (tối
+đa n phép cộng, mỗi số đã < MOD) nên không tràn.
+
+## Độ phức tạp
+- Xây Trie: O(tổng độ dài các từ) ≤ O(10^6) thời gian và bộ nhớ.
+- DP: mỗi vị trí bắt đầu i đi trên Trie tối đa n bước, nên O(n^2) = 25*10^6 bước
+  khi n = 5000.
+- Bộ nhớ: O(26 * số nút Trie + n); vì bảng chữ cái có kích thước cố định, có thể
+  viết gọn là O(số nút Trie + n). Bản Python lưu Trie bằng dict nên bộ nhớ tỉ lệ
+  với số cạnh thực tế, cộng thêm chi phí giữ toàn bộ input trong bộ nhớ.

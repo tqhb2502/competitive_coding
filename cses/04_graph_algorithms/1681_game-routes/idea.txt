@@ -1,0 +1,35 @@
+Game Routes - CSES 1681
+https://cses.fi/problemset/task/1681
+
+Tags: topological-sort
+
+## Đề bài
+Cho một trò chơi có n màn (level) và m teleporter. Mỗi teleporter là một cạnh có
+hướng a -> b, cho phép đi từ màn a sang màn b. Đồ thị bảo đảm là DAG (đồ thị có
+hướng không chu trình). Hãy đếm số cách đi khác nhau từ màn 1 đến màn n, kết quả
+lấy theo modulo 10^9 + 7.
+
+## Ý tưởng
+Mô hình hóa: mỗi màn là một đỉnh, mỗi teleporter là một cạnh có hướng. Vì đồ thị
+là DAG nên tồn tại thứ tự topo và ta có thể quy hoạch động (DP) trên thứ tự đó.
+
+Gọi dp[v] = số đường đi khác nhau từ đỉnh 1 đến đỉnh v. Khởi tạo dp[1] = 1, các
+giá trị còn lại bằng 0. Duyệt các đỉnh theo thứ tự topo; với mỗi cạnh u -> v thì
+cộng dồn dp[v] = (dp[v] + dp[u]) % MOD. Đáp án cuối cùng là dp[n].
+
+Ở đây dùng Kahn's algorithm (topo sort bằng BFS) với mảng in-degree và một
+hàng đợi (`std::queue` trong C++, `collections.deque` trong Python):
+- Tính in-degree cho mọi đỉnh, đưa mọi đỉnh có in-degree = 0 vào hàng đợi.
+- Lần lượt lấy đỉnh u ra: với mỗi cạnh u -> v cộng dp[u] vào dp[v], đồng thời
+  giảm in-degree[v]; khi in-degree[v] về 0 thì đưa v vào hàng đợi.
+Cách làm này hoàn toàn dùng vòng lặp (iterative) nên không lo tràn stack hay lỗi
+đệ quy khi n, m lớn.
+
+Vì sao đúng: trong thứ tự topo, khi xử lý đỉnh u thì mọi đường đi từ 1 tới u đã
+được đếm đầy đủ (mọi đỉnh trước u trên đường đi đều đã xử lý xong), nên dp[u] đã
+hoàn chỉnh và an toàn cộng sang các đỉnh kế tiếp. Vì đồ thị là DAG nên mỗi đường
+đi được đếm đúng một lần theo đỉnh đứng ngay trước v.
+
+## Độ phức tạp
+- Thời gian: O(n + m) vì mỗi đỉnh và mỗi cạnh chỉ được duyệt đúng một lần.
+- Bộ nhớ: O(n + m) cho danh sách kề (adjacency list), mảng in-degree và mảng dp.

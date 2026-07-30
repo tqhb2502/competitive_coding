@@ -1,0 +1,47 @@
+Finding Patterns - CSES 2102
+https://cses.fi/problemset/task/2102
+
+Tags: aho-corasick, suffix-automaton
+
+## Đề bài
+Cho một chuỗi text độ dài n (n ≤ 1e5) và k pattern (k ≤ 5e5, tổng độ dài các
+pattern ≤ 5e5). Với mỗi pattern, in ra "YES" nếu pattern xuất hiện như một
+substring của text, ngược lại in "NO".
+
+## Ý tưởng
+Dùng Suffix Automaton (SAM) của text:
+- Xây dựng suffix automaton của text. SAM là một DFA nhỏ gọn (tối đa 2n trạng
+  thái) mà tập tất cả các đường đi bắt đầu từ trạng thái khởi đầu (state 0)
+  tương ứng CHÍNH XÁC với tập tất cả các substring khác nhau của text.
+- Do đó, một pattern P là substring của text KHI VÀ CHỈ KHI ta đọc lần lượt được
+  từng ký tự của P bằng các transition của SAM, xuất phát từ state 0. Nếu tại một
+  bước nào đó không có transition cho ký tự hiện tại thì P không phải substring
+  -> "NO"; nếu đọc hết P -> "YES".
+
+Vì sao đúng:
+- Mỗi trạng thái của SAM đại diện cho một lớp các substring có cùng tập vị trí
+  kết thúc (endpos). Đường đi từ state khởi đầu theo các nhãn transition sinh ra
+  đúng mọi substring của text và chỉ những substring đó. Vì vậy việc "chạy"
+  pattern trên automaton kiểm tra sự tồn tại một cách chắc chắn, không cần
+  hashing (tránh được anti-hash test của CSES).
+
+Xây dựng SAM (thuật toán online cổ điển):
+- Thêm từng ký tự của text. Mỗi lần thêm tạo trạng thái mới cur với len tăng 1,
+  đi ngược theo suffix link để nối transition; xử lý clone khi
+  len(p)+1 != len(q).
+- Biểu diễn transition khác nhau giữa hai bản cài đặt:
+  + solution.cpp: mỗi trạng thái là một struct State lưu transition bằng
+    `array<int,26>` cho bảng chữ cái cố định `a..z`; giá trị -1 nghĩa là cạnh
+    không tồn tại. Toàn bộ SAM giữ trong `vector<State>`.
+  + solution.py: dùng 3 mảng song song `sa_len`/`sa_link`/`sa_next` (thay vì
+    object) để tiết kiệm chi phí; transition của mỗi trạng thái lưu bằng `dict`
+    khóa theo giá trị byte của ký tự (input đọc bằng `sys.stdin.buffer`). Cả input
+    được đọc một lần bằng `sys.stdin.buffer.read().split()`.
+
+## Độ phức tạp
+- Xây SAM: O(n) trạng thái/transition (amortized), bảng chữ cái cố định (a..z),
+  số trạng thái ≤ 2n.
+- Kiểm tra tất cả pattern: O(tổng độ dài pattern) = O(5e5).
+- Bộ nhớ: solution.cpp O(26n) do mỗi trạng thái mang bảng transition cố định
+  `array<int,26>`; solution.py O(n) theo tổng số cạnh thực sự (dict) cộng thêm
+  O(tổng độ dài input) vì đọc toàn bộ input một lần vào bộ nhớ.

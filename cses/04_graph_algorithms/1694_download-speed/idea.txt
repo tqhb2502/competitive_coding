@@ -1,0 +1,36 @@
+Download Speed - CSES 1694
+https://cses.fi/problemset/task/1694
+
+Tags: dinic
+
+## Đề bài
+- Có n máy tính và m kết nối có hướng. Mỗi kết nối a -> b có dung lượng (capacity) c.
+- Máy 1 là server (source), máy n là đích (sink).
+- Cần tìm tốc độ truyền dữ liệu lớn nhất có thể từ máy 1 tới máy n.
+
+## Ý tưởng
+- Đây chính xác là bài toán Maximum Flow (luồng cực đại) trên đồ thị có hướng với
+  source = 1 và sink = n. Tốc độ tải tối đa bằng giá trị luồng cực đại (theo định lý
+  max-flow min-cut).
+- Dùng thuật toán Dinic để tìm max-flow:
+  - Mỗi kết nối a -> b với capacity c được biểu diễn bằng một cạnh thuận (capacity c)
+    và một cạnh nghịch (residual, capacity 0). Cặp cạnh lưu ở chỉ số chẵn/lẻ liên tiếp
+    nên cạnh đối của eid là eid ^ 1.
+  - Nếu có nhiều kết nối song song (kể cả hai chiều a -> b và b -> a) thì cứ thêm từng
+    cạnh riêng biệt; điều này hoàn toàn đúng đắn với residual graph.
+  - Lặp lại: dựng level graph bằng BFS từ source; nếu tới được sink thì đẩy blocking
+    flow (gồm nhiều đường tăng luồng) bằng DFS, dùng mảng iterator (nextEdge/it) để bỏ
+    qua các cạnh đã bão hòa. Lặp cho tới khi BFS không còn tới được sink.
+  - Bản C++ dùng DFS đệ quy (sendFlow); bản Python dùng DFS lặp bằng stack tường minh
+    để tránh vượt giới hạn đệ quy khi đường tăng luồng dài.
+- Tính đúng đắn: Dinic kết thúc khi không còn augmenting path trong residual graph, khi
+  đó luồng đã đạt cực đại. Vì c có thể tới 1e9 nên giá trị luồng và capacity được
+  lưu bằng `long long`.
+
+## Độ phức tạp
+- Thời gian: Dinic tổng quát O(V^2 * E). Với n <= 500 và m <= 1000 (số cạnh kể cả
+  residual khoảng 2m), chi phí rất nhỏ so với giới hạn nên chạy nhanh. C++ và Python
+  cùng độ phức tạp thời gian.
+- Bộ nhớ: O(V + E) cho danh sách kề và các mảng to[], cap[]. Riêng bản Python đọc toàn
+  bộ input một lần (sys.stdin.buffer.read().split()) nên giữ thêm O(m) token trong bộ
+  nhớ, nhưng vẫn nằm trong O(V + E).

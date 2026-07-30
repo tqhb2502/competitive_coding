@@ -1,0 +1,51 @@
+Convex Hull - CSES 2195
+https://cses.fi/problemset/task/2195
+
+Tags: convex-hull
+
+## Đề bài
+- Cho n điểm (3 <= n <= 2*10^5), tọa độ nguyên trong khoảng [-10^9, 10^9], các
+  điểm phân biệt và diện tích bao lồi dương.
+- Yêu cầu in ra số lượng k và TẤT CẢ các điểm nằm trên convex hull. Điểm quan
+  trọng: "print all points that lie on the convex hull" nghĩa là phải in cả các
+  điểm collinear nằm TRÊN CẠNH của bao lồi, không chỉ riêng các đỉnh (vertices).
+  Thứ tự in tùy ý (đề ghi rõ "You can print the points in any order").
+
+## Ý tưởng
+- Dùng Andrew's monotone chain để dựng convex hull. Sắp xếp các điểm theo (x, y).
+- Xây dựng lower hull (duyệt trái -> phải) và upper hull (duyệt phải -> trái).
+  Với mỗi điểm, ta pop đỉnh ở đỉnh stack nếu nó tạo thành góc quẹo "sai hướng".
+
+- Kỹ thuật exact-integer (vì sao đúng): ta đánh giá hướng quẹo bằng cross product
+  nguyên:
+      cross(a, b, p) = (b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)
+  cross > 0: quẹo trái (counter-clockwise); cross < 0: quẹo phải (clockwise);
+  cross = 0: ba điểm thẳng hàng (collinear).
+  Tọa độ <= 10^9 nên trị tuyệt đối của cross không quá 8*10^18, vẫn nằm trong
+  `long long`. Không dùng float nên tránh mọi sai số làm sai orientation.
+
+- Giữ lại điểm collinear trên cạnh: bản convex hull tối thiểu (chỉ lấy đỉnh) pop
+  khi cross <= 0. Để GIỮ điểm collinear trên cạnh biên, ta chỉ pop khi cross < 0
+  (góc quẹo phải thực sự). Nhờ vậy các điểm nằm ngay trên cạnh (cross == 0) không
+  bị loại.
+- Hợp của lower hull và upper hull phủ toàn bộ biên, kể cả các điểm collinear
+  trên mọi cạnh. Trước khi ghép, code bỏ điểm cuối của mỗi chain để hai đầu mút
+  chung không bị lặp.
+
+- Xử lý suy biến khác nhau giữa hai bản: solution.cpp kiểm tra riêng trường hợp
+  mọi điểm thẳng hàng (khi đó chỉ in danh sách điểm đã sắp xếp, tránh việc hai
+  monotone chain in trùng các điểm collinear) dù CSES đã bảo đảm diện tích hull
+  dương; solution.py dựa vào bảo đảm đó nên chỉ chặn riêng n <= 1.
+
+- I/O: solution.cpp tắt đồng bộ cin/cout và đọc từng điểm; solution.py đọc toàn
+  bộ input một lần bằng sys.stdin.buffer.read() (O(n) bộ nhớ) rồi tối ưu hằng số
+  (theo dõi độ dài stack bằng biến m, unpack đỉnh stack, cache pop/append cục bộ).
+
+- Tính đúng: monotone chain là thuật toán chuẩn, đã được chứng minh đúng cho
+  convex hull. Đã kiểm tra chương trình với brute-force O(n^3) (một điểm thuộc
+  biên bao lồi khi tồn tại đường thẳng tựa qua nó mà mọi điểm còn lại nằm một
+  phía) trên nhiều test ngẫu nhiên có nhiều điểm collinear -> kết quả trùng khớp.
+
+## Độ phức tạp
+- Thời gian: O(n log n) do sắp xếp; vòng lặp monotone chain amortized O(n).
+- Bộ nhớ: O(n).

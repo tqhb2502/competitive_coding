@@ -1,0 +1,34 @@
+Two Stacks Sorting - CSES 2402
+https://cses.fi/problemset/task/2402
+
+Tags: dsu, leftist-heap
+
+## Đề bài
+Cho một hoán vị của 1..n. Lần lượt đẩy từng phần tử vào một trong hai stack,
+rồi lấy các đỉnh stack ra để tạo thành dãy tăng dần 1..n. In số hiệu stack (1
+hoặc 2) của từng phần tử theo thứ tự đầu vào, hoặc IMPOSSIBLE nếu không thể.
+Ràng buộc n <= 2*10^5.
+
+## Ý tưởng
+Dùng lịch tham lam: luôn lấy số nhỏ nhất đang chờ ra ngay khi nó nằm ở đỉnh một
+stack; trì hoãn không bao giờ có lợi. Trong lịch push/pop này, mỗi giá trị v tồn
+tại trong khoảng thời gian [in[v], out[v]]. Hai giá trị bắt buộc phải nằm khác
+stack khi và chỉ khi hai khoảng của chúng giao chéo:
+
+  in[u] < in[v] < out[u] < out[v]
+
+(nếu cùng stack thì v nằm trên u nhưng u lại phải ra trước v, vô lý). Vậy bài
+toán quy về tô hai màu đồ thị giao chéo của các khoảng.
+
+Quét các khoảng theo đầu trái. Các khoảng còn hoạt động có out lớn hơn in hiện
+tại; những khoảng xung đột với khoảng mới chính là các khoảng có out nhỏ hơn out
+mới, tất cả phải cùng màu và ngược màu khoảng mới. Dùng DSU có parity để gộp
+ràng buộc cùng/khác màu. Với mỗi thành phần và mỗi parity, lưu các out đang hoạt
+động trong một leftist heap; một set toàn cục giữ out nhỏ nhất của tối đa hai lớp
+parity mỗi thành phần. Mỗi bước xóa lười các out đã kết thúc, gộp các thành phần
+có out trong miền xung đột với đỉnh mới bằng parity 1, và báo mâu thuẫn nếu cả
+hai lớp của cùng một thành phần đều bị buộc ngược màu. Cuối cùng lấy parity làm
+số stack và mô phỏng lại để xác nhận đáp án.
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n).

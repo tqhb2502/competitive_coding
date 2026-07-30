@@ -1,0 +1,35 @@
+Repetitions - CSES 1069
+https://cses.fi/problemset/task/1069
+
+Tags: frequency-counting
+
+## Đề bài
+- Cho một chuỗi DNA gồm các ký tự A, C, G, T có độ dài n (1 <= n <= 10^6).
+- Tìm độ dài của đoạn lặp dài nhất, tức là substring dài nhất chỉ gồm một
+  loại ký tự (các ký tự giống nhau đứng liên tiếp).
+
+## Ý tưởng
+- Duyệt chuỗi một lần từ trái sang phải.
+- Duy trì biến "cur" = độ dài dãy các ký tự giống nhau liên tiếp hiện tại.
+- Nếu ký tự hiện tại giống ký tự trước đó thì cur += 1, ngược lại reset cur = 1.
+- Cập nhật đáp án "best" = max(best, cur) sau mỗi bước.
+
+Tính đúng đắn:
+- Mỗi đoạn các ký tự giống nhau liên tiếp được đếm chính xác bởi biến cur
+  (tăng dần khi còn giống, reset khi đổi ký tự).
+- Vì ta lấy max qua tất cả các vị trí nên best chính là độ dài đoạn lặp dài nhất.
+
+Ghi chú cài đặt:
+- Code C++ đọc chuỗi bằng `std::cin` (đã bật fast I/O cho n tới 10^6), rồi duyệt
+  bằng vòng lặp range-based trên từng ký tự với hai biến best/current như trên.
+- Code Python dùng cách cài đặt khác nhưng cùng ý tưởng: đọc toàn bộ dữ liệu bằng
+  `sys.stdin.buffer.read().split()`, lấy token đầu, rồi dùng `itertools.groupby`
+  để gộp các ký tự giống nhau liên tiếp thành từng đoạn và lấy độ dài đoạn dài
+  nhất (groupby chạy ở tầng C nên nhanh); có xử lý dữ liệu rỗng bằng cách in "0".
+
+## Độ phức tạp
+- Thời gian: O(n) - duyệt chuỗi một lần.
+- Bộ nhớ: O(n) để lưu chuỗi đầu vào (hoặc O(1) ngoài chuỗi).
+
+Với n = 10^6, vòng lặp tuyến tính trên `std::string` nằm trong giới hạn thời
+gian; không cần cấu trúc dữ liệu phụ.

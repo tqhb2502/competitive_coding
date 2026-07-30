@@ -1,0 +1,39 @@
+Inversion Probability - CSES 1728
+https://cses.fi/problemset/task/1728
+
+Tags: probability-expectation
+
+## Đề bài
+- Có mảng n phần tử, phần tử thứ i là số nguyên được chọn ngẫu nhiên đều (uniform) trong đoạn [1, r_i].
+- Một inversion là cặp chỉ số (a, b) với a < b và x_a > x_b.
+- Cần tính kỳ vọng (expected value) của số lượng inversion.
+- Kết quả in ra là số thực; sai số tuyệt đối hoặc tương đối tối đa 1e-6 được chấp nhận (code in đúng 6 chữ số thập phân).
+
+## Ý tưởng
+- Dùng linearity of expectation (tính tuyến tính của kỳ vọng).
+- Viết số inversion thành tổng trên mọi cặp (a, b) với a < b của biến chỉ thị (indicator) [x_a > x_b].
+- Vì kỳ vọng của biến chỉ thị bằng xác suất sự kiện xảy ra, ta có:
+      E[số inversion] = tổng_{a<b} P(x_a > x_b),
+  công thức này đúng bất kể các phần tử có độc lập hay không (ở đây chúng độc lập nên càng đơn giản).
+- Tính P(x_i > x_j) cho cặp i < j với x_i đều trên [1, r_i], x_j đều trên [1, r_j], độc lập:
+      + Mẫu số là số cặp có thứ tự (u, v) với u thuộc [1, r_i], v thuộc [1, r_j], bằng r_i * r_j.
+      + Tử số là số cặp thỏa u > v, tính bằng công thức đóng (closed form):
+            đặt m = min(r_j, r_i - 1); nếu m <= 0 thì tử số bằng 0,
+            ngược lại count = m * r_i - m * (m + 1) / 2.
+      + Vậy P(x_i > x_j) = count / (r_i * r_j).
+- Kiểm chứng với ví dụ r = [5, 2, 7]:
+      (1,2): 7/10 = 0.7 ; (1,3): 10/35 ; (2,3): 1/14 ; tổng = 1.057143 (khớp đáp án mẫu).
+- Để tránh sai số của số thực, code cộng dồn các phân số một cách chính xác bằng số nguyên lớn (big integer):
+      + Chọn mẫu số chung D = L^2, với L là lcm của mọi r_i; D dựng trực tiếp từ số mũ nguyên tố lớn nhất
+        xuất hiện trong các r_i (mỗi nguyên tố lấy mũ 2 lần số mũ lớn nhất).
+      + Mỗi cặp đóng góp phần tử D / (r_i * r_j) * count vào tử số chung.
+      + Cuối cùng in tử số / D làm tròn 6 chữ số thập phân theo kiểu half-even (banker's rounding)
+        bằng cách nhân với 10^6 rồi tìm nhị phân giá trị nguyên gần nhất.
+
+## Độ phức tạp
+- Có O(n^2) cặp, mỗi cặp tính tử số trong O(1) bằng công thức đóng.
+- Với n <= 100 và r_i <= 100, số phép tính rất nhẹ.
+- Time: O(n^2) (chưa kể chi phí số nguyên lớn nhỏ). Space: O(n).
+- Đáp án là số thực, sai số tuyệt đối / tương đối ~1e-6 được chấp nhận.
+
+LƯU Ý TLE: Không có nguy cơ TLE.

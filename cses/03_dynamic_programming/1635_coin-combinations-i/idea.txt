@@ -1,0 +1,62 @@
+Coin Combinations I - CSES 1635
+https://cses.fi/problemset/task/1635
+
+Tags: coin-change
+
+## Đề bài
+Cho n loại đồng xu với mệnh giá cho trước và một tổng đích x. Mỗi loại đồng xu
+được dùng bao nhiêu lần cũng được. Hãy đếm số cách CÓ THỨ TỰ (ordered, tức là
+"compositions") để tạo ra tổng tiền đúng bằng x; ví dụ 2+3 và 3+2 được tính là
+HAI cách khác nhau. Kết quả lấy modulo 1000000007.
+
+Định dạng vào/ra:
+  - Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
+  - Dòng 2: n số nguyên là mệnh giá các đồng xu.
+  - In ra một số nguyên: số cách theo modulo 1000000007.
+Ràng buộc: 1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6.
+
+## Ý tưởng
+Quy hoạch động (DP) theo tổng tiền.
+
+Trạng thái:
+  dp[s] = số cách có thứ tự để tạo ra tổng đúng bằng s.
+
+Cơ sở (base case):
+  dp[0] = 1  (đúng một cách: không dùng đồng xu nào).
+
+Chuyển trạng thái (transition):
+  dp[s] = tổng của dp[s - c] với mọi đồng xu c thỏa c <= s.
+  Ý tưởng: cố định đồng xu ĐỨNG CUỐI trong dãy là c. Phần đầu của dãy là một cách
+  có thứ tự tạo ra tổng (s - c), tức dp[s - c]. Vì ta duyệt qua MỌI đồng xu c ở vị
+  trí cuối nên các hoán vị (permutation) được đếm tách biệt, đúng với yêu cầu "thứ
+  tự quan trọng".
+
+Đáp án:
+  dp[x] mod 1000000007.
+
+Tính đúng đắn (correctness):
+  Mỗi dãy có thứ tự tạo tổng s (với s > 0) tương ứng DUY NHẤT với cặp (đồng cuối c,
+  dãy có thứ tự tạo tổng s - c). Do đó công thức truy hồi bao phủ đủ và không trùng
+  lặp mọi dãy. Với s = 0 chỉ có dãy rỗng nên dp[0] = 1.
+
+Cả hai lời giải đều sắp xếp các đồng xu tăng dần trước khi chạy DP; nhờ đó vòng
+duyệt đồng xu có thể dừng sớm khi gặp c > s.
+
+Cài đặt C++ (solution.cpp): với mỗi tổng s, duyệt các đồng xu theo thứ tự tăng
+dần và break ngay khi coin > s. Biến `ways` được giữ trong [0, MOD) bằng cách trừ
+MOD sau mỗi phép cộng thay cho phép chia lấy dư, rồi gán dp[s] = ways.
+
+Cài đặt Python (solution.py): dùng đúng công thức truy hồi trên nhưng chia miền s
+làm hai để tăng tốc CPython:
+  - Vùng biên 1 <= s < cmax (cmax là mệnh giá lớn nhất): chưa chắc mọi đồng xu đều
+    dùng được nên vẫn duyệt kèm kiểm tra c <= s và break sớm khi c > s.
+  - Vùng nóng cmax <= s <= x: mọi đồng xu đều hợp lệ (s - c >= 0), nên sinh sẵn một
+    hàm cộng "duỗi cuộn" (unrolled) bằng exec, nhúng thẳng các mệnh giá vào biểu
+    thức dp[s] = (dp[s-c1] + dp[s-c2] + ...) % MOD để bỏ hẳn vòng lặp bên trong,
+    giúp giảm mạnh hằng số thời gian.
+
+## Độ phức tạp
+- Thời gian: O(n log n) để sắp xếp và O(n*x) cho DP ở cận xấu nhất; đúng cho cả
+  hai lời giải. Python chỉ tối ưu hằng số (duỗi cuộn vòng trong) chứ không thay đổi
+  độ phức tạp tiệm cận.
+- Bộ nhớ: O(n+x) cho mảng đồng xu và mảng DP.

@@ -1,0 +1,42 @@
+String Matching - CSES 1753
+https://cses.fi/problemset/task/1753
+
+Tags: kmp, string-hashing, z-function
+
+## Đề bài
+Cho chuỗi văn bản (text) t độ dài n và chuỗi mẫu (pattern) p độ dài m.
+Hãy đếm số lần chuỗi mẫu p xuất hiện trong chuỗi văn bản t, kể cả các lần
+xuất hiện chồng lấn (overlapping).
+
+## Ý tưởng
+Dùng thuật toán KMP (Knuth-Morris-Pratt). KMP chạy tuyến tính O(n + m) và
+mang tính tất định (deterministic), nên không bị các test chống hashing
+(anti-hash) của CSES đánh bại như phương pháp polynomial hashing.
+
+- Bước 1 — tính failure function (mảng prefix function) của pattern p:
+  pi[i] = độ dài lớn nhất của biên (border) — tức tiền tố đồng thời là hậu tố —
+  của đoạn p[0..i], không tính chính đoạn đó. Tính được trong O(m).
+- Bước 2 — quét text t: duy trì biến k là độ dài phần pattern đang khớp hiện
+  tại. Với mỗi ký tự t[i], nếu không khớp thì lùi k về pi[k-1] (dùng failure
+  function) cho tới khi khớp hoặc k = 0; nếu khớp thì tăng k. Khi k == m nghĩa
+  là tìm thấy một lần xuất hiện đầy đủ của pattern → tăng bộ đếm answer, rồi
+  lùi k = pi[k-1] để tiếp tục tìm các lần xuất hiện chồng lấn.
+
+Chi tiết cài đặt (I/O) — cả hai bản dùng cùng thuật toán KMP:
+- Bản C++ đọc text và pattern bằng std::cin >> (kèm sync_with_stdio(false) và
+  cin.tie(nullptr)) để tăng tốc, rồi quét toàn bộ text.
+- Bản Python đọc toàn bộ stdin một lần bằng sys.stdin.buffer.read().split() và
+  xử lý text/pattern trực tiếp ở dạng bytes cho nhanh; có thêm nhánh biên trả về
+  0 ngay khi input ít hơn 2 token hoặc khi m > n.
+
+Vì sao đúng:
+- Failure function bảo đảm khi gặp mismatch, ta không cần quét lại các ký tự đã
+  so khớp trong text; thay vào đó lùi con trỏ pattern về biên dài nhất còn có
+  khả năng khớp tiếp. Điều này bảo toàn bất biến "k luôn bằng chiều dài phần
+  cuối của text đang xét mà cũng là tiền tố của pattern".
+- Việc lùi k = pi[k-1] sau khi tìm thấy một lần khớp cho phép đếm cả các lần
+  xuất hiện chồng lấn (ví dụ pattern "aa" trong "aaa" xuất hiện 2 lần).
+
+## Độ phức tạp
+- Thời gian: O(n + m) — mỗi con trỏ chỉ tiến/lùi tổng cộng tuyến tính.
+- Không gian phụ: O(m) cho mảng failure function.

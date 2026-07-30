@@ -1,0 +1,38 @@
+Maximum Building II - CSES 1148
+https://cses.fi/problemset/task/1148
+
+Tags: difference-array, monotonic-stack, nearest-element, offline, prefix-sum, range-update
+
+## Đề bài
+Cho lưới n*m gồm ô trống ('.') và cây ('*'). Với mỗi kích thước h*w
+(1 <= h <= n, 1 <= w <= m), đếm số vị trí đặt được một hình chữ nhật h*w
+gồm toàn ô trống. Ràng buộc n, m <= 1000.
+
+## Ý tưởng
+Duyệt lần lượt hàng dưới của hình chữ nhật. Với mỗi hàng, histogram[c] là số ô
+trống liên tiếp đi lên tại cột c. Một đoạn cột độ rộng w có giá trị nhỏ nhất H
+tạo đúng một hình chữ nhật kết thúc ở hàng này cho mọi chiều cao 1..H.
+
+Gán mỗi đoạn duy nhất cho vị trí cực tiểu phải nhất của nó. Với cột i cao H,
+dùng stack đơn điệu tìm:
+- A: số cách kéo đầu trái tới sau phần tử nhỏ hơn gần nhất (previousSmaller);
+- B: số cách kéo đầu phải tới trước phần tử nhỏ hơn hoặc bằng gần nhất
+  (nextSmallerOrEqual).
+
+Chọn a trong [1, A], b trong [1, B] tạo độ rộng w = a + b - 1. Số cặp cho từng
+độ rộng w là một hàm tam giác:
+  w                với 1 <= w <= min(A, B),
+  min(A, B)        với min(A, B) < w <= max(A, B),
+  A + B - w        với max(A, B) < w <= A + B - 1.
+
+Cộng ba đoạn tuyến tính này vào bảng exact[H][w] bằng hai mảng hiệu (hệ số của w
+và hằng số). Sau khi xử lý mọi hàng, lấy prefix theo w để khôi phục số đoạn có
+minimum đúng bằng H. Cuối cùng lấy suffix theo H: tổng exact[H][w] với H >= h
+chính là số hình h*w.
+
+Quy tắc "trước nhỏ hơn, sau nhỏ hơn hoặc bằng" gán mỗi đoạn histogram cho đúng
+một cực tiểu, kể cả khi nhiều cột cùng chiều cao, nên mỗi hình chữ nhật trống
+được đếm đúng một lần.
+
+## Độ phức tạp
+O(n*m) thời gian và O(n*m) bộ nhớ.

@@ -1,0 +1,40 @@
+Labyrinth - CSES 1193
+https://cses.fi/problemset/task/1193
+
+Tags: bfs
+
+## Đề bài
+Cho một mê cung dạng lưới gồm n hàng và m cột. Mỗi ô hoặc là sàn có thể đi ('.'),
+tường không đi được ('#'), điểm bắt đầu 'A' hoặc điểm đích 'B'. Từ một ô ta chỉ
+được di chuyển sang một trong bốn ô kề cạnh (lên, xuống, trái, phải) nếu ô đó nằm
+trong mê cung và không phải tường. Hãy xác định xem có thể đi từ 'A' tới 'B' hay
+không; nếu có, in ra một đường đi ngắn nhất (theo số bước) dưới dạng chuỗi các
+hướng U/D/L/R.
+
+## Ý tưởng
+Mô hình hóa mê cung thành đồ thị: mỗi ô đi được là một đỉnh, mỗi cặp ô kề cạnh và
+cùng đi được nối với nhau bằng một cạnh trọng số 1. Để tiết kiệm bộ nhớ, ô (r, c)
+được đánh số phẳng thành chỉ số cur = r * m + c.
+
+Vì mọi cạnh có trọng số bằng nhau, ta dùng BFS (Breadth-First Search) xuất phát từ
+'A' để tìm đường đi ngắn nhất tới mọi ô, trong đó có 'B'. Hàng đợi được cài bằng
+`std::queue` (C++) hoặc `collections.deque` (Python). Lần đầu thăm mỗi ô, ta lưu
+lại hướng di chuyển đã dùng để tới ô đó (mã hóa U/D/L/R) vào mảng đánh dấu
+(previous_move trong C++, visited trong Python); nhờ đó vừa đánh dấu đã thăm vừa đủ
+thông tin để truy vết.
+
+Sau BFS, nếu 'B' vẫn chưa được thăm thì in "NO". Ngược lại in "YES", độ dài đường
+đi và chuỗi hướng: truy vết ngược từ 'B' về 'A' bằng cách tại mỗi ô đọc hướng đã
+lưu, thêm ký tự tương ứng rồi lùi về ô liền trước (cộng offset ngược với hướng đã
+đi), cuối cùng đảo ngược chuỗi để có thứ tự từ 'A' tới 'B'.
+
+Tính đúng đắn: BFS trên đồ thị có trọng số đều nhau luôn cho khoảng cách ngắn nhất
+theo số bước; mỗi ô chỉ được thăm đúng một lần và lưu chính xác hướng tới nó, nên
+truy vết ngược tái tạo đúng một đường đi ngắn nhất hợp lệ.
+
+## Độ phức tạp
+- Thời gian: O(n * m), vì mỗi ô được đưa vào và lấy ra khỏi hàng đợi tối đa một lần,
+  và tại mỗi ô chỉ xét 4 hướng.
+- Bộ nhớ: O(n * m) cho lưới, mảng đánh dấu/lưu hướng và (bản Python) bản đồ phẳng.
+  Bản Python đọc toàn bộ input một lần nên phần input cũng chiếm O(n * m).
+- Với n, m <= 1000 thì n * m <= 10^6, hoàn toàn nằm trong giới hạn.

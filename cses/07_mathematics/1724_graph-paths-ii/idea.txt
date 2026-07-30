@@ -1,0 +1,60 @@
+Graph Paths II - CSES 1724
+https://cses.fi/problemset/task/1724
+
+Tags: semiring-matrix
+
+## Đề bài
+Cho đồ thị có hướng gồm n node và m cạnh, mỗi cạnh mang một trọng số. Hãy tìm
+đường đi (walk) có tổng trọng số NHỎ NHẤT từ node 1 đến node n sử dụng ĐÚNG k
+cạnh. Nếu không tồn tại đường đi như vậy, in ra -1.
+
+Ràng buộc: 1 <= n <= 100, 1 <= m <= n(n-1), 1 <= k <= 1e9, 1 <= c <= 1e9.
+Không có modulo. Đáp án thật lớn nhất bằng k * max_c <= 1e9 * 1e9 = 1e18.
+
+## Ý tưởng
+Dùng matrix exponentiation trên tropical semiring (min, +) hay còn gọi là
+min-plus. Đặt M là ma trận kề n x n với:
+  M[i][j] = trọng số cạnh nhỏ nhất từ i -> j (bằng INF nếu không có cạnh).
+
+Trong tropical semiring, ta thay thế:
+  - phép "cộng" của semiring = min
+  - phép "nhân" của semiring  = cộng số học (+)
+Khi đó phép nhân ma trận min-plus được định nghĩa:
+  C[i][j] = min_l ( A[i][l] + B[l][j] ).
+
+Ý nghĩa: nếu A[i][l] là trọng số nhỏ nhất của walk i->l dùng p cạnh, và
+B[l][j] là trọng số nhỏ nhất của walk l->j dùng q cạnh, thì C[i][j] là trọng
+số nhỏ nhất của walk i->j dùng đúng p+q cạnh. Do đó:
+  ( M^k )[i][j] = trọng số nhỏ nhất của walk i->j dùng ĐÚNG k cạnh.
+
+Đáp án bằng ( M^k )[0][n-1] (chỉ số 0-based). Nếu ô này không phải khoảng cách
+thật thì không có walk hợp lệ, in ra -1 (bản C++ kiểm tra == INF, bản Python
+kiểm tra >= INF; xem phần "Xử lý INF").
+
+Tính đúng đắn: quy nạp theo số cạnh. M^1 = M đúng cho walk 1 cạnh. Giả sử M^p và
+M^q đều đúng, thì tích min-plus của chúng tính đúng trọng số nhỏ nhất của walk
+p+q cạnh vì nó lấy min trên mọi node trung gian l (chia walk thành đoạn i->l dài
+p và đoạn l->j dài q). Tính chất kết hợp (associativity) của min-plus cho phép
+dùng fast exponentiation.
+
+Tối ưu: chỉ cần HÀNG 0 của M^k. Do đó dùng fast exponentiation nhưng thay vì
+tích ma trận-ma trận ở các bit lẻ, ta nhân vào một VECTOR hàng v = e_0 (v[0]=0,
+còn lại INF): v <- v * base (O(n^2)). Chỉ các bước squaring base <- base*base
+mới tốn O(n^3). Nhờ vậy số phép nhân O(n^3) giảm còn ~log k (thay vì ~2 log k).
+
+Xử lý INF: giá trị thật tối đa là 1e18. Chọn INF = 1<<62 (~4.6e18) > 1e18. Hai
+bản xử lý INF khác nhau:
+  - Bản C++ (long long, có thể tràn 64-bit): trong cả hai hàm multiply, bỏ qua
+    mọi số hạng có A[i][l] = INF hoặc B[l][j] = INF. Nhờ vậy không cộng vào giá
+    trị vô cực và mỗi ô luôn là một khoảng cách thật (<= 1e18) hoặc đúng bằng
+    INF; kiểm tra cuối dùng == INF.
+  - Bản Python (số nguyên chính xác tùy ý, không lo tràn): matmul tính thẳng
+    min(map(add, hàng, cột)) KHÔNG lọc INF, còn vecmul chỉ bỏ qua nguồn
+    v[i] = INF. Ô "không có walk" trở thành giá trị nhiễm INF (>= INF nhưng
+    không nhất thiết đúng bằng INF); vì khoảng cách thật <= 1e18 < INF nên kiểm
+    tra cuối dùng >= INF vẫn tách đúng.
+
+## Độ phức tạp
+Mỗi phép squaring min-plus tốn O(n^3); có ~log k lần => O(n^3 * log k) thời gian,
+O(n^2) bộ nhớ. Với n=100, log k ~ 30 => ~30 phép nhân ma trận * 1e6 = ~3e7 phép
+min/cộng (cộng thêm ~30 phép vecmul O(n^2) không đáng kể).

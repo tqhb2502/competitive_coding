@@ -1,0 +1,43 @@
+Mex Grid Construction - CSES 3419
+https://cses.fi/problemset/task/3419
+
+Tags: bit-operations, constructive
+
+## Đề bài
+- Xây dựng lưới n x n. Duyệt theo thứ tự từ trái sang phải, từ trên xuống dưới,
+  mỗi ô (i, j) được điền số nguyên không âm nhỏ nhất chưa xuất hiện ở bên trái
+  cùng hàng (các ô (i, k) với k < j) và bên trên cùng cột (các ô (k, j) với
+  k < i). Đây chính là hàm mex trên tập giá trị đã có ở hàng và cột.
+
+## Ý tưởng
+- Dùng 0-indexed cho hàng i và cột j.
+- Kết quả nổi tiếng: giá trị ở ô (i, j) chính là i XOR j (phép XOR theo bit).
+- Chứng minh (quy nạp theo tính chất XOR):
+  Giả sử giá trị của mọi ô phía trước đều bằng chỉ số hàng XOR chỉ số cột.
+  Tập giá trị các ô bên trái là { i XOR k : 0 <= k < j }.
+  Tập giá trị các ô bên trên là { k XOR j : 0 <= k < i }.
+  Cần chứng tỏ mex của hợp hai tập này bằng i XOR j.
+  + i XOR j chưa xuất hiện:
+    Nếu i XOR k = i XOR j thì k = j (mâu thuẫn với k < j).
+    Nếu k XOR j = i XOR j thì k = i (mâu thuẫn với k < i).
+  + Mọi giá trị v < i XOR j đều đã xuất hiện:
+    Gọi p là bit cao nhất mà v và (i XOR j) khác nhau; tại bit p thì i XOR j
+    có bit 1 còn v có bit 0 (vì v nhỏ hơn).
+    Nếu bit p của i là 1: đặt k = i XOR (v XOR j). Khi đó i XOR k = v XOR j,
+    tức k XOR j = v (thuộc tập bên trên) và kiểm tra được k < i.
+    Trường hợp bit p của j là 1 xử lý đối xứng cho tập bên trái.
+  => mex đúng bằng i XOR j.
+- Cài đặt:
+  + C++: với mỗi ô (row, col) tính và in trực tiếp row XOR col, các giá trị
+    cách nhau bởi dấu cách, mỗi hàng một dòng; không lưu dòng hay lưới.
+  + Python: với mỗi hàng i tạo chuỗi bằng join các giá trị i XOR j (j từ 0 đến
+    n-1), gom tất cả hàng vào một danh sách rồi ghi ra một lần; thêm ký tự
+    xuống dòng cuối khi n > 0.
+
+## Độ phức tạp
+- Thời gian: O(n^2) để sinh toàn bộ lưới.
+- Bộ nhớ: C++ tính và in trực tiếp từng ô nên chỉ O(1) ngoài dữ liệu xuất;
+  Python gom toàn bộ hàng vào danh sách trước khi ghi nên tốn O(n^2) cho phần
+  văn bản xuất (đúng bằng kích thước output), không có mảng lưới 2 chiều.
+
+LƯU Ý TLE: Với n <= 100 nên chỉ có tối đa 10000 số, cực kỳ nhẹ, không có rủi ro TLE.

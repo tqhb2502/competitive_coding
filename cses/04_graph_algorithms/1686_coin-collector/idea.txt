@@ -1,0 +1,46 @@
+Coin Collector - CSES 1686
+https://cses.fi/problemset/task/1686
+
+Tags: scc
+
+## Đề bài
+Có n phòng và m đường hầm một chiều (đồ thị có hướng). Phòng thứ i chứa k_i đồng
+xu. Ta được tự do chọn phòng bắt đầu và phòng kết thúc, di chuyển theo các đường
+hầm và thu xu. Mỗi phòng đi qua chỉ được cộng xu đúng một lần. Hãy tìm số xu lớn
+nhất có thể thu được.
+
+## Ý tưởng
+- Mô hình hóa đồ thị: nếu từ phòng u đi được tới v và từ v cũng đi được về u thì
+  u, v nằm trong cùng một strongly connected component (SCC). Khi bước vào một SCC
+  ta luôn có thể đi hết mọi phòng trong SCC đó rồi thoát ra, nên thu được toàn bộ
+  xu của cả SCC.
+- Vì vậy ta gom (condense) mỗi SCC thành một đỉnh, với giá trị đỉnh bằng tổng xu
+  của các phòng trong SCC. Đồ thị sau khi condense là một DAG (không còn chu trình).
+- Thuật toán:
+  - Bước 1: Tìm SCC bằng Tarjan cài đặt dạng iterative (dùng stack tường minh để
+    tránh tràn call stack khi n tới 1e5).
+  - Bước 2: Tính comp_val[c] = tổng xu của các phòng thuộc SCC c.
+  - Bước 3: Xây danh sách kề của DAG condense: với mỗi cạnh gốc a -> b mà
+    comp[a] khác comp[b], thêm cạnh comp[a] -> comp[b].
+  - Bước 4: DP tìm đường đi có tổng lớn nhất trên DAG:
+      dp[c] = comp_val[c] + max(dp[c']) với mọi successor c' của c (0 nếu không có).
+    Đáp án = max(dp[c]) trên tất cả các SCC.
+- Tính đúng đắn: Tarjan đánh số SCC theo thứ tự topo ĐẢO NGƯỢC (một SCC được pop
+  khỏi stack khi mọi thứ nó tới được đã xong), nên "sink" nhận id nhỏ còn "source"
+  nhận id lớn. Do đó với mọi cạnh condense c -> c' luôn có c' < c. Khi duyệt c theo
+  id tăng dần, mọi successor c' đã được tính dp trước, nên công thức dp đúng mà
+  không cần topo sort riêng. Vì mỗi k_i >= 1 nên mọi SCC có giá trị dương, đáp án
+  chính là dp lớn nhất.
+
+## Độ phức tạp
+- Thời gian: O(n + m) cho Tarjan, condense và DP (cả bản C++ lẫn Python).
+- Bộ nhớ: O(n + m) cho cả hai bản, chỉ khác cách lưu đồ thị:
+  - C++: danh sách kề `vector<vector<int>>`, danh sách cạnh gốc và các mảng
+    của Tarjan/DP.
+  - Python: đọc toàn bộ input một lần rồi dựng đồ thị dạng CSR (mảng off/adj),
+    cùng các mảng Tarjan/DP và list-các-list cho DAG condense.
+- Giá trị đáp án có thể tới n * 1e9 = 1e14 nên code dùng số nguyên 64-bit
+  (`long long` trong C++; Python dùng số nguyên vô hạn nên không lo tràn).
+
+Tarjan được cài đặt lặp bằng stack tường minh, tránh tràn call stack khi đồ thị
+có đường đi rất sâu.

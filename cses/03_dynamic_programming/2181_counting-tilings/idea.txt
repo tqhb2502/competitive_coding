@@ -1,0 +1,53 @@
+Counting Tilings - CSES 2181
+https://cses.fi/problemset/task/2181
+
+Tags: broken-profile-dp
+
+## Đề bài
+Cho lưới kích thước n x m. Hãy đếm số cách lát kín toàn bộ lưới bằng các quân
+domino 1x2 và 2x1 (mỗi ô được phủ đúng một lần, không chồng lấn, không hở).
+Kết quả lấy modulo 1000000007. Ràng buộc: 1 <= n <= 10, 1 <= m <= 1000.
+
+## Ý tưởng
+Dùng profile DP (broken profile) duyệt lưới theo từng cột từ trái sang phải.
+Vì n <= 10 nên biểu diễn ranh giới giữa hai cột bằng bitmask trên n hàng, tổng
+cộng 2^n <= 1024 trạng thái.
+
+Đối xứng chuyển vị: số cách lát lưới (n x m) bằng số cách lát (m x n) vì phép
+chuyển vị là song ánh giữa hai tập cách lát (domino ngang đổi thành dọc và ngược
+lại). Do đó hoán đổi để n là chiều nhỏ hơn, giữ 2^n nhỏ nhất.
+
+- Trạng thái: dp[mask] = số cách lát hợp lệ toàn bộ các cột đã xử lý xong, với
+  mask là tập các ô của cột SẮP xử lý đã bị một quân domino ngang từ cột trước
+  "thò" sang chiếm chỗ (phần thừa ra mà cột hiện tại đã bị chiếm sẵn).
+
+- Chuyển trạng thái: với mask cur của cột hiện tại, ta lát đầy phần còn lại của
+  cột. Duyệt hàng row = 0..n-1:
+    + Nếu bit row trong cur đã bật: ô đã bị chiếm, bỏ qua, không thò sang cột kế.
+    + Nếu ô trống: có 2 lựa chọn.
+        1) Đặt domino ngang (1x2) thò sang cột kế: bật bit row trong mask nxt.
+        2) Đặt domino dọc (2x1) phủ (row, row+1) ngay trong cột này, khi
+           row+1 < n và ô (row+1) cũng đang trống; hai ô này không thò sang.
+  Mỗi cách lát đầy một cột cho ra một mask nxt = tập ô bị thò sang cột kế; nxt
+  chính là mask cur cho cột tiếp theo. Hai file dùng cùng một DP này, chỉ khác
+  cách cài đặt việc cộng dồn:
+    + solution.cpp precompute transitions[cur] = danh sách mọi nxt sinh được từ
+      cur. Khi xử lý một cột, với mỗi cur ta cộng dp[cur] vào từng next[nxt]
+      trong danh sách này.
+    + solution.py precompute chiều ngược incoming[nxt] = danh sách các cur sinh
+      ra nxt, rồi sinh động (exec) hàm step(dp) với các chỉ số hardcode để tính
+      thẳng ndp[nxt] = tổng dp[cur] (cur thuộc incoming[nxt]) rồi rút gọn modulo;
+      nhờ vậy phép cộng dồn chạy ở tầng bytecode CPython cho nhanh.
+
+- Base case: trước cột đầu tiên dp[0] = 1 (chưa có ô nào bị thò sang), còn lại 0.
+
+- Đáp án: áp dụng chuyển trạng thái đúng m lần. Sau cột cuối không được có ô nào
+  thò ra ngoài lưới, nên đáp án = dp[0] (nếu n*m lẻ thì tự nhiên dp[0] = 0).
+
+## Độ phức tạp
+Gọi E là tổng số cặp chuyển `(cur, nxt)` đã sinh cho toàn bộ `2^n` mask. Cả hai
+file cùng độ phức tạp (chỉ khác chiều lưu danh sách chuyển).
+
+- Precompute các chuyển trạng thái: O(E).
+- DP: O(m * E), vì mỗi cột duyệt mỗi cạnh chuyển đúng một lần.
+- Bộ nhớ: O(2^n + E) cho hai mảng DP và danh sách chuyển trạng thái.

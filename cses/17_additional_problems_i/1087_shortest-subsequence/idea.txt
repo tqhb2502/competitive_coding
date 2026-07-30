@@ -1,0 +1,28 @@
+Shortest Subsequence - CSES 1087
+https://cses.fi/problemset/task/1087
+
+Tags: frequency-counting, greedy-array
+
+## Đề bài
+Cho một xâu DNA chỉ gồm bốn ký tự A, C, G, T. Hãy tìm xâu ngắn nhất
+mà không phải là dãy con (subsequence) của xâu đã cho. Nếu có nhiều đáp án,
+in ra bất kỳ đáp án nào. Ràng buộc: n <= 10^6.
+
+## Ý tưởng
+Dùng thuật toán tham lam (greedy). Quét xâu từ trái sang phải và chia nó
+thành các khối liên tiếp ngắn nhất, mỗi khối chứa đủ cả bốn ký tự khác nhau.
+Mỗi khi ký tự hiện tại làm khối trở nên đầy đủ (đủ cả bốn loại), ta thêm
+chính ký tự đó vào đáp án rồi bắt đầu đếm lại cho khối tiếp theo.
+
+Sau khối đầy đủ cuối cùng thường còn một đoạn dư không đủ cả bốn ký tự.
+Ta chọn một ký tự không xuất hiện trong đoạn dư đó và thêm vào cuối đáp án.
+
+Chứng minh: giả sử có q khối đầy đủ. Mọi xâu DNA độ dài q đều là dãy con
+(lần lượt lấy ký tự thứ i từ khối đầy đủ thứ i), nên đáp án phải dài ít nhất
+q+1. Với xâu ta xây dựng, ký tự thứ i là ký tự hoàn tất khối i; muốn khớp nó
+ta phải đi tới cuối khối i, và sau q ký tự chỉ còn lại đoạn dư. Ký tự cuối
+đã chọn không có trong đoạn dư nên không thể khớp, vậy đáp án dài đúng q+1
+và do đó là ngắn nhất.
+
+## Độ phức tạp
+Thời gian O(n), bộ nhớ O(1) ngoài xâu kết quả.

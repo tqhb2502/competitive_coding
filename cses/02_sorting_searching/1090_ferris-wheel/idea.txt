@@ -1,0 +1,33 @@
+Ferris Wheel - CSES 1090
+https://cses.fi/problemset/task/1090
+
+Tags: sorted-array, two-pointers
+
+## Đề bài
+Có n đứa trẻ, đứa thứ i có cân nặng p[i]. Mỗi gondola chở tối đa 2 đứa trẻ và
+tổng cân nặng của chúng không được vượt quá x. Hãy tìm số gondola tối thiểu cần
+dùng để chở hết tất cả các đứa trẻ.
+
+## Ý tưởng
+Dùng greedy kết hợp two-pointer:
+1. Sắp xếp (sort) mảng cân nặng theo thứ tự tăng dần.
+2. Đặt hai con trỏ: left ở đầu (đứa nhẹ nhất còn lại) và right ở cuối (đứa nặng
+   nhất còn lại). Mỗi bước ta luôn phải xử lý đứa nặng nhất còn lại (chỉ số
+   right):
+   - Nếu p[left] + p[right] <= x thì ghép đứa nhẹ nhất với đứa nặng nhất vào
+     chung một gondola: tăng left, giảm right.
+   - Ngược lại, đứa nặng nhất phải ngồi một mình: chỉ giảm right.
+   Mỗi bước đều tốn đúng 1 gondola, nên tăng biến đếm ans lên 1.
+3. Lặp cho tới khi left > right. Đáp án là ans.
+
+Tính tối ưu (exchange argument):
+- Đứa nặng nhất bắt buộc phải chiếm một gondola trong mọi lời giải; câu hỏi duy
+  nhất là có ghép thêm được một đứa nữa vào gondola đó hay không.
+- Nếu tồn tại một đứa ghép chung được với đứa nặng nhất (tổng <= x) thì đứa nhẹ
+  nhất chắc chắn cũng ghép được (vì nó nhẹ nhất). Ghép đứa nhẹ nhất với đứa nặng
+  nhất không bao giờ làm xấu đi lời giải, nên greedy này là tối ưu.
+
+## Độ phức tạp
+- Thời gian: O(n log n) do bước sort, phần two-pointer chỉ O(n).
+- Bộ nhớ: O(n) để lưu mảng cân nặng.
+Với n <= 2*10^5, code C++ chỉ cần một lần `sort` và một lượt hai con trỏ.

@@ -1,0 +1,26 @@
+Maximum Building I - CSES 1147
+https://cses.fi/problemset/task/1147
+
+Tags: monotonic-stack, nearest-element
+
+## Đề bài
+Cho lưới kích thước n*m gồm các ô trống ('.') và các ô có cây ('*'). Hãy tìm
+diện tích của hình chữ nhật lớn nhất chỉ chứa toàn ô trống. Ràng buộc n, m <= 1000.
+
+## Ý tưởng
+Duyệt lần lượt từng hàng và duy trì mảng height[c] là số ô trống liên tiếp theo
+chiều dọc kết thúc tại hàng hiện tại ở cột c. Khi gặp ô '.' thì tăng height[c],
+khi gặp ô '*' thì đặt height[c] về 0. Coi mỗi hàng như một biểu đồ cột
+(histogram): mọi hình chữ nhật ô trống có cạnh dưới nằm ở hàng hiện tại tương
+ứng đúng với một hình chữ nhật bên trong histogram này.
+
+Với mỗi histogram, tìm hình chữ nhật lớn nhất bằng một stack các chỉ số cột có
+chiều cao không giảm (monotonic stack). Khi gặp một cột thấp hơn, ta pop từng
+chiều cao h ra khỏi stack; bề rộng lớn nhất mà h còn làm chiều cao nhỏ nhất kéo
+dài từ ngay sau chỉ số còn lại trên stack tới trước cột hiện tại. Thêm một cột
+biên (sentinel) cao 0 ở cuối để pop hết mọi thanh còn lại. Lấy giá trị lớn nhất
+qua tất cả các hàng chính là đáp án cho toàn lưới.
+
+## Độ phức tạp
+Thời gian O(n*m) vì mỗi cột được đẩy vào và lấy ra khỏi stack đúng một lần mỗi
+hàng. Bộ nhớ O(m).

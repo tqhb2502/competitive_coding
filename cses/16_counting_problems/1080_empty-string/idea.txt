@@ -1,0 +1,37 @@
+Empty String - CSES 1080
+https://cses.fi/problemset/task/1080
+
+Tags: interval-dp
+
+## Đề bài
+Cho xâu s độ dài n gồm các chữ cái thường. Mỗi bước được phép xóa hai ký tự
+kề nhau nếu chúng bằng nhau (sau khi xóa, hai ký tự ở hai bên trở thành kề
+nhau). Đếm số thứ tự phép xóa khác nhau để đưa xâu về rỗng, lấy dư 10^9+7.
+Nếu n lẻ thì không thể xóa hết, đáp án bằng 0.
+
+## Ý tưởng
+Interval DP. Đặt dp[l][r] là số cách (số thứ tự phép xóa) để xóa hết đoạn
+s[l..r] có độ dài chẵn.
+
+Xét ký tự s[l]. Trong mọi quá trình xóa hết đoạn, s[l] sẽ bị xóa cùng đúng
+một ký tự s[k] bằng nó (k cùng parity với l+1 để hai đoạn con đều chẵn).
+Trước khi ghép cặp (l,k), toàn bộ đoạn [l+1,k-1] phải được xóa hết; sau khi
+xóa cặp (l,k), các phép xóa trong [l,k] và [k+1,r] hoàn toàn độc lập.
+
+    left  = dp[l+1][k-1]  (bằng 1 nếu đoạn rỗng)
+    right = dp[k+1][r]    (bằng 1 nếu đoạn rỗng)
+
+Phần [l,k] dùng p=(k-l+1)/2 phép xóa (kể cả phép xóa cặp l,k), phần bên phải
+dùng q=(r-k)/2 phép xóa. Giữ nguyên thứ tự nội bộ của mỗi phần, số cách trộn
+hai dãy phép xóa là C(p+q, p) = C((r-l+1)/2, (k-l+1)/2). Do đó:
+
+    dp[l][r] += left * right * C((r-l+1)/2, (k-l+1)/2).
+
+Mỗi quá trình xóa được phân loại duy nhất theo ký tự k ghép với s[l] nên các
+nhóm không trùng nhau và bao phủ mọi đáp án. Tính dp theo độ dài đoạn tăng
+dần. Các hệ số nhị thức chỉ cần tới n/2 và được tiền xử lý bằng tam giác
+Pascal.
+
+## Độ phức tạp
+Thời gian O(n^3), bộ nhớ O(n^2); với n<=500. Vòng chuyển chỉ xét các vị trí
+đúng parity nên số phép tính thực tế nhỏ.

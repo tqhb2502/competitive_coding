@@ -1,0 +1,33 @@
+Polygon Area - CSES 2191
+https://cses.fi/problemset/task/2191
+
+Tags: polygon-area
+
+## Đề bài
+Cho một đa giác đơn (simple polygon) với n đỉnh, các đỉnh được cho theo thứ tự
+vòng quanh đa giác. Hãy tính diện tích của đa giác. Vì diện tích có thể là số
+không nguyên, đề bài yêu cầu in ra 2a, tức là gấp đôi diện tích, để kết quả luôn
+là số nguyên.
+
+## Ý tưởng
+Dùng công thức shoelace (công thức dây giày / Gauss's area formula). Với các đỉnh
+P_0, P_1, ..., P_{n-1} theo thứ tự vòng quanh đa giác, diện tích có dấu bằng:
+    2A = sum_{i=0}^{n-1} (x_i * y_{i+1} - x_{i+1} * y_i)   (chỉ số lấy mod n)
+Diện tích thực là |2A| / 2. Vì đề bài yêu cầu in 2a nên ta chỉ cần in |sum|.
+
+Mỗi số hạng x_i * y_{i+1} - x_{i+1} * y_i chính là cross product của hai vector
+tính từ gốc tọa độ và luôn là số nguyên. Ta cộng dồn toàn bộ bằng số nguyên rồi
+lấy giá trị tuyệt đối. Với tọa độ tới ~1e9 mỗi tích cỡ ~1e18, tổng qua n <= 1000
+số hạng có thể cỡ ~1e21 nên vượt int64. Bản C++ cộng dồn bằng `__int128` để tránh
+tràn (và có hàm print_integer tự in vì cout không hỗ trợ __int128); bản Python
+đọc toàn bộ input một lần (sys.stdin.buffer.read) rồi cộng dồn bằng big integer
+sẵn có nên không bao giờ tràn. Không dùng float để tránh mọi sai số làm tròn
+(bài toán hình học của CSES rất nhạy về precision).
+
+Vì sao đúng: công thức shoelace cho diện tích có dấu của bất kỳ đa giác đơn nào;
+dấu phụ thuộc chiều duyệt (clockwise hay counter-clockwise). Lấy trị tuyệt đối
+cho ra 2a đúng bất kể chiều duyệt của đầu vào.
+
+## Độ phức tạp
+Thời gian O(n) để duyệt các đỉnh một lần. Bộ nhớ O(n) để lưu tọa độ (có thể giảm
+xuống O(1) nếu xử lý streaming, nhưng O(n) là đủ với n <= 1000).

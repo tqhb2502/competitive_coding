@@ -1,0 +1,52 @@
+Removal Game - CSES 1097
+https://cses.fi/problemset/task/1097
+
+Tags: interval-dp
+
+## Đề bài
+Cho một dãy gồm n số nguyên (n <= 5000, mỗi số trong khoảng -10^9..10^9).
+Hai người chơi lần lượt, mỗi lượt lấy phần tử ở đầu hoặc ở cuối dãy hiện tại
+và cộng giá trị đó vào điểm của mình. Cả hai đều chơi tối ưu để tối đa hóa
+điểm của bản thân. Hãy in ra điểm lớn nhất mà người đi trước (người 1) đạt được.
+
+Định dạng vào/ra:
+- Dòng 1: số nguyên n.
+- Dòng 2: n số nguyên x1 x2 ... xn.
+- In ra một số nguyên: điểm lớn nhất của người 1.
+- Bài toán KHÔNG có modulo (đáp án là số nguyên thật, có thể âm).
+
+## Ý tưởng
+Quy hoạch động theo lý thuyết trò chơi (minimax) trên các đoạn con.
+
+Trạng thái:
+- dp[i][j] = hiệu điểm lớn nhất (điểm người đang tới lượt TRỪ điểm đối thủ)
+  mà người đang tới lượt đạt được khi trò chơi chỉ còn xét đoạn con a[i..j].
+
+Chuyển trạng thái:
+- Người tới lượt có 2 lựa chọn, sau khi lấy thì đối thủ trở thành người đi trước
+  trên phần còn lại nên hiệu điểm của ta trên phần đó bị đảo dấu:
+  + Lấy đầu a[i]  => giá trị = a[i] - dp[i+1][j]
+  + Lấy cuối a[j] => giá trị = a[j] - dp[i][j-1]
+- dp[i][j] = max(a[i] - dp[i+1][j], a[j] - dp[i][j-1]).
+
+Cơ sở:
+- dp[i][i] = a[i] (còn đúng 1 phần tử thì bắt buộc lấy, không có đối thủ đi tiếp).
+
+Đáp án:
+- Gọi diff = dp[0][n-1] = (điểm người 1) - (điểm người 2).
+- Gọi total = tổng tất cả phần tử = (điểm người 1) + (điểm người 2).
+- Suy ra điểm người 1 = (total + diff) / 2. Vì total và diff luôn cùng tính chẵn lẻ
+  nên tử số chia hết cho 2; code dùng phép chia số nguyên `/`.
+- Trường hợp n = 1: người 1 buộc phải lấy phần tử duy nhất => đáp án = a[0].
+
+Cài đặt tối ưu bộ nhớ O(n):
+- Lặp theo độ dài đoạn L tăng dần và chỉ dùng một mảng 1 chiều dp. Trước bước L,
+  dp[i] đang giữ kết quả của đoạn dài L-1 bắt đầu tại i. Công thức cập nhật:
+      dp_mới[i] = max(a[i] - dp_cũ[i+1], a[i+L-1] - dp_cũ[i]).
+  Duyệt i tăng dần là an toàn: `dp[i+1]` vẫn là giá trị của độ dài L-1, còn
+  `dp[i]` được đọc trước khi ghi đè.
+
+## Độ phức tạp
+- Thời gian: O(n^2) — có O(n^2) trạng thái, mỗi trạng thái O(1). Với n = 5000
+  là khoảng 12.5 triệu phép tính.
+- Bộ nhớ: O(n).

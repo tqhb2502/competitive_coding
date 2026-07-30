@@ -1,0 +1,56 @@
+Distinct Values Subarrays II - CSES 2428
+https://cses.fi/problemset/task/2428
+
+Tags: coordinate-compression, counting, sliding-window, two-pointers
+
+## Đề bài
+Cho một mảng gồm n số nguyên và một số nguyên k. Hãy đếm số lượng subarray
+(dãy con liên tiếp) có nhiều nhất k giá trị phân biệt (at most k distinct values).
+
+## Ý tưởng
+Dùng kỹ thuật two-pointer / sliding window kết hợp nén tọa độ (coordinate compression):
+- Duyệt con trỏ phải right từ 0 đến n-1, đồng thời duy trì cửa sổ [left, right]
+  sao cho số giá trị phân biệt trong cửa sổ luôn <= k.
+- Trước tiên nén tọa độ các giá trị về đoạn [0, distinctValues) bằng một
+  `unordered_map`, sau đó dùng vector `frequency` để lưu tần suất trong cửa sổ
+  và một biến distinct đếm số giá trị phân biệt hiện có.
+- Khi thêm a[right] vào cửa sổ: nếu tần suất cũ của nó bằng 0 thì distinct tăng thêm 1.
+- Nếu distinct > k, ta thu nhỏ cửa sổ từ bên trái: giảm tần suất a[left], nếu tần suất
+  về 0 thì distinct giảm 1, rồi tăng left, lặp cho tới khi distinct <= k.
+- Với mỗi right, cửa sổ hợp lệ dài nhất kết thúc tại right có biên trái là left. Khi đó
+  MỌI subarray kết thúc tại right và bắt đầu tại một chỉ số trong [left, right] đều hợp lệ
+  (vì thu nhỏ cửa sổ chỉ làm số giá trị phân biệt giảm hoặc giữ nguyên). Số subarray như
+  vậy là (right - left + 1). Cộng dồn giá trị này cho mọi right ta được đáp án.
+
+Vì sao đúng:
+- Tính chất đơn điệu: nếu một cửa sổ có <= k giá trị phân biệt thì mọi cửa sổ con của nó
+  cũng có <= k giá trị phân biệt. Do đó với right cố định, tập các left hợp lệ là một đoạn
+  liên tục [left_min, right]. Biên trái nhỏ nhất hợp lệ là đơn điệu không giảm khi right
+  tăng, nên two-pointer duyệt mỗi phần tử tối đa 2 lần (một lần vào, một lần ra).
+- Cộng (right - left + 1) đảm bảo đếm chính xác từng subarray kết thúc tại right đúng một
+  lần, nên tổng là số subarray thỏa mãn trên toàn mảng.
+
+Kiểm tra ví dụ: n=5, k=2, a=[1,2,3,1,1].
+right=0: cửa sổ {1}, left=0, cộng 1  -> 1
+right=1: cửa sổ {1,2}, left=0, cộng 2 -> 3
+right=2: thêm 3 -> 3 distinct, thu nhỏ bỏ a[0]=1, left=1, cộng 2 -> 5
+right=3: thêm 1 -> distinct 3, bỏ a[1]=2, left=2, cộng 2 -> 7
+right=4: thêm 1 (đã có), left=2, cộng 3 -> 10
+Đáp án = 10, khớp.
+
+## Độ phức tạp
+- Thời gian: O(n) trung bình (mỗi con trỏ left, right chỉ đi tiến, các thao tác trên
+  hash map/vector đều O(1) trung bình). Đọc input O(n).
+- Bộ nhớ: O(n) cho mảng đã nén, mảng tần suất và hash map nén tọa độ.
+
+Kết quả có thể lớn tới ~ n*(n+1)/2 = 2e10, vượt 32-bit, nên code dùng
+`long long` cho biến đếm.
+
+Hai bản C++ và Python dùng chung thuật toán trên, chỉ khác chi tiết cài đặt:
+- C++: đọc từng số một, nén tọa độ bằng `unordered_map` (đặt trước dung lượng và
+  hạ `max_load_factor`), sau đó dùng `vector` frequency truy cập theo chỉ số; biến
+  đếm đáp án dùng `long long` cho khỏi tràn.
+- Python: đọc toàn bộ input một lần bằng `sys.stdin.buffer.read().split()`, giữ
+  nguyên các token ở dạng bytes (vừa hashable vừa so sánh được) để tránh chi phí
+  parse int, nén tọa độ bằng `dict` và đếm tần suất bằng `list`. Do đọc trọn input,
+  bộ nhớ có thêm phần lưu danh sách token nhưng tổng vẫn là O(n).

@@ -1,0 +1,27 @@
+Sorting Methods - CSES 1162
+https://cses.fi/problemset/task/1162
+
+Tags: binary-search, fenwick, lis, permutation-cycles
+
+## Đề bài
+Cho một hoán vị của các số 1..n. Với bốn loại thao tác khác nhau, hãy tính số
+bước ít nhất để sắp xếp hoán vị thành dãy tăng dần:
+1. Đổi chỗ hai phần tử kề nhau.
+2. Đổi chỗ hai phần tử bất kỳ.
+3. Chuyển một phần tử tới vị trí bất kỳ.
+4. Chuyển một phần tử ra đầu dãy.
+In ra bốn đáp án tương ứng trên cùng một dòng. Ràng buộc: n <= 2*10^5.
+
+## Ý tưởng
+1. Đổi kề: đáp án là số nghịch thế (inversions) của hoán vị, đếm bằng Fenwick
+   tree — mỗi thao tác đổi kề làm số nghịch thế thay đổi đúng 1.
+2. Đổi bất kỳ: mỗi chu trình độ dài l của hoán vị cần đúng l-1 lần đổi để tách,
+   nên đáp án là n trừ đi số chu trình.
+3. Chuyển tới vị trí bất kỳ: giữ nguyên một dãy con tăng dài nhất (LIS) rồi chèn
+   từng phần tử còn lại vào đúng chỗ, nên đáp án là n trừ độ dài LIS.
+4. Chuyển ra đầu: các phần tử không phải chuyển bắt buộc là một hậu tố giá trị
+   liên tiếp k, k+1, ..., n đã xuất hiện đúng thứ tự. Quét hoán vị từ phải sang
+   trái, lần lượt tìm n, n-1, ...; số giá trị chưa tìm được chính là đáp án.
+
+## Độ phức tạp
+Thời gian O(n log n) do Fenwick tree và LIS, bộ nhớ O(n).

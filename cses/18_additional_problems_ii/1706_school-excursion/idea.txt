@@ -1,0 +1,27 @@
+School Excursion - CSES 1706
+https://cses.fi/problemset/task/1706
+
+Tags: dsu, dynamic-bitset, knapsack
+
+## Đề bài
+Có n đứa trẻ và m yêu cầu, mỗi yêu cầu buộc hai đứa trẻ phải đi cùng một địa
+điểm. Với mỗi i = 1..n, hãy xác định liệu có thể chọn đúng i đứa trẻ đi
+Korkeasaari hay không. In ra một xâu nhị phân độ dài n: bit thứ i bằng '1' nếu
+đạt được, ngược lại bằng '0'.
+
+## Ý tưởng
+Quan hệ "phải đi cùng nhau" có tính bắc cầu, nên dùng DSU gộp mọi cặp yêu cầu.
+Mỗi thành phần liên thông phải được chọn toàn bộ hoặc không chọn, do đó bài toán
+quy về: cho các khối có kích thước là kích thước từng thành phần, hỏi tổng con
+nào đạt được. Đếm số thành phần ứng với mỗi kích thước s.
+
+Dùng bitset possible với bit i cho biết tổng i có thể đạt, khởi tạo bit 0. Vì có
+thể có nhiều thành phần cùng kích thước s, ta phân rã nhị phân số lượng c thành
+các nhóm 1, 2, 4, ... và phần dư; mỗi nhóm gộp take thành phần thành trọng lượng
+s * take rồi cập nhật possible |= possible << (s * take). Cách phân rã này cho
+phép biểu diễn mọi số lượng từ 0 đến c mà chỉ tốn O(log c) phép dịch. Cuối cùng
+in các bit 1..n của possible.
+
+## Độ phức tạp
+DSU tốn O((n + m) * alpha(n)). Phần bitset tốn O((n / 64) * tổng log(c_s + 1))
+thời gian và O(n) bit bộ nhớ.

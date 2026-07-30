@@ -1,0 +1,24 @@
+Food Division - CSES 1189
+https://cses.fi/problemset/task/1189
+
+Tags: prefix-sum
+
+## Đề bài
+Có n đứa trẻ ngồi thành một vòng tròn. Mỗi đứa đang có một lượng thức ăn và
+mong muốn một lượng thức ăn nhất định (tổng lượng hiện tại bằng tổng lượng mong
+muốn). Mỗi bước cho phép chuyển một đơn vị thức ăn qua một cạnh kề trên vòng
+tròn. Tìm số bước ít nhất để mỗi đứa trẻ đạt được lượng thức ăn mong muốn.
+
+## Ý tưởng
+Đặt d_i = a_i - b_i (hiệu giữa lượng hiện có và lượng mong muốn) và tính tổng
+tiền tố s_i = d_1 + ... + d_i cho i = 1..n (do tổng bằng nhau nên s_n = 0). Gọi
+luồng qua cạnh cuối là một hằng số tự do c thì các luồng qua n cạnh lần lượt
+bằng s_i - c. Mỗi đơn vị giá trị tuyệt đối của luồng ứng với đúng một bước
+chuyển qua cạnh đó, nên tổng số bước là tổng |s_i - c|.
+
+Tổng khoảng cách tuyệt đối tới một điểm đạt nhỏ nhất khi điểm đó là trung vị.
+Vậy chọn c bằng trung vị của n tổng tiền tố s_i, rồi cộng khoảng cách tuyệt đối
+từ mỗi s_i tới trung vị chính là đáp án. Dùng nth_element để tìm trung vị.
+
+## Độ phức tạp
+Thời gian O(n) trung bình (nth_element), bộ nhớ O(n); dùng số nguyên 64 bit.

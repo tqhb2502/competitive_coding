@@ -1,0 +1,42 @@
+Nearest Smaller Values - CSES 1645
+https://cses.fi/problemset/task/1645
+
+Tags: monotonic-stack, nearest-element
+
+## Đề bài
+Cho một mảng gồm n số nguyên. Với mỗi vị trí i (đánh chỉ số từ 1), hãy tìm
+vị trí gần nhất nằm BÊN TRÁI của i mà có giá trị NHỎ HƠN giá trị tại i. Nếu
+không tồn tại vị trí như vậy thì in ra 0.
+
+Ví dụ: mảng 2 5 1 4 8 3 2 5 cho kết quả 0 1 0 3 4 3 3 7.
+
+## Ý tưởng
+Sử dụng monotonic stack. Ta duyệt mảng từ trái sang phải và duy trì một stack
+chứa các CHỈ SỐ mà giá trị tương ứng đang TĂNG NGHIÊM NGẶT (strictly
+increasing) theo thứ tự từ đáy lên đỉnh stack.
+
+Khi xử lý vị trí i với giá trị x = a[i]:
+- Lặp bỏ (pop) khỏi đỉnh stack tất cả các chỉ số j mà a[j] >= x. Các vị trí
+  đó không thể là đáp án cho i, và cũng không bao giờ là đáp án cho bất kỳ vị
+  trí nào bên phải i (vì i đứng gần hơn và có giá trị nhỏ hơn hoặc bằng chúng),
+  nên loại bỏ được vĩnh viễn.
+- Sau khi pop xong: nếu stack rỗng thì không có phần tử nhỏ hơn nào bên trái,
+  đáp án là 0. Ngược lại, đỉnh stack chính là chỉ số gần nhất bên trái có giá
+  trị nhỏ hơn x, đó là đáp án cho i (đổi sang chỉ số bắt đầu từ 1).
+- Cuối cùng push i vào stack.
+
+Tính đúng đắn: stack luôn giữ tính chất tăng nghiêm ngặt về giá trị, nên nếu
+stack không rỗng sau khi pop thì đỉnh stack là phần tử bên trái gần nhất có
+giá trị nhỏ hơn a[i]; mọi phần tử ở giữa đều đã bị pop vì có giá trị >= a[i].
+
+## Độ phức tạp
+- Thời gian: O(n) khấu hao (amortized), vì mỗi chỉ số được push đúng một lần
+  và pop nhiều nhất một lần.
+- Bộ nhớ: O(n) cho mảng giá trị và stack chỉ số.
+
+Hai bản cài đặt dùng CÙNG thuật toán monotonic stack, chỉ khác cách xử lý I/O:
+- C++ đọc từng giá trị ngay trong vòng lặp, xử lý và IN NGAY đáp án cho mỗi vị
+  trí (xuất trực tiếp), dùng fast I/O nhờ sync_with_stdio(false)/cin.tie.
+- Python đọc TOÀN BỘ input một lần, lưu thêm mảng đáp án res rồi ghi ra một lần
+  duy nhất ở cuối bằng ' '.join để tăng tốc I/O.
+Với n <= 2*10^5, cả hai bản đều chạy tốt trong giới hạn.

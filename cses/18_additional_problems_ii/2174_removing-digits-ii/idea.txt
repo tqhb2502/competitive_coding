@@ -1,0 +1,35 @@
+Removing Digits II - CSES 2174
+https://cses.fi/problemset/task/2174
+
+Tags: digit-dp, simulation
+
+## Đề bài
+Cho số nguyên n. Mỗi bước ta trừ khỏi n một chữ số khác 0 đang xuất hiện trong
+n. Tìm số bước ít nhất để đưa n về 0. Ràng buộc: n <= 10^18.
+
+## Ý tưởng
+Gọi f(x) là đáp án và D(x) là chữ số lớn nhất của x. Chiến lược greedy tối ưu là
+luôn trừ đi D(x); có thể chứng minh f không giảm và việc trừ D(x) cho trạng thái
+kế tiếp nhỏ nhất, nên f(x) = 1 + f(x - D(x)).
+
+Vì n rất lớn nên không thể mô phỏng từng bước; ta nén mô phỏng theo khối thập
+phân. Hàm process(k, s, m) xét k chữ số cuối có giá trị s trong khi chữ số lớn
+nhất của phần tiền tố cố định là m. Hàm chạy các bước greedy liên tiếp cho tới
+lần trừ đầu tiên làm suffix âm (phải mượn 1 từ prefix), rồi trả về hai giá trị:
+- steps: số bước greedy đã thực hiện;
+- deficit (1..9): độ thiếu hụt, tức suffix mới trước khi mượn là -deficit.
+
+Trong hàm, tách chữ số đầu a của suffix và phần thấp r. Khi a chưa đổi, lời gọi
+process(k-1, r, max(m, a)) xử lý trọn phần thấp. Sau đó a giảm một đơn vị và phần
+thấp trở thành 10^(k-1) - deficit. Vì chỉ có 9 khả năng deficit, ta tiền xử lý
+kết quả process cho mọi (k, m, deficit) và lưu vào bảng completeBlock; mỗi lần
+xử lý một số bất kỳ chỉ có một nhánh chưa tiền xử lý ở mỗi độ sâu, các khối còn
+lại chỉ cần tra bảng.
+
+Với số ban đầu, coi chữ số đầu là prefix và gọi process để xử lý toàn bộ suffix;
+mỗi lượt như vậy giảm chữ số đầu đi một đơn vị, lặp cho tới khi n < 10 rồi cộng
+thêm một bước cuối nếu n vẫn khác 0.
+
+## Độ phức tạp
+Tiền xử lý O(19 * 10^3), xử lý mỗi truy vấn O(19 * 10^2) thời gian; bộ nhớ
+O(19 * 10^2).

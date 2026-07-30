@@ -1,0 +1,32 @@
+Police Chase - CSES 1695
+https://cses.fi/problemset/task/1695
+
+Tags: dinic
+
+## Đề bài
+Có n ngã tư và m con đường vô hướng nối chúng. Ngân hàng nằm ở ngã tư 1, còn
+bến cảng nằm ở ngã tư n. Cần chọn số con đường ít nhất để đóng sao cho không
+còn cách nào đi từ ngã tư 1 đến ngã tư n. Hãy in ra số con đường tối thiểu phải
+đóng và danh sách các con đường đó (chấp nhận mọi đáp án hợp lệ cùng số lượng).
+
+## Ý tưởng
+- Đây chính là bài toán minimum edge cut trên đồ thị vô hướng giữa nguồn s = 1
+  và đích t = n.
+- Theo định lý max-flow min-cut, số cạnh nhỏ nhất cần cắt đúng bằng giá trị luồng
+  cực đại (max-flow) từ s đến t khi cho mỗi cạnh capacity = 1.
+- Xây dựng mạng luồng: mỗi con đường vô hướng (a, b) được biểu diễn bằng HAI cung
+  có hướng a -> b và b -> a, mỗi cung capacity 1 và là reverse edge của nhau. Cách
+  biểu diễn này cho ra đúng mô hình cạnh vô hướng capacity 1, nên mỗi con đường
+  chỉ đóng góp tối đa 1 vào min cut.
+- Dùng Dinic để tính max-flow từ s đến t.
+- Sau khi có max-flow, chạy BFS trên residual graph (chỉ đi theo cung còn cap > 0)
+  để tìm tập S các đỉnh còn tới được từ s. Lát cắt (S, T) với T là phần còn lại
+  chính là một min cut.
+- Với mỗi cạnh gốc (a, b): nếu đúng một đầu thuộc S và đầu kia thuộc T thì đó là
+  con đường nằm trên lát cắt, tức con đường cần đóng. Số cạnh này đúng bằng giá
+  trị max-flow.
+
+## Độ phức tạp
+- Cận tổng quát của Dinic là O(V^2 * E). Với V <= 500 và số cung residual
+  O(m), ràng buộc bài vẫn phù hợp với cách cài đặt này.
+- Bộ nhớ O(V + E).

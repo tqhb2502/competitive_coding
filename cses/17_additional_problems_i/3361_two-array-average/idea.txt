@@ -1,0 +1,27 @@
+Two Array Average - CSES 3361
+https://cses.fi/problemset/task/3361
+
+Tags: prefix-sum
+
+## Đề bài
+Cho hai mảng độ dài n. Chọn một tiền tố không rỗng của mỗi mảng sao cho trung
+bình cộng của tất cả phần tử được chọn là lớn nhất. In ra hai độ dài tiền tố.
+Đáp án được chấp nhận nếu trung bình đạt được sai khác tối đa 10^(-6) so với tối
+ưu. Ràng buộc: n <= 10^5, giá trị phần tử <= 10^9.
+
+## Ý tưởng
+Gọi prefixA[i], prefixB[j] là tổng i và j phần tử đầu. Với một giá trị trung
+bình thử x, tồn tại cặp (i, j) có trung bình ít nhất x khi và chỉ khi
+
+    max_i(prefixA[i] - x*i) + max_j(prefixB[j] - x*j) >= 0,
+
+với i, j chạy từ 1 đến n. Điều này đúng vì trung bình của cặp (i, j) ít nhất x
+tương đương prefixA[i] + prefixB[j] - x*(i + j) >= 0, và hai chỉ số độc lập nên
+giá trị lớn nhất của vế trái tách thành tổng hai giá trị lớn nhất tìm riêng
+trong O(n). Tính chất này đơn điệu theo x (x khả thi thì mọi giá trị nhỏ hơn
+cũng khả thi), vì vậy nhị phân x trong [0, 10^9]. Sau 70 vòng, độ rộng khoảng
+nhỏ hơn nhiều so với 10^(-6). Tại cận dưới cuối cùng, lấy chính hai chỉ số tạo
+ra hai giá trị lớn nhất và in chúng.
+
+## Độ phức tạp
+70 lần quét hai mảng: O(n) thời gian với hằng số cố định, O(n) bộ nhớ.

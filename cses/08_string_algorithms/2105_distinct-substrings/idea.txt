@@ -1,0 +1,49 @@
+Distinct Substrings - CSES 2105
+https://cses.fi/problemset/task/2105
+
+Tags: suffix-array, suffix-automaton
+
+## Đề bài
+Cho một xâu s độ dài n (n <= 1e5, chỉ gồm các chữ cái thường a-z).
+Hãy đếm số lượng xâu con (substring) PHÂN BIỆT của s và in ra một số nguyên
+duy nhất.
+
+## Ý tưởng
+Sử dụng suffix automaton (SAM).
+- SAM là một automaton gọn biểu diễn các lớp endpos của s. Điểm mấu chốt: mỗi
+  ĐƯỜNG ĐI khác rỗng xuất phát từ trạng thái gốc (initial) tương ứng 1-1 với
+  một xâu con phân biệt của s.
+- Mỗi trạng thái v (khác trạng thái gốc) đại diện cho một lớp các xâu con có
+  cùng tập vị trí kết thúc (endpos). Các xâu trong lớp này có độ dài liên tiếp
+  từ len[link[v]] + 1 đến len[v]. Do đó số xâu con MỚI mà trạng thái v đóng góp
+  đúng bằng len[v] - len[link[v]].
+- Cộng tất cả các đóng góp này trên mọi trạng thái v != gốc cho ra số xâu con
+  phân biệt cần tìm.
+
+Vì sao đúng:
+- SAM đảm bảo mỗi xâu con phân biệt được biểu diễn bởi đúng một cặp
+  (trạng thái, độ dài), với độ dài nằm trong khoảng (len[link[v]], len[v]].
+  Các khoảng độ dài của hai trạng thái có thể chồng lấn về mặt số học, nhưng
+  hai trạng thái đại diện cho hai lớp endpos khác nhau nên các cặp
+  (trạng thái, độ dài) vẫn phân biệt. Các cặp này phủ đúng mọi xâu con, vì vậy
+  tổng (len[v] - len[link[v]]) không đếm trùng và không bỏ sót.
+
+Xây dựng SAM: thêm từng ký tự vào cuối, cập nhật transitions và suffix link,
+tạo thêm một trạng thái "clone" khi cần tách lớp. Số trạng thái <= 2n và số
+cạnh chuyển là O(n). Kết quả có thể lớn tới n*(n+1)/2 ~ 5e9 nên cần kiểu số nguyên
+64-bit (`long long`).
+
+Hai bản cài đặt dùng cùng thuật toán SAM, chỉ khác cách lưu transition và I/O:
+- solution.cpp: mỗi trạng thái lưu transition trong `array<int,26>` (đầy đủ 26
+  ô, -1 nếu không có cạnh), đọc xâu bằng `std::cin`.
+- solution.py: mỗi trạng thái lưu transition trong một `dict` (chỉ giữ các cạnh
+  thực sự tồn tại), đọc toàn bộ input một lần bằng `sys.stdin.buffer.read()` rồi
+  duyệt trực tiếp trên `bytes` (mỗi ký tự là một giá trị byte int).
+
+## Độ phức tạp
+- Thời gian: O(n) khấu hao (bảng chữ cái a-z cố định).
+  * solution.cpp: transition lưu trong `array<int,26>`.
+  * solution.py: transition lưu trong `dict` cho từng trạng thái.
+- Bộ nhớ:
+  * solution.cpp: O(26n) do mỗi trạng thái luôn cấp phát đủ 26 ô.
+  * solution.py: O(n) vì `dict` chỉ lưu các cạnh có thật (tổng cộng O(n) cạnh).

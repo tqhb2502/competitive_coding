@@ -1,0 +1,35 @@
+Permutations - CSES 1070
+https://cses.fi/problemset/task/1070
+
+Tags: constructive
+
+## Đề bài
+- Cho số nguyên n. Hãy in ra một hoán vị "đẹp" của các số 1..n, tức là hoán vị
+  mà không có hai phần tử kề nhau nào có hiệu tuyệt đối bằng 1.
+- Nếu không tồn tại hoán vị như vậy thì in "NO SOLUTION".
+
+## Ý tưởng
+- Xử lý các trường hợp đặc biệt:
+  + n = 1: chỉ có "1", không có cặp kề nhau nên luôn hợp lệ -> in "1".
+  + n = 2: chỉ có "1 2" hoặc "2 1", cả hai đều có hiệu bằng 1 -> NO SOLUTION.
+  + n = 3: mọi hoán vị đều có ít nhất một cặp liên tiếp (vì 2 luôn nằm cạnh 1
+    hoặc 3) -> NO SOLUTION.
+- Với n >= 4: cách dựng đơn giản là in tất cả các số CHẴN trước (2, 4, 6, ...),
+  rồi tới tất cả các số LẺ sau (1, 3, 5, ...).
+  + Trong nhóm số chẵn, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
+  + Trong nhóm số lẻ, hai số liên tiếp hơn kém nhau 2 -> không vi phạm.
+  + Điểm nối giữa số chẵn lớn nhất và số lẻ nhỏ nhất (luôn là 1): với n >= 4,
+    số chẵn lớn nhất >= 4 nên hiệu tại điểm nối >= 3, không bằng 1.
+  Vì vậy hoán vị tạo ra luôn "đẹp".
+- Tính đúng đắn: đề bài chấp nhận bất kỳ lời giải hợp lệ nào (checker chỉ kiểm
+  tra tính hợp lệ), nên chỉ cần bảo đảm không có cặp kề nhau hiệu 1. Cách xếp
+  chẵn-trước lẻ-sau thỏa mãn điều đó với mọi n >= 4; còn n = 2, 3 đã chứng minh
+  là vô nghiệm, n = 1 có nghiệm tầm thường.
+
+## Độ phức tạp
+- Thời gian: O(n) để sinh và in dãy số.
+- Bộ nhớ: C++ sinh và in trực tiếp từng số nên chỉ O(1) ngoài dữ liệu xuất;
+  Python dựng danh sách kết quả kích thước n nên tốn O(n).
+
+LƯU Ý TLE: Code C++ dùng fast I/O và in trực tiếp; với n = 10^6 và độ phức tạp
+O(n), lượng công việc chủ yếu chính là kích thước output.

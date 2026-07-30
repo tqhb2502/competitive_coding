@@ -1,0 +1,44 @@
+Counting Necklaces - CSES 2209
+https://cses.fi/problemset/task/2209
+
+Tags: burnside
+
+## Đề bài
+Đếm số vòng cổ (necklace) khác nhau gồm n hạt, mỗi hạt được tô một trong m màu.
+Hai vòng cổ được coi là giống nhau nếu có thể xoay (rotation) cái này để trùng
+với cái kia. In kết quả modulo 10^9 + 7.
+
+## Ý tưởng
+Áp dụng bổ đề Burnside (Cauchy-Frobenius). Nhóm đối xứng ở đây là nhóm cyclic
+C_n gồm n phép xoay: xoay 0, 1, 2, ..., n-1 vị trí. Số cách tô màu bất biến
+(fixed) dưới phép xoay k vị trí bằng m^gcd(k, n), vì phép xoay k tạo ra gcd(k, n)
+chu trình (cycle), mỗi chu trình phải cùng một màu.
+
+Theo Burnside, số vòng cổ khác nhau là trung bình số điểm bất biến:
+    answer = (1/n) * sum_{k=0}^{n-1} m^gcd(k, n).
+
+Gom nhóm theo giá trị d = gcd(k, n): với mỗi ước d của n, số các k trong [0, n-1]
+có gcd(k, n) = d đúng bằng phi(n/d) (Euler totient). Đặt lại theo ước thu được
+công thức gọn:
+    answer = (1/n) * sum_{d | n} phi(d) * m^(n/d).
+
+Kiểm tra ví dụ n = 4, m = 3: các ước là 1, 2, 4.
+    phi(1)*3^4 + phi(2)*3^2 + phi(4)*3^1 = 1*81 + 1*9 + 2*3 = 96.
+    96 / 4 = 24  -> đúng với đáp án mẫu.
+
+Cách tính:
+- Tìm tất cả ước d của n bằng cách duyệt tới sqrt(n).
+- Với mỗi ước d, tính Euler phi(d) bằng phân tích thừa số nguyên tố
+  (factorization) trong O(sqrt(d)); số ước của n nhỏ nên tổng chi phí rất thấp.
+- m^(n/d) mod p tính bằng modular exponentiation.
+- Phép chia cho n dưới modulo dùng modular inverse theo Fermat: pow(n, MOD-2, MOD)
+  vì MOD = 10^9 + 7 là số nguyên tố và gcd(n, MOD) = 1.
+
+## Độ phức tạp
+Gọi tau(n) là số ước của n.
+- Liệt kê ước: O(sqrt(n)).
+- Với mỗi ước d, tính phi(d) bằng chia thử O(sqrt(d)) và lũy thừa modulo
+  O(log n).
+- Tổng thời gian:
+  O(sqrt(n) + sum_{d|n}(sqrt(d) + log n)), có thể chặn thô bởi
+  O(tau(n) * sqrt(n)); bộ nhớ O(tau(n)).

@@ -1,0 +1,37 @@
+Hotel Queries - CSES 1143
+https://cses.fi/problemset/task/1143
+
+Tags: segment-tree
+
+## Đề bài
+Có n khách sạn, khách sạn thứ i còn h[i] phòng trống. Có m nhóm khách xử lí
+tuần tự; nhóm thứ j cần r[j] phòng. Với mỗi nhóm, hãy tìm khách sạn có chỉ số
+NHỎ NHẤT (bên trái nhất) mà số phòng trống còn lại lớn hơn hoặc bằng r[j], xếp
+cả nhóm vào đó (trừ đi r[j] phòng) rồi in ra chỉ số khách sạn đó (đánh số từ 1).
+Nếu không có khách sạn nào đủ phòng thì in 0.
+
+## Ý tưởng
+- Dùng một max segment tree trên mảng số phòng trống h[]. Mỗi node lưu số phòng
+  trống LỚN NHẤT trong đoạn mà node đó quản lí.
+- Mỗi truy vấn gồm hai thao tác gộp lại:
+  1) Tìm khách sạn trái nhất có phòng trống >= r bằng cách đi xuống (descent)
+     từ gốc. Nếu max toàn mảng (giá trị ở gốc) < r thì không có khách sạn nào,
+     trả về 0. Ngược lại, tại mỗi node nội bộ: nếu con TRÁI có max >= r thì rẽ
+     sang con trái (ưu tiên chỉ số nhỏ nhất), nếu không thì rẽ sang con phải.
+     Khi tới lá, đó chính là khách sạn cần tìm.
+  2) Cập nhật điểm (point update): trừ r vào giá trị của lá vừa tìm được, rồi
+     cập nhật lại giá trị max của mọi node tổ tiên trên đường từ lá về gốc.
+- Tính đúng đắn: vì node lưu max, điều kiện "con trái có max >= r" bảo đảm tồn
+  tại ít nhất một lá bên trái đủ phòng nên rẽ trái luôn cho lá đủ điều kiện với
+  chỉ số nhỏ nhất; nếu con trái không đủ nhưng đoạn hiện tại đủ thì chắc chắn
+  con phải đủ, nên rẽ phải là hợp lệ. Các lá dư sinh ra khi làm tròn kích thước
+  cây lên lũy thừa 2 được khởi tạo bằng 0 nên với r >= 1 không bao giờ thỏa mãn.
+
+## Độ phức tạp
+- Thời gian: mỗi truy vấn tìm và cập nhật đều là O(log n), tổng cộng
+  O((n + m) log n) cho cả hai file.
+- Bộ nhớ:
+  * solution.cpp: O(n) cho mảng segment tree (khoảng 2 * size phần tử), đọc và
+    ghi theo luồng nên không giữ toàn bộ input/output trong bộ nhớ.
+  * solution.py: O(n + m) vì đọc toàn bộ input một lần rồi gom toàn bộ output vào
+    danh sách trước khi in; riêng segment tree vẫn là O(n).

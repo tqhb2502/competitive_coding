@@ -1,0 +1,31 @@
+Cyclic Array - CSES 1191
+https://cses.fi/problemset/task/1191
+
+Tags: binary-lifting, sliding-window, two-pointers
+
+## Đề bài
+Cho một mảng vòng gồm n số nguyên dương. Hãy chia mảng thành ít đoạn liên tiếp
+nhất sao cho tổng mỗi đoạn không vượt quá k. Bảo đảm mọi phần tử đều dương và
+không phần tử nào lớn hơn k. Ràng buộc: n <= 2*10^5, k <= 10^18.
+
+## Ý tưởng
+Nhân đôi mảng để mỗi cách cắt vòng tại vị trí i trở thành một đoạn tuyến tính
+[i, i+n). Dùng two pointers tính next[p]: vị trí đầu tiên sau đoạn dài nhất bắt
+đầu ở p mà có tổng <= k. Do các số đều dương, với một điểm bắt đầu cố định thì
+lấy đoạn dài nhất luôn tối ưu (rút ngắn đoạn đầu không thể làm giảm số đoạn còn
+lại).
+
+Xây bảng binary lifting jump[t][p] là vị trí đạt được sau khi lấy 2^t đoạn tham
+lam liên tiếp. Với mỗi điểm cắt i = 0..n-1, nhảy các lũy thừa lớn nhất mà vẫn
+chưa vượt qua i+n rồi cộng thêm đoạn cuối; lấy giá trị nhỏ nhất qua mọi điểm cắt.
+
+Tính đúng đắn: với một điểm cắt cố định, đoạn đầu của mọi lời giải kết thúc không
+muộn hơn next[i]. Thay nó bằng đoạn tham lam chỉ làm phần chưa phủ ngắn hơn nên
+không tăng số đoạn; quy nạp cho thấy dãy bước next cho số đoạn tối thiểu của điểm
+cắt đó. Mọi phân hoạch vòng đều có một biên đoạn dùng làm điểm cắt, và mọi điểm
+cắt tạo một phân hoạch vòng hợp lệ. Vì vậy giá trị nhỏ nhất của số bước next qua
+n điểm cắt chính là đáp án tối ưu toàn cục. Binary lifting chỉ tăng tốc việc đếm
+các bước này chứ không đổi dãy next.
+
+## Độ phức tạp
+O(n log n) thời gian, O(n log n) bộ nhớ.

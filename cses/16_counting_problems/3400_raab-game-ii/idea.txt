@@ -1,0 +1,45 @@
+Raab Game II - CSES 3400
+https://cses.fi/problemset/task/3400
+
+Tags: combinatorics, inclusion-exclusion
+
+## Đề bài
+Mỗi người chơi có bộ bài đánh số 1..n. Trong một ván, hai người lần lượt lật bài
+tạo thành n cặp; ở mỗi cặp lá lớn hơn ghi một điểm cho chủ nhân, hai lá bằng nhau
+thì hòa. Với mỗi truy vấn (n, a, b), đếm số ván mà người thứ nhất thắng đúng a
+lượt và người thứ hai thắng đúng b lượt, lấy dư theo 1e9+7. Có nhiều truy vấn.
+
+## Ý tưởng
+Cố định cách ghép cặp giữa lá của hai người thì n cặp có thể xuất hiện theo n! thứ
+tự lượt, nên cần nhân số cách ghép cặp hợp lệ với n!.
+
+Đặt m = a + b. Một cặp bằng nhau tạo một lượt hòa, còn mỗi cặp không bằng nhau ghi
+đúng một điểm cho một trong hai người, nên hoán vị mô tả cách ghép cặp có đúng
+n - m điểm cố định (fixed point). Nếu m > n thì không thể, đáp án bằng 0.
+
+Chọn m giá trị nằm trong các cặp không bằng nhau theo C(n, m) cách. Sau khi chuẩn
+hóa thứ tự các giá trị đã chọn (quan hệ lớn/nhỏ được giữ nguyên), phần còn lại là
+một derangement của 1..m (hoán vị không có điểm cố định).
+
+Đặt D[i][j] là số derangement của 1..i có đúng j vị trí p thỏa perm[p] > p (tức là
+người thứ hai thắng j lượt). Dùng truy hồi kiểu Eulerian cho derangement:
+
+    D[i][j] = j       * D[i-1][j]
+            + (i - j) * D[i-1][j-1]
+            + (i - 1) * D[i-2][j-1]
+
+với D[0][0] = 1, các trạng thái ngoài miền bằng 0. Hai hạng đầu tương ứng phép
+chèn như trong truy hồi số Eulerian; hạng cuối xử lý trường hợp phép chèn tạo
+thành một chu trình hai phần tử để không sinh điểm cố định.
+
+Số cách ghép cặp cho kết quả (a, b) là C(n, m) * D[m][b], nên đáp án là:
+
+    n! * C(n, m) * D[m][b]  (mod 1e9+7).
+
+Đọc trước toàn bộ truy vấn, chỉ tính DP đến m lớn nhất, dùng ba hàng cuộn (rolling)
+và lưu lại D[m][b] cần cho từng truy vấn.
+
+## Độ phức tạp
+- Tiền xử lý giai thừa và nghịch đảo giai thừa: O(N), với N <= 5000.
+- DP tính derangement: O(M^2), với M = max(a + b) hợp lệ, M <= 5000.
+- Bộ nhớ: O(M + t) với t là số truy vấn.

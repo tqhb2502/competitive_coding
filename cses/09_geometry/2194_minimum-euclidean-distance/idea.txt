@@ -1,0 +1,54 @@
+Minimum Euclidean Distance - CSES 2194
+https://cses.fi/problemset/task/2194
+
+Tags: closest-pair
+
+## Đề bài
+- Cho n điểm (2 <= n <= 2*10^5), tọa độ nguyên -10^9 <= x, y <= 10^9, các điểm
+  phân biệt đôi một.
+- In ra d^2, với d là khoảng cách Euclid nhỏ nhất giữa hai điểm phân biệt.
+  Lưu ý: in ra BÌNH PHƯƠNG khoảng cách (một số nguyên), không phải d.
+
+## Ý tưởng
+- Đây là bài toán "cặp điểm gần nhất" (closest pair). Vì cần in bình phương
+  khoảng cách nên toàn bộ phép tính dùng SỐ HỌC NGUYÊN CHÍNH XÁC:
+  d2 = dx*dx + dy*dy, với dx = x1 - x2, dy = y1 - y2. Tọa độ <= 10^9 nên
+  d2 <= 8*10^18, vẫn nằm trong `long long`; không dùng float để tính khoảng
+  cách nên kết quả chính xác.
+
+- Thuật toán: randomized incremental + spatial hash grid (kỳ vọng O(n)):
+  1. Xáo trộn ngẫu nhiên bằng `std::shuffle`. Bước này giúp phá vỡ
+     mọi trường hợp xấu (adversarial), đảm bảo kỳ vọng tốt bất kể input.
+  2. Khởi tạo best = bình phương khoảng cách của hai điểm đầu tiên.
+  3. Đặt kích thước ô lưới s = isqrt(best) (căn bậc hai NGUYÊN, s >= 1 vì các
+     điểm phân biệt nên best >= 1). Băm mỗi điểm vào ô (floor(x/s), floor(y/s)).
+     - Bản C++: grid là `unordered_map<Cell, vector<Point>, CellHash>`; `CellHash`
+       dùng splitmix64 và salt theo thời gian để chống va chạm hash có chủ đích;
+       hàm `floor_divide` riêng bảo đảm chỉ số ô đúng với cả tọa độ âm;
+       `integer_square_root` tự tinh chỉnh để loại sai số của std::sqrt.
+     - Bản Python: grid là dict lồng nhau `cx -> (cy -> danh sách điểm)`; dùng
+       toán tử `//` (đã tự làm tròn xuống với số âm) và `isqrt` sẵn có (fallback
+       `or 1`); đọc TOÀN BỘ input một lần bằng `sys.stdin.buffer.read().split()`
+       (bộ nhớ O(n)) và có nhánh riêng in ra 0 khi n <= 1.
+  4. Thêm từng điểm p còn lại:
+     - Tính ô (cx, cy) của p. Duyệt 3x3 ô xung quanh, so sánh d2 với từng điểm
+       đã chèn. Nếu tìm được d2 < best -> cập nhật best.
+     - Nếu best giảm: tính lại s = isqrt(best) và rebuild lại toàn bộ grid với
+       kích thước ô mới.
+     - Nếu không giảm: chèn p vào ô của nó.
+
+- Vì sao chỉ cần kiểm tra 3x3 ô (tính đúng đắn):
+  - Tại mỗi bước, grid dùng kích thước ô s = isqrt(best) nên s <= sqrt(best).
+  - Nếu tồn tại điểm q đã chèn sao cho dist(p, q) < best (có thể cải thiện), thì
+    |dx| < sqrt(best) < s + 1, mà dx là số nguyên nên |dx| <= s. Với bước s và
+    |dx| <= s, chỉ số ô theo x của p và q sai khác nhau nhiều nhất 1 (floor
+    division); tương tự cho y. Vậy q chắc chắn nằm trong lưới 3x3 quanh ô của p
+    -> không bao giờ bỏ sót cặp gần hơn. Do s là SỐ NGUYÊN nên phép tính ô hoàn
+    toàn chính xác, không có sai số float.
+  - Các điểm đã chèn đôi một cách nhau >= sqrt(best) >= s, nên mỗi ô s x s chứa
+    tối đa O(1) điểm => mỗi lần chèn chỉ tốn O(1) phép so sánh (kỳ vọng).
+
+## Độ phức tạp
+- Kỳ vọng O(n): số lần "cải thiện" (rebuild) kỳ vọng là O(log n), mỗi rebuild
+  O(i); tổng chi phí rebuild kỳ vọng O(n) (backwards analysis). Mỗi lần chèn
+  kỳ vọng O(1). Bộ nhớ O(n) cho grid và danh sách điểm.

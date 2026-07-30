@@ -1,0 +1,34 @@
+Nim Game I - CSES 1730
+https://cses.fi/problemset/task/1730
+
+Tags: sprague-grundy
+
+## Đề bài
+Trò chơi Nim cổ điển: có n đống que, hai người chơi luân phiên lấy đi một số que
+bất kỳ (ít nhất 1) từ MỘT đống không rỗng. Người lấy được que cuối cùng sẽ thắng.
+Với mỗi test case, hãy xác định người đi trước ("first") hay người đi sau
+("second") thắng khi cả hai chơi tối ưu.
+
+## Ý tưởng
+Áp dụng định lý Nim (Bouton's theorem):
+- Xét XOR kích thước của tất cả các đống: X = x_1 XOR x_2 XOR ... XOR x_n.
+- Nếu X != 0 thì người đi trước ("first") thắng.
+- Nếu X == 0 thì người đi sau ("second") thắng.
+
+Vì sao đúng (lý luận Sprague-Grundy / XOR):
+- Trạng thái có X == 0 là trạng thái thua (P-position): mọi nước đi đều làm X trở
+  thành khác 0, vì khi thay đổi đúng một đống thì bit cao nhất bị đổi khiến XOR
+  không thể vẫn bằng 0.
+- Trạng thái có X != 0 là trạng thái thắng (N-position): luôn tồn tại một nước đi
+  đưa XOR về 0. Cụ thể, gọi b là bit cao nhất của X; chọn một đống có bit đó bằng
+  1 (chắc chắn tồn tại), giảm đống đó xuống giá trị (giá trị hiện tại XOR X); giá
+  trị mới nhỏ hơn giá trị cũ nên hợp lệ, và làm XOR toàn cục bằng 0.
+- Trạng thái kết thúc (mọi đống rỗng) có X == 0 và là trạng thái thua cho người
+  đến lượt. Bằng quy nạp, X == 0 luôn thua, X != 0 luôn thắng.
+
+Cài đặt: với mỗi test case, đọc n cùng n số, tính XOR dồn tất cả, in "first" nếu
+kết quả khác 0, ngược lại in "second".
+
+## Độ phức tạp
+- Thời gian: O(tổng n) trên tất cả test case, tức O(2*10^5). Rất nhẹ.
+- Bộ nhớ phụ: O(1) cho biến XOR dồn.

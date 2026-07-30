@@ -1,0 +1,47 @@
+Distinct Values Subarrays - CSES 3420
+https://cses.fi/problemset/task/3420
+
+Tags: counting, sliding-window, two-pointers
+
+## Đề bài
+Cho một mảng gồm n số nguyên. Hãy đếm số lượng subarray (dãy con liên tiếp) mà
+trong đó tất cả các phần tử đều phân biệt (không có phần tử nào trùng nhau).
+
+## Ý tưởng
+Sử dụng kỹ thuật two-pointer (sliding window):
+- Duyệt con trỏ phải right từ 0 đến n-1. Với mỗi right, ta duy trì con trỏ trái
+  left nhỏ nhất sao cho cửa sổ [left, right] gồm toàn phần tử phân biệt.
+- Dùng hash map lưu vị trí xuất hiện gần nhất của mỗi giá trị (bản C++ dùng
+  `unordered_map`, bản Python dùng `dict`). Khi xét a[right], nếu giá trị a[right]
+  đã từng xuất hiện ở vị trí p >= left thì phải dời left lên p + 1 để loại bỏ phần
+  tử trùng, tức là: left = max(left, last[a[right]] + 1).
+- Sau khi cập nhật left, mọi subarray kết thúc tại right và bắt đầu tại một vị trí
+  trong đoạn [left, right] đều gồm các phần tử phân biệt. Số subarray như vậy là
+  (right - left + 1). Cộng dồn giá trị này vào đáp án.
+- Cập nhật last[a[right]] = right rồi tiếp tục sang right kế tiếp.
+
+Vì sao đúng: với mỗi right cố định, tập các left hợp lệ là một đoạn liền
+[L, right] (nếu [left, right] phân biệt thì mọi cửa sổ con [left', right] với
+left' > left cũng phân biệt). Con trỏ left chỉ tăng dần (monotonic) vì khi right
+tăng thì ràng buộc chỉ chặt thêm, nên mỗi subarray phân biệt được đếm đúng một
+lần tại chỉ số kết thúc của nó.
+
+Kiểm tra ví dụ a = [1, 2, 1, 3]:
+  right=0: left=0, cộng 1 -> total=1
+  right=1: left=0, cộng 2 -> total=3
+  right=2: a=1 đã ở vị trí 0, left=1, cộng 2 -> total=5
+  right=3: left=1, cộng 3 -> total=8
+Đáp án 8, khớp với đề.
+
+## Độ phức tạp
+- Thời gian: O(n) vì mỗi con trỏ chỉ đi tới, mỗi phần tử được xử lý O(1) lần
+  (thao tác hash map trung bình O(1)).
+- Bộ nhớ: O(n) cho hash map. Bản C++ đọc và xử lý từng phần tử ngay lập tức nên
+  ngoài hash map không lưu cả mảng đầu vào. Bản Python đọc toàn bộ input một lần
+  rồi giữ mảng token `a` trong bộ nhớ (dạng bytes, không ép sang int), nên tốn
+  thêm O(n) cho mảng này.
+
+Bản C++ đặt trước dung lượng (`reserve(2*n)`) và hạ `max_load_factor` cho
+`unordered_map`, đồng thời xử lý phần tử ngay khi đọc; đáp án có thể tới ~2*10^10
+nên dùng `long long`. Bản Python so sánh trực tiếp các token bytes (không ép sang
+int) và số nguyên Python không giới hạn nên không lo tràn số.

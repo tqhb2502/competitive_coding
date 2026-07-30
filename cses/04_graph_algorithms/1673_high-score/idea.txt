@@ -1,0 +1,60 @@
+High Score - CSES 1673
+https://cses.fi/problemset/task/1673
+
+Tags: bellman-ford, bfs
+
+## Đề bài
+Cho một đồ thị CÓ HƯỚNG, CÓ TRỌNG SỐ gồm n đỉnh và m cạnh; trọng số mỗi cạnh có thể
+âm hoặc dương. Bắt đầu ở đỉnh 1 và cần đi tới đỉnh n. Mỗi khi đi qua một cạnh, điểm số
+được cộng thêm trọng số của cạnh đó. Hãy tìm SỐ ĐIỂM LỚN NHẤT có thể đạt được khi đi từ
+đỉnh 1 đến đỉnh n. Nếu có thể thu được điểm lớn vô hạn thì in ra -1.
+
+## Ý tưởng
+1. Mô hình hóa
+- Bài toán tương đương tìm ĐƯỜNG ĐI CÓ TỔNG TRỌNG SỐ LỚN NHẤT (longest path) từ đỉnh 1
+  đến đỉnh n.
+- Nếu tồn tại một chu trình DƯƠNG (positive cycle) nằm trên một đường đi hợp lệ từ 1 tới
+  n thì có thể lặp vô hạn để tăng điểm không giới hạn, khi đó đáp án là -1.
+
+2. Thuật toán: Bellman-Ford cho longest path
+- Vì có thể có chu trình dương nên không dùng được Dijkstra. Ta dùng Bellman-Ford (biến
+  thể tối đa hóa): đặt dist[1] = 0, các đỉnh khác = -vô cực.
+- Điều kiện relax: nếu dist[a] hữu hạn và dist[a] + x > dist[b] thì cập nhật dist[b].
+
+3. Cắt tỉa (pruning) để giảm kích thước bài toán
+- R1 = tập đỉnh REACHABLE từ đỉnh 1 (BFS trên đồ thị xuôi).
+- R2 = tập đỉnh CÓ THỂ ĐI TỚI đỉnh n (BFS trên đồ thị đảo ngược - reverse graph).
+- good = R1 giao R2. Chỉ những đỉnh vừa tới được từ 1 vừa đi được tới n mới ảnh hưởng
+  đến kết quả, nên chỉ giữ lại các cạnh có cả hai đầu mút thuộc good.
+- Nhận xét quan trọng: mọi đỉnh nằm trên một đường đi từ 1 tới một đỉnh good cũng là
+  good, nên đồ thị con good bảo toàn tính liên thông từ đỉnh 1 và giữ nguyên tính đúng
+  đắn.
+
+4. Phát hiện chu trình dương và tính đúng đắn
+- Nếu đồ thị con good KHÔNG có chu trình dương thì đường đi dài nhất là đường đi đơn, có
+  tối đa (cntgood - 1) cạnh (cntgood = số đỉnh good). Do đó chạy (cntgood - 1) vòng relax
+  là đủ để mọi dist đạt giá trị cuối cùng.
+- Chạy thêm 1 vòng relax nữa (detection round): nếu vẫn còn cạnh có thể relax nghĩa là có
+  chu trình dương ảnh hưởng tới đường đi. Vì mọi đỉnh good đều đi tới được n nên chu trình
+  này chắc chắn nằm trên một đường đi 1 -> n, do đó đáp án là -1.
+- Ngược lại, đáp án là dist[n].
+- Code C++ quét toàn bộ các cạnh good trong mỗi vòng. Nếu một vòng không có cập nhật
+  nào thì đã hội tụ và dừng sớm; sau cùng LUÔN quét thêm toàn bộ cạnh good đúng một lần
+  để phát hiện chu trình dương (nếu đã hội tụ thì vòng này không tìm thấy gì).
+- Code Python dùng biến thể active-set (kiểu SPFA): mỗi vòng chỉ duyệt các đỉnh vừa
+  được cập nhật ở vòng trước thay vì quét lại toàn bộ cạnh, vẫn giữ chặn
+  O(cntgood * E_good) nhưng nhanh hơn nhiều trên thực tế. Nếu tập active trở nên rỗng
+  trước khi chạy hết (cntgood - 1) vòng thì đã hội tụ (chắc chắn không có chu trình
+  dương) và BỎ QUA vòng kiểm tra; ngược lại mới quét toàn bộ cạnh good một lần để phát
+  hiện chu trình dương.
+
+## Độ phức tạp
+- BFS cắt tỉa: O(n + m).
+- Bellman-Ford: O(V_good * E_good), xấu nhất O(n * m) =
+  2500 * 5000 = 1.25 * 10^7 phép relax; có thể dừng sớm khi một vòng không đổi.
+- Bộ nhớ: O(n + m).
+
+Việc chỉ giữ đồ thị con good có thể giảm đáng kể số cạnh thực tế; ngay cả cận
+xấu nhất 1.25 * 10^7 phép relax vẫn phù hợp với code C++. Bản Python dùng active-set
+để tránh quét lại toàn bộ cạnh mỗi vòng nên nhanh hơn nhiều so với Bellman-Ford quét
+đầy đủ, dù chặn xấu nhất về lý thuyết vẫn là O(cntgood * E_good).

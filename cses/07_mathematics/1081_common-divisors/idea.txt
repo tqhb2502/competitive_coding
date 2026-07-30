@@ -1,0 +1,34 @@
+Common Divisors - CSES 1081
+https://cses.fi/problemset/task/1081
+
+Tags: divisor-sieve, sieve
+
+## Đề bài
+Cho mảng gồm n số nguyên dương (n <= 2*10^5, mỗi giá trị x_i <= 10^6). Hãy tìm
+hai phần tử sao cho ước chung lớn nhất (gcd) của chúng là lớn nhất có thể, rồi in
+ra giá trị gcd lớn nhất đó.
+
+## Ý tưởng
+Sử dụng harmonic sieve (đếm bội số).
+- Gọi d là một ước chung khả dĩ của một cặp nào đó. Nếu có ÍT NHẤT 2 phần tử trong
+  mảng cùng chia hết cho d thì tồn tại một cặp (a, b) với d | a và d | b, do đó
+  gcd(a, b) là bội của d, tức là gcd(a, b) >= d. Vậy đáp án chính là giá trị d LỚN
+  NHẤT sao cho số phần tử của mảng chia hết cho d là >= 2.
+- Vì sao đúng: nếu đáp án thật sự là G = gcd(a, b) lớn nhất, thì cả a và b đều chia
+  hết cho G nên khi xét d = G ta đếm được >= 2 phần tử; và không có d nào lớn hơn G
+  thỏa mãn (nếu có d' > G có >= 2 bội thì cặp tương ứng có gcd >= d' > G, mâu thuẫn).
+  Do đó lấy d lớn nhất có >= 2 bội chính là đáp án.
+
+Cách cài đặt hiệu quả:
+- Lập mảng đếm cnt[v] = số phần tử trong mảng có giá trị bằng v, với v từ 0..M (M là
+  giá trị lớn nhất xuất hiện, M <= 10^6).
+- Với mỗi d từ M giảm dần về 1, số phần tử chia hết cho d là tổng cnt[d] + cnt[2d] +
+  cnt[3d] + ... Ta duyệt các bội của d bằng một vòng lặp; ngay khi tổng đạt 2 thì
+  có thể in d và kết thúc, không cần đếm nốt các bội còn lại.
+- d đầu tiên (lớn nhất) mà tổng này >= 2 chính là đáp án; in ra và dừng. Vì n >= 2 nên
+  chậm nhất tới d = 1 luôn cho tổng = n >= 2, đáp án luôn tồn tại.
+
+## Độ phức tạp
+- Thời gian: tổng công việc của vòng sieve là sum_{d=1}^{M} (M/d) = M * H(M) ~
+  M*ln(M), tức O(M log M); việc dừng sớm chỉ làm giảm số phép cộng thực tế.
+- Bộ nhớ: O(n + M): O(n) cho mảng lưu toàn bộ đầu vào + O(M) cho mảng đếm cnt.

@@ -1,0 +1,34 @@
+Bouncing Ball Cycle - CSES 3216
+https://cses.fi/problemset/task/3216
+
+Tags: extended-euclid, integer-math
+
+## Đề bài
+Quả bóng xuất phát ở góc trên trái của bảng kích thước n x m và di chuyển theo
+đường chéo, phản xạ mỗi khi chạm biên. Với mỗi truy vấn, hãy tìm thời điểm đầu
+tiên bóng trở về đúng ô ban đầu và số ô khác nhau mà bóng đã đi qua.
+
+## Ý tưởng
+Đặt a = n - 1, b = m - 1. Hai tọa độ của bóng dao động độc lập với chu kỳ lần
+lượt là 2a và 2b, nên thời điểm quay lại góc xuất phát là T = lcm(2a, 2b) =
+2 * lcm(a, b).
+
+Gọi g = gcd(a, b). Một ô có khoảng cách (x, y) tới góc đầu (0 <= x <= a,
+0 <= y <= b) được thăm khi tồn tại thời điểm t đồng dư với một trong ±x theo
+modulo 2a và đồng dư với một trong ±y theo modulo 2b. Theo định lý phần dư
+Trung Hoa, hệ này có nghiệm khi và chỉ khi x đồng dư y hoặc x đồng dư -y theo
+modulo 2g.
+
+Từ đó ta đếm số ô được thăm trong O(1). Đặt A = a/g, B = b/g. Trên đoạn 0..a,
+số phần tử rơi vào mỗi lớp thặng dư modulo 2g bằng floor(A/2), cộng thêm lớp 0
+nếu A chẵn, hoặc mọi lớp 0..g nếu A lẻ; mô tả tương tự cho cạnh b với B. Ta
+tính tổng số cặp có phần dư bằng nhau, cộng số cặp có phần dư đối nhau, rồi trừ
+đi các lớp tự đối (lớp 0 và lớp g) vì chúng bị đếm hai lần.
+
+Công thức chu kỳ chính là bội chung dương nhỏ nhất khiến cả hai tọa độ tam giác
+cùng về 0. Hai quan hệ "phần dư bằng nhau" và "phần dư đối nhau" chỉ giao nhau
+tại lớp 0 và lớp g, nên bước trừ cuối bảo đảm mỗi ô được đếm đúng một lần.
+
+## Độ phức tạp
+O(log(min(a, b))) thời gian cho mỗi truy vấn (chi phí duy nhất là phép tính
+gcd theo thuật toán Euclid, phần còn lại là số học O(1)), O(1) bộ nhớ.

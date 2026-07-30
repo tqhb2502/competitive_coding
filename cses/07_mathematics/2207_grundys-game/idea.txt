@@ -1,0 +1,56 @@
+Grundy's Game - CSES 2207
+https://cses.fi/problemset/task/2207
+
+Tags: sprague-grundy
+
+## Đề bài
+Có một đống gồm n xu, hai người chơi lần lượt đi. Mỗi nước đi chọn một đống và
+tách nó thành HAI đống không rỗng có KÍCH THƯỚC KHÁC NHAU. Người thực hiện nước
+đi cuối cùng (khiến đối thủ không còn nước đi) là người thắng. Với mỗi n cho
+trước, in "first" nếu người đi trước thắng, "second" nếu người đi sau thắng, giả
+sử cả hai chơi tối ưu.
+
+## Ý tưởng
+Dùng lý thuyết trò chơi tổ hợp Sprague-Grundy. Đây là trò chơi kiểu "normal
+play" (người không đi được là người thua). Mỗi trạng thái là một đống kích thước
+k mang giá trị Grundy g(k) (nimber). Một nước đi tách đống k thành a và b với
+a + b = k, a khác b, a, b >= 1; vì hai đống mới độc lập nhau nên giá trị Grundy
+của trạng thái kết quả là XOR của hai đống: g(a) XOR g(b).
+
+Công thức truy hồi (mex = minimum excludant, số nguyên không âm nhỏ nhất chưa
+xuất hiện):
+    g(k) = mex { g(a) XOR g(k-a) : 1 <= a < k-a }
+Cụ thể a chạy từ 1 đến floor((k-1)/2) để bảo đảm a < b và a khác b.
+
+Điều kiện thắng thua:
+- Nếu g(n) == 0 thì đây là P-position: người ĐANG PHẢI đi sẽ thua, tức "second"
+  thắng.
+- Nếu g(n) khác 0 thì người đi trước có nước đi đưa về P-position, tức "first"
+  thắng.
+
+Kiểm tra vài giá trị đầu (khớp OEIS A002188):
+    g(1)=0, g(2)=0, g(3)=1, g(4)=0, g(5)=2, g(6)=1, g(7)=0, g(8)=2, ...
+    Ví dụ n=6 -> g=1 -> first; n=7 -> g=0 -> second; n=8 -> g=2 -> first.
+
+Điểm mấu chốt cho miền n <= 10^6 của bài: bảng P-position đã biết và được tiền
+tính cho miền này có phần tử cuối là 1222 (xem Winning Ways / OEIS A002188).
+Đây là dữ kiện chuyên biệt mà cài đặt dựa vào, không phải kết luận suy ra chỉ
+từ việc chạy truy hồi tới 1300. Danh sách 41 P-position trong miền bài:
+  1, 2, 4, 7, 10, 20, 23, 26, 50, 53, 270, 273, 276, 282, 285, 288, 316, 334,
+  337, 340, 346, 359, 362, 365, 386, 389, 392, 566, 630, 633, 636, 639, 673,
+  676, 682, 685, 923, 926, 929, 932, 1222.
+
+Vì vậy code không cần tính g(n) cho tận n = 10^6 (điều đó là O(n^2) và bất khả
+thi). Nó tính lại g(k) tới B = 1300 bằng đúng công thức truy hồi để tái tạo phần
+P-position cần tra, rồi dùng dữ kiện tiền tính trên cho các giá trị lớn hơn:
+    - nếu n <= B: trả lời "second" nếu g(n)==0, ngược lại "first";
+    - nếu n > B : chắc chắn g(n) khác 0 (không còn P-position nào), trả lời
+      "first".
+Cách này TỰ SINH tập P-position (không hard-code, tránh chép sai) và đã được đối
+chiếu khớp hoàn toàn với danh sách trên.
+
+## Độ phức tạp
+- Tiền xử lý: tính g(k) cho k <= B bằng vòng lặp mex, tổng thao tác cỡ
+  B^2/4 xấp xỉ 4.2 x 10^5, gần như tức thời. Bộ nhớ O(B).
+- Trả lời t truy vấn: O(t) với tra cứu O(1) mỗi truy vấn.
+- Tổng: O(B^2 + t) thời gian, O(B) bộ nhớ.

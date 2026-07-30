@@ -1,0 +1,52 @@
+Book Shop - CSES 1158
+https://cses.fi/problemset/task/1158
+
+Tags: knapsack
+
+## Đề bài
+Có n cuốn sách, cuốn thứ i có giá price[i] và số trang pages[i]. Ngân sách tối
+đa là x và mỗi cuốn chỉ được mua nhiều nhất một lần. Hãy tối đa hóa tổng số
+trang mua được sao cho tổng giá không vượt quá x.
+Ràng buộc: 1 <= n <= 1000, 1 <= x <= 10^5, 1 <= giá, số trang <= 1000. Bài này
+không có phép chia lấy dư (modulo).
+
+Định dạng vào/ra:
+- Dòng 1: n và x. Dòng 2: n số nguyên giá của từng cuốn. Dòng 3: n số nguyên số
+  trang. In ra một số nguyên: tổng số trang lớn nhất, kèm ký tự xuống dòng.
+
+## Ý tưởng
+Đây chính là bài 0/1 knapsack (bài toán cái túi) kinh điển.
+
+Trạng thái DP:
+- dp[j] = số trang lớn nhất có thể đạt được khi tổng giá tiền KHÔNG VƯỢT QUÁ j
+  (với j chạy từ 0 đến x). Cách hiểu "không vượt quá j" giúp mảng dp luôn không
+  giảm theo j, nhờ đó đáp án cuối cùng chính là dp[x].
+
+Khởi tạo (base case):
+- dp[j] = 0 với mọi j, vì khi chưa xét cuốn sách nào thì số trang bằng 0.
+
+Chuyển trạng thái (xét lần lượt từng cuốn i, giá p = price[i], số trang v = pages[i]):
+- Với mỗi j >= p: dp[j] = max(dp[j], dp[j - p] + v), tức là chọn giữa "không mua
+  cuốn i" (giữ dp[j]) hoặc "mua cuốn i" (dp[j - p] + v).
+- Vì đây là 0/1 knapsack (mỗi cuốn dùng tối đa 1 lần) nên khi dùng mảng 1 chiều
+  ta phải bảo đảm dp[j - p] vẫn là giá trị "trước khi xét cuốn i". Cách kinh điển
+  là duyệt j GIẢM DẦN (từ x xuống p) để tránh dùng lại cùng một cuốn nhiều lần.
+
+Đáp án:
+- dp[x] là số trang lớn nhất mua được với ngân sách x. Do dp không giảm theo j nên
+  dp[x] cũng bằng max(dp).
+
+Hai lời giải dùng CÙNG một thuật toán (0/1 knapsack, cùng trạng thái/chuyển
+trạng thái/đáp án), chỉ khác cách viết vòng lặp trong:
+- solution.cpp: duyệt j GIẢM DẦN bằng vòng lặp tường minh như mô tả ở trên.
+- solution.py: cập nhật theo lô bằng phép cắt mảng (slice). seg_new = dp[p:x+1]
+  ("không mua cuốn i") và seg_old = dp[0:x+1-p] ("mua cuốn i") được đọc thành bản
+  sao độc lập trước khi ghi đè, nên không có xung đột đọc/ghi và hoàn toàn tương
+  đương với việc duyệt j giảm dần. (Có thêm điều kiện bỏ qua cuốn có giá p > x.)
+
+## Độ phức tạp
+- Thời gian: O(n * x) cho cả hai lời giải, tối đa 1000 * 100000 = 1e8 phép cập
+  nhật. Bản Python tuy cùng độ phức tạp nhưng các phép cập nhật chạy ở tầng C
+  (nhờ cắt mảng và zip) nên đủ nhanh, không TLE.
+- Bộ nhớ phụ của DP là O(x); tính cả hai mảng giá và số trang, tổng bộ nhớ
+  là O(n+x).

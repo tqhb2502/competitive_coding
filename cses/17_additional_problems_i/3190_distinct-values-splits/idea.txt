@@ -1,0 +1,27 @@
+Distinct Values Splits - CSES 3190
+https://cses.fi/problemset/task/3190
+
+Tags: coordinate-compression, counting, prefix-sum, range-query, sliding-window, sorting, two-pointers
+
+## Đề bài
+Cho mảng gồm n phần tử. Đếm số cách chia mảng thành các đoạn liên tiếp sao
+cho trong mỗi đoạn, mọi giá trị đều phân biệt. In kết quả theo modulo 10^9+7.
+Ràng buộc: n <= 2*10^5.
+
+## Ý tưởng
+Quy hoạch động kết hợp cửa sổ trượt. Gọi dp[i] là số cách chia prefix 1..i,
+với dp[0] = 1. Gọi left là vị trí nhỏ nhất sao cho đoạn [left, i] không có giá
+trị lặp; khi đọc phần tử x_i ta cập nhật left = max(left, last[x_i] + 1), trong
+đó last lưu vị trí xuất hiện gần nhất của mỗi giá trị.
+
+Nếu đoạn cuối bắt đầu tại start thì phần trước đó có dp[start-1] cách, và đoạn
+cuối [start, i] hợp lệ chính xác khi left <= start <= i. Do đó
+  dp[i] = sum(dp[j]) với left-1 <= j <= i-1.
+Duy trì prefix[i] = dp[0] + ... + dp[i] để lấy tổng đoạn trong O(1) bằng phép
+trừ hai prefix sum. Đáp án là dp[n].
+
+Để lưu last một cách tất định ta nén tọa độ các giá trị bằng một bản sao đã
+sắp xếp của mảng, rồi dùng lower_bound để tra chỉ số nén.
+
+## Độ phức tạp
+Thời gian O(n log n) do nén tọa độ và tra cứu lower_bound, bộ nhớ O(n).

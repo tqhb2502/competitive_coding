@@ -1,0 +1,50 @@
+Intersection Points - CSES 1740
+https://cses.fi/problemset/task/1740
+
+Tags: coordinate-compression, fenwick, sorting, sweep-line
+
+## Đề bài
+Cho n đoạn thẳng trên mặt phẳng, mỗi đoạn hoặc nằm ngang (horizontal, y1 = y2)
+hoặc nằm dọc (vertical, x1 = x2). Đề bảo đảm không có hai đoạn song song cắt
+nhau và không có endpoint nào là giao điểm. Do đó mỗi giao điểm nhất thiết là
+giao của đúng một đoạn ngang với một đoạn dọc, cắt nhau tại điểm nằm bên trong
+ngặt (strict interior) của cả hai đoạn. Hãy đếm tổng số giao điểm.
+
+## Ý tưởng
+Dùng sweep line quét một đường thẳng đứng theo trục x từ trái sang phải, kết
+hợp với Binary Indexed Tree (BIT / Fenwick tree) trên trục y.
+
+- Mỗi đoạn ngang [xl, xr] tại độ cao y sinh ra hai sự kiện:
+    * "add"    tại x = xl  -> thêm y vào cấu trúc (đoạn bắt đầu hoạt động)
+    * "remove" tại x = xr  -> bỏ y ra (đoạn kết thúc hoạt động)
+- Mỗi đoạn dọc tại hoành độ x, trải từ y_low đến y_high, sinh ra một sự kiện
+  "query" tại x: đếm xem có bao nhiêu đoạn ngang đang hoạt động (đã add nhưng
+  chưa remove theo thứ tự sự kiện, tức xl <= x <= xr) có y nằm trong
+  [y_low, y_high]. Đó chính là số giao điểm mà đoạn dọc này tạo ra. Do đề bảo
+  đảm endpoint không là giao điểm, cách hiểu inclusive này cho cùng tập giao
+  hợp lệ với điều kiện hình học ngặt xl < x < xr.
+
+Sắp xếp các sự kiện theo x tăng dần; khi trùng x thì dùng thứ tự type
+add (0) < query (1) < remove (2). Nhờ bảo đảm không endpoint nào là giao điểm
+nên mọi thứ tự khi trùng x đều cho cùng kết quả; ta chọn thứ tự trên cho an
+toàn và nhất quán.
+
+Đếm số y trong [y_low, y_high] của tập điểm đang hoạt động là bài toán
+range-count động -> dùng BIT trên trục y. Cập nhật add/remove là point update
+(+1 / -1), truy vấn là range sum = prefix(y_high) - prefix(y_low - 1).
+
+Nén tọa độ (coordinate compression): chỉ những y của đoạn ngang mới được đếm,
+nên ta nén tập các y đó thành rank 1..m (m = số y phân biệt của đoạn ngang).
+Nhờ đó BIT chỉ cần kích thước m+1 thay vì cỡ 2*10^6, giảm bộ nhớ và hằng số
+log. Với mỗi đoạn dọc, dùng `lower_bound` / `upper_bound` trên mảng y đã sắp
+để lấy nhanh khoảng rank tương ứng với
+[y_low, y_high]. Toàn bộ so sánh và cộng dồn dùng số nguyên (exact integer
+arithmetic), không dùng float nên không có sai số.
+
+Hai bản C++ và Python dùng chung thuật toán và cùng độ phức tạp; bản Python thay
+`lower_bound` / `upper_bound` bằng `bisect_left` / `bisect_right`, cài BIT bằng
+list thường và đọc toàn bộ input một lần (sys.stdin.buffer.read).
+
+## Độ phức tạp
+- Số sự kiện O(n), sắp xếp O(n log n), mỗi thao tác BIT O(log m).
+- Thời gian tổng cộng O(n log n). Bộ nhớ O(n) cho BIT và danh sách sự kiện.

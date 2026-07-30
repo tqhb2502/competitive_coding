@@ -1,0 +1,21 @@
+Stick Divisions - CSES 1161
+https://cses.fi/problemset/task/1161
+
+Tags: optimal-merge
+
+## Đề bài
+Cho một thanh dài x, cần cắt thành n đoạn có độ dài cho trước. Mỗi lần chẻ một
+thanh thành hai phần tốn chi phí đúng bằng độ dài của thanh trước khi chẻ. Hãy
+tìm tổng chi phí nhỏ nhất để cắt được tất cả các đoạn mong muốn.
+
+## Ý tưởng
+Đảo ngược quá trình: thay vì cắt, ta ghép n đoạn đích lại thành thanh ban đầu.
+Ghép hai đoạn dài a và b tốn a+b, đúng bằng chi phí của lần cắt tương ứng. Đây
+chính là bài toán mã Huffman: luôn lấy hai đoạn ngắn nhất, cộng chi phí a+b vào
+đáp án rồi đẩy tổng a+b trở lại hàng đợi. Dùng min-heap (priority_queue) để mỗi
+bước lấy nhanh hai giá trị nhỏ nhất. Vì trong cây ghép tối ưu, hai lá sâu nhất
+luôn có thể chọn là hai đoạn ngắn nhất, nên tham lam ghép liên tiếp hai đoạn nhỏ
+nhất cho tổng chi phí nhỏ nhất.
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n).

@@ -1,0 +1,39 @@
+Range Interval Queries - CSES 3163
+https://cses.fi/problemset/task/3163
+
+Tags: coordinate-compression, fenwick, inclusion-exclusion, offline, sorting, sweep-line, wavelet-matrix
+
+## Đề bài
+Cho một mảng x gồm n số nguyên và q truy vấn. Mỗi truy vấn cho bốn số a, b, c, d;
+hãy đếm số chỉ số i thỏa đồng thời a ≤ i ≤ b và c ≤ x_i ≤ d. Nói cách khác, đây là
+truy vấn đếm hai chiều: một điều kiện trên khoảng chỉ số và một điều kiện trên
+khoảng giá trị.
+
+## Ý tưởng
+Xử lý OFFLINE bằng Fenwick tree (BIT) kết hợp nén tọa độ (coordinate compression).
+
+Định nghĩa f(i, v) = số chỉ số j thỏa 1 ≤ j ≤ i và x_j ≤ v. Khi đó đáp án mỗi truy
+vấn tính bằng nguyên lý bao hàm - loại trừ (inclusion-exclusion) trên hình chữ nhật
+hai chiều [a, b] × [c, d]:
+
+    answer = f(b, d) - f(b, c-1) - f(a-1, d) + f(a-1, c-1)
+
+Nén tọa độ: nén các giá trị x_i về rank 1..m (m là số giá trị phân biệt), dùng
+mảng giá trị đã sắp xếp và loại trùng. Rank của x_i được tìm bằng
+`std::lower_bound` rồi cộng 1. Với một ngưỡng t bất kỳ, số giá trị ≤ t được tìm
+bằng `std::upper_bound`, và đây cũng là chỉ số prefix cần hỏi trên BIT.
+
+Quét theo chỉ số (sweep line): duyệt i từ 1 đến n. Tại bước i, thêm phần tử x_i vào
+BIT tại rank của nó (point update +1). Mỗi số hạng f(i, v) trở thành một sự kiện
+"tại chỉ số i, hỏi prefix sum của BIT đến rank ứng với v". Vì ta quét i tăng dần,
+khi xử lý sự kiện tại i thì BIT đang chứa đúng mọi phần tử có chỉ số ≤ i, nên prefix
+sum trả về đúng f(i, v). Mỗi truy vấn tách thành tối đa bốn sự kiện; ta gom sự kiện
+theo chỉ số i vào các bucket (events[i]) để khỏi phải sắp xếp.
+
+Tính đúng đắn: BIT prefix sum đến rank(v) đếm đúng số phần tử đã thêm (chỉ số ≤ i)
+có giá trị ≤ v, tức là f(i, v). Công thức bao hàm - loại trừ cho ra đúng số phần tử
+nằm trong hình chữ nhật [a, b] × [c, d]. Các trường hợp biên (a-1 = 0 nghĩa là không
+có phần tử nào; ngưỡng nhỏ hơn mọi giá trị cho rank = 0) đều được xử lý để trả về 0.
+
+## Độ phức tạp
+Thời gian O((n + q) log n), bộ nhớ O(n + q).

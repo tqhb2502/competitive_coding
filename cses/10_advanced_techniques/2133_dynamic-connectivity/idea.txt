@@ -1,0 +1,66 @@
+Dynamic Connectivity - CSES 2133
+https://cses.fi/problemset/task/2133
+
+Tags: offline-dynamic-connectivity, rollback-dsu, segment-tree
+
+## Đề bài
+Cho đồ thị vô hướng với n đỉnh và m cạnh ban đầu. Sau đó có k sự kiện, mỗi sự
+kiện là thêm một cạnh (loại 1) hoặc xóa một cạnh (loại 2). Ta phải in ra k+1 số:
+số thành phần liên thông của đồ thị ban đầu (trước sự kiện đầu tiên), và sau mỗi
+sự kiện tiếp theo.
+
+Ràng buộc: 2 <= n <= 1e5; 1 <= m, k <= 1e5.
+
+## Ý tưởng
+Đây là bài toán offline dynamic connectivity. Việc thêm/xóa cạnh không thể giải
+trực tiếp bằng DSU thông thường vì DSU không hỗ trợ thao tác xóa (undo). Kỹ thuật
+chuẩn là: segment tree trên trục thời gian + DSU-with-rollback (union by size,
+KHÔNG path compression).
+
+Coi các "trạng thái" là 0, 1, ..., k (trạng thái 0 là đồ thị ban đầu, trạng thái
+t là sau khi áp dụng t sự kiện đầu tiên). Mỗi cạnh cụ thể tồn tại trong một (hoặc
+nhiều) khoảng liên tiếp các trạng thái:
+  - Cạnh ban đầu: bắt đầu tồn tại từ trạng thái 0.
+  - Cạnh thêm bởi sự kiện i (loại 1): bắt đầu tồn tại từ trạng thái i.
+  - Cạnh xóa bởi sự kiện i (loại 2): tồn tại trong khoảng [start, i-1], với start
+    là thời điểm nó được thêm vào (hoặc 0 nếu là cạnh ban đầu).
+  - Cạnh không bao giờ bị xóa: tồn tại đến tận trạng thái k, khoảng [start, k].
+
+Ta dùng một unordered_map từ mã hóa cặp đỉnh (min*BASE + max) sang một stack các
+thời điểm start đang "mở". Khi xóa cạnh, ta lấy start ở đỉnh stack ra và sinh một
+khoảng [start, i-1]. Cách dùng stack xử lý đúng cả trường hợp có nhiều cạnh trùng
+lặp giữa cùng một cặp đỉnh (multi-edge), vì mỗi bản sao có tuổi thọ riêng.
+
+Segment tree trên thời gian: xây segment tree trên miền [0, k] (k+1 lá). Với mỗi
+(cạnh, khoảng [l, r]), ta thêm cạnh đó vào O(log k) node phủ khoảng [l, r] (giống
+cách cập nhật "lazy" phủ đoạn). Tổng số bản ghi là O((m + k) log k), vừa đủ bộ nhớ.
+
+Sau đó DFS segment tree:
+  - Tại mỗi node: ghi lại checkpoint = kích thước stack rollback, rồi union tất cả
+    các cạnh lưu tại node đó.
+  - Nếu là node lá (nl == nr): số thành phần liên thông của trạng thái nl chính là
+    dsu.comp hiện tại.
+  - Nếu không phải lá: đệ quy xuống hai con.
+  - Trước khi trả về: rollback tất cả các union đã thực hiện tại node này về
+    checkpoint.
+
+DSU-with-rollback: dùng union by size để cây find có độ cao O(log n), và KHÔNG
+dùng path compression (vì path compression không thể undo một cách rẻ tiền). Mỗi
+lần union thực sự làm thay đổi cấu trúc, ta lưu (root, child) vào stack ops và
+giảm biến đếm comp. Khi rollback, ta bật các bản ghi ra khỏi stack, khôi phục
+par[child] = child, trừ lại sz[root], và tăng comp. Số thành phần liên thông luôn
+bằng comp = n - (số union thành công trên đường từ gốc xuống node hiện tại).
+
+Tính đúng đắn: tại mỗi trạng thái t, tập cạnh đang "sống" là đúng tập cạnh mà các
+khoảng tồn tại của chúng chứa t. Trong quá trình DFS, trên đường từ gốc đến lá t,
+các node mà ta đi qua chính là các node mà segment tree dùng để biểu diễn tập
+khoảng chứa t; do đó tất cả (và chỉ) các cạnh sống tại t đã được union khi ta chạm
+lá t. Vì vậy dsu.comp tại lá t là số thành phần liên thông đúng của trạng thái t.
+
+## Độ phức tạp
+- Thời gian: O((m + k) log k * log n). Mỗi cạnh xuất hiện trong O(log k) node, mỗi
+  union/find tốn O(log n) — vì DSU chỉ dùng union by size, KHÔNG path compression
+  (để rollback được), nên chi phí find là O(log n) chứ không phải alpha (nghịch đảo
+  Ackermann). Với n, m, k = 1e5 chạy rất nhanh trong giới hạn thời gian của CSES.
+- Bộ nhớ: O((m + k) log k) cho các bản ghi cạnh trong segment tree, cộng O(n) cho
+  DSU và O(k) cho mảng kết quả.

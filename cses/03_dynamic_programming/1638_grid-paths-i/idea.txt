@@ -1,0 +1,38 @@
+Grid Paths I - CSES 1638
+https://cses.fi/problemset/task/1638
+
+Tags: grid-dp
+
+## Đề bài
+Cho lưới n x n, mỗi ô là ô trống ('.') hoặc ô có bẫy ('*'). Đếm số đường đi từ
+ô trên-trái (0,0) đến ô dưới-phải (n-1,n-1), mỗi bước chỉ được đi sang phải hoặc
+đi xuống dưới, không được đi vào ô có bẫy. Kết quả lấy modulo 1000000007.
+
+## Ý tưởng
+Quy hoạch động (DP) trên lưới.
+- Trạng thái: dp[i][j] = số đường đi hợp lệ từ ô (0,0) đến ô (i,j).
+- Chuyển trạng thái: nếu ô (i,j) là bẫy ('*') thì dp[i][j] = 0 (không thể đứng ở đó,
+  đồng thời tự động loại mọi đường đi qua bẫy). Ngược lại
+      dp[i][j] = dp[i-1][j] + dp[i][j-1]   (mod MOD),
+  vì bước cuối đến (i,j) hoặc từ ô phía trên đi xuống, hoặc từ ô bên trái đi sang phải;
+  hai khả năng này rời nhau và bao phủ mọi đường. Các ô ngoài lưới (i-1<0 hoặc j-1<0)
+  coi như giá trị 0.
+- Cơ sở: dp[0][0] = 1 nếu ô (0,0) không phải bẫy, ngược lại = 0.
+- Đáp án: dp[n-1][n-1].
+- Modulo: MOD = 1000000007.
+
+Thứ tự duyệt: mỗi ô chỉ phụ thuộc ô phía trên và ô bên trái (đã tính trước), nên duyệt
+theo hàng từ trên xuống, trong mỗi hàng từ trái sang phải.
+
+Tối ưu bộ nhớ: chỉ cần một mảng 1 chiều dp độ dài n (rolling array theo từng hàng),
+vì dp[j] mới = dp[j] (giá trị hàng trên) + dp[j-1] (giá trị vừa cập nhật ở bên trái).
+
+Tối ưu tốc độ: giữ một biến cục bộ 'left' chính là dp[j-1] vừa tính của hàng hiện tại,
+tránh truy cập lại dp[j-1] và tránh nhánh kiểm tra j>0. Thay phép chia lấy dư bằng một
+phép trừ có điều kiện (nếu tổng >= MOD thì trừ MOD), vì tổng hai giá trị đều < MOD nên
+chỉ cần trừ nhiều nhất một lần. Về đầu vào: bản C++ đọc từng hàng vào một `std::string`
+và kiểm tra ô bẫy bằng ký tự `'*'`; bản Python đọc toàn bộ input dưới dạng bytes rồi
+kiểm tra ô bẫy bằng mã byte 42 (tức ký tự '*'). Cả hai bản dùng cùng một thuật toán DP.
+
+## Độ phức tạp
+Thời gian O(n^2), bộ nhớ O(n). Với n <= 1000 thì n^2 = 10^6 phép cộng.

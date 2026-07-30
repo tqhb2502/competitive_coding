@@ -1,0 +1,55 @@
+Array Description - CSES 1746
+https://cses.fi/problemset/task/1746
+
+Tags: linear-dp
+
+## Đề bài
+Cho một mảng gồm n phần tử, mỗi phần tử là số nguyên trong đoạn [1, m].
+Một số vị trí đã biết giá trị, một số vị trí bị ẩn (ghi bằng 0) và có thể điền
+tự do một giá trị bất kỳ trong [1, m]. Điều kiện hợp lệ: hai phần tử kề nhau có
+hiệu tuyệt đối tối đa 1, tức |a[i] - a[i+1]| <= 1.
+Hãy đếm số mảng hợp lệ, kết quả lấy theo modulo 1000000007.
+
+Ràng buộc: 1 <= n <= 10^5, 1 <= m <= 100, 0 <= x_i <= m.
+Định dạng: dòng 1 gồm n và m; dòng 2 gồm n số mô tả mảng (0 là vị trí chưa biết);
+in ra một số nguyên là số mảng hợp lệ theo modulo 10^9 + 7.
+
+## Ý tưởng
+Dùng quy hoạch động (DP) quét mảng từ trái sang phải. Cả hai lời giải dùng CHUNG
+một DP; chỉ khác nhau ở chi tiết cài đặt (cách lấy modulo và cấu trúc dữ liệu).
+
+- Trạng thái: dp[i][v] = số cách điền hợp lệ cho tiền tố gồm i phần tử đầu, sao
+  cho phần tử thứ i mang giá trị v (với v thuộc [1, m]).
+- Chuyển trạng thái: vì hai phần tử kề nhau chênh nhau tối đa 1 nên phần tử thứ
+  i-1 chỉ có thể là v-1, v hoặc v+1. Do đó:
+      dp[i][v] = dp[i-1][v-1] + dp[i-1][v] + dp[i-1][v+1]   (lấy modulo)
+  Nếu x[i] != 0 (đã biết trước) thì chỉ giữ lại v = x[i], các giá trị khác bằng 0.
+  Nếu x[i] == 0 thì mọi v trong [1, m] đều được phép.
+- Cơ sở (i = 1): nếu x[1] == 0 thì dp[1][v] = 1 với mọi v trong [1, m]; nếu
+  x[1] != 0 thì dp[1][x[1]] = 1, còn lại bằng 0.
+- Đáp án: tổng dp[n][v] với v chạy từ 1 tới m, lấy theo modulo 1000000007.
+
+Tính đúng đắn: state dp[i][v] gói trọn thông tin cần thiết cho bước kế tiếp (chỉ
+cần biết giá trị v của phần tử cuối là đủ để áp ràng buộc |chênh lệch| <= 1).
+Ràng buộc x[i] != 0 được tôn trọng bằng cách chỉ cho phép đúng giá trị x[i], nên
+tổng dp[n][*] đếm đúng và không trùng lặp mọi mảng hợp lệ.
+
+Cài đặt: chỉ cần giữ một hàng DP hiện tại (mảng 1 chiều độ dài m+2) với hai ô đệm
+(padding) ở chỉ số 0 và m+1 luôn bằng 0 để tránh kiểm tra biên khi cộng v-1 và v+1.
+- solution.cpp: dùng hai vector `dp` và `next`; trước mỗi vị trí xóa `next` về 0,
+  tính xong thì hoán đổi (swap). Lấy modulo NGAY tại mỗi ô (nâng tổng ba số lên
+  `long long` trước khi lấy modulo). Vị trí chưa biết tính đủ v = 1..m, vị trí đã
+  biết chỉ tính đúng một ô.
+- solution.py: mỗi bước tạo lại danh sách dp mới. Với vị trí chưa biết, cộng ba
+  lát cắt (slice) cùng lúc bằng zip: core[k] = dp[k] + dp[k+1] + dp[k+2], rồi bao
+  lại hai ô đệm quanh core. Tận dụng số nguyên chính xác tùy ý của Python, code
+  HOÃN việc lấy modulo (defer modulo): chỉ mod sau mỗi 16 bước "chưa biết" liên
+  tiếp (khi đó giá trị < 3^16 * 1e9 ~ 4.3e16 vẫn an toàn), giúp giảm số phép mod.
+  Vị trí đã biết thì tính một ô, lấy modulo ngay và đặt lại bộ đếm.
+
+## Độ phức tạp
+Cả hai lời giải có cùng độ phức tạp.
+Thời gian O(n * m) (tối đa khoảng 10^7 phép tính với n <= 10^5, m <= 100). Bộ nhớ
+phụ cho DP là O(m) (một/hai hàng); ngoài ra còn lưu mảng đầu vào nên tổng bộ nhớ
+là O(n + m). Việc hoãn modulo trong solution.py chỉ là tối ưu hằng số, không làm
+đổi độ phức tạp.

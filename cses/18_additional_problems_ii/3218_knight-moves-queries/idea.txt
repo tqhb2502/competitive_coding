@@ -1,0 +1,30 @@
+Knight Moves Queries - CSES 3218
+https://cses.fi/problemset/task/3218
+
+Tags: integer-math
+
+## Đề bài
+Cho nhiều truy vấn, mỗi truy vấn là một ô (x, y) trên bàn cờ vô hạn với các
+hàng và cột đều dương. Với mỗi truy vấn, tìm số nước đi ít nhất của quân mã để
+đi từ ô (x, y) về ô (1, 1).
+
+## Ý tưởng
+Dời gốc tọa độ về ô (1, 1): đặt a = |x - 1|, b = |y - 1| rồi hoán đổi để bảo
+đảm a >= b. Khoảng cách mã lúc này chỉ phụ thuộc vào cặp (a, b).
+
+Có ba cấu hình nhỏ cần xử lý riêng vì công thức tổng quát không đúng:
+- (1, 0) cần 3 nước.
+- (2, 2) cần 4 nước.
+- (1, 1) cần 4 nước; trường hợp này phát sinh do bàn cờ chỉ có hàng và cột
+  dương nên cách đi 2 nước phải vượt qua biên trên hoặc biên trái.
+
+Ngoài các ngoại lệ trên, đặt d = max(ceil(a / 2), ceil((a + b) / 3)). Đây là
+cận dưới: mỗi nước mã thay đổi một tọa độ tối đa 2 đơn vị nên cần ít nhất
+ceil(a / 2) nước; tổng khoảng cách Manhattan giảm tối đa 3 mỗi nước nên cần ít
+nhất ceil((a + b) / 3) nước. Vì mỗi nước mã đổi tính chẵn lẻ của tổng tọa độ,
+số nước phải cùng tính chẵn lẻ với a + b; nếu d và a + b khác tính chẵn lẻ thì
+tăng d thêm một đơn vị. Giá trị d sau khi chỉnh chẵn lẻ luôn dựng được và là
+đáp án tối ưu.
+
+## Độ phức tạp
+O(1) thời gian và O(1) bộ nhớ cho mỗi truy vấn.

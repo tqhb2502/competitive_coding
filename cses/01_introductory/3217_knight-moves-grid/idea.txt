@@ -1,0 +1,60 @@
+Knight Moves Grid - CSES 3217
+https://cses.fi/problemset/task/3217
+
+Tags: bfs
+
+## Đề bài
+- Cho bàn cờ n x n. Với mỗi ô, hãy in ra số nước đi tối thiểu mà quân mã
+  (knight) cần để đi từ ô đó tới góc trên-trái, tức ô (0,0).
+- Ràng buộc: 4 <= n <= 1000.
+
+## Ý tưởng
+- Nước đi của quân mã có tính đối xứng: số nước đi từ ô A đến ô B bằng số nước
+  đi từ B đến A (mỗi nước đi đều có nước đi ngược lại). Vì vậy thay vì tính
+  khoảng cách từ MỖI ô về góc (0,0), ta chỉ cần chạy MỘT lần BFS xuất phát từ
+  góc (0,0).
+- BFS (tìm kiếm theo chiều rộng) trên đồ thị mà mỗi ô là một đỉnh, mỗi nước đi
+  hợp lệ của quân mã là một cạnh trọng số 1. BFS cho ra khoảng cách ngắn nhất
+  (theo số cạnh) từ (0,0) tới tất cả các ô.
+- 8 nước đi của quân mã: (+-1, +-2) và (+-2, +-1).
+
+Cách cài đặt trong code C++:
+- Trải bàn cờ thành một mảng 1 chiều PHẲNG có "viền" (padding) dày 2 ô mỗi bên,
+  chiều rộng mỗi hàng W = n + 4. Như vậy mỗi nước đi quân mã (lệch tối đa 2 ô)
+  luôn rơi vào trong mảng, không bao giờ cần kiểm tra biên.
+- dist[] khởi tạo = -2 cho tất cả (viền = tường, coi như đã thăm nên bị bỏ qua).
+  Sau đó đánh dấu vùng n x n thực sự bên trong = -1 (chưa thăm).
+- Góc (0,0) ở tọa độ có viền là (2,2), tức chỉ số phẳng start = 2*W + 2; đặt
+  dist[start] = 0.
+- 8 nước đi được đổi thành 8 độ lệch chỉ số phẳng:
+  (+-1,+-2) và (+-2,+-1)  ->  +-W+-2 và +-2W+-1.
+- Dùng một `vector<int>` làm hàng đợi và một chỉ số `head`. Với mỗi ô `current`
+  được lấy ra, ô kề chưa thăm nhận `dist[next] = dist[current] + 1` rồi được
+  đẩy vào cuối vector. Mỗi ô chỉ vào hàng đợi một lần.
+- In ma trận dist theo từng hàng (chỉ lấy phần bên trong), các số cách nhau bởi
+  dấu cách.
+
+Cách cài đặt trong code Python:
+- Cùng ý tưởng BFS trên mảng phẳng có viền như trên, chỉ khác cách duyệt hàng
+  đợi: BFS chạy theo TỪNG LỚP. `cur` giữ các ô ở khoảng cách d-1, `nxt` gom các
+  ô mới phát hiện ở khoảng cách d. Vì mọi ô trong cùng một lớp có cùng khoảng
+  cách nên không cần lưu kèm khoảng cách trong hàng đợi; biến `d` tăng dần sau
+  mỗi lớp và được gán trực tiếp cho các ô mới (dist[j] = d).
+
+Tính đúng đắn:
+- BFS trên đồ thị không trọng số (mỗi cạnh giá trị 1) luôn cho khoảng cách ngắn
+  nhất từ nguồn tới mỗi đỉnh. Do tính đối xứng của nước đi quân mã, khoảng cách
+  từ (0,0) tới ô (i,j) chính là số nước đi tối thiểu từ (i,j) về (0,0).
+- Viền -2 đảm bảo nước đi ra ngoài bàn cờ bị bỏ qua (giống như kiểm tra biên),
+  cho kết quả giống hệt BFS có kiểm tra biên 0 <= r,c < n.
+- Vì n >= 4, bàn cờ đủ lớn để mọi ô đều đến được góc, không có ô nào là -1.
+
+## Độ phức tạp
+- Thời gian: O(n^2) - mỗi ô được thăm đúng một lần, mỗi ô xét 8 nước đi.
+  Với n = 1000 là khoảng 10^6 ô, tổng ~8 * 10^6 thao tác.
+- Bộ nhớ: O(n^2) cho mảng khoảng cách có viền và hàng đợi.
+
+LƯU Ý TLE:
+- Mảng phẳng có padding loại bỏ kiểm tra biên và hàng đợi `vector + head` tránh
+  cấp phát theo từng tọa độ. Với n = 1000, tổng công việc khoảng 8 * 10^6 lần
+  xét cạnh.

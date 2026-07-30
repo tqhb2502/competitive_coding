@@ -1,0 +1,38 @@
+Point Location Test - CSES 2189
+https://cses.fi/problemset/task/2189
+
+Tags: geometry-basics
+
+## Đề bài
+Cho ba điểm p1, p2, p3 với tọa độ nguyên. Khi đứng ở p1 nhìn về phía p2, hãy
+xác định điểm p3 nằm bên TRÁI (in ra "LEFT"), bên PHẢI (in ra "RIGHT") hay nằm
+ngay trên đường thẳng đi qua p1 và p2 (in ra "TOUCH"). Có t truy vấn độc lập.
+
+## Ý tưởng
+Dùng cross product (tích có hướng) để xác định orientation của bộ ba điểm.
+Đặt vector a = p2 - p1 = (x2 - x1, y2 - y1)
+     vector b = p3 - p1 = (x3 - x1, y3 - y1)
+Tính cross = a.x * b.y - a.y * b.x
+           = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)
+
+Giá trị cross chính là z-component của tích có hướng (p2 - p1) x (p3 - p1),
+tức dấu của nó cho biết chiều quay của bộ ba điểm p1 -> p2 -> p3:
+- Nếu cross > 0: p3 nằm bên trái khi đi từ p1 tới p2 (quay ngược chiều kim
+  đồng hồ) -> "LEFT".
+- Nếu cross < 0: p3 nằm bên phải (quay theo chiều kim đồng hồ) -> "RIGHT".
+- Nếu cross = 0: hai vector cùng phương nên ba điểm thẳng hàng -> "TOUCH".
+
+Lưu ý về số học chính xác: tọa độ tới 1e9 nên mỗi hiệu có thể tới 2e9 và tích
+tới 4e18, hiệu hai tích có thể vượt phạm vi 64-bit. Bản C++ dùng `__int128` để
+tránh tràn số; bản Python dùng số nguyên độ chính xác tùy ý (big int) nên tự
+động không tràn. Toàn bộ phép tính là số nguyên nên không có sai số làm tròn.
+
+Khác biệt I/O giữa hai bản: C++ đọc từng truy vấn trực tiếp từ luồng `cin`
+(xử lý ngay khi đọc); Python đọc toàn bộ input một lần vào một mảng rồi duyệt,
+đồng thời gom kết quả vào danh sách `out` và xuất một lần cho nhanh.
+
+## Độ phức tạp
+- Thời gian: O(t) cho t truy vấn, mỗi truy vấn chỉ vài phép nhân và trừ nguyên.
+- Bộ nhớ phụ:
+  + Bản C++: O(1), vì từng truy vấn được xử lý ngay khi đọc từ luồng.
+  + Bản Python: O(t), vì đọc toàn bộ input vào bộ nhớ và gom kết quả rồi mới xuất.

@@ -1,0 +1,36 @@
+Subtree Queries - CSES 1137
+https://cses.fi/problemset/task/1137
+
+Tags: euler-tour, fenwick
+
+## Đề bài
+Cho một cây có gốc tại node 1 gồm n node, mỗi node mang một giá trị. Cần xử lí q
+truy vấn thuộc hai loại:
+- "1 s x": gán lại giá trị của node s thành x.
+- "2 s": hỏi tổng các giá trị của tất cả các node nằm trong subtree của node s.
+
+## Ý tưởng
+- Dùng Euler tour (DFS theo thứ tự vào) để "làm phẳng" cây thành một mảng một
+  chiều. Mỗi node được gán một chỉ số lúc thăm (time-in, gọi là tin) theo thứ tự
+  DFS. Điểm mấu chốt: toàn bộ subtree của node s chiếm đúng một đoạn liên tiếp
+  các chỉ số [tin[s], tout[s]], với tout[s] = tin[s] + size[s] - 1 (size[s] là số
+  node trong subtree của s). Lí do: khi DFS đi vào một node rồi duyệt hết mọi con
+  trước khi quay ra, tất cả node của subtree được thăm liên tiếp nhau.
+- Vì n lên tới 2e5 nên KHÔNG dùng đệ quy để tránh tràn call stack.
+  Ta tính parent, tin, tout bằng DFS lặp (iterative) với một explicit stack.
+- Sau khi làm phẳng, bài toán trở thành point update (đổi giá trị một phần tử) và
+  range sum query (tổng một đoạn) trên mảng — đây là công việc kinh điển của một
+  BIT (Fenwick tree).
+  + Truy vấn loại 1 (đổi node s thành x): cập nhật điểm tại vị trí tin[s] với
+    delta = x - giá_trị_hiện_tại(s), rồi lưu lại giá trị mới.
+  + Truy vấn loại 2 (tổng subtree của s): trả về prefix_sum(tout[s]) -
+    prefix_sum(tin[s] - 1).
+
+## Độ phức tạp
+- Xây cây và Euler tour: O(n).
+- Mỗi truy vấn (update hoặc sum) tốn O(log n) trên BIT.
+- Tổng thời gian: O((n + q) log n) cho cả hai lời giải.
+- Bộ nhớ: bản C++ đọc trực tiếp bằng cin nên chỉ tốn O(n); bản Python đọc toàn bộ
+  input một lần vào mảng token nên tốn O(n + q).
+- Với n, q <= 2e5 và giá trị tối đa 1e9, tổng có thể tới ~2e14 nên dùng số nguyên
+  64-bit (`long long` trong C++; Python có số nguyên lớn tùy ý nên không lo tràn).

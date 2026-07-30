@@ -1,0 +1,40 @@
+Room Allocation - CSES 1164
+https://cses.fi/problemset/task/1164
+
+Tags: interval-scheduling
+
+## Đề bài
+Có n khách, khách thứ i cần phòng trong khoảng ngày [a_i, b_i] (từ ngày đến a_i
+tới ngày đi b_i). Hai khách có thể dùng chung một phòng khi và chỉ khi hai khoảng
+ngày của họ không giao nhau. Nếu hai khoảng [a, b] giao nhau (kể cả trùng đúng
+một ngày) thì hai khách bắt buộc phải ở hai phòng khác nhau. Hãy tìm số phòng ít
+nhất và gán số phòng cho từng khách, in kết quả theo đúng thứ tự đầu vào.
+
+## Ý tưởng
+Dùng thuật toán greedy kết hợp min-heap (priority queue) theo ngày đi:
+1. Gắn thêm chỉ số gốc idx cho mỗi khách để cuối cùng in lại đúng thứ tự đầu vào.
+2. Sắp xếp tất cả khách theo ngày đến a tăng dần.
+3. Duyệt lần lượt các khách theo thứ tự đã sắp xếp. Dùng một min-heap lưu một
+   cặp (ngày_đi_gần_nhất, số_phòng) cho mỗi phòng đã mở; đỉnh heap là phòng có
+   ngày đi gần nhất nhỏ nhất.
+   - Với khách hiện tại (a, b): nếu heap không rỗng và phòng ở đỉnh thoả điều kiện
+     heap_top.ngay_di < a, nghĩa là phòng đó đã trống trước khi khách này đến, thì
+     tái sử dụng: lấy phòng đó ra khỏi heap, gán cho khách hiện tại, rồi đẩy lại
+     cặp (b, so_phong) vào heap.
+   - Ngược lại (không phòng nào kịp trống): mở một phòng mới, tăng biến đếm số
+     phòng k, gán phòng mới cho khách, đẩy (b, k) vào heap.
+4. Số phòng tối thiểu chính là giá trị k lớn nhất (tổng số phòng đã mở).
+
+Vì sao đúng: xét khách theo thứ tự ngày đến tăng dần nên trạng thái gần nhất của
+mọi phòng đã mở đều thuộc về khách đến trước (hoặc cùng ngày). Phòng có ngày đi
+sớm nhất là phòng dễ trống nhất; nếu phòng này chưa trống thì mọi phòng khác
+cũng chưa trống, nên bắt buộc mở phòng mới. Số phòng đang mở đồng thời tại một
+thời điểm đúng bằng số khoảng giao nhau nhiều nhất (maximum overlap), cũng là cận
+dưới lý thuyết, nên đáp án là tối ưu.
+
+## Độ phức tạp
+- Sắp xếp: O(n log n).
+- Mỗi khách push/pop heap tối đa một lần: O(n log n).
+- Tổng thời gian: O(n log n). Bộ nhớ: O(n) cho mảng khách, heap và mảng đáp án.
+- Với n <= 2*10^5, code C++ dùng `priority_queue` và fast I/O nên nằm trong
+  giới hạn.

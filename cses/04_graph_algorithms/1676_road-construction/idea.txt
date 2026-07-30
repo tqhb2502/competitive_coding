@@ -1,0 +1,37 @@
+Road Construction - CSES 1676
+https://cses.fi/problemset/task/1676
+
+Tags: dsu
+
+## Đề bài
+Có n thành phố và ban đầu chưa có con đường nào nối chúng. Sau đó có m con
+đường lần lượt được xây dựng, con đường thứ i nối hai thành phố a và b.
+Sau mỗi lần xây một con đường, hãy in ra hai giá trị: số thành phần liên thông
+hiện tại và kích thước (số thành phố) của thành phần liên thông lớn nhất.
+
+## Ý tưởng
+Mô hình hóa bằng đồ thị và dùng cấu trúc DSU (Disjoint Set Union / Union-Find):
+- Ban đầu mỗi thành phố là một thành phần liên thông riêng biệt, nên có n
+  thành phần và thành phần lớn nhất có kích thước 1.
+- Duy trì mảng parent (cha của mỗi đỉnh) và mảng size (kích thước mỗi tập).
+- find(x): tìm đại diện (root) của tập chứa x, kèm path compression (nén đường đi).
+- union(a, b): tìm root của a và b.
+  + Nếu cùng root: cạnh này nối hai thành phố đã cùng thành phần -> không đổi gì.
+  + Nếu khác root: gộp theo union by size (gắn cây nhỏ vào cây lớn), giảm biến
+    đếm số thành phần đi 1, cập nhật kích thước tập gộp và cập nhật max size.
+- Sau mỗi con đường, in "số thành phần" và "kích thước lớn nhất".
+
+Tính đúng đắn: DSU duy trì chính xác quan hệ liên thông khi thêm cạnh dần dần
+(incremental). Số thành phần bắt đầu bằng n, mỗi lần gộp hai tập khác nhau giảm
+đúng 1. Kích thước tập gộp bằng tổng hai tập con, và max size chỉ có thể tăng nên
+chỉ cần so sánh với kích thước tập vừa gộp.
+
+## Độ phức tạp
+- Thời gian: O((n + m) * alpha(n)) với alpha là hàm Ackermann nghịch đảo (gần như
+  hằng số) nhờ path compression và union by size. Đúng cho cả C++ lẫn Python.
+- Bộ nhớ:
+  + C++: O(n) cho hai mảng parent và size; đọc từng số và in từng dòng nên không
+    cần thêm bộ nhớ theo m.
+  + Python: O(n + m). Ngoài hai mảng parent/size cỡ O(n), bản Python đọc toàn bộ
+    input một lần (O(m) token) và gom toàn bộ output vào một danh sách trước khi
+    in (O(m) dòng).

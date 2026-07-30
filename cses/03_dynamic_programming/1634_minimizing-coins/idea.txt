@@ -1,0 +1,55 @@
+Minimizing Coins - CSES 1634
+https://cses.fi/problemset/task/1634
+
+Tags: coin-change
+
+## Đề bài
+Cho n loại đồng xu, mỗi loại có giá trị c_i và được dùng vô số lần. Hãy tạo ra
+đúng tổng x bằng số đồng xu ÍT NHẤT có thể. Nếu không tạo được tổng x thì in -1.
+
+Dữ liệu vào:
+  - Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
+  - Dòng 2: n số nguyên là giá trị các đồng xu.
+Dữ liệu ra: một số nguyên là số đồng xu ít nhất, hoặc -1 nếu không tạo được.
+Ràng buộc: 1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6. Không có phép chia dư.
+
+## Ý tưởng
+Đây là bài toán unbounded knapsack (mỗi đồng xu được dùng lại tùy ý). Cả
+solution.cpp và solution.py cài đặt CÙNG một thuật toán dưới đây.
+
+Trạng thái:
+  dp[s] = số đồng xu ít nhất để tạo ra đúng tổng s (với 0 <= s <= x).
+
+Công thức chuyển:
+  dp[s] = min( dp[s - c] + 1 ) với mọi đồng xu c sao cho c <= s.
+Ý nghĩa: để tạo tổng s, ta chọn đồng xu cuối cùng giá trị c, phần còn lại là tổng
+s - c đã giải tối ưu, rồi cộng thêm 1 đồng xu vừa chọn.
+
+Cơ sở:
+  dp[0] = 0 (tạo tổng 0 cần 0 đồng xu).
+  Các dp[s] còn lại khởi tạo bằng INF = x + 1. Vì mỗi đồng xu có giá trị >= 1 nên
+  đáp án thật (nếu có) luôn <= x, do đó INF = x + 1 vừa an toàn (không tràn số),
+  vừa dễ nhận biết trạng thái "chưa tạo được".
+
+Vì mỗi đồng xu được dùng lại tùy ý nên ta duyệt s tăng dần (vòng lặp xuôi), cho
+phép dp[s - c] đã chứa chính đồng xu c; nhờ vậy dp[s] xét đủ mọi cách chọn đồng xu
+cuối và luôn dựa trên nghiệm con tối ưu.
+
+Đáp án:
+  Nếu dp[x] vẫn > x (tức còn bằng INF) thì in -1, ngược lại in dp[x].
+
+Chi tiết cài đặt:
+  - Loại các đồng xu trùng nhau và bỏ đồng xu có giá trị > x (vô dụng).
+  - Với mỗi đồng xu c, quét i từ c tới x và cập nhật dp[i] = min(dp[i], dp[i-c]+1).
+
+## Độ phức tạp
+Cả hai lời giải dùng chung thuật toán nên có cùng độ phức tạp. Gọi c là số mệnh
+giá phân biệt không vượt x sau khi lọc (c <= n).
+- Thời gian: O(n log n) để sắp xếp, khử trùng, cộng O(c*x) cho DP. Với x tối đa
+  10^6 và c tối đa ~100, phần DP có thể lên tới ~10^8 phép cập nhật.
+- Bộ nhớ: O(n+x) cho danh sách đồng xu và mảng dp.
+
+LƯU Ý TLE: solution.cpp (C++ -O2) chạy ~10^8 phép cập nhật thoải mái trong giới
+hạn thời gian. solution.py cùng độ phức tạp O(c*x) nhưng là vòng lặp thuần
+CPython nên có nguy cơ TLE trên các test x lớn nhất; đây là cái giá của việc
+dùng Python cho DP kích thước 10^6.

@@ -1,0 +1,27 @@
+Mex Grid Queries - CSES 1157
+https://cses.fi/problemset/task/1157
+
+Tags: bit-operations
+
+## Đề bài
+Xét một lưới hai chiều vô hạn. Ô (y, x) chứa số nguyên không âm nhỏ nhất chưa
+xuất hiện ở bên trái trong cùng hàng y hoặc ở phía trên trong cùng cột x (tức là
+giá trị mex của các ô đó). Cho một truy vấn với y, x (có thể lên tới 10^9), hãy
+in ra giá trị tại ô (y, x).
+
+## Ý tưởng
+Đổi sang chỉ số bắt đầu từ 0: đặt i = y - 1 và j = x - 1. Khi đó giá trị của ô
+đúng bằng i XOR j, nên chỉ cần in (y - 1) XOR (x - 1).
+
+Chứng minh: đặt z = i XOR j và xét từng bit.
+- z không thể trùng một ô nào bên trái: nếu tồn tại j' với i XOR j' = z thì
+  j' = i XOR z = j, tức chính nó chứ không nhỏ hơn j. Tương tự z không xuất hiện
+  ở phía trên trong cột.
+- Với mọi t < z, gọi b là bit cao nhất mà t và z khác nhau; tại bit đó z bằng 1
+  còn t bằng 0. Nếu bit b của i bằng bit b của z thì j' = i XOR t nhỏ hơn j (nằm
+  bên trái); ngược lại i' = j XOR t nhỏ hơn i (nằm phía trên). Vậy mọi t < z đều
+  đã xuất hiện.
+Do mọi số nhỏ hơn z đều có mặt còn z thì chưa, mex đúng bằng z = i XOR j.
+
+## Độ phức tạp
+Thời gian O(1) và bộ nhớ O(1) cho mỗi truy vấn.

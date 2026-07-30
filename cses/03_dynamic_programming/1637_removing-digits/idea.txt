@@ -1,0 +1,31 @@
+Removing Digits - CSES 1637
+https://cses.fi/problemset/task/1637
+
+Tags: linear-dp, simulation
+
+## Đề bài
+Cho một số nguyên n (1 <= n <= 10^6). Ở mỗi bước, ta được phép trừ n đi một
+trong các chữ số của chính n tại thời điểm đó. Hãy tìm số bước tối thiểu để
+đưa n về 0.
+
+## Ý tưởng
+Cách DP (nền tảng, chuẩn xác):
+- Trạng thái: dp[i] = số bước tối thiểu để đưa số i về 0.
+- Cơ sở (base case): dp[0] = 0.
+- Chuyển trạng thái: dp[i] = 1 + min( dp[i - d] ), với d chạy qua từng chữ số
+  khác 0 của i (chữ số 0 không có tác dụng nên bỏ qua).
+- Đáp án: dp[n].
+
+Cách Greedy (dùng trong lời giải vì nhanh hơn nhiều):
+- Nhận xét: ở mỗi bước, luôn trừ đi CHỮ SỐ LỚN NHẤT của số hiện tại; lặp lại
+  cho tới khi số bằng 0 và đếm số bước.
+- Vì sao đúng: hàm dp là hàm KHÔNG GIẢM theo giá trị (a <= b thì dp[a] <= dp[b]),
+  nên trong công thức chuyển trạng thái, muốn dp[i - d] nhỏ nhất ta chọn d lớn
+  nhất (làm i - d nhỏ nhất). Vậy chọn chữ số lớn nhất là tối ưu ở mọi bước, tức
+  greedy trùng với DP. Đã kiểm chứng bằng máy: cách "trừ chữ số lớn nhất" cho ra
+  đúng dp[i] với MỌI i trong đoạn 1..10^6 (không có trường hợp sai). Ví dụ
+  dp[27] = 5: 27 -> 20 -> 18 -> 10 -> 9 -> 0.
+
+## Độ phức tạp
+- DP: thời gian O(n * số_chữ_số) ~ O(7n), bộ nhớ O(n).
+- Greedy dùng trong code: O(số_bước * số_chữ_số) thời gian và O(1) bộ nhớ.

@@ -1,0 +1,30 @@
+Coin Arrangement - CSES 2180
+https://cses.fi/problemset/task/2180
+
+Tags: greedy-array
+
+## Đề bài
+Cho một bảng lưới kích thước 2 x n chứa tổng cộng 2n đồng xu (mỗi ô có thể
+chứa nhiều xu). Mỗi bước ta được phép chuyển một đồng xu sang một ô kề cạnh.
+Hãy tìm số bước ít nhất để mỗi ô có đúng một đồng xu. Ràng buộc: n <= 10^5.
+
+## Ý tưởng
+Duyệt các cột từ trái sang phải theo kiểu tham lam (greedy). Với hàng trên và
+hàng dưới, ta giữ hai biến số dư tích lũy top và bottom (giá trị âm nghĩa là
+đang thiếu xu) sau khi đã xử lý các cột phía trước.
+
+Tại mỗi cột:
+1. Cộng (số xu của ô trừ 1) vào số dư của hàng tương ứng.
+2. Nếu hai số dư trái dấu, chuyển dọc min(|top|, |bottom|) xu để triệt tiêu
+   một phần dư/thiếu ngay tại cột này; cộng đúng lượng đó vào đáp án.
+3. Nếu chưa phải cột cuối, mọi số dư còn lại bắt buộc phải đi qua biên phải
+   sang cột kế tiếp; cộng |top| + |bottom| vào đáp án.
+
+Mỗi xu dư/thiếu chưa được ghép ở một hàng buộc phải vượt qua biên phải của
+prefix trên chính hàng đó, trừ khi được ghép với nhu cầu trái dấu của hàng
+còn lại bằng một cạnh dọc. Ghép cặp trái dấu ngay tại cột hiện tại chỉ tốn
+một bước dọc và không thể rẻ hơn việc hoãn lại, nên phép triệt tiêu tham lam
+luôn tồn tại trong một phương án tối ưu.
+
+## Độ phức tạp
+O(n) thời gian và O(1) bộ nhớ phụ (ngoài dữ liệu đọc vào).

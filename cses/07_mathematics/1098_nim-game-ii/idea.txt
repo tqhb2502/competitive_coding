@@ -1,0 +1,38 @@
+Nim Game II - CSES 1098
+https://cses.fi/problemset/task/1098
+
+Tags: sprague-grundy
+
+## Đề bài
+Có nhiều ván chơi. Mỗi ván có n đống que, hai người chơi lần lượt đi.
+Mỗi lượt, người chơi chọn một đống không rỗng và lấy đi 1, 2 hoặc 3 que.
+Người lấy que cuối cùng sẽ thắng (normal play convention). Với mỗi ván,
+hãy xác định người đi trước ("first") hay người đi sau ("second") thắng
+khi cả hai chơi tối ưu.
+
+## Ý tưởng
+Dùng lý thuyết trò chơi Sprague-Grundy. Mỗi đống là một trò chơi con độc
+lập, giá trị Grundy của toàn cục bằng XOR các giá trị Grundy thành phần.
+
+Với một đống kích thước x và luật lấy 1, 2 hoặc 3 que (đây là "subtraction
+game" với tập lấy {1,2,3}), giá trị Grundy là:
+      grundy(x) = x mod 4
+Chứng minh nhanh bằng quy nạp với hàm mex:
+    grundy(0) = 0 (đã thua, không còn nước đi)
+    grundy(x) = mex{ grundy(x-1), grundy(x-2), grundy(x-3) }
+Suy ra dãy grundy(0..) = 0,1,2,3,0,1,2,3,... tức là chính x mod 4.
+
+Kết luận:
+- Tính XOR của (x_i mod 4) trên tất cả các đống của một ván.
+- Nếu XOR khác 0 thì đây là "N-position", người đi trước ("first") thắng.
+- Nếu XOR bằng 0 thì đây là "P-position", người đi sau ("second") thắng.
+
+Kiểm tra nhanh với ví dụ:
+- [5,7,2,5] -> 1^3^2^1 = 1 khác 0 -> first.
+- [4,1]     -> 0^1     = 1 khác 0 -> first.
+- [4,4,4]   -> 0^0^0   = 0        -> second.
+
+## Độ phức tạp
+- Thời gian: O(tổng n) để đọc và XOR toàn bộ các số, rất nhanh với giới
+  hạn tổng n <= 2*10^5.
+- Bộ nhớ phụ: O(1), vì các kích thước đống được xử lý ngay khi đọc.

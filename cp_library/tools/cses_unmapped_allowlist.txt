@@ -1,0 +1,7 @@
+# Snippet chuẩn thi đấu chưa có bài áp dụng trực tiếp trong bộ CSES hiện tại.
+# Mỗi dòng: <snippet-id>  # lý do. link_cses.py sẽ fail nếu xuất hiện id mới
+# không có CSES mà chưa được giải trình, hoặc nếu một id trong đây đã có mapping.
+bfs-01  # Không có bài trong kho hiện tại dùng cạnh chỉ gồm 0/1; Labyrinth là BFS không trọng số.
+cdq-divide-conquer  # Range Interval Queries dùng sweep-line + Fenwick, không phải CDQ dominance 3 chiều.
+line-intersection  # Các bài hình học hiện tại chỉ cần predicate chính xác, không dựng giao điểm thực của hai đường.
+rotating-calipers  # CSES hiện có convex hull/closest pair nhưng không có bài đường kính Euclid.

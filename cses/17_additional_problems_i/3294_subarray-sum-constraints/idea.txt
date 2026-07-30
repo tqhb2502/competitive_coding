@@ -1,0 +1,28 @@
+Subarray Sum Constraints - CSES 3294
+https://cses.fi/problemset/task/3294
+
+Tags: bfs, prefix-sum, weighted-dsu
+
+## Đề bài
+Dựng mảng x_1..x_n thỏa m ràng buộc dạng (l, r, s), nghĩa là tổng đoạn
+x_l + ... + x_r phải bằng s. Nếu tồn tại thì in "YES" rồi in mảng, ngược lại
+in "NO". Mọi phần tử phải nằm trong đoạn [-10^15, 10^15].
+Ràng buộc: n <= 5000, m <= 2*10^5, |s| <= 10^9.
+
+## Ý tưởng
+Đặt tiền tố P_0 = 0 và P_i = x_1 + ... + x_i (prefix sum). Khi đó mỗi ràng buộc
+trở thành hiệu hai tiền tố:
+    P_r - P_{l-1} = s.
+Dựng đồ thị trên các đỉnh 0..n: mỗi ràng buộc thêm cạnh từ l-1 tới r mang độ
+lệch s và cạnh ngược từ r tới l-1 mang độ lệch -s. Trong mỗi thành phần liên
+thông, neo một đỉnh có thế 0 rồi BFS để gán
+    P[v] = P[u] + delta(u, v).
+Nếu tới một đỉnh đã gán mà giá trị mới khác giá trị cũ thì hệ mâu thuẫn, in "NO".
+Nếu mọi cạnh nhất quán thì in "YES" cùng x_i = P_i - P_{i-1}.
+
+Các thành phần liên thông độc lập nên đều được neo ở 0. Trên đường đơn trị tuyệt
+đối của thế không vượt quá n*10^9, nên hiệu hai thế liên tiếp nhỏ hơn 10^15,
+luôn thỏa giới hạn đề.
+
+## Độ phức tạp
+Thời gian O(n + m), bộ nhớ O(n + m).

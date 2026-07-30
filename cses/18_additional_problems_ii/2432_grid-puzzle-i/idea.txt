@@ -1,0 +1,24 @@
+Grid Puzzle I - CSES 2432
+https://cses.fi/problemset/task/2432
+
+Tags: dinic
+
+## Đề bài
+Cho bảng vuông n x n. Hãy chọn một số ô sao cho hàng thứ i có đúng a_i ô được
+chọn và cột thứ j có đúng b_j ô được chọn. In ra một cách chọn hợp lệ (ô được
+chọn ghi 'X', ô trống ghi '.'), hoặc in -1 nếu không tồn tại cách nào. Ràng
+buộc n <= 50.
+
+## Ý tưởng
+Mô hình hóa bằng mạng luồng (max-flow) và giải bằng Dinic:
+- Nguồn nối tới mỗi đỉnh hàng i với sức chứa a_i.
+- Mỗi đỉnh cột j nối tới đích với sức chứa b_j.
+- Mỗi ô (i, j) cho một cạnh hàng i -> cột j với sức chứa 1.
+Nếu tổng a khác tổng b thì chắc chắn vô nghiệm, in -1. Ngược lại chạy Dinic:
+nếu luồng cực đại bằng tổng a thì mỗi cạnh hàng-cột đã bão hòa (luồng 1) tương
+ứng một ô được chọn, ta in 'X' tại các ô đó; nếu luồng cực đại nhỏ hơn tổng a
+thì bài toán vô nghiệm, in -1.
+
+## Độ phức tạp
+Mạng có O(n) đỉnh và O(n^2) cạnh; Dinic chạy đủ nhanh với n <= 50 và dùng
+O(n^2) bộ nhớ.

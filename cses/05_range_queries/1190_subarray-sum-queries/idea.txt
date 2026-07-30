@@ -1,0 +1,42 @@
+Subarray Sum Queries - CSES 1190
+https://cses.fi/problemset/task/1190
+
+Tags: segment-tree
+
+## Đề bài
+Cho một mảng gồm n số nguyên và m truy vấn. Mỗi truy vấn là một phép cập nhật một
+phần tử (point update): gán giá trị mới cho một vị trí. Sau mỗi lần cập nhật, in ra
+tổng của đoạn con (subarray) liên tiếp có tổng lớn nhất. Vì cho phép chọn đoạn con
+rỗng, đáp án luôn không âm (>= 0).
+
+## Ý tưởng
+Dùng cây phân đoạn lặp (iterative segment tree, dựng từ dưới lên). Mỗi node lưu bốn
+đại lượng cho đoạn mà nó quản lý:
+  - tot : tổng của cả đoạn.
+  - pre : tổng tiền tố (prefix) lớn nhất, đã kẹp >= 0 (cho phép tiền tố rỗng).
+  - suf : tổng hậu tố (suffix) lớn nhất, đã kẹp >= 0 (cho phép hậu tố rỗng).
+  - best: tổng đoạn con lớn nhất nằm trong đoạn, đã kẹp >= 0.
+
+Phép hợp (merge) node cha từ hai con trái L và phải R:
+  - tot  = L.tot + R.tot
+  - pre  = max(L.pre, L.tot + R.pre)
+  - suf  = max(R.suf, R.tot + L.suf)
+  - best = max(L.best, R.best, L.suf + R.pre)
+Trường hợp đáng chú ý của best là đoạn con vắt qua ranh giới giữa hai con: hậu tố tốt
+nhất của L nối với tiền tố tốt nhất của R, tức L.suf + R.pre.
+
+Khởi tạo lá với giá trị v: tot = v, còn pre = suf = best = max(0, v). Phần tử trung
+hòa (identity) cho các lá đệm khi n không phải lũy thừa của 2 là (0, 0, 0, 0), tương
+ứng đoạn rỗng; merge với nó không làm đổi kết quả.
+
+Vì mỗi truy vấn chỉ cần đáp án của TOÀN mảng (chính là node gốc), ta không cần range
+query: mỗi update chỉ sửa đúng 1 lá rồi đi ngược lên gốc cập nhật các node cha, sau đó
+đọc best tại gốc (best[1]).
+
+## Độ phức tạp
+  - Xây dựng: O(n).
+  - Mỗi update: O(log n) do đi từ lá lên gốc.
+  - Tổng thời gian: O((n + m) log n) cho cả hai lời giải (C++ và Python).
+  - Bộ nhớ: C++ dùng O(n) vì đọc input theo luồng. Python dùng O(n + m) vì đọc
+    toàn bộ input một lần bằng sys.stdin.buffer.read() và gom hết đáp án vào đệm
+    output trước khi in một lần.

@@ -1,0 +1,27 @@
+Writing Numbers - CSES 1086
+https://cses.fi/problemset/task/1086
+
+Tags: binary-search, monotone-predicate, search-on-answer
+
+## Đề bài
+Viết lần lượt các số nguyên dương 1, 2, 3, ...; mỗi phím chữ số 0..9 chỉ được
+bấm tối đa n lần. Hãy tìm số cuối cùng có thể viết ra. Ràng buộc: n <= 10^18.
+
+## Ý tưởng
+Điều kiện "viết được tới số x" là số lần xuất hiện của mỗi chữ số trong đoạn
+1..x đều không vượt quá n, và điều kiện này đơn điệu theo x, nên ta nhị phân
+tìm x lớn nhất còn hợp lệ.
+
+Để đếm số lần xuất hiện của một chữ số d trong đoạn 1..x, ta xét từng hàng
+factor = 1, 10, 100, ... rồi tách x thành ba phần quanh hàng đó: higher (phần
+cao hơn), current (chữ số tại hàng), lower (phần thấp hơn). Với d khác 0, mỗi
+chu kỳ đầy đủ đóng góp higher*factor, sau đó cộng thêm phần chu kỳ cuối theo
+current. Với d = 0, trừ đi một chu kỳ để không đếm các chữ số 0 đứng đầu.
+
+Dùng số nguyên không dấu 64 bit; với cận x = 10^18, mọi tích và bộ đếm trung
+gian đều còn nằm trong miền biểu diễn. Mốc 10^18 chắc chắn không hợp lệ (riêng
+chữ số 1 đã xuất hiện hơn 10^18 lần dù n = 10^18), nên đây là cận trên đủ lớn.
+
+## Độ phức tạp
+Thời gian O(log^2 n): khoảng 60 bước nhị phân, mỗi bước quét tối đa 19 hàng.
+Bộ nhớ O(1).

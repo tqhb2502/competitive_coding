@@ -1,0 +1,41 @@
+Distance Queries - CSES 1135
+https://cses.fi/problemset/task/1135
+
+Tags: binary-lifting, lca-binary-lifting, offline-lca, sparse-table
+
+## Đề bài
+Cho một cây gồm n đỉnh và n-1 cạnh. Có q truy vấn, mỗi truy vấn cho hai đỉnh
+(a, b) và yêu cầu tính khoảng cách trên cây giữa chúng, tức số cạnh trên đường
+đi duy nhất nối a và b.
+
+## Ý tưởng
+Chọn gốc tùy ý (ở đây chọn đỉnh 1). Gọi depth[x] là độ sâu của đỉnh x (số cạnh
+từ gốc tới x, depth[gốc] = 0) và gọi l = LCA(a, b) là tổ tiên chung thấp nhất
+(Lowest Common Ancestor). Vì đường đi từ a tới b luôn đi lên tới l rồi đi xuống
+b nên:
+
+    dist(a, b) = depth[a] + depth[b] - 2 * depth[l]
+
+Việc còn lại là tính LCA nhanh bằng binary lifting (nhảy nhị phân):
+- up[k][v] = tổ tiên thứ 2^k của v.
+- up[0][v] = parent[v]; up[k][v] = up[k-1][ up[k-1][v] ].
+- Để tìm LCA(a, b): trước tiên nâng đỉnh sâu hơn lên cùng độ sâu với đỉnh kia
+  bằng cách nhảy theo các bit của hiệu độ sâu. Nếu khi đó a == b thì đó chính là
+  LCA. Ngược lại, nhảy đồng thời cả hai đỉnh lên bằng bước lớn nhất mà chúng vẫn
+  khác nhau; cuối cùng parent chung của chúng là LCA.
+
+Tính parent[] và depth[]: vì cây có tới 2e5 đỉnh, KHÔNG dùng đệ quy (tránh tràn
+stack). Ta duyệt BFS lặp (iterative) từ đỉnh 1 theo thứ tự tăng dần độ sâu.
+
+Khác biệt cài đặt giữa hai bản (thuật toán BFS + binary lifting là như nhau):
+- Bản C++ dựng danh sách kề bằng vector<vector> và đọc/ghi trực tiếp qua cin/cout.
+- Bản Python đọc toàn bộ input một lần, dựng danh sách kề dạng CSR (mảng start[]
+  là offset, mảng adj[] chứa các đỉnh kề) để tiết kiệm bộ nhớ và chạy nhanh hơn.
+
+## Độ phức tạp
+- Tiền xử lý bảng up: O(n log n) thời gian và O(n log n) bộ nhớ (LOG ≈ 18 với
+  n = 2e5).
+- Mỗi truy vấn LCA: O(log n). Tổng các truy vấn: O(q log n).
+- Tổng: O((n + q) log n) thời gian, O(n log n) bộ nhớ.
+- Bản Python đọc toàn bộ input vào bộ nhớ một lần (thêm O(n + q)), nhưng bảng up
+  cỡ O(n log n) vẫn là thành phần chiếm bộ nhớ chủ đạo.

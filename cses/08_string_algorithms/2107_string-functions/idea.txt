@@ -1,0 +1,32 @@
+String Functions - CSES 2107
+https://cses.fi/problemset/task/2107
+
+Tags: kmp, z-function
+
+## Đề bài
+Cho một xâu s độ dài n chỉ gồm các ký tự thường 'a'..'z'. Hãy in ra hai dòng:
+- Dòng 1: giá trị Z-function tại từng vị trí (quy ước z tại vị trí đầu tiên bằng 0).
+- Dòng 2: giá trị prefix function π tại từng vị trí.
+Trong đó z(i) là độ dài lớn nhất của xâu con bắt đầu tại vị trí i mà cũng là một
+prefix của s; π(i) là độ dài lớn nhất của một prefix thực sự của s[0..i] mà đồng
+thời là suffix của đoạn đó.
+
+## Ý tưởng
+Đây đúng là hai hàm chuỗi kinh điển, đều tính được trong thời gian tuyến tính và
+đều tất định (không dùng hashing) nên an toàn trước các test chống hash của CSES.
+
+1) Z-function (O(n)): duy trì cửa sổ [l, r) là đoạn khớp prefix vươn xa nhất về
+   bên phải đã biết. Với mỗi i, nếu i < r thì khởi tạo z[i] = min(r - i, z[i - l])
+   để tận dụng thông tin đã tính, sau đó mở rộng bằng so sánh trực tiếp
+   s[z[i]] == s[i + z[i]]. Cập nhật [l, r) mỗi khi i + z[i] vượt qua r.
+
+2) Prefix function (KMP, O(n)): với mỗi i đặt j = π[i - 1]; trong khi j > 0 và
+   s[i] != s[j] thì lùi j = π[j - 1] (quay lui theo các border). Nếu s[i] == s[j]
+   thì tăng j lên 1, rồi gán π[i] = j.
+
+Kiểm chứng với s = "abaabca": Z = [0, 0, 1, 2, 0, 0, 1] và π = [0, 0, 1, 1, 2, 0, 1],
+khớp hoàn toàn với output mẫu.
+
+## Độ phức tạp
+- Thời gian: O(n) cho mỗi hàm nhờ phân tích khấu hao, tổng O(n).
+- Bộ nhớ: O(n) cho hai mảng kết quả.

@@ -1,0 +1,61 @@
+Range Queries and Copies - CSES 1737
+https://cses.fi/problemset/task/1737
+
+Tags: persistent-segment-tree
+
+## Đề bài
+Ta duy trì một danh sách các mảng, ban đầu chỉ có một mảng gồm n phần tử.
+Cần xử lý q truy vấn, các mảng và các vị trí đều đánh chỉ số bắt đầu từ 1:
+  1 k a x : gán phần tử ở vị trí a của mảng k bằng x (cập nhật một điểm).
+  2 k a b : tính tổng các phần tử từ vị trí a đến b của mảng k (tổng đoạn).
+  3 k     : sao chép mảng k thành một mảng mới rồi thêm vào cuối danh sách.
+
+## Ý tưởng
+Điểm mấu chốt là truy vấn "3 k" phải sao chép cả một mảng. Nếu sao chép thật sự
+tốn O(n) thì với nhiều lần sao chép tổng chi phí lên tới O(n*q), quá lớn. Thay
+vào đó ta dùng persistent segment tree (cây phân đoạn bền vững) với kỹ thuật
+path copying (sao chép đường đi):
+
+- Mỗi mảng k được đại diện bởi một node gốc roots[k].
+- Mỗi node bất biến lưu tổng của đoạn cùng chỉ số con trái và con phải; node 0
+  đóng vai trò null. Cách lưu node khác nhau giữa hai lời giải:
+  * solution.cpp giữ toàn bộ node trong một `vector<Node>` (struct gồm sum,
+    left, right) và làm việc trên đoạn 0-indexed [0, n-1] (mọi vị trí nhập vào
+    đều bị trừ 1 trước khi dùng).
+  * solution.py giữ node trong ba mảng phẳng song song: left[]/right[] kiểu
+    int32 và val[] kiểu int64, và làm việc trên đoạn 1-indexed [1, n].
+
+Các thao tác:
+- Build ban đầu tạo cây phủ n phần tử rồi cộng tổng từ dưới lên (con tính trước
+  cha). solution.cpp build bằng ĐỆ QUY trên [0, n-1]; solution.py build bằng
+  VÒNG LẶP dùng stack, sau đó duyệt ngược danh sách internal node (pre-order) để
+  gộp tổng. Cây ban đầu dùng O(n) node.
+
+- Cập nhật "1 k a x": đây là cập nhật một điểm nhưng phải tạo ra một PHIÊN BẢN MỚI
+  theo path copying. Đi từ gốc xuống lá ở vị trí a; tại mỗi tầng trên đường đi tạo
+  một node MỚI, thay con nằm trên đường cập nhật và DÙNG CHUNG con còn lại với
+  phiên bản cũ. Chỉ O(log n) node mới được tạo. Cuối cùng gán roots[k] bằng gốc
+  mới; vì chỉ gán lại roots[k] nên các bản sao đã tạo trước đó (trỏ tới gốc cũ)
+  hoàn toàn không bị ảnh hưởng. solution.cpp thực hiện bằng ĐỆ QUY; solution.py đi
+  xuống ghi nhớ đường đi (node cũ + hướng rẽ) rồi đi ngược lên dựng node mới, đều
+  LẶP không đệ quy.
+
+- Tổng đoạn "2 k a b": duyệt cây roots[k]. Node nằm ngoài đoạn truy vấn bỏ qua,
+  node nằm trọn trong [a, b] cộng thẳng tổng đã lưu, còn node giao một phần thì
+  tách xuống hai con. solution.cpp duyệt bằng ĐỆ QUY; solution.py duyệt bằng stack.
+
+- Sao chép "3 k": chỉ cần thêm roots[k] vào cuối danh sách roots — mảng mới DÙNG
+  CHUNG toàn bộ cây với mảng k, tốn O(1). Về sau, bất kỳ cập nhật nào lên mảng k
+  hay lên bản sao đều tạo đường đi riêng, không đụng tới nhau (tính bền vững).
+
+Tính đúng đắn: path copying bảo đảm mỗi phiên bản (mỗi gốc) mô tả đúng trạng thái
+mảng tại thời điểm đó, vì node dùng chung chỉ chứa dữ liệu bất biến còn mọi thay
+đổi luôn sinh node mới trên đường đi, nên không phá vỡ phiên bản cũ.
+
+## Độ phức tạp
+- Thời gian: build O(n); mỗi cập nhật O(log n) (tạo O(log n) node); mỗi tổng đoạn
+  O(log n); mỗi sao chép O(1). Tổng cộng O((n + q) log n) cho cả hai lời giải.
+- Bộ nhớ: O(n + q log n) node; cả hai file cấp phát theo cận `2*n + 20*q + 10`
+  (solution.cpp reserve `vector<Node>`, solution.py cấp sẵn ba mảng phẳng). Ngoài
+  ra solution.py đọc toàn bộ input một lần bằng sys.stdin.buffer.read() nên tốn
+  thêm O(n + q) bộ nhớ cho dữ liệu đầu vào.

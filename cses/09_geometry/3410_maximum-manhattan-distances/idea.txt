@@ -1,0 +1,43 @@
+Maximum Manhattan Distances - CSES 3410
+https://cses.fi/problemset/task/3410
+
+Tags: manhattan-distance
+
+## Đề bài
+Ta lần lượt thêm n điểm vào một tập hợp. Sau mỗi lần thêm một điểm, hãy in ra
+khoảng cách Manhattan lớn nhất giữa hai điểm bất kỳ trong tập hiện tại. Khoảng
+cách Manhattan giữa hai điểm là |x1 - x2| + |y1 - y2|.
+
+## Ý tưởng
+Dùng phép quay 45 độ để biến khoảng cách Manhattan thành khoảng cách Chebyshev.
+Với hai điểm bất kỳ ta có đẳng thức:
+    |x1 - x2| + |y1 - y2| = max( |(x1+y1) - (x2+y2)| , |(x1-y1) - (x2-y2)| ).
+Điều này đúng vì với mọi cặp giá trị a = x1-x2 và b = y1-y2 ta luôn có
+|a| + |b| = max(|a+b|, |a-b|). Đặt u = x + y và v = x - y, phép quay 45 độ này
+biến khoảng cách Manhattan thành khoảng cách Chebyshev trong hệ tọa độ (u, v).
+
+Do đó khoảng cách Manhattan lớn nhất trên toàn bộ tập điểm bằng
+    max( maxU - minU , maxV - minV ),
+trong đó maxU/minU là giá trị lớn nhất/nhỏ nhất của u = x+y, còn maxV/minV là
+giá trị lớn nhất/nhỏ nhất của v = x-y trên tất cả các điểm đã thêm.
+
+Vì sao đúng: giá trị max(|u_i - u_j|) trên mọi cặp điểm chính là maxU - minU
+(tương tự cho v là maxV - minV). Lấy max của hai đại lượng này cho ra đáp án,
+đạt được bởi cặp điểm cùng cho khoảng cách Manhattan lớn nhất.
+
+Kỹ thuật số nguyên chính xác: tọa độ là số nguyên tới khoảng 1e9 nên u, v và
+các hiệu maxU-minU, maxV-minV đều là số nguyên, không cần dùng float cho phần
+quyết định. Đáp án luôn là số nguyên.
+
+Thuật toán: khi thêm mỗi điểm, cập nhật bốn biến running min/max của u và v,
+rồi in ra max(maxU-minU, maxV-minV). Mỗi bước tốn O(1).
+
+Về nhập/xuất: bản C++ đọc từng điểm và in ngay đáp án của bước đó (dùng int64,
+bộ nhớ phụ O(1)). Bản Python đọc toàn bộ input một lần rồi tách token, gom các
+đáp án vào một danh sách và xuất một lần ở cuối (nên tốn O(n) bộ nhớ), tận dụng
+số nguyên chính xác vô hạn của Python nên không lo tràn số.
+
+## Độ phức tạp
+Thời gian O(n) cho cả hai bản. Bộ nhớ: bản C++ dùng O(1) phụ và in đáp án ngay
+sau mỗi điểm; bản Python dùng O(n) do đọc hết input và gom toàn bộ đáp án rồi
+mới xuất một lần.

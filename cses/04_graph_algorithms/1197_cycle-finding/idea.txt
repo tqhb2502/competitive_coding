@@ -1,0 +1,40 @@
+Cycle Finding - CSES 1197
+https://cses.fi/problemset/task/1197
+
+Tags: bellman-ford
+
+## Đề bài
+Cho đồ thị có hướng gồm n đỉnh và m cạnh, mỗi cạnh có trọng số có thể âm
+(trọng số nằm trong khoảng có thể tới -10^9). Hãy kiểm tra đồ thị có tồn tại
+chu trình âm (negative cycle) hay không. Nếu có, in ra "YES" rồi in một chu
+trình âm bất kỳ theo dãy đỉnh đúng thứ tự đi qua, với đỉnh đầu được lặp lại ở
+cuối. Nếu không có, in ra "NO".
+
+## Ý tưởng
+Dùng thuật toán Bellman-Ford để phát hiện chu trình âm.
+
+- Khởi tạo dist[v] = 0 cho MỌI đỉnh v. Điều này tương đương việc thêm một đỉnh
+  nguồn ảo nối tới tất cả các đỉnh bằng cạnh trọng số 0, nhờ vậy phát hiện được
+  chu trình âm ở bất kỳ vị trí nào của đồ thị, kể cả chu trình không thể đến
+  được từ đỉnh 1.
+
+- Lặp đúng n vòng. Mỗi vòng duyệt toàn bộ m cạnh và thực hiện relax: nếu
+  dist[a] + c < dist[b] thì cập nhật dist[b] = dist[a] + c và parent[b] = a.
+  Nếu một vòng nào đó không còn relax được cạnh nào thì đồ thị đã hội tụ, tức
+  KHÔNG có chu trình âm, dừng sớm (early break) và in "NO".
+
+- Nếu tới vòng thứ n vẫn còn relax được (đỉnh cuối cùng được relax khác -1) thì
+  chắc chắn tồn tại chu trình âm.
+
+Truy vết chu trình:
+Đỉnh x được relax ở vòng thứ n có thể chưa nằm trên chu trình mà chỉ đến được
+từ chu trình. Đi ngược theo mảng parent đúng n bước từ x sẽ chắc chắn rơi vào
+một đỉnh y nằm trong chu trình âm. Sau đó đi theo chuỗi parent từ y cho tới khi
+quay lại y để thu được các đỉnh của chu trình; do parent biểu diễn hướng ngược
+(cạnh đi từ parent -> con) nên phải đảo (reverse) danh sách để có thứ tự đi
+xuôi. Mảng khoảng cách dùng `long long`, đủ chứa các giá trị phát sinh trong
+giới hạn đề bài.
+
+## Độ phức tạp
+Thời gian: O(n * m), xấu nhất 2500 * 5000 = 1.25 * 10^7 phép relax.
+Bộ nhớ: O(n + m) cho mảng cạnh, mảng dist và mảng parent.

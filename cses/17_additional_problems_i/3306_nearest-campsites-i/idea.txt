@@ -1,0 +1,29 @@
+Nearest Campsites I - CSES 3306
+https://cses.fi/problemset/task/3306
+
+Tags: coordinate-compression, fenwick, sorted-array, sorting, two-pointers
+
+## Đề bài
+Cho n điểm trại đã đặt và m điểm trại trống trên lưới. Khoảng cách giữa hai
+điểm là khoảng cách Manhattan |x1 - x2| + |y1 - y2|. Với mỗi điểm trại trống,
+xét khoảng cách tới điểm trại đã đặt gần nhất; in ra giá trị lớn nhất trong
+m khoảng cách đó. Ràng buộc: n, m <= 10^5; tọa độ <= 10^6.
+
+## Ý tưởng
+Dùng bốn lượt quét theo bốn hướng dấu (sx, sy) với sx, sy thuộc {-1, +1}. Với
+mỗi hướng, biến đổi mọi điểm thành X = sx*x, Y = sy*y. Xét góc phần tư có
+X_site <= X_query và Y_site <= Y_query thì khoảng cách Manhattan rút gọn thành
+X_query + Y_query - (X_site + Y_site). Do đó điểm trại gần nhất trong góc này là
+điểm có X_site + Y_site lớn nhất.
+
+Sắp xếp điểm trại và truy vấn theo X tăng dần. Trong khi quét theo X, thêm mọi
+điểm trại có X_site <= X_query vào Fenwick tree; cây lưu max(X_site + Y_site)
+theo tọa độ Y đã nén. Truy vấn tiền tố (prefix) trên Y <= Y_query cho đáp án của
+góc hiện tại.
+
+Chạy đủ bốn cặp dấu. Với một điểm trại đã đặt và một điểm truy vấn bất kỳ, cặp
+này luôn nằm trong ít nhất một trong bốn góc, nên lấy min qua bốn lượt quét cho
+khoảng cách gần nhất của mỗi điểm trống. Cuối cùng lấy max trên m điểm trống.
+
+## Độ phức tạp
+Thời gian O((n + m) log(n + m)), bộ nhớ O(n + m).

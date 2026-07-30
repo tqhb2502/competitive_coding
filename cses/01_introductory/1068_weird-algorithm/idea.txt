@@ -1,0 +1,34 @@
+Weird Algorithm - CSES 1068
+https://cses.fi/problemset/task/1068
+
+Tags: simulation
+
+## Đề bài
+- Cho số nguyên dương n (1 <= n <= 10^6).
+- Áp dụng quy tắc lặp: nếu n chẵn thì chia đôi (n / 2), nếu n lẻ thì nhân ba cộng một (3n + 1).
+- Lặp lại cho đến khi n = 1.
+- In ra tất cả các giá trị của n trong quá trình (kể cả giá trị đầu và giá trị 1 ở cuối),
+  cách nhau bởi dấu cách, trên cùng một dòng.
+
+## Ý tưởng
+- Mô phỏng trực tiếp dãy Collatz đúng theo định nghĩa bài toán:
+  + In giá trị hiện tại của n.
+  + Nếu n chẵn: n = n / 2. Nếu n lẻ: n = 3 * n + 1.
+  + Dừng khi n = 1 (vẫn phải in ra giá trị 1).
+- Code C++ in trực tiếp (streaming) từng giá trị ra cout, chèn dấu cách trước giá trị
+  kế tiếp và xuống dòng sau khi đã in 1 (không lưu toàn bộ dãy).
+- Code Python gom lần lượt các giá trị vào một danh sách, rồi ghép bằng dấu cách và
+  in một lần duy nhất ở cuối.
+- Tính đúng đắn: dãy Collatz với n <= 10^6 luôn hội tụ về 1 (đã được kiểm chứng thực nghiệm
+  rất xa), nên vòng lặp chắc chắn kết thúc; ta chỉ mô phỏng theo định nghĩa nên kết quả chính xác.
+
+LƯU Ý (tràn số):
+- Với n <= 10^6, giá trị trung gian có thể lên tới khoảng 5.7 * 10^10 (~2^36, đạt tại n = 704511),
+  vượt xa phạm vi int 32-bit, nên code C++ dùng `long long` để tránh tràn số.
+- Python dùng số nguyên chính xác vô hạn nên không cần lo tràn số.
+
+## Độ phức tạp
+- Thời gian: O(L) với L là độ dài dãy Collatz (với n <= 10^6, L tối đa khoảng ~500 bước),
+  rất nhỏ nên chạy tức thì.
+- Bộ nhớ: C++ dùng O(1) (in trực tiếp, không lưu dãy); Python dùng O(L) (lưu toàn bộ
+  dãy vào danh sách trước khi in một lần).

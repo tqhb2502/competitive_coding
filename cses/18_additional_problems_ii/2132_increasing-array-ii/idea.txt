@@ -1,0 +1,27 @@
+Increasing Array II - CSES 2132
+https://cses.fi/problemset/task/2132
+
+Tags: slope-trick
+
+## Đề bài
+Cho mảng gồm n phần tử. Mỗi thao tác cho phép tăng hoặc giảm một phần tử đúng
+một đơn vị. Hãy tìm tổng chi phí nhỏ nhất để biến mảng thành mảng không giảm.
+
+## Ý tưởng
+Đây là bài toán hồi quy đẳng điệu theo chuẩn L1 (isotonic regression), giải
+bằng kỹ thuật slope trick kết hợp thuật toán PAVA.
+
+Duyệt các phần tử từ trái sang phải và duy trì một max-heap chứa các mức đại
+diện cho nghiệm tối ưu của tiền tố hiện tại. Với mỗi giá trị x đọc vào, đẩy x
+vào heap. Nếu phần tử lớn nhất top ở đỉnh heap thoả top > x thì hai khối cuối
+đang vi phạm thứ tự không giảm: cộng thêm chi phí bắt buộc top - x vào đáp án,
+bỏ đỉnh top rồi đẩy thêm một bản sao của x vào heap (tương ứng việc gộp khối và
+điều chỉnh trung vị của khối gộp). Ngược lại khi top <= x thì x tạo được khối
+mới mà không phá vỡ thứ tự.
+
+Vì các khối liên tiếp có cùng giá trị tối ưu là các trung vị không giảm, tổng
+chi phí cộng dồn qua từng bước luôn là chi phí tối ưu cho tiền tố, nên đáp án
+cuối cùng là kết quả đúng.
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n). Đáp án dùng số nguyên 64 bit.

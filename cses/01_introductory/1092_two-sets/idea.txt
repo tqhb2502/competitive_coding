@@ -1,0 +1,40 @@
+Two Sets - CSES 1092
+https://cses.fi/problemset/task/1092
+
+Tags: constructive, greedy-array
+
+## Đề bài
+Cho số nguyên n. Hãy chia các số 1, 2, ..., n thành hai tập hợp có tổng bằng nhau.
+Nếu chia được thì in "YES" kèm mô tả hai tập (số phần tử rồi tới danh sách phần tử của
+mỗi tập); nếu không chia được thì in "NO".
+
+## Ý tưởng
+- Tổng của tất cả các số từ 1 đến n là S = n*(n+1)/2. Muốn chia thành hai tập có tổng
+  bằng nhau thì S phải chẵn, khi đó mỗi tập cần đạt tổng target = S/2 = n*(n+1)/4.
+- S chẵn khi và chỉ khi n*(n+1) chia hết cho 4. Xét n theo modulo 4:
+    + n % 4 == 0  -> chia hết -> chia được.
+    + n % 4 == 1  -> tích ≡ 2 (mod 4) -> không chia được.
+    + n % 4 == 2  -> tích ≡ 2 (mod 4) -> không chia được.
+    + n % 4 == 3  -> n+1 ≡ 0 (mod 4) -> chia được.
+  Vậy chia được khi n % 4 == 0 hoặc n % 4 == 3, ngược lại in "NO".
+
+- Cách dựng một tập có tổng đúng bằng target (tham lam / greedy):
+    + Duyệt i từ n giảm dần về 1, giữ biến remaining khởi tạo bằng target.
+    + Nếu i <= remaining thì cho i vào tập 1 và trừ remaining đi i; ngược lại cho i
+      vào tập 2.
+    + Vì luôn lấy số lớn nhất còn "vừa" được nên tham lam này chắc chắn đưa remaining
+      về 0. Các số còn lại tự động tạo thành tập 2 có tổng = S - target = target.
+
+- Tại sao đúng: khi remaining > 0 luôn tồn tại số i <= remaining chưa dùng (ít nhất
+  số 1 dùng được nếu remaining >= 1), nên quá trình tham lam luôn lấp đầy đúng target
+  mà không "nhảy qua". Do đó tập 1 có tổng đúng bằng target, tập 2 có tổng phần còn lại
+  cũng bằng target. CSES chấp nhận bất kỳ cách chia hợp lệ nào (thứ tự tập và thứ tự
+  phần tử tùy ý).
+
+## Độ phức tạp
+- Thời gian: O(n) để duyệt và phân loại các số.
+- Bộ nhớ: O(n) để lưu hai tập.
+Với n <= 10^6 hoàn toàn nằm trong giới hạn.
+
+Code C++ lưu hai tập trong hai `vector<int>` rồi xuất trực tiếp bằng fast I/O.
+Thời gian xuất là O(n), tương ứng với chính kích thước kết quả.

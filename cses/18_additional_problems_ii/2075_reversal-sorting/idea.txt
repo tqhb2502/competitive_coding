@@ -1,0 +1,24 @@
+Reversal Sorting - CSES 2075
+https://cses.fi/problemset/task/2075
+
+Tags: implicit-treap
+
+## Đề bài
+Cho một hoán vị của 1..n. Hãy sắp xếp nó tăng dần bằng không quá n phép đảo
+đoạn con và in ra các đoạn đã đảo (mỗi đoạn là cặp chỉ số đầu, cuối).
+Ràng buộc: n <= 2*10^5.
+
+## Ý tưởng
+Xử lý lần lượt giá trị i cần đặt đúng chỗ, từ 1 đến n. Trước bước i thì prefix
+1..i-1 đã đúng và bị khóa. Tìm vị trí hiện tại p của giá trị i; nếu p > i thì
+đảo đoạn [i, p]. Phép đảo này đưa i về đúng vị trí i mà không đụng tới prefix
+đã khóa, nên sau bước i thì prefix 1..i đúng. Mỗi giá trị dùng nhiều nhất một
+phép đảo nên tổng số phép không vượt quá n (thực tế tối đa n-1).
+
+Để tìm vị trí và đảo đoạn nhanh, lưu hoán vị trong implicit treap có lazy
+reverse. Giữ con trỏ tới node của từng giá trị. Vị trí của một node được tính
+từ kích thước cây con trái cộng với đường đi cha lên gốc; còn thao tác đảo đoạn
+thực hiện bằng split/merge trong O(log n).
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n), số phép đảo tối đa n-1.

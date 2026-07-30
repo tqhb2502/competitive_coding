@@ -1,0 +1,54 @@
+Coin Combinations II - CSES 1636
+https://cses.fi/problemset/task/1636
+
+Tags: coin-change
+
+## Đề bài
+Cho n loại đồng xu với các mệnh giá cho trước và một tổng đích x. Hãy đếm số
+cách tạo ra đúng tổng x, mỗi loại đồng xu được dùng số lần tùy ý, KHÔNG kể thứ
+tự (hai tổ hợp {2,3} và {3,2} chỉ tính là một). Kết quả lấy modulo 1000000007.
+
+Định dạng vào/ra:
+- Dòng 1: hai số nguyên n và x (số loại đồng xu và tổng cần tạo).
+- Dòng 2: n số nguyên là giá trị các đồng xu.
+- In ra một số nguyên: số cách tạo tổng x, lấy modulo 1000000007.
+- Ràng buộc: 1 <= n <= 100, 1 <= x <= 10^6, 1 <= c_i <= 10^6.
+
+## Ý tưởng
+Đây là bài đếm số tổ hợp (multiset) kiểu unbounded knapsack: mỗi loại đồng xu
+được dùng số lần tùy ý, và ta không kể thứ tự. Cả solution.cpp và solution.py đều
+cài cùng một cách như trình bày dưới đây (khác nhau chỉ ở chi tiết ngôn ngữ).
+
+Trạng thái (DP state):
+- ways[s] = số cách (không kể thứ tự) tạo ra tổng đúng bằng s khi CHỈ dùng những
+  loại đồng xu đã được xét cho tới thời điểm hiện tại.
+
+Base case:
+- ways[0] = 1 (đúng một cách tạo tổng 0: không dùng đồng xu nào).
+- ways[s] = 0 với mọi s > 0 lúc ban đầu.
+
+Chuyển trạng thái (transition — mấu chốt để KHÔNG kể thứ tự):
+- Vòng NGOÀI duyệt từng loại đồng xu c; vòng TRONG duyệt s tăng dần từ c tới x:
+      ways[s] = (ways[s] + ways[s - c]) mod MOD
+- Vì đồng xu nằm ở vòng ngoài nên mỗi tổ hợp {số lượng mỗi loại xu} chỉ được sinh
+  ra đúng một lần, do ta cố định thứ tự "xét các loại xu". Đây chính là điểm khác
+  với Coin Combinations I (bài 1635) vốn để tổng ở vòng ngoài nên đếm cả thứ tự.
+- Việc cho s tăng dần cho phép loại xu c hiện tại được dùng lại nhiều lần
+  (unbounded). Nếu c > x thì bỏ qua loại xu đó vì nó không đóng góp gì.
+
+Đáp án (answer):
+- ways[x] mod MOD.
+
+Ví dụ x = 9, coins = {2,3,5}: các tổ hợp là 2+2+5, 3+3+3, 2+2+2+3 -> đáp án 3.
+
+Cài đặt bỏ qua ngay đồng xu c > x. Trong vòng cập nhật, tổng của hai số nhỏ hơn
+MOD nên chỉ cần trừ MOD một lần nếu kết quả đạt MOD.
+
+## Độ phức tạp
+- Thời gian: O(n*x). Với n <= 100 và x <= 10^6, vòng lặp trong đạt tối đa ~10^8 bước.
+- Bộ nhớ: O(n+x) cho danh sách đồng xu và mảng `ways` (Python thực chất chỉ cần
+  mảng `ways` cỡ O(x)).
+- solution.cpp: O(n*x), chạy thoải mái trong giới hạn thời gian.
+- LƯU Ý TLE: solution.py cùng độ phức tạp O(n*x) nhưng vòng lặp chạy ở tầng Python;
+  ở cận trên (x tới 10^6 với nhiều đồng xu nhỏ) số bước lên tới ~10^8 nên dễ bị TLE
+  trên CPython thuần, cần PyPy hoặc dữ liệu không đạt cận xấu nhất mới qua.

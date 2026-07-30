@@ -1,0 +1,31 @@
+Grid Paths II - CSES 1078
+https://cses.fi/problemset/task/1078
+
+Tags: combinatorics
+
+## Đề bài
+Cho lưới n×n có m ô bẫy. Hãy đếm số đường đi đơn điệu (chỉ được đi xuống hoặc
+sang phải) từ ô (1,1) tới ô (n,n) mà không đi qua bất kỳ ô bẫy nào. In kết quả
+theo modulo 10^9 + 7.
+
+## Ý tưởng
+Nếu bỏ qua bẫy, số đường đơn điệu từ ô (y1,x1) tới ô (y2,x2) với y1<=y2 và
+x1<=x2 là hệ số nhị thức C((y2-y1)+(x2-x1), y2-y1), vì ta chỉ cần chọn vị trí
+của các bước đi xuống trong toàn bộ chuỗi bước.
+
+Sắp xếp các ô bẫy theo thứ tự (y,x) rồi thêm đích (n,n) vào cuối danh sách. Với
+mỗi điểm i, gọi ways[i] là số đường từ (1,1) tới i mà không đi qua bất kỳ bẫy
+nào đứng trước i trong danh sách. Khởi tạo bằng tổng số đường không xét bẫy:
+ways[i] = C(y_i + x_i - 2, y_i - 1).
+
+Với mỗi điểm j đứng trước thoả y_j<=y_i và x_j<=x_i, số đường mà bẫy j là bẫy
+đầu tiên bị chạm được đếm đúng một lần bởi ways[j] * C((y_i-y_j)+(x_i-x_j),
+y_i-y_j). Trừ tất cả các lượng này khỏi ways[i] (nguyên lý bù trừ). Khi i là một
+ô bẫy, ways[i] lưu số đường hợp lệ tới bẫy đó để các điểm sau loại bỏ; khi i là
+đích, ways[i] chính là đáp án.
+
+Tiền xử lý giai thừa và nghịch đảo giai thừa tới 2n để tính mỗi hệ số nhị thức
+theo modulo trong O(1).
+
+## Độ phức tạp
+Thời gian O(n + m^2), bộ nhớ O(n + m); với n<=10^6 và m<=1000.

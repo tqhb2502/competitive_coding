@@ -1,0 +1,46 @@
+Path Queries - CSES 1138
+https://cses.fi/problemset/task/1138
+
+Tags: difference-array, euler-tour, fenwick, range-update
+
+## Đề bài
+Cho một cây có gốc gồm n đỉnh (đỉnh 1 là gốc), mỗi đỉnh mang một giá trị. Có q truy vấn:
+  - "1 s x": đổi giá trị của đỉnh s thành x.
+  - "2 s": tính tổng giá trị các đỉnh nằm trên đường đi từ gốc (đỉnh 1) đến đỉnh s.
+
+## Ý tưởng
+Nhận xét mấu chốt: đường đi từ gốc đến s chính là tập hợp mọi tổ tiên của s (kể cả
+chính s). Vì vậy tổng cần tính là tổng giá trị của tất cả các đỉnh u là tổ tiên của s.
+
+Làm phẳng cây bằng Euler tour: dùng DFS lặp (iterative, tránh tràn call stack vì n có
+thể tới 2*10^5) để gán cho mỗi đỉnh v hai mốc thời gian tin[v] (lúc vào) và tout[v]
+(lúc ra). Tính chất: u là tổ tiên của s (kể cả u = s) khi và chỉ khi
+    tin[u] <= tin[s] <= tout[u].
+
+Kỹ thuật "range-update qua điểm vào/ra" trên một Fenwick tree (BIT): với mỗi đỉnh v có
+giá trị val[v], cộng +val[v] tại vị trí tin[v] và cộng -val[v] tại vị trí tout[v]+1.
+Khi đó prefix_sum(tin[s]) đúng bằng tổng giá trị các tổ tiên của s:
+  - Nếu u là tổ tiên của s thì tin[u] <= tin[s] <= tout[u], nên +val[u] nằm trong tiền
+    tố còn -val[u] (ở tout[u]+1 > tin[s]) thì không -> đóng góp +val[u].
+  - Nếu u không phải tổ tiên nhưng tin[u] <= tin[s] thì bắt buộc tout[u] < tin[s], nên
+    cả +val[u] lẫn -val[u] đều nằm trong tiền tố -> đóng góp 0.
+  - Nếu tin[u] > tin[s] thì cả hai đều không nằm trong tiền tố -> đóng góp 0.
+
+Xử lý truy vấn:
+  - Loại "2 s": trả về prefix_sum(tin[s]).
+  - Loại "1 s x": đặt delta = x - val[s]; cập nhật val[s] = x; cộng delta tại tin[s] và
+    cộng -delta tại tout[s]+1 (point update). Việc này giữ đúng bất biến trên cho mọi
+    truy vấn về sau.
+
+Khởi tạo BIT (cách dựng khác nhau giữa hai bản, nhưng cây Fenwick thu được là như nhau):
+  - Bản Python: dựng mảng hiệu (difference array) — cộng +val tại tin[v], -val tại tout[v]+1
+    — rồi khởi tạo cây Fenwick trực tiếp trong O(n).
+  - Bản C++: thực hiện hai point update (+val[v] tại entry[v], -val[v] tại exit[v]+1) cho từng
+    đỉnh, tốn O(n log n).
+
+## Độ phức tạp
+  - Thời gian: Euler tour O(n); dựng BIT O(n) ở bản Python, O(n log n) ở bản C++; mỗi truy vấn
+    O(log n). Tổng O((n + q) log n) cho cả hai bản.
+  - Bộ nhớ: O(n) cho danh sách kề, tin/tout, parent và BIT. Bản C++ đọc input theo luồng nên
+    thêm O(n); bản Python đọc toàn bộ input một lần bằng sys.stdin.buffer.read() nên tốn thêm
+    O(n + q) cho mảng token đầu vào.

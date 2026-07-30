@@ -1,0 +1,47 @@
+Elevator Rides - CSES 1653
+https://cses.fi/problemset/task/1653
+
+Tags: bitmask-dp
+
+## Đề bài
+Có n người (n <= 20), mỗi người có cân nặng w[i]. Một thang máy chịu tải tối
+đa là x. Hãy tìm số chuyến (rides) tối thiểu để đưa hết tất cả mọi người lên.
+
+## Ý tưởng
+Dùng bitmask DP trên tập con những người đã được xếp vào các chuyến.
+
+Trạng thái (state):
+  dp[mask] = cặp (rides, weight)
+    - rides  = số chuyến tối thiểu để chở hết những người trong mask.
+    - weight = tổng cân nặng nhỏ nhất của chuyến CUỐI CÙNG (chuyến đang mở),
+               xét trong mọi cách đạt được số chuyến tối thiểu đó.
+  So sánh hai state theo thứ tự lexicographic: ưu tiên rides nhỏ hơn, nếu bằng
+  nhau thì weight nhỏ hơn (còn dư nhiều chỗ trong chuyến cuối thì càng dễ nhét
+  thêm người sau này).
+
+Mẹo mã hoá (encoding): gộp cặp (rides, weight) thành một số nguyên duy nhất
+  state = rides * BIG + weight, với BIG = x + 1 (vì luôn có weight <= x).
+  Khi đó lấy min trên số nguyên này chính là so sánh lexicographic mong muốn,
+  đồng thời chỉ cần lưu một số cho mỗi mask.
+
+Chuyển trạng thái (transition):
+  Với mỗi người p thuộc mask, gọi prev = dp[mask không có p].
+  Tách prev thành (r = rides, wt = weight của chuyến cuối):
+    - Nếu wt + w[p] <= x: nhét p vào chuyến cuối đang mở
+          cand = (r, wt + w[p])       -> dạng số: prev + w[p]
+    - Ngược lại: phải mở một chuyến mới cho p
+          cand = (r + 1, w[p])        -> dạng số: prev - wt + BIG + w[p]
+  dp[mask] = min trên mọi p của cand.
+
+Cơ sở (base case):
+  dp[0] = (1, 0) tức là BIG (đã có sẵn 1 chuyến mở, chưa chở ai, cân nặng 0).
+  Khi thêm người đầu tiên p: vì w[p] <= x nên 0 + w[p] <= x, ta được (1, w[p]).
+
+Đáp án:
+  full = (1 << n) - 1
+  answer = dp[full] / BIG   (phần rides của state cuối cùng, phép chia nguyên).
+
+## Độ phức tạp
+Thời gian: với mỗi mask ta duyệt các bit đang bật, tổng số phép bằng tổng các
+           popcount = n * 2^(n-1) ~ 20 * 2^19 ≈ 10^7  =>  O(n * 2^n).
+Bộ nhớ:    mảng dp kích thước 2^n số nguyên  =>  O(2^n). Với n = 20 là ~10^6.

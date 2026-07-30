@@ -1,0 +1,38 @@
+Planets and Kingdoms - CSES 1683
+https://cses.fi/problemset/task/1683
+
+Tags: scc
+
+## Đề bài
+Có n hành tinh và m máy dịch chuyển (teleporter). Mỗi máy dịch chuyển là một
+cạnh CÓ HƯỚNG a -> b, cho phép đi từ hành tinh a sang hành tinh b.
+Hai hành tinh a và b thuộc cùng một "vương quốc" (kingdom) khi có thể đi được
+từ a đến b VÀ đi được từ b về a.
+Yêu cầu: tìm số vương quốc k, rồi gán cho mỗi hành tinh một nhãn từ 1 đến k
+sao cho hai hành tinh cùng vương quốc thì có cùng nhãn.
+
+## Ý tưởng
+Mô hình hóa: coi mỗi hành tinh là một đỉnh, mỗi teleporter a -> b là một cạnh
+có hướng. Điều kiện "cùng vương quốc" chính là định nghĩa của Strongly Connected
+Component (SCC): một tập đỉnh mà từ bất kỳ đỉnh nào cũng tới được mọi đỉnh khác
+trong tập. Vậy số vương quốc k = số SCC, và nhãn của mỗi đỉnh chính là chỉ số SCC.
+
+Dùng thuật toán Kosaraju:
+1. Xây đồ thị gốc (adj) và đồ thị đảo chiều (radj: đảo hướng mọi cạnh).
+2. Chạy DFS trên đồ thị gốc và ghi lại thứ tự KẾT THÚC (finish order, post-order)
+   của các đỉnh. Dùng DFS lặp (iterative) với con trỏ chỉ số cạnh cho từng đỉnh
+   để tránh tràn stack khi n lớn.
+3. Duyệt các đỉnh theo thứ tự NGƯỢC của finish order. Với mỗi đỉnh chưa có nhãn,
+   chạy DFS trên đồ thị ĐẢO CHIỀU (radj); mọi đỉnh thăm được trong lần này tạo
+   thành đúng một SCC và được gán cùng một nhãn mới.
+4. In số vương quốc k rồi in nhãn của các đỉnh 1..n.
+
+Tính đúng của Kosaraju: khi xử lý theo thứ tự finish time giảm dần, đỉnh xuất phát
+mỗi lần ở bước 3 luôn thuộc một SCC là "đích" (sink) trên đồ thị đảo chiều, nên
+DFS chỉ phủ trọn đúng SCC đó mà không "rò rỉ" sang SCC khác. CSES chấp nhận mọi
+cách gán nhãn hợp lệ, miễn hai đỉnh cùng SCC có cùng nhãn và số vương quốc k đúng.
+
+## Độ phức tạp
+- Thời gian: O(n + m) cho cả hai lần DFS và việc xây dựng đồ thị.
+- Bộ nhớ: O(n + m) cho adj, radj, mảng order và mảng nhãn.
+- Với n <= 1e5, m <= 2e5, tổng thao tác chỉ vài trăm nghìn, thừa sức trong giới hạn.

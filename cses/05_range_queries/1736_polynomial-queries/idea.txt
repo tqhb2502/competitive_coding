@@ -1,0 +1,51 @@
+Polynomial Queries - CSES 1736
+https://cses.fi/problemset/task/1736
+
+Tags: difference-array, fenwick, prefix-sum, range-query, range-update
+
+## Đề bài
+Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
+- Loại 1 (a b): cộng thêm một cấp số cộng lên đoạn [a, b], tức là cộng giá trị 1 vào
+  vị trí a, cộng 2 vào vị trí a+1, ..., cộng (b-a+1) vào vị trí b.
+- Loại 2 (a b): trả về tổng các phần tử trong đoạn [a, b].
+
+## Ý tưởng
+Dùng ba Fenwick tree (BIT). Ý tưởng cốt lõi là biến "range update dạng cấp số cộng"
+thành một vài point update nhờ lấy sai phân bậc hai (second difference), rồi biểu diễn
+prefix sum của phần cộng thêm như một đa thức bậc hai theo chỉ số x.
+
+Với một update loại 1 trên đoạn [l, r], giá trị cộng thêm tại vị trí i là
+    inc(i) = i - l + 1   (l <= i <= r), và bằng 0 ở ngoài đoạn.
+Gọi f là sai phân bậc hai của hàm inc; khi đó f chỉ khác 0 tại đúng ba điểm:
+    f[l]   += 1
+    f[r+1] += -(r - l + 2)
+    f[r+2] += (r - l + 1)
+Giá trị cộng thêm tích lũy tại i là d[i] = tổng_{j<=i} f[j]*(i - j + 1), và prefix sum
+của phần cộng thêm:
+    PS(x) = tổng_{i<=x} d[i]
+          = (1/2) * [ (x^2 + 3x + 2)*A0(x) - (2x + 3)*A1(x) + A2(x) ]
+với A0(x) = tổng_{j<=x} f[j], A1(x) = tổng_{j<=x} j*f[j], A2(x) = tổng_{j<=x} j^2*f[j].
+Ba đại lượng A0, A1, A2 chính là prefix sum của f[j], j*f[j], j^2*f[j], nên mỗi cái
+được duy trì bằng một Fenwick tree hỗ trợ point update và prefix query.
+
+Các phép toán:
+- Update loại 1: thực hiện ba point update (tại l, r+1, r+2) lên cả ba BIT, mỗi point
+  update tốn O(log n). Các vị trí r+1, r+2 vượt quá n bị bỏ qua vì truy vấn prefix chỉ
+  tính đến n.
+- Query loại 2 trên [l, r]: đáp số = (PS(r) - PS(l-1)) + (pre[r] - pre[l-1]), trong đó
+  pre[] là prefix sum tĩnh của mảng ban đầu (không đổi), còn PS lấy từ ba BIT theo công
+  thức trên. Mỗi PS(x) cần ba prefix query O(log n).
+
+Về tính đúng đắn: công thức PS(x) suy trực tiếp từ d[i] = tổng_{j<=i} f[j]*(i-j+1) bằng
+cách đổi thứ tự tổng và khai triển (x-j+1)(x-j+2)/2 theo các lũy thừa của j. Vì mọi d[i]
+đều nguyên nên biểu thức trong ngoặc luôn chẵn, phép chia 2 là chính xác (kể cả khi
+âm).
+
+## Độ phức tạp
+Thời gian: O((n + q) log n) cho cả hai lời giải (mỗi update/query chỉ gồm vài thao
+tác BIT, mỗi thao tác O(log n)).
+Bộ nhớ:
+- solution.cpp: O(n) cho ba BIT và mảng prefix; đọc input tuần tự bằng std::cin. Các
+  moment đa thức và phép nhân trung gian dùng `__int128` để tránh tràn số.
+- solution.py: O(n + q) vì đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split();
+  Python dùng số nguyên lớn tùy ý nên không lo tràn số, và đã inline vòng lặp BIT cho nhanh.

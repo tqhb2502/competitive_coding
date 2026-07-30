@@ -1,0 +1,49 @@
+Sliding Window Or - CSES 3405
+https://cses.fi/problemset/task/3405
+
+Tags: sliding-window
+
+## Đề bài
+- Mảng a[1..n] được sinh bởi công thức truy hồi: x1 = x, x[i] = (a*x[i-1] + b) mod c,
+  trong đó phần tử a[i] chính là x[i].
+- Với mỗi cửa sổ (window) độ dài k liên tiếp, tính phép OR bit của tất cả phần tử
+  trong cửa sổ.
+- In ra XOR của toàn bộ các giá trị OR đó.
+- Ràng buộc: 1 <= k <= n <= 10^7; 0 <= x, a, b <= 10^9; 1 <= c <= 10^9.
+  Phần tử đầu x1 = x có thể không nhỏ hơn c nhưng vẫn không vượt 10^9; từ x2
+  trở đi các giá trị đều nhỏ hơn c. Vì vậy mọi phần tử vẫn nhỏ hơn 2^30.
+
+## Ý tưởng
+- Vì n có thể lớn tới 10^7 nên phải sinh mảng và trả lời mọi cửa sổ trong thời gian
+  tuyến tính, đồng thời tiết kiệm bộ nhớ (chỉ giữ một khối kích thước k chứ không giữ
+  cả mảng).
+- Sinh dãy nhanh: dùng một Generator theo mô hình LCG. Để tránh phép chia và lấy dư
+  chậm khi lặp tới 10^7 lần, ta tính trước nghịch đảo (reciprocal) của modulus rồi
+  dùng nhân 128-bit theo kiểu Barrett reduction để lấy phần dư chỉ bằng phép nhân và
+  dịch bit.
+- Vài trường hợp đặc biệt được xử lý trực tiếp cho gọn và nhanh:
+  * c = 1: dãy trở thành x, 0, 0, ... nên chỉ đúng một cửa sổ chứa x; đáp án là x.
+  * k = 1: mỗi cửa sổ chỉ gồm một phần tử, đáp án là XOR của tất cả phần tử.
+  * k = n: chỉ có duy nhất một cửa sổ, đáp án là OR của toàn mảng.
+- Trường hợp tổng quát dùng kỹ thuật chia khối (block decomposition) cho sliding
+  window OR:
+  * Chia dãy thành các khối liên tiếp kích thước k. Mỗi cửa sổ độ dài k luôn nằm gọn
+    trong hai khối kề nhau: một đoạn hậu tố (suffix) của khối trước và một đoạn tiền tố
+    (prefix) của khối sau.
+  * Với khối trước, tính sẵn suffix OR: block[i] = OR của các phần tử từ vị trí i cho
+    tới hết khối.
+  * Duyệt khối sau và duy trì prefix OR tăng dần. Cửa sổ kết thúc tại vị trí offset của
+    khối sau có OR = suffixOR[offset+1] | prefixOR[0..offset]; khi cửa sổ trùng đúng cả
+    khối sau (offset = k-1) thì OR chỉ còn bằng prefix.
+  * XOR mỗi giá trị OR của cửa sổ vào đáp án. Cửa sổ đầu tiên (đúng bằng khối đầu) được
+    tính riêng bằng OR của khối đầu.
+  * Sau khi xử lý xong một khối, ghi đè khối bằng các giá trị thô rồi tính lại suffix OR
+    để nó đóng vai trò "khối trước" cho khối kế tiếp.
+- Tính đúng đắn: mọi cửa sổ đều được tách thành hậu tố khối trước và tiền tố khối sau,
+  hai đoạn này rời nhau và ghép lại đúng bằng k phần tử của cửa sổ, nên OR ghép chính xác.
+
+## Độ phức tạp
+- Thời gian: O(n) — mỗi phần tử được sinh đúng một lần và mỗi cửa sổ được trả lời trong
+  O(1) nhờ suffix OR và prefix OR; việc sinh dãy dùng nhân 64/128-bit thay cho phép lấy
+  dư nên rất nhanh.
+- Bộ nhớ: O(k) — chỉ lưu một khối kích thước k thay vì toàn bộ mảng 10^7 phần tử.

@@ -1,0 +1,52 @@
+Monster Game I - CSES 2084
+https://cses.fi/problemset/task/2084
+
+Tags: binary-search, convex-hull-trick, monotone-predicate
+
+## Đề bài
+- Có n con quái, độ mạnh s_1 <= s_2 <= ... <= s_n. Khi giết một con quái ta tốn
+  thời gian = (độ mạnh của nó) * (hệ số kỹ năng hiện tại). Sau khi giết con quái
+  thứ j, hệ số kỹ năng chuyển thành f_j. Ban đầu hệ số kỹ năng là x, và thỏa
+  x >= f_1 >= f_2 >= ... >= f_n >= 1. Bắt buộc phải giết con quái cuối cùng (thứ n).
+  Cần tìm tổng thời gian nhỏ nhất.
+
+## Ý tưởng
+- Kỹ thuật: quy hoạch động tối ưu bằng Convex Hull Trick (CHT) dạng monotonic
+  (bao lồi dưới).
+
+- Công thức DP: gọi dp[i] = thời gian nhỏ nhất để vừa giết xong con quái i. Để giết
+  con quái i ta phải dùng hệ số kỹ năng của con quái j đã giết ngay trước đó (hoặc
+  x nếu chưa giết con nào). Đặt fac[0] = x và fac[j] = f_j:
+      dp[i] = min_{0 <= j < i} ( dp[j] + s_i * fac[j] ),   dp[0] = 0.
+  Đáp án là dp[n].
+
+- Nhìn dưới góc độ CHT: với mỗi ứng viên j, coi là một đường thẳng
+  y = fac[j] * X + dp[j] (hệ số góc = fac[j], hệ số tự do = dp[j]). Tính dp[i] chính
+  là lấy min các đường thẳng tại X = s_i.
+
+- Hệ số góc fac[j] không tăng dần (vì x >= f_1 >= f_2 >= ...), và các điểm truy vấn
+  s_i không giảm dần (s_1 <= s_2 <= ...). Do đó có thể duy trì lower envelope bằng
+  một stack monotonic: thêm đường thẳng ở cuối và truy vấn min tại X = s_i.
+
+- Trong solution.cpp, truy vấn dùng binary search trên các đường thẳng của envelope
+  (hàm giá trị theo chỉ số đường thẳng là unimodal - giảm rồi tăng), rất ổn định và
+  tránh mọi trường hợp biên của con trỏ khi vừa thêm vừa truy vấn xen kẽ.
+
+- Các slope có thể bằng nhau (f có thể trùng), nên trước khi thêm một đường có cùng
+  hệ số góc với đường cuối, chỉ giữ đường có intercept nhỏ hơn (dominate). Nhờ vậy
+  mọi cặp đường kề nhau trong envelope có hệ số góc giảm THỰC SỰ, phép so sánh "bad"
+  bằng tích chéo không chia cho 0. Dùng __int128 khi so sánh tích chéo để tránh tràn.
+
+- Tính đúng: do hàm mục tiêu là min của các đường thẳng tuyến tính, nghiệm tối ưu
+  nằm trên lower envelope. Với hệ số góc giảm và X tăng, đường thẳng tối ưu dịch
+  chuyển một chiều. Ta thêm line j SAU khi đã tính xong dp[j], nên khi tính dp[i]
+  mọi line 0..i-1 đều có sẵn -> đúng điều kiện j < i.
+
+- Giá trị: dp[i] <= dp[0] + s_i * x = s_i * x <= 10^6 * 10^6 = 10^12, vừa long long.
+  Trong query, fac[j]*s_i <= 10^12 nên tổng cũng vừa long long (không cần __int128).
+
+## Độ phức tạp
+- Thời gian O(n log n): mỗi đường thẳng được thêm và bị loại nhiều nhất một lần
+  (amortized), mỗi truy vấn là một binary search O(log n).
+- Bộ nhớ O(n).
+- Với n <= 2*10^5 thuật toán này rất nhẹ, chạy tốt trong giới hạn thời gian của CSES.

@@ -1,0 +1,37 @@
+Distinct Subsequences - CSES 1149
+https://cses.fi/problemset/task/1149
+
+Tags: distinct-subsequences
+
+## Đề bài
+Cho một chuỗi s độ dài n (chỉ gồm các chữ cái thường). Hãy đếm số lượng chuỗi
+con (subsequence) PHÂN BIỆT và KHÁC RỖNG của s. Kết quả lấy modulo 10^9 + 7.
+Ràng buộc: n <= 5 * 10^5.
+
+## Ý tưởng
+Dùng Dynamic Programming đếm distinct subsequences.
+- Gọi dp[i] là số subsequence phân biệt (bao gồm cả chuỗi rỗng) của tiền tố
+  gồm i ký tự đầu tiên s[0..i-1]. Khởi tạo dp[0] = 1 (chỉ có chuỗi rỗng).
+- Khi thêm ký tự c = s[i-1] vào cuối:
+      dp[i] = 2 * dp[i-1] - dp[j-1]
+  trong đó:
+    * 2 * dp[i-1]: mỗi subsequence cũ đều có thể GIỮ NGUYÊN hoặc GẮN THÊM c
+      vào cuối, làm số chuỗi tăng gấp đôi.
+    * Nếu c đã từng xuất hiện trước đó, gọi j là vị trí (1-indexed) lần xuất
+      hiện GẦN NHẤT trước i thì ta bị đếm trùng đúng dp[j-1] chuỗi (các chuỗi
+      tạo ra khi gắn c tại lần xuất hiện trước), nên phải trừ đi dp[j-1]. Nếu
+      c chưa từng xuất hiện thì không trừ gì.
+- Cài đặt: giữ mảng last[c] lưu giá trị dp NGAY TRƯỚC khi xử lý lần xuất hiện
+  gần nhất của c (chính là dp[j-1]). Mỗi bước:
+      new = 2 * dp % MOD
+      nếu c đã gặp: new = (new - last[c]) % MOD
+      last[c] = dp        # dp hiện tại chính là dp[j-1] cho lần sau
+      dp = new
+- Vì sao đúng: việc trừ dp[j-1] loại bỏ chính xác các chuỗi bị đếm lặp do ký
+  tự c lặp lại, đảm bảo mỗi chuỗi phân biệt chỉ được đếm một lần. dp cuối cùng
+  dp[n] đã tính CẢ chuỗi rỗng, nên đáp án = dp[n] - 1, rồi lấy modulo cho
+  không âm.
+
+## Độ phức tạp
+- Thời gian: O(n), mỗi ký tự xử lý O(1) nhờ mảng last kích thước 26.
+- Bộ nhớ: O(1) ngoài chuỗi đầu vào (một biến dp và hai mảng 26 phần tử: mảng đếm và mảng cờ đã gặp).

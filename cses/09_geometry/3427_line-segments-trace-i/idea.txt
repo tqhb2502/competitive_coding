@@ -1,0 +1,58 @@
+Line Segments Trace I - CSES 3427
+https://cses.fi/problemset/task/3427
+
+Tags: convex-hull-trick
+
+## Đề bài
+Có n đoạn thẳng, mỗi đoạn nối điểm (0, y1) với (m, y2); toạ độ nguyên và hệ
+số góc (slope) của mỗi đoạn là số nguyên. Với mỗi x = 0, 1, ..., m, hãy in ra
+giá trị y lớn nhất trong tất cả các đoạn tại hoành độ x đó (chính là bao trên
+- upper envelope). Kết quả in trên một dòng gồm m + 1 số nguyên (ứng với
+x = 0, 1, ..., m) cách nhau bởi dấu cách.
+
+## Ý tưởng
+Vì mọi đoạn đều trải dài trên toàn bộ khoảng [0, m], ta coi mỗi đoạn như một
+đường thẳng đầy đủ:
+    f_i(x) = s_i * x + b_i
+với b_i = y1 (giá trị tại x = 0) và s_i = (y2 - y1) / m là slope. Đề bài bảo
+đảm slope là số nguyên, nên phép chia (y2 - y1) // m là chính xác tuyệt đối.
+Bài toán trở thành: tìm upper envelope (bao trên) của n đường thẳng rồi lấy
+giá trị tại các điểm nguyên x = 0..m.
+
+Dùng Convex Hull Trick (CHT) đơn điệu:
+- Với cùng một slope, chỉ giữ đường có intercept lớn nhất (đường đó trội hoàn
+  toàn trên mọi x).
+- Sắp xếp các đường theo slope tăng dần rồi xây upper hull bằng một stack. Khi
+  thêm đường mới l3, nếu đường đang ở đỉnh l2 (nằm giữa l1 phía dưới và l3) trở
+  nên vô dụng thì loại (pop) nó ra. Điều kiện pop dùng cross-multiplication trên
+  số nguyên để tránh phép chia và tránh sai số float:
+      (c2 - c3) * (m2 - m1) <= (c1 - c2) * (m3 - m2)
+  nghĩa là giao điểm của cặp (l2, l3) nằm bên trái hoặc trùng giao điểm của
+  cặp (l1, l2), khi đó l2 không bao giờ là giá trị lớn nhất duy nhất.
+- Do các truy vấn x = 0, 1, ..., m tăng dần, chỉ số của đường tối ưu trên bao
+  trên là không giảm, nên duyệt bằng một con trỏ ptr tiến dần: khi
+  f(hull[ptr+1], x) >= f(hull[ptr], x) thì tăng ptr. Giá trị f = s*x + b được
+  tính bằng số nguyên nên luôn chính xác.
+
+Hai bản cài đặt dùng cùng thuật toán CHT nhưng khác vài chi tiết:
+- solution.cpp đọc dữ liệu theo luồng (cin), sắp xếp toàn bộ đường theo slope
+  (cùng slope thì intercept lớn hơn đứng trước) rồi bỏ qua đường trùng slope
+  ngay trong lúc xây hull, và dùng __int128 cho tích chéo để tránh tràn số.
+- solution.py đọc toàn bộ input một lần (sys.stdin.buffer.read(), bộ nhớ O(n)),
+  gộp các đường cùng slope bằng một dict (giữ intercept lớn nhất) trước khi sắp
+  xếp, và dùng số nguyên vô hạn của Python nên không lo tràn số.
+
+## Tính đúng đắn
+- Mọi phép so sánh và tích chéo đều là số nguyên nên không có sai số dấu phẩy
+  động: solution.cpp dùng `__int128` cho tích chéo để không tràn số, còn
+  solution.py dùng số nguyên vô hạn sẵn có của Python.
+- Với x nguyên, y = b + s*x luôn là số nguyên, khớp với yêu cầu in số nguyên.
+  Tại x = m: y = y1 + s*m = y1 + (y2 - y1) = y2 (đúng đầu mút phải).
+- Upper envelope của các đường thẳng cho đúng giá trị lớn nhất tại mọi x; và vì
+  mọi đoạn đều phủ kín [0, m] nên kết quả trùng với giá trị lớn nhất trên các
+  đoạn tại mọi x trong khoảng đó.
+
+## Độ phức tạp
+- Thời gian: O(n log n) cho bước sắp xếp + O(n) xây hull + O(n + m) cho truy vấn.
+- Bộ nhớ: bản C++ ghi trực tiếp từng giá trị ra cout nên O(n); bản Python gom
+  toàn bộ output vào danh sách trước khi in nên O(n + m).

@@ -1,0 +1,27 @@
+Pyramid Array - CSES 1747
+https://cses.fi/problemset/task/1747
+
+Tags: fenwick
+
+## Đề bài
+Cho mảng gồm n số phân biệt. Mỗi bước cho phép hoán đổi hai phần tử kề nhau. Tìm
+số bước ít nhất để biến mảng thành dạng kim tự tháp: tăng dần rồi giảm dần (được
+phép chỉ tăng hoặc chỉ giảm). Ràng buộc: n <= 2*10^5.
+
+## Ý tưởng
+Xử lý các phần tử theo thứ tự giá trị tăng dần. Khi tới phần tử đang ở vị trí p,
+mọi phần tử nhỏ hơn đã được lấy ra, còn các phần tử lớn hơn vẫn giữ thứ tự tương
+đối. Phần tử hiện tại là nhỏ nhất còn lại nên buộc phải đưa ra một trong hai đầu
+của dãy còn lại (đầu trái hoặc đầu phải của kim tự tháp). Gọi L là số phần tử còn
+hoạt động nằm bên trái p và R là số phần tử nằm bên phải; chi phí tối ưu cho phần
+tử này là min(L, R), vì mỗi lần hoán đổi kề chỉ vượt qua đúng một phần tử lớn hơn.
+Sau đó xóa vị trí p khỏi tập đang hoạt động và tiếp tục với phần tử kế tiếp.
+
+Dùng Fenwick tree lưu giá trị 1 tại mỗi vị trí chưa xóa; L tính bằng tổng tiền tố
+(prefix sum) trước p, còn thao tác xóa cập nhật trong O(log n). Vì các hoán đổi
+đưa phần tử ra biên chỉ đi qua phần tử lớn hơn và không làm thay đổi bài toán con
+của dãy còn lại, nên chọn min(L, R) tại từng bước là tối ưu độc lập; quy nạp qua
+mọi giá trị cho tổng chi phí nhỏ nhất.
+
+## Độ phức tạp
+Thời gian O(n log n), bộ nhớ O(n).

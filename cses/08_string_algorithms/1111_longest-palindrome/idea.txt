@@ -1,0 +1,32 @@
+Longest Palindrome - CSES 1111
+https://cses.fi/problemset/task/1111
+
+Tags: manacher
+
+## Đề bài
+Cho một xâu s độ dài n (tối đa 10^6, chỉ gồm các ký tự thường a-z). Hãy tìm chuỗi
+con liên tiếp là palindrome dài nhất của s. Nếu có nhiều đáp án thì in ra bất kỳ
+một đáp án hợp lệ nào.
+
+## Ý tưởng
+Dùng thuật toán Manacher để tìm palindrome dài nhất trong thời gian tuyến tính.
+
+- Palindrome có thể độ dài lẻ (tâm là một ký tự) hoặc chẵn (tâm nằm giữa hai ký
+  tự). Để xử lý đồng nhất hai trường hợp, ta biến đổi xâu bằng cách chèn một ký tự
+  phân cách (giá trị 0, tức '#') vào giữa mọi cặp ký tự và ở hai đầu. Ví dụ
+  "aba" -> "#a#b#a#". Khi đó mọi palindrome của xâu gốc đều tương ứng với một
+  palindrome ĐỘ DÀI LẺ trong xâu đã biến đổi, nên chỉ cần xét tâm lẻ.
+- Thêm hai ký tự "lính canh" (guard) khác nhau và khác mọi ký tự khác ở hai đầu,
+  giúp vòng lặp mở rộng tự dừng mà không cần kiểm tra biên (tránh out-of-bounds).
+- Với mỗi tâm i, gọi P[i] là bán kính palindrome dài nhất nhận i làm tâm trong xâu
+  đã biến đổi. Manacher tận dụng tính đối xứng: nếu i nằm trong palindrome hiện
+  tại (biên phải right, tâm center) thì khởi tạo P[i] = min(right - i, P[mirror])
+  với mirror là ảnh gương của i qua center, sau đó chỉ mở rộng thêm khi cần. Nhờ
+  vậy con trỏ right không bao giờ lùi, tổng số bước mở rộng là O(m).
+- Trong xâu đã biến đổi, bán kính P[i] tại một tâm đúng bằng ĐỘ DÀI palindrome
+  tương ứng trong xâu gốc. Lấy tâm có P[i] lớn nhất; vị trí bắt đầu trong xâu gốc
+  là (i - 1 - P[i]) / 2 (với i là chỉ số trong mảng đầy đủ đã có guard ở đầu).
+
+## Độ phức tạp
+- Thời gian: O(n).
+- Bộ nhớ: O(n) cho mảng biến đổi và mảng bán kính P.

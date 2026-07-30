@@ -1,0 +1,61 @@
+Rectangle Cutting - CSES 1744
+https://cses.fi/problemset/task/1744
+
+Tags: interval-dp
+
+## Đề bài
+Cho một hình chữ nhật kích thước a × b. Mỗi bước, ta chọn một hình chữ nhật và
+cắt nó bằng một đường thẳng (song song với cạnh) thành hai hình chữ nhật con,
+sao cho mọi cạnh vẫn là số nguyên. Hãy tìm số lần cắt tối thiểu để chia toàn bộ
+hình ban đầu thành các hình vuông. Ràng buộc: 1 ≤ a, b ≤ 500. Bài toán không có
+phép chia dư (modulo).
+
+Vào: một dòng gồm hai số nguyên a và b.
+Ra: một số nguyên duy nhất là số lần cắt tối thiểu.
+Ví dụ: "3 5" -> "3".
+
+## Ý tưởng
+Trạng thái quy hoạch động:
+  dp[i][j] = số lần cắt tối thiểu để chia một hình chữ nhật i × j thành các hình
+  vuông. Vì các phần sau khi cắt là độc lập, thứ tự cắt không ảnh hưởng tổng số
+  lần cắt, nên chỉ cần biết kích thước hiện tại của hình chữ nhật.
+
+Trường hợp cơ sở:
+  dp[i][i] = 0, vì hình vuông không cần cắt thêm.
+
+Công thức chuyển (với i ≠ j, xét lần cắt đầu tiên):
+  - Cắt theo cạnh dài j (giữ nguyên i) thành i×k và i×(j-k):
+      dp[i][j] = min với 1 ≤ k < j của ( dp[i][k] + dp[i][j-k] ) + 1
+  - Cắt theo cạnh dài i (giữ nguyên j) thành k×j và (i-k)×j:
+      dp[i][j] = min với 1 ≤ k < i của ( dp[k][j] + dp[i-k][j] ) + 1
+  dp[i][j] là giá trị nhỏ nhất trong hai nhóm trên. Cộng thêm 1 vì đây là lần
+  cắt đầu tiên, hai phần con còn lại được giải tối ưu độc lập.
+
+Đáp án:
+  dp[a][b]. Với a == b kết quả là 0: solution.py kiểm tra và in thẳng 0, còn
+  solution.cpp lấy luôn dp[a][b] = 0 nhờ bảng được khởi tạo 0.
+
+Tính đúng đắn:
+  Mọi cách cắt tối ưu đều có một lần cắt đầu tiên trên toàn bộ hình, chia nó
+  thành đúng hai hình chữ nhật con qua một đường thẳng (theo cạnh i hoặc cạnh j)
+  tại vị trí nguyên k. Ta thử mọi hướng và mọi vị trí k, mỗi phần con lại được
+  tính tối ưu qua dp của các kích thước nhỏ hơn, nên DP bao phủ toàn bộ không
+  gian phương án. Thứ tự điền: duyệt i tăng dần, trong mỗi i duyệt j tăng dần;
+  mọi phụ thuộc đều tới ô có chỉ số nhỏ hơn nên luôn sẵn sàng.
+
+Tận dụng đối xứng:
+  Vì dp[i][j] = dp[j][i], chỉ cần tính nửa tam giác trên (i < j) rồi soi gương
+  dp[j][i] = dp[i][j]. Khi tính i < j:
+  - các vị trí cắt cạnh j dùng `dp[i][k] + dp[i][j-k]`;
+  - nhờ đối xứng, các vị trí cắt cạnh i dùng
+    `dp[j][k] + dp[j][i-k]`.
+  Hai phía của một vị trí cắt có thể hoán đổi, nên code chỉ cần duyệt
+  k tới một nửa độ dài tương ứng.
+
+## Độ phức tạp
+Với N = max(a, b) ≤ 500: thời gian O(N^3) (mỗi ô có O(N) chuyển tiếp), bộ nhớ
+O(N^2). Tận dụng đối xứng nên hằng số nhỏ đi khoảng một nửa.
+
+Cả solution.cpp và solution.py đều cài cùng thuật toán O(N^3) / O(N^2) này;
+bản Python dùng map(add, lát_trái, lát_phải) để đẩy phần cộng của mỗi ô xuống
+chạy trong C nên vẫn kịp thời gian trong giới hạn N ≤ 500.

@@ -1,0 +1,51 @@
+Nested Ranges Check - CSES 2168
+https://cses.fi/problemset/task/2168
+
+Tags: sorting, sweep-line
+
+## Đề bài
+Cho n đoạn [x, y]. Đoạn [a, b] được gọi là chứa đoạn [c, d] khi và chỉ khi
+a <= c và d <= b. Với mỗi đoạn, hãy trả lời hai câu hỏi:
+  (1) Đoạn này có CHỨA một đoạn khác nào đó hay không?
+  (2) Đoạn này có BỊ CHỨA bởi một đoạn khác nào đó hay không?
+In ra hai dòng, mỗi dòng gồm n giá trị 0/1 theo đúng thứ tự nhập:
+  - Dòng 1: kết quả câu hỏi (1) cho từng đoạn.
+  - Dòng 2: kết quả câu hỏi (2) cho từng đoạn.
+
+## Ý tưởng
+Sắp xếp (sorting) rồi quét một lượt (sweep), làm hai lần độc lập.
+
+A) Kiểm tra "bị chứa" (contained):
+   Đoạn i bị chứa nếu tồn tại j != i với x_j <= x_i và y_j >= y_i.
+   Sắp xếp các đoạn theo x tăng dần, nếu x bằng nhau thì theo y giảm dần.
+   Duyệt lần lượt và giữ biến max_y là y lớn nhất trong các đoạn đã xét trước đó.
+   Khi tới đoạn i, mọi đoạn đã xét đều có x_j <= x_i; nếu y_i <= max_y thì chắc
+   chắn có một đoạn trước đó bao trọn đoạn i, nên đánh dấu contained[i] = 1.
+   Ngược lại cập nhật max_y = y_i.
+   Sắp y giảm dần khi x bằng nhau giúp đoạn có y lớn hơn được xét trước, nhờ đó
+   đoạn có y nhỏ hơn (cùng x) được bắt đúng là bị chứa.
+
+B) Kiểm tra "chứa đoạn khác" (contains):
+   Đoạn i chứa đoạn khác nếu tồn tại j != i với x_j >= x_i và y_j <= y_i.
+   Sắp xếp theo x giảm dần, nếu x bằng nhau thì theo y tăng dần.
+   Duyệt và giữ biến min_y là y nhỏ nhất trong các đoạn đã xét trước đó.
+   Khi tới đoạn i, mọi đoạn đã xét đều có x_j >= x_i; nếu y_i >= min_y thì có một
+   đoạn trước đó nằm gọn trong đoạn i, nên contains[i] = 1. Ngược lại cập nhật
+   min_y = y_i.
+
+Tính đúng đắn: đề bảo đảm không có hai đoạn trùng nhau nên trường hợp cả x và y
+đều bằng không xảy ra; cách sắp xếp phụ (y giảm/tăng khi x bằng) bảo đảm giá trị
+so sánh với max_y/min_y luôn đến từ một đoạn KHÁC và thực sự bao/bị bao đúng định
+nghĩa. Do đó hai lượt quét cho kết quả chính xác cho mọi đoạn.
+
+## Độ phức tạp
+- Thời gian: O(n log n) do hai lần sắp xếp; hai lượt quét là O(n).
+- Bộ nhớ: O(n) để lưu các đoạn và mảng kết quả.
+
+Code C++ dùng `std::sort` trên struct `Range` với hàm so sánh tùy biến, hai lượt
+quét tuyến tính và fast I/O (`sync_with_stdio(false)`); lưu cờ bằng hai vector int.
+Code Python cùng thuật toán nhưng đọc toàn bộ input một lần bằng
+`sys.stdin.buffer.read()`, mã hóa thứ tự giảm dần bằng cách đổi dấu (sắp bộ ba
+`(x, -y, i)` cho lượt A và `(-x, y, i)` cho lượt B) rồi gọi `sorted`, và lưu cờ
+kết quả bằng `bytearray`. Cả hai bản đều O(n log n) thời gian, O(n) bộ nhớ, phù
+hợp với n <= 2*10^5.

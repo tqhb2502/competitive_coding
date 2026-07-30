@@ -1,0 +1,46 @@
+Tree Diameter - CSES 1131
+https://cses.fi/problemset/task/1131
+
+Tags: tree-diameter
+
+## Đề bài
+Cho một cây có n node và n-1 cạnh (mỗi cạnh dài 1). Hãy tìm đường kính của
+cây (diameter), tức là khoảng cách lớn nhất giữa hai node bất kỳ.
+
+## Ý tưởng
+Mô hình hóa:
+- Cây có n node, n-1 cạnh, không trọng số nên mỗi cạnh có độ dài 1.
+- solution.cpp lưu đồ thị bằng `vector<vector<int>>` làm danh sách kề.
+- solution.py lưu đồ thị bằng danh sách kề dạng CSR (đếm bậc degree -> tính mảng
+  offset `start` -> điền các cạnh vào mảng phẳng `adj`) để duyệt nhanh và tiết
+  kiệm bộ nhớ.
+
+Thuật toán double BFS (two-sweep):
+1. Chọn một node bất kỳ (ở đây là node 1), chạy BFS để tìm node u xa nó nhất.
+2. Chạy BFS lần thứ hai xuất phát từ u, tìm node v xa u nhất.
+3. Khoảng cách dist(u, v) chính là đường kính của cây.
+
+Tính đúng đắn:
+- Bổ đề kinh điển: với một cây bất kỳ, node xa nhất tính từ một node tùy ý
+  luôn là một trong hai đầu mút của một đường kính nào đó. Do đó BFS lần 1 từ
+  một node bất kỳ chắc chắn cho ra một đầu mút u của đường kính. BFS lần 2 từ u
+  cho ra đầu mút còn lại v, và dist(u, v) là độ dài đường kính.
+- Chứng minh (tóm tắt): Giả sử đường kính là (s, t). Gọi u là node xa nhất từ
+  node xuất phát r. Có thể chứng minh bằng phản chứng rằng nếu u không phải đầu
+  mút của một đường kính thì tồn tại đường đi dài hơn (s, t), mâu thuẫn. Vì thế u
+  là một đầu mút của đường kính, và BFS từ u tìm được đường kính đầy đủ.
+
+Cài đặt:
+- Cả hai bản đều BFS iterative (không đệ quy) kèm mảng dist để tránh tràn call
+  stack với cây tới 2*10^5 node: solution.cpp dùng `std::queue`, solution.py
+  dùng `collections.deque`.
+- Mỗi BFS trả về (node xa nhất, khoảng cách xa nhất).
+- solution.py đọc toàn bộ input một lần bằng sys.stdin.buffer.read().split().
+- Trường hợp đặc biệt n = 1: không có cạnh nên đường kính = 0. solution.py xử lý
+  tường minh bằng một nhánh riêng; solution.cpp không cần nhánh riêng vì BFS từ
+  node 1 tự nhiên trả về khoảng cách 0.
+
+## Độ phức tạp
+- Thời gian: O(n) cho mỗi lần BFS, tổng O(n) cho cả hai bản.
+- Bộ nhớ: O(n) cho danh sách kề và các mảng phụ. solution.py đọc toàn bộ input
+  một lần nên cũng dùng O(n) bộ nhớ cho dữ liệu vào.

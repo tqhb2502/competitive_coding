@@ -1,0 +1,26 @@
+Range Xor Queries - CSES 1650
+https://cses.fi/problemset/task/1650
+
+Tags: disjoint-sparse-table, prefix-xor
+
+## Đề bài
+Cho một mảng tĩnh gồm n số nguyên và q truy vấn. Mỗi truy vấn cho hai chỉ số
+a và b (1-indexed), yêu cầu tính XOR của tất cả các phần tử trong đoạn [a, b].
+Mảng không thay đổi giữa các truy vấn.
+
+## Ý tưởng
+Sử dụng mảng tiền tố XOR (prefix XOR).
+- Định nghĩa mảng P với P[0] = 0 và P[i] = x_1 XOR x_2 XOR ... XOR x_i.
+- Dựng P một lần trong O(n) theo công thức P[i] = P[i-1] XOR x_i.
+- Trả lời mỗi truy vấn trong O(1): XOR của đoạn [a, b] = P[b] XOR P[a-1].
+
+Tính đúng đắn: phép XOR có tính giao hoán, kết hợp, cùng với t XOR t = 0 và
+t XOR 0 = t. Các phần tử x_1..x_{a-1} xuất hiện trong cả P[b] lẫn P[a-1] nên
+khi XOR hai giá trị này chúng triệt tiêu lẫn nhau, chỉ còn lại x_a XOR ... XOR x_b.
+
+## Độ phức tạp
+- Thời gian: O(n) để dựng prefix XOR, O(1) mỗi truy vấn, tổng cộng O(n + q).
+- Bộ nhớ:
+  - C++ (solution.cpp): O(n) cho mảng prefix, đọc input theo luồng.
+  - Python (solution.py): O(n + q) do đọc toàn bộ input một lần vào bộ nhớ,
+    ngoài mảng prefix O(n) và danh sách kết quả O(q).

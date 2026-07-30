@@ -1,0 +1,34 @@
+Building Roads - CSES 1666
+https://cses.fi/problemset/task/1666
+
+Tags: dsu
+
+## Đề bài
+Có n thành phố và m con đường (cạnh vô hướng) đã có sẵn nối một số cặp thành
+phố. Hãy xây thêm số con đường ÍT NHẤT sao cho từ bất kỳ thành phố nào cũng đi
+được đến mọi thành phố khác (đồ thị trở nên liên thông). In ra số con đường cần
+xây và một danh sách các con đường mới hợp lệ (đề chấp nhận nhiều đáp án đúng).
+
+## Ý tưởng
+- Coi mỗi thành phố là một đỉnh, mỗi con đường là một cạnh vô hướng. Đồ thị ban
+  đầu chia thành c thành phần liên thông (connected components).
+- Để nối c thành phần thành một khối duy nhất cần đúng c - 1 con đường mới: mỗi
+  con đường nối hai thành phần khác nhau làm giảm số thành phần đi đúng 1, nên
+  c - 1 vừa là tối thiểu vừa đủ.
+- Cách nối: chọn một đỉnh đại diện (root) cho mỗi thành phần. Lấy đại diện đầu
+  tiên làm "gốc" rồi nối gốc với đại diện của từng thành phần còn lại. Các đại
+  diện đôi một khác nhau nên không sinh ra cặp trùng lặp.
+- Dùng cấu trúc DSU (Disjoint Set Union / Union-Find) với path compression và
+  union by size để gộp các đỉnh nối bởi cạnh có sẵn. Sau đó quét các đỉnh 1..n,
+  mỗi đỉnh là root của chính nó chính là một đại diện của một thành phần.
+- Có thể thay DSU bằng BFS/DFS với cùng độ phức tạp; DSU gọn và nhanh hơn.
+
+## Độ phức tạp
+- Thời gian: O((n + m) * α(n)) cho cả hai bản, với α là hàm ngược Ackermann
+  (gần như hằng số).
+- Bộ nhớ:
+  - C++: O(n) cho hai mảng của DSU và danh sách đại diện; đọc từng cạnh bằng cin
+    rồi gộp ngay nên không lưu danh sách m cạnh.
+  - Python: O(n + m) vì đọc toàn bộ input một lần (data giữ khoảng 2m token),
+    cộng O(n) cho hai mảng DSU và danh sách đại diện.
+- Với n <= 1e5 và m <= 2e5, thuật toán rất nhẹ.

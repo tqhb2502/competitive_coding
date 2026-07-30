@@ -1,0 +1,57 @@
+Nested Ranges Count - CSES 2169
+https://cses.fi/problemset/task/2169
+
+Tags: coordinate-compression, fenwick, sorting
+
+## Đề bài
+Cho n đoạn [a, b]. Với mỗi đoạn, hãy đếm:
+  (1) số đoạn khác mà nó CHỨA (đoạn [a, b] chứa [c, d] nếu a <= c và d <= b),
+  (2) số đoạn khác CHỨA nó.
+In ra hai dòng, mỗi dòng gồm n số theo đúng thứ tự nhập vào.
+
+Ràng buộc: 1 <= n <= 2*10^5, 1 <= x <= y <= 10^9, các đoạn đôi một khác nhau.
+
+## Ý tưởng
+Nhận xét: đoạn i chứa đoạn j khi và chỉ khi a_i <= a_j và b_j <= b_i.
+Vì mọi đoạn đôi một khác nhau nên quan hệ "chứa" là phản đối xứng: không thể có
+hai đoạn cùng chứa lẫn nhau (điều đó đòi hỏi a_i = a_j và b_i = b_j, tức trùng
+nhau). Do vậy không sợ đếm trùng hay đếm chính mình. Ngoài ra vì các đoạn đôi một khác
+nhau, nếu hai đoạn cùng a thì chắc chắn khác b (và ngược lại), giúp xử lý các
+trường hợp bằng nhau (ties) an toàn.
+
+Thuật toán: sort + Fenwick tree (BIT).
+Nén tọa độ (coordinate compression) các giá trị b về rank 1..m. BIT được đánh chỉ
+số theo rank của b, lưu số đoạn đã chèn.
+
+Pass 1 - tính contains[i] (số đoạn mà i chứa):
+  Cần đếm j sao cho a_i <= a_j và b_j <= b_i.
+  Sắp xếp các đoạn theo a giảm dần, nếu bằng a thì b tăng dần: khóa = (-a, b).
+  Duyệt theo thứ tự này. Khi tới i, mọi j đã chèn vào BIT đều có a_j > a_i, hoặc
+  a_j = a_i nhưng b_j < b_i (nhờ tie b tăng dần) - đều thỏa a_i <= a_j. Truy vấn
+  prefix count b_j <= b_i (query rank[b_i]) cho ra contains[i], rồi mới chèn b_i.
+
+Pass 2 - tính contained[i] (số đoạn chứa i):
+  Cần đếm j sao cho a_j <= a_i và b_i <= b_j.
+  Sắp xếp theo a tăng dần, nếu bằng a thì b giảm dần: khóa = (a, -b).
+  Khi tới i, mọi j đã chèn đều có a_j <= a_i. Cần đếm b_j >= b_i:
+  contained[i] = (số đã chèn) - (số b_j < b_i) = cnt - query(rank[b_i] - 1).
+
+Cả hai truy vấn đều bao gồm trường hợp bằng nhau đúng như định nghĩa "chứa" (dấu
+<= và >=), và thứ tự tie đảm bảo các đoạn cùng a được xử lý chính xác.
+Kiểm tra với ví dụ mẫu: contains = "2 0 0 0", contained = "0 1 0 1" - khớp.
+
+## Độ phức tạp
+Thời gian: O(n log n) cho sort và các thao tác BIT (mỗi truy vấn/cập nhật O(log n)).
+Bộ nhớ: O(n).
+
+Cả hai lời giải (C++ và Python) dùng chung thuật toán: hai lần sort và hai lượt
+Fenwick, mỗi lượt có n truy vấn cùng n cập nhật O(log n), nên tổng O(n log n) tốt
+hơn hẳn cách duyệt cặp O(n^2).
+
+Khác biệt cài đặt:
+  - C++: sort mảng struct Range bằng comparator, khóa (-a, b) cho pass 1 và
+    (a, -b) cho pass 2.
+  - Python: đọc toàn bộ input một lần rồi ghép hai khóa sắp xếp thành một số
+    nguyên duy nhất (key = b - a*BIG cho pass 1, key = a*BIG - b cho pass 2, với
+    BIG = 2^31 > mọi b) để argsort các chỉ số nhanh hơn so với dùng tuple.
+Cả hai đều là O(n log n) thời gian, O(n) bộ nhớ, nằm trong giới hạn thời gian.

@@ -1,0 +1,38 @@
+Monsters - CSES 1194
+https://cses.fi/problemset/task/1194
+
+Tags: bfs
+
+## Đề bài
+Cho một mê cung dạng lưới n x m gồm các ô: '.' là ô trống, '#' là tường, 'A' là
+vị trí xuất phát của người chơi, 'M' là vị trí các quái vật. Mỗi bước, người chơi
+và tất cả quái vật đồng thời di chuyển 1 ô theo 4 hướng (lên/xuống/trái/phải).
+Hãy tìm cách đưa người chơi từ 'A' ra một ô biên (hàng 0, hàng n-1, cột 0 hoặc
+cột m-1) mà không bao giờ đứng cùng ô với quái vật, kể cả khi quái vật biết trước
+đường đi của người chơi (chiến lược phải an toàn trong mọi trường hợp). In "YES"
+kèm độ dài và chuỗi hướng đi nếu thoát được, ngược lại in "NO".
+
+## Ý tưởng
+Mô hình đồ thị: coi mỗi ô là một đỉnh, hai ô kề nhau (không phải tường) nối bằng
+một cạnh trọng số 1. Ta chạy hai lượt BFS.
+
+1. Multi-source BFS xuất phát đồng thời từ TẤT CẢ các ô 'M' để tính
+   mon[ô] = số bước ít nhất để MỘT quái vật bất kỳ tới được ô đó. Đây chính là
+   thời điểm sớm nhất một quái vật có thể chiếm ô.
+2. BFS từ 'A' để tính dist[ô] = số bước ít nhất người chơi tới ô đó. Khi mở rộng
+   sang ô kề nb với thời điểm tới mới nd = dist[cur] + 1, ta CHỈ cho phép đi vào
+   nb nếu nd < mon[nb] (nghiêm ngặt nhỏ hơn), tức người chơi tới ô đó TRƯỚC mọi
+   quái vật nên an toàn. Ngay ô xuất phát cũng cần 0 < mon[A].
+3. Khi BFS chạm tới một ô biên thỏa điều kiện, truy vết cha (par) và ký tự di
+   chuyển (mv) để dựng lại đường đi rồi in ra. Nếu 'A' đã nằm ở biên thì thoát
+   ngay với đường đi rỗng (độ dài 0).
+
+Tính đúng đắn: BFS trên đồ thị trọng số 1 cho khoảng cách ngắn nhất, nên mon[] và
+dist[] là thời điểm sớm nhất tương ứng. Điều kiện dist < mon phải là nghiêm ngặt
+vì nếu người chơi và quái vật cùng tới một ô ở cùng thời điểm thì bị bắt. Nếu ta
+luôn tới mọi ô trên đường đi trước quái vật thì không có thời điểm nào trùng ô với
+quái vật, an toàn kể cả khi quái vật đi tối ưu. Độ dài đường đi tối đa <= n*m.
+
+## Độ phức tạp
+- Thời gian: O(n*m) cho cả hai lần BFS (mỗi ô và mỗi cạnh xét số lần hằng số).
+- Bộ nhớ: O(n*m) cho các mảng mon, dist, par, mv, wall.

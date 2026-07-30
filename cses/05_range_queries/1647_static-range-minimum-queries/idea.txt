@@ -1,0 +1,32 @@
+Static Range Minimum Queries - CSES 1647
+https://cses.fi/problemset/task/1647
+
+Tags: disjoint-sparse-table, sparse-table
+
+## Đề bài
+Cho một mảng gồm n phần tử và q truy vấn. Mỗi truy vấn cho hai chỉ số a, b
+và yêu cầu tìm giá trị nhỏ nhất trong đoạn [a, b]. Mảng là cố định (static),
+không có thao tác cập nhật, chỉ có truy vấn min trên đoạn.
+
+## Ý tưởng
+- Dùng cấu trúc Sparse Table. Vì mảng cố định và phép min là idempotent
+  (min(x, x) = x, nên các đoạn con chồng lấn không làm sai kết quả), ta trả
+  lời được mỗi truy vấn trong O(1).
+- Định nghĩa: sp[k][i] = giá trị nhỏ nhất của đoạn có độ dài 2^k bắt đầu tại
+  chỉ số i, tức đoạn [i, i + 2^k - 1].
+- Công thức xây dựng theo quy hoạch động trên k:
+    sp[0][i] = x[i]
+    sp[k][i] = min( sp[k-1][i], sp[k-1][i + 2^(k-1)] )
+- Trả lời truy vấn đoạn [a, b] (sau khi đổi về 0-indexed):
+    len = b - a + 1
+    k   = floor(log2(len))   (tra bảng log dựng sẵn)
+    kết quả = min( sp[k][a], sp[k][b - 2^k + 1] )
+  Hai đoạn con độ dài 2^k phủ kín [a, b] (có thể chồng lấn), và nhờ min là
+  idempotent nên phần chồng lấn không ảnh hưởng kết quả.
+- Bảng log được dựng trước để lấy k trong O(1); mỗi hàng sparse table được tính
+  bằng một vòng lặp từ hàng ngay trước nó.
+
+## Độ phức tạp
+- Xây dựng: O(n log n) thời gian, O(n log n) bộ nhớ.
+- Mỗi truy vấn: O(1).
+- Tổng: O(n log n + q).

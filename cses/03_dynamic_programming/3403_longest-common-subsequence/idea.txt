@@ -1,0 +1,54 @@
+Longest Common Subsequence - CSES 3403
+https://cses.fi/problemset/task/3403
+
+Tags: lcs
+
+## Đề bài
+Cho hai mảng số nguyên a (độ dài n) và b (độ dài m). Hãy tìm dãy con chung dài
+nhất (LCS) của chúng: in ra độ dài của LCS, rồi in ra một dãy con chung bất kì
+đạt độ dài đó (đề có checker riêng nên chấp nhận mọi lời giải hợp lệ).
+Ràng buộc: 1 <= n, m <= 1000; 1 <= a_i, b_i <= 10^9. Không có modulo.
+
+## Ý tưởng
+Quy hoạch động cổ điển trên hai tiền tố, có truy vết để dựng lại dãy con.
+
+- Trạng thái: dp[i][j] = độ dài LCS giữa tiền tố a[0..i-1] và tiền tố b[0..j-1]
+  (i chạy 0..n, j chạy 0..m).
+
+- Cơ sở: dp[0][j] = 0 và dp[i][0] = 0, vì khi một tiền tố rỗng thì không có
+  phần tử chung nào.
+
+- Công thức chuyển:
+    + Nếu a[i-1] == b[j-1]: dp[i][j] = dp[i-1][j-1] + 1
+      (nối phần tử chung này vào cuối LCS của hai tiền tố ngắn hơn).
+    + Nếu a[i-1] != b[j-1]: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+      (bỏ phần tử cuối của a hoặc của b, lấy phương án tốt hơn).
+
+- Đáp án: độ dài LCS = dp[n][m]. Để lấy một dãy cụ thể, truy vết ngược từ ô
+  (n, m): nếu a[i-1] == b[j-1] thì phần tử này thuộc LCS, thêm vào kết quả rồi
+  lùi (i, j) -> (i-1, j-1); ngược lại đi về ô có dp lớn hơn (dp[i-1][j] >=
+  dp[i][j-1] thì i -= 1, không thì j -= 1). Cuối cùng đảo ngược danh sách để
+  có thứ tự đúng từ trái sang phải.
+
+- Vì sao đúng: LCS có tính cấu trúc con tối ưu (optimal substructure) và các bài
+  toán con gối nhau (overlapping subproblems) được lưu trong bảng dp nên mỗi
+  trạng thái chỉ tính một lần. Khi truy vết, ít nhất một trong hai chỉ số luôn
+  giảm và giá trị dp không tăng; mỗi lần nhận một phần tử chung thì cả hai chỉ
+  số cùng giảm và độ dài mục tiêu giảm đúng 1. Vì vậy ta tái tạo được một dãy
+  con chung có đúng độ dài dp[n][m].
+
+- Cài đặt (cả hai lời giải dùng cùng thuật toán, chỉ khác cách lưu bảng):
+    + solution.cpp lưu bảng DP trong một `vector<int>` phẳng có
+      `(n + 1) * (m + 1)` phần tử, truy cập ô `(i, j)` qua chỉ số
+      `i * (m + 1) + j` để tránh chi phí của nhiều cấp phát nhỏ.
+    + solution.py giữ bảng dưới dạng danh sách các hàng (mỗi hàng là một list
+      dài `m + 1`), thêm từng hàng vừa tính vào `dp`. Ngoài ra Python đọc các
+      phần tử ở dạng chuỗi byte và so sánh trực tiếp trên byte (nhanh mà vẫn
+      đúng vì mỗi số nguyên có đúng một biểu diễn thập phân).
+  Cả hai đều giữ toàn bộ bảng để phục vụ truy vết.
+
+## Độ phức tạp
+Áp dụng cho cả solution.cpp lẫn solution.py (cùng độ phức tạp).
+- Thời gian: O(n * m) để điền bảng dp (tối đa ~10^6 phép tính) cộng O(n + m)
+  cho truy vết.
+- Bộ nhớ: O(n * m) do phải giữ toàn bộ bảng dp để truy vết lại dãy con.

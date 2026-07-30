@@ -1,0 +1,38 @@
+Dynamic Range Minimum Queries - CSES 1649
+https://cses.fi/problemset/task/1649
+
+Tags: segment-tree
+
+## Đề bài
+Cho một mảng gồm n phần tử. Cần xử lý q truy vấn thuộc hai loại:
+  - "1 k u": gán giá trị của phần tử tại vị trí k (đánh số từ 1) bằng u.
+  - "2 a b": tìm giá trị nhỏ nhất trong đoạn đóng [a, b].
+
+## Ý tưởng
+Dùng iterative segment tree (segment tree lặp, xây dựng bottom-up) cho phép
+min. Không dùng Fenwick/BIT vì phép min không có phần tử nghịch đảo (không thể
+"trừ" ngược như phép tổng), nên không thể suy ra min một đoạn từ các tiền tố.
+
+Cài đặt:
+  - Chọn size là lũy thừa của 2 nhỏ nhất mà >= n. Cây lưu trong mảng tree có
+    2*size phần tử; lá thứ i (0-indexed) nằm tại tree[size + i].
+  - Xây dựng: đặt các lá, rồi duyệt node cha p từ size-1 về 1 và gán
+    tree[p] = min(tree[2p], tree[2p+1]).
+  - Point update vị trí k: đặt lại giá trị tại lá, rồi đi ngược từ lá lên gốc,
+    cập nhật lại mỗi node cha bằng min của hai con.
+  - Range-min query trên đoạn nửa mở [l, r): dịch l += size, r += size rồi lặp:
+    nếu l lẻ thì gộp tree[l] và tăng l; nếu r lẻ thì giảm r rồi gộp tree[r];
+    sau đó l >>= 1, r >>= 1 cho tới khi l >= r. Truy vấn "2 a b" là đoạn đóng
+    [a, b] nên gọi query(a-1, b).
+
+Tính đúng đắn: segment tree phân rã mọi đoạn thành O(log n) đoạn cơ sở tương
+ứng các node; min của các min từng đoạn chính là min toàn đoạn. Point update
+chỉ ảnh hưởng các node trên đường từ lá tới gốc nên O(log n) node là đủ.
+
+## Độ phức tạp
+  - Xây dựng: O(n).
+  - Mỗi update và mỗi query: O(log n).
+  - Tổng thời gian: O((n + q) log n).
+  - Bộ nhớ mảng tree: O(size) ~ O(n).
+  - solution.py đọc toàn bộ input một lần nên tốn thêm O(n + q); solution.cpp
+    đọc từng token nên chỉ O(n).

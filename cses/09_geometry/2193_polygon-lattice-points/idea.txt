@@ -1,0 +1,48 @@
+Polygon Lattice Points - CSES 2193
+https://cses.fi/problemset/task/2193
+
+Tags: polygon-area
+
+## Đề bài
+Cho một đa giác đơn (simple polygon) có n đỉnh với tọa độ nguyên. Hãy đếm:
+- Số điểm nguyên (lattice points) nằm HOÀN TOÀN bên trong đa giác.
+- Số điểm nguyên nằm TRÊN BIÊN của đa giác.
+In ra hai số: số điểm bên trong (interior) rồi số điểm trên biên (boundary),
+cách nhau một dấu cách.
+
+## Ý tưởng
+Dùng ĐỊNH LÝ PICK cho đa giác đơn có đỉnh nguyên:
+    A = i + b/2 - 1   =>   i = A - b/2 + 1
+với A là diện tích, i là số điểm bên trong, b là số điểm trên biên.
+
+Tính b (số điểm nguyên trên biên):
+- Trên cạnh nối hai đỉnh nguyên (x1, y1) và (x2, y2), số điểm nguyên trên đoạn
+  kể cả hai đầu mút là gcd(|dx|, |dy|) + 1; số điểm nằm nghiêm ngặt giữa hai
+  đầu mút là gcd(|dx|, |dy|) - 1.
+- Để cộng quanh chu vi mà không lặp đỉnh, coi mỗi cạnh là nửa mở: tính một đầu
+  mút và bỏ đầu còn lại. Khi đó cạnh đóng góp đúng gcd(|dx|, |dy|) điểm, nên
+  tổng các gcd trên n cạnh chính là b.
+
+Tính A bằng công thức shoelace với số nguyên chính xác:
+- Tính diện tích gấp đôi: 2A = | sum_k (x_k * y_{k+1} - x_{k+1} * y_k) |.
+- Lấy trị tuyệt đối nên không phụ thuộc chiều duyệt (thuận hay nghịch kim đồng hồ).
+- Toàn bộ phép tính giữ nguyên số nguyên để tránh sai số float. Bản C++ dùng
+  `__int128` vì giá trị trung gian có thể rất lớn với tọa độ tới 1e9; bản Python
+  dùng số nguyên lớn tùy ý (arbitrary precision) sẵn có nên không lo tràn số.
+
+Ghép lại: đặt twoA = |2A|, ta có
+    i = A - b/2 + 1 = (2A - b + 2) / 2.
+Định lý Pick bảo đảm (2A - b) luôn chẵn nên phép chia này chia hết hoàn toàn; dùng
+phép chia nguyên để giữ kết quả chính xác. Đáp án in ra là i rồi b.
+
+Vì sao đúng:
+- Định lý Pick đúng cho MỌI đa giác đơn có đỉnh nguyên (kể cả không lồi), và đề bài
+  bảo đảm đa giác là simple (không tự cắt).
+- Công thức gcd cho cạnh nửa mở đếm đúng mọi điểm biên đúng một lần.
+- Shoelace cho diện tích chính xác; trị tuyệt đối khử phụ thuộc chiều duyệt.
+
+## Độ phức tạp
+- Thời gian: O(n log C), với C là độ lớn tọa độ, do mỗi cạnh gọi gcd; phần
+  shoelace riêng tốn O(n).
+- Bộ nhớ: O(n) để lưu các đỉnh; thừa sức với n <= 1e5. Bản Python đọc toàn bộ
+  input một lần (sys.stdin.buffer.read) rồi tách token, vẫn là O(n) bộ nhớ.

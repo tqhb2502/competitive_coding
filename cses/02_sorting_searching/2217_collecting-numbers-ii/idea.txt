@@ -1,0 +1,40 @@
+Collecting Numbers II - CSES 2217
+https://cses.fi/problemset/task/2217
+
+Tags: permutation-cycles
+
+## Đề bài
+Cho một hoán vị gồm các số từ 1 đến n. Mỗi vòng (round) ta đi từ trái sang phải và
+thu thập các số theo thứ tự tăng dần, tiếp tục từ chỗ đã dừng ở vòng trước; số vòng
+cần dùng để thu hết tất cả các số chính là kết quả. Có m truy vấn, mỗi truy vấn đổi
+chỗ giá trị ở hai vị trí a và b của mảng. Sau MỖI truy vấn hãy in ra số vòng hiện tại.
+
+## Ý tưởng
+- Gọi pos[v] là vị trí (chỉ số) của giá trị v trong mảng.
+- Nhận xét mấu chốt: khi thu giá trị v rồi tới v+1, nếu pos[v] < pos[v+1] thì v+1
+  nằm sau v nên thu tiếp trong cùng vòng; ngược lại pos[v] > pos[v+1] thì phải bắt
+  đầu một vòng mới. Do đó số vòng = 1 + (số cặp liên tiếp (v, v+1) với pos[v] > pos[v+1]).
+  Gọi số cặp "bad" đó là count, đáp án = count + 1.
+- Mỗi truy vấn chỉ đổi pos của hai giá trị va = arr[a] và vb = arr[b], nên chỉ ảnh
+  hưởng tới bốn chỉ số cặp ứng viên: va-1, va, vb-1, vb (chỉ giữ những chỉ số nằm
+  trong [1, n-1]). Ta cập nhật count tăng dần (incremental) cho mỗi truy vấn:
+    (1) Lấy bốn chỉ số cặp ứng viên; khử trùng lặp: chỉ trùng khi va, vb kề nhau
+        (vb = va+1 khiến cặp va trùng cặp vb-1; vb = va-1 khiến cặp va-1 trùng cặp vb).
+    (2) Với mỗi cặp hợp lệ, nếu đang là "bad" thì count -= 1 (bỏ đóng góp cũ).
+    (3) Thực hiện swap: cập nhật arr và pos của va, vb.
+    (4) Với mỗi cặp hợp lệ, nếu bây giờ là "bad" thì count += 1 (thêm đóng góp mới).
+    (5) In ra count + 1.
+- Vì mọi cặp khác giữ nguyên pos nên giữ nguyên trạng thái, chỉ cần trừ rồi cộng lại
+  đóng góp của đúng những cặp liên quan tới va, vb là ra count mới chính xác.
+
+## Độ phức tạp
+- Thời gian: khởi tạo O(n), mỗi truy vấn chỉ đụng tối đa 4 cặp -> O(1). Tổng O(n + m).
+- Bộ nhớ:
+  + C++: O(n) cho hai mảng values và position; truy vấn được đọc và in theo luồng
+    (streaming) nên không lưu thêm dữ liệu tỉ lệ với m.
+  + Python: đọc toàn bộ input một lần vào `data` rồi gom mọi đáp án vào `out` trước
+    khi in một thể, nên tốn O(n + m).
+
+Code C++ đặt bốn chỉ số bị ảnh hưởng trong `array<int, 4>`, sort mảng cố định
+rồi bỏ các giá trị trùng/kém hợp lệ khi quét. Mỗi truy vấn vẫn chỉ làm O(1)
+công việc và xuất một số bằng fast I/O.

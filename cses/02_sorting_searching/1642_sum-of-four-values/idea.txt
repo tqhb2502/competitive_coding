@@ -1,0 +1,51 @@
+Sum of Four Values - CSES 1642
+https://cses.fi/problemset/task/1642
+
+Tags: meet-in-the-middle
+
+## Đề bài
+Cho mảng a gồm n phần tử và một số nguyên x. Hãy tìm bốn vị trí phân biệt
+sao cho tổng bốn giá trị tại các vị trí đó bằng đúng x. In ra bốn vị trí
+(đánh số từ 1); nếu không tồn tại thì in ra "IMPOSSIBLE".
+
+Ràng buộc: 1 <= n <= 1000, 1 <= x, a_i <= 10^9.
+
+## Ý tưởng
+Dùng hashmap lưu tổng của các cặp (pair sums). Vì n <= 1000 nên số cặp
+(i, j) chỉ khoảng n^2/2 ~ 5*10^5, do đó thuật toán O(n^2) hoàn toàn hợp lý.
+
+Ta cần bốn chỉ số phân biệt. Sắp xếp lại thành p1 < p2 < p3 < p4 và tách
+thành hai cặp: cặp "thấp" (p1, p2) và cặp "cao" (p3, p4), với điều kiện
+p2 < p3 (tức chỉ số lớn của cặp thấp nhỏ hơn chỉ số bé của cặp cao).
+
+Duyệt i từ 0 đến n-1. Với mỗi i:
+  1. TÌM: coi i là chỉ số nhỏ của cặp cao. Với mọi j > i, tính
+     need = x - a[i] - a[j]. Nếu need đã có trong hashmap "seen" (lưu một
+     cặp (k, l) có tổng bằng need) thì (k, l, i, j) chính là đáp án.
+  2. THÊM: sau khi tìm xong cho i, thêm mọi cặp (k, i) với k < i vào
+     hashmap: seen[a[k] + a[i]] = (k, i) (chỉ giữ cặp đầu tiên cho mỗi tổng).
+
+Vì bước THÊM diễn ra SAU bước TÌM, tại thời điểm tìm với chỉ số i thì hashmap
+chỉ chứa các cặp (k, l) mà cả hai chỉ số đều nhỏ hơn i. Kết hợp với j > i, ta
+có k < l < i < j, đảm bảo bốn chỉ số PHÂN BIỆT.
+
+Tính đúng đắn: mọi bộ bốn chỉ số phân biệt đều sắp xếp được thành
+p1 < p2 < p3 < p4 với p2 < p3. Khi vòng lặp chạy tới i = p3, j = p4 thì
+need = x - a[p3] - a[p4] = a[p1] + a[p2] chắc chắn đã nằm trong hashmap
+(được thêm ở vòng i = p2 < p3). Dù hashmap có thể giữ một cặp khác cùng tổng
+thay vì đúng (p1, p2), cặp đó vẫn có cả hai chỉ số nhỏ hơn i nên vẫn phân biệt
+với i, j. Do đó nếu có nghiệm thì thuật toán chắc chắn tìm được; nếu duyệt hết
+mà không thấy thì thực sự không tồn tại -> in "IMPOSSIBLE".
+
+## Độ phức tạp
+- Thời gian: O(n^2) cho cả hai bước tìm và thêm (mỗi cặp xử lý O(1) trung
+  bình nhờ hashmap).
+- Bộ nhớ: O(n^2) trong trường hợp xấu nhất để lưu các tổng cặp trong hashmap.
+
+Với n = 1000 có khoảng 10^6 lượt tìm/chèn. Hai bản cài đặt dùng chung thuật
+toán, chỉ khác chi tiết:
+- Bản C++ dùng `unordered_map`, đặt trước dung lượng (`reserve` ~ n^2/2) và hạ
+  `max_load_factor` xuống 0.7 để tránh rehash tốn kém.
+- Bản Python đọc toàn bộ input một lần bằng `sys.stdin.buffer.read()` rồi dùng
+  `dict` thường (không tinh chỉnh thủ công); tốn thêm O(n) bộ nhớ cho dữ liệu
+  đã đọc, không đổi độ phức tạp tổng thể.
